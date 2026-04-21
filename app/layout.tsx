@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NBA Trivia",
-  description: "NBA trivia games — Start, Bench, Cut and more",
+  title: "Courtside Central",
+  description: "NBA trivia and games — Start, Bench, Cut, Guess Who, and more",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-gray-950 text-white antialiased">
+      <body className="min-h-full flex flex-col bg-teal-50 text-slate-900 antialiased">
         {children}
       </body>
     </html>

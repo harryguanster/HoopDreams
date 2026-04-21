@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { TRIOS, type Trio, type Player } from "@/lib/playerData";
+import { TRIOS, type Trio } from "@/lib/playerData";
 import PlayerCard from "./PlayerCard";
 import ResultScreen from "./ResultScreen";
 
@@ -18,7 +18,6 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 export default function StartBenchCutPage() {
-  const [trioIndex, setTrioIndex] = useState(() => Math.floor(Math.random() * TRIOS.length));
   const [shuffledTrios] = useState(() => shuffleArray([...Array(TRIOS.length).keys()]));
   const [roundIndex, setRoundIndex] = useState(0);
   const [assignments, setAssignments] = useState<Assignments>({});
@@ -26,52 +25,33 @@ export default function StartBenchCutPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const trio: Trio = TRIOS[shuffledTrios[roundIndex]];
-
   const assignedRoles = Object.values(assignments) as Role[];
   const takenRoles = new Set(assignedRoles);
 
-  const handlePlayerClick = useCallback(
-    (playerId: string) => {
-      if (submitted) return;
-      setSelectedPlayer((prev) => (prev === playerId ? null : playerId));
-    },
-    [submitted]
-  );
+  const handlePlayerClick = useCallback((playerId: string) => {
+    if (submitted) return;
+    setSelectedPlayer((prev) => (prev === playerId ? null : playerId));
+  }, [submitted]);
 
-  const handleRoleClick = useCallback(
-    (role: Role) => {
-      if (!selectedPlayer || submitted) return;
-
-      setAssignments((prev) => {
-        const next = { ...prev };
-
-        // If this role is already taken by another player, un-assign that player
-        const existingHolder = Object.entries(next).find(
-          ([pid, r]) => r === role && pid !== selectedPlayer
-        );
-        if (existingHolder) delete next[existingHolder[0]];
-
-        // If this player already has a role, clear it
-        if (next[selectedPlayer] === role) {
-          delete next[selectedPlayer];
-        } else {
-          next[selectedPlayer] = role;
-        }
-
-        return next;
-      });
-      setSelectedPlayer(null);
-    },
-    [selectedPlayer, submitted]
-  );
+  const handleRoleClick = useCallback((role: Role) => {
+    if (!selectedPlayer || submitted) return;
+    setAssignments((prev) => {
+      const next = { ...prev };
+      const existingHolder = Object.entries(next).find(([pid, r]) => r === role && pid !== selectedPlayer);
+      if (existingHolder) delete next[existingHolder[0]];
+      if (next[selectedPlayer] === role) delete next[selectedPlayer];
+      else next[selectedPlayer] = role;
+      return next;
+    });
+    setSelectedPlayer(null);
+  }, [selectedPlayer, submitted]);
 
   const handleSubmit = () => {
     if (Object.keys(assignments).length === 3) setSubmitted(true);
   };
 
   const handleNextRound = () => {
-    const nextIndex = (roundIndex + 1) % TRIOS.length;
-    setRoundIndex(nextIndex);
+    setRoundIndex((roundIndex + 1) % TRIOS.length);
     setAssignments({});
     setSelectedPlayer(null);
     setSubmitted(false);
@@ -80,53 +60,41 @@ export default function StartBenchCutPage() {
   const allAssigned = Object.keys(assignments).length === 3;
 
   if (submitted) {
-    return (
-      <ResultScreen
-        trio={trio}
-        assignments={assignments}
-        onPlayAgain={handleNextRound}
-      />
-    );
+    return <ResultScreen trio={trio} assignments={assignments} onPlayAgain={handleNextRound} />;
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="border-b border-gray-800 px-4 py-3 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors">
+    <div className="min-h-screen flex flex-col bg-teal-50">
+      <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
+        <a href="/" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
           <span className="text-lg">🏀</span>
-          <span className="font-bold text-sm tracking-wide">NBA TRIVIA</span>
+          <span className="font-black text-sm tracking-wide">COURTSIDE CENTRAL</span>
         </a>
-        <span className="text-xs text-gray-500 uppercase tracking-widest">Start · Bench · Cut</span>
+        <span className="text-xs text-slate-400 uppercase tracking-widest">Start · Bench · Cut</span>
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
-        {/* Category */}
         <div className="text-center mb-8 animate-fade-in">
-          <p className="text-xs text-orange-400 uppercase tracking-widest font-semibold mb-1">
+          <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
             Round {roundIndex + 1} of {TRIOS.length}
           </p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">{trio.category}</h1>
-          <p className="text-gray-400 text-sm mt-1">{trio.description}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{trio.category}</h1>
+          <p className="text-slate-500 text-sm mt-1">{trio.description}</p>
         </div>
 
-        {/* Instruction */}
         <div className="mb-6 text-center">
           {selectedPlayer ? (
-            <p className="text-orange-300 text-sm font-medium animate-fade-in">
+            <p className="text-teal-600 text-sm font-medium animate-fade-in">
               Now pick a role for{" "}
-              <span className="text-white font-bold">
+              <span className="text-slate-900 font-bold">
                 {trio.players.find((p) => p.id === selectedPlayer)?.name.split(" ")[0]}
               </span>
             </p>
           ) : (
-            <p className="text-gray-400 text-sm">
-              Tap a player to select, then assign their role below
-            </p>
+            <p className="text-slate-400 text-sm">Tap a player to select, then assign their role below</p>
           )}
         </div>
 
-        {/* Player Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-8">
           {trio.players.map((player) => (
             <PlayerCard
@@ -139,48 +107,20 @@ export default function StartBenchCutPage() {
           ))}
         </div>
 
-        {/* Role Buttons */}
         <div className="grid grid-cols-3 gap-3 w-full max-w-xl mb-8">
-          <RoleButton
-            role="start"
-            label="START"
-            emoji="⭐"
-            color="green"
-            taken={takenRoles.has("start")}
-            active={!!selectedPlayer}
-            onClick={() => handleRoleClick("start")}
-          />
-          <RoleButton
-            role="bench"
-            label="BENCH"
-            emoji="🪑"
-            color="yellow"
-            taken={takenRoles.has("bench")}
-            active={!!selectedPlayer}
-            onClick={() => handleRoleClick("bench")}
-          />
-          <RoleButton
-            role="cut"
-            label="CUT"
-            emoji="✂️"
-            color="red"
-            taken={takenRoles.has("cut")}
-            active={!!selectedPlayer}
-            onClick={() => handleRoleClick("cut")}
-          />
+          <RoleButton role="start" label="START" emoji="⭐" color="green" taken={takenRoles.has("start")} active={!!selectedPlayer} onClick={() => handleRoleClick("start")} />
+          <RoleButton role="bench" label="BENCH" emoji="🪑" color="yellow" taken={takenRoles.has("bench")} active={!!selectedPlayer} onClick={() => handleRoleClick("bench")} />
+          <RoleButton role="cut" label="CUT" emoji="✂️" color="red" taken={takenRoles.has("cut")} active={!!selectedPlayer} onClick={() => handleRoleClick("cut")} />
         </div>
 
-        {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={!allAssigned}
-          className={`
-            px-10 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-200
+          className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-200
             ${allAssigned
-              ? "bg-orange-500 hover:bg-orange-400 text-white shadow-lg shadow-orange-500/25 active:scale-95"
-              : "bg-gray-800 text-gray-600 cursor-not-allowed"
-            }
-          `}
+              ? "bg-teal-500 hover:bg-teal-400 text-white shadow-lg shadow-teal-200 active:scale-95"
+              : "bg-slate-200 text-slate-400 cursor-not-allowed"
+            }`}
         >
           {allAssigned ? "Submit My Picks" : `Assign all ${3 - Object.keys(assignments).length} remaining`}
         </button>
@@ -189,57 +129,37 @@ export default function StartBenchCutPage() {
   );
 }
 
-function RoleButton({
-  role,
-  label,
-  emoji,
-  color,
-  taken,
-  active,
-  onClick,
-}: {
-  role: Role;
-  label: string;
-  emoji: string;
-  color: "green" | "yellow" | "red";
-  taken: boolean;
-  active: boolean;
-  onClick: () => void;
+type Role2 = "start" | "bench" | "cut";
+
+function RoleButton({ label, emoji, color, taken, active, onClick }: {
+  role: Role2; label: string; emoji: string; color: "green" | "yellow" | "red";
+  taken: boolean; active: boolean; onClick: () => void;
 }) {
   const colorMap = {
     green: {
-      base: "border-green-700 bg-green-900/30 text-green-400",
-      active: "border-green-500 bg-green-800/50 text-green-300 hover:bg-green-700/60 cursor-pointer",
-      taken: "border-green-600 bg-green-900/60 text-green-300",
+      base: "border-green-200 bg-green-50 text-green-400",
+      active: "border-green-400 bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer",
+      taken: "border-green-400 bg-green-100 text-green-700",
     },
     yellow: {
-      base: "border-yellow-700 bg-yellow-900/30 text-yellow-400",
-      active: "border-yellow-500 bg-yellow-800/50 text-yellow-300 hover:bg-yellow-700/60 cursor-pointer",
-      taken: "border-yellow-600 bg-yellow-900/60 text-yellow-300",
+      base: "border-yellow-200 bg-yellow-50 text-yellow-400",
+      active: "border-yellow-400 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer",
+      taken: "border-yellow-400 bg-yellow-100 text-yellow-700",
     },
     red: {
-      base: "border-red-800 bg-red-900/30 text-red-400",
-      active: "border-red-500 bg-red-800/50 text-red-300 hover:bg-red-700/60 cursor-pointer",
-      taken: "border-red-600 bg-red-900/60 text-red-300",
+      base: "border-red-200 bg-red-50 text-red-300",
+      active: "border-red-400 bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer",
+      taken: "border-red-400 bg-red-100 text-red-700",
     },
   };
 
-  const classes = taken
-    ? colorMap[color].taken
-    : active
-    ? colorMap[color].active
-    : colorMap[color].base;
+  const classes = taken ? colorMap[color].taken : active ? colorMap[color].active : colorMap[color].base;
 
   return (
     <button
       onClick={active ? onClick : undefined}
       disabled={!active}
-      className={`
-        flex flex-col items-center justify-center gap-1 py-4 rounded-xl border-2 font-bold text-xs tracking-widest
-        transition-all duration-150 select-none
-        ${classes}
-        ${active && !taken ? "active:scale-95" : ""}
-      `}
+      className={`flex flex-col items-center justify-center gap-1 py-4 rounded-xl border-2 font-bold text-xs tracking-widest transition-all duration-150 select-none ${classes} ${active && !taken ? "active:scale-95" : ""}`}
     >
       <span className="text-2xl">{emoji}</span>
       <span>{label}</span>
