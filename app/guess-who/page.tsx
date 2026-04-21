@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { GUESS_WHO_PLAYERS, type GuessWhoPlayer } from "@/lib/guessWhoData";
+import { ALL_PLAYER_NAMES } from "@/lib/allPlayers";
+import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -23,7 +25,6 @@ export default function GuessWhoPage() {
   const [guess, setGuess] = useState("");
   const [gameState, setGameState] = useState<GameState>("playing");
   const [wrongGuess, setWrongGuess] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const player: GuessWhoPlayer = shuffled[playerIndex];
   const cluesRevealed = clueIndex + 1; // how many clues are showing
@@ -40,10 +41,8 @@ export default function GuessWhoPage() {
       if (allCluesShown) {
         setGameState("wrong");
       } else {
-        // Reveal next clue as penalty
         setClueIndex((i) => Math.min(i + 1, 4));
         setGuess("");
-        inputRef.current?.focus();
       }
     }
   }, [guess, player, allCluesShown]);
@@ -147,20 +146,17 @@ export default function GuessWhoPage() {
 
         {/* Guess input */}
         <div className="w-full flex gap-2 mb-4">
-          <input
-            ref={inputRef}
-            type="text"
+          <PlayerAutocomplete
+            players={ALL_PLAYER_NAMES}
             value={guess}
-            onChange={(e) => setGuess(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && checkGuess()}
-            placeholder="Type player name..."
-            className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-400 transition-colors text-sm"
+            onChange={setGuess}
+            onSubmit={checkGuess}
             autoFocus
           />
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-5 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm"
+            className="px-5 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
           >
             Guess
           </button>

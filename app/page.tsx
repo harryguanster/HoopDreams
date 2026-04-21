@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TRIOS } from "@/lib/playerData";
 import { GUESS_WHO_PLAYERS } from "@/lib/guessWhoData";
+import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 
 export default function Home() {
   return (
@@ -84,20 +85,32 @@ export default function Home() {
             </div>
           </Link>
 
-          <div className="bg-white/50 border-2 border-slate-200 rounded-2xl p-6 flex flex-col gap-4 opacity-50">
+          <Link
+            href="/stat-line-guesser"
+            className="group bg-white hover:bg-teal-50 border-2 border-slate-200 hover:border-teal-400 rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200 hover:shadow-lg hover:shadow-teal-100 active:scale-[0.98]"
+          >
             <div className="flex items-start justify-between">
-              <div className="text-4xl grayscale">📊</div>
-              <span className="text-xs bg-slate-100 text-slate-400 border border-slate-200 px-2.5 py-1 rounded-full font-semibold">
-                COMING SOON
+              <div className="text-4xl">📊</div>
+              <span className="text-xs bg-teal-100 text-teal-700 border border-teal-300 px-2.5 py-1 rounded-full font-semibold">
+                AVAILABLE
               </span>
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-400">Stat Line Guesser</h2>
-              <p className="text-slate-400 text-sm mt-1 leading-relaxed">
+              <h2 className="text-xl font-black text-slate-900 group-hover:text-teal-600 transition-colors">
+                Stat Line Guesser
+              </h2>
+              <p className="text-slate-500 text-sm mt-1 leading-relaxed">
                 See a mystery stat line and guess which player it belongs to across any era.
               </p>
             </div>
-          </div>
+            <div className="flex items-center gap-4 text-xs text-slate-400 font-medium border-t border-slate-100 pt-4">
+              <span>{STAT_LINE_PLAYERS.length} players</span>
+              <span>·</span>
+              <span>All eras</span>
+              <span>·</span>
+              <span>5 reveals max</span>
+            </div>
+          </Link>
         </div>
 
         <p className="text-slate-400 text-xs mt-16 text-center">

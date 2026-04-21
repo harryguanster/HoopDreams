@@ -1,0 +1,20 @@
+// Master list of NBA player names for autocomplete across all games
+export const ALL_PLAYER_NAMES: string[] = [
+  "LeBron James", "Michael Jordan", "Kobe Bryant", "Stephen Curry", "Kevin Durant",
+  "Giannis Antetokounmpo", "Nikola Jokic", "Joel Embiid", "Luka Doncic", "Jayson Tatum",
+  "Shaquille O'Neal", "Tim Duncan", "Magic Johnson", "Larry Bird", "Kareem Abdul-Jabbar",
+  "Wilt Chamberlain", "Bill Russell", "Hakeem Olajuwon", "Patrick Ewing", "David Robinson",
+  "Dirk Nowitzki", "Kevin Garnett", "Chris Paul", "Dwyane Wade", "Klay Thompson",
+  "Damian Lillard", "Kyrie Irving", "James Harden", "Russell Westbrook", "Paul George",
+  "Kawhi Leonard", "Anthony Davis", "Karl-Anthony Towns", "Bam Adebayo", "Jimmy Butler",
+  "Devin Booker", "Donovan Mitchell", "Trae Young", "Ja Morant", "Zion Williamson",
+  "Victor Wembanyama", "Anthony Edwards", "Shai Gilgeous-Alexander", "Jalen Brunson",
+  "Tracy McGrady", "Vince Carter", "Allen Iverson", "Isiah Thomas", "Charles Barkley",
+  "Scottie Pippen", "Dennis Rodman", "Gary Payton", "John Stockton", "Karl Malone",
+  "Reggie Miller", "Clyde Drexler", "Patrick Ewing", "Alonzo Mourning", "Dikembe Mutombo",
+  "Oscar Robertson", "Jerry West", "Elgin Baylor", "Bob Pettit", "Julius Erving",
+  "George Gervin", "Pete Maravich", "Bob Cousy", "Bill Walton", "Elvin Hayes",
+  "Moses Malone", "Dominique Wilkins", "James Worthy", "Byron Scott", "Robert Parish",
+  "Kevin McHale", "Pau Gasol", "Steve Nash", "Jason Kidd", "Ray Allen",
+  "Paul Pierce", "Deron Williams", "Chris Bosh", "LaMarcus Aldridge", "Blake Griffin",
+];
