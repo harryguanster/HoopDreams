@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { GUESS_WHO_PLAYERS, type GuessWhoPlayer } from "@/lib/guessWhoData";
-import { ALL_PLAYER_NAMES } from "@/lib/allPlayers";
+import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
+import { ALL_PLAYER_NAMES, CURRENT_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -18,16 +20,21 @@ type GameState = "playing" | "correct" | "wrong";
 
 const STARS = ["⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐", "⭐⭐", "⭐"];
 
-export default function GuessWhoPage() {
-  const [shuffled] = useState(() => shuffleArray(GUESS_WHO_PLAYERS));
+function GuessWhoGame() {
+  const searchParams = useSearchParams();
+  const era = searchParams.get("era") === "current" ? "current" : "alltime";
+  const players = era === "current" ? CURRENT_GUESS_WHO_PLAYERS : GUESS_WHO_PLAYERS;
+  const playerNames = era === "current" ? CURRENT_PLAYER_NAMES : ALL_PLAYER_NAMES;
+
+  const [shuffled] = useState(() => shuffleArray(players));
   const [playerIndex, setPlayerIndex] = useState(0);
-  const [clueIndex, setClueIndex] = useState(0); // 0 = first clue shown
+  const [clueIndex, setClueIndex] = useState(0);
   const [guess, setGuess] = useState("");
   const [gameState, setGameState] = useState<GameState>("playing");
   const [wrongGuess, setWrongGuess] = useState("");
 
   const player: GuessWhoPlayer = shuffled[playerIndex];
-  const cluesRevealed = clueIndex + 1; // how many clues are showing
+  const cluesRevealed = clueIndex + 1;
   const allCluesShown = clueIndex === 4;
 
   const checkGuess = useCallback(() => {
@@ -59,12 +66,12 @@ export default function GuessWhoPage() {
     if (clueIndex < 4) setClueIndex((i) => i + 1);
   };
 
-  const score = STARS[clueIndex]; // stars based on which clue they got it on
+  const score = STARS[clueIndex];
 
   if (gameState === "correct" || gameState === "wrong") {
     return (
       <div className="min-h-screen flex flex-col bg-teal-50">
-        <Header />
+        <Header era={era} />
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full animate-fade-in">
           <div className={`w-full rounded-3xl border-2 p-8 text-center shadow-lg ${gameState === "correct" ? "bg-white border-teal-300" : "bg-white border-red-200"}`}>
             <div className="text-6xl mb-4">{gameState === "correct" ? "🎉" : "😬"}</div>
@@ -77,10 +84,9 @@ export default function GuessWhoPage() {
                 <p className="text-3xl mb-6">{score}</p>
               </>
             ) : (
-              <p className="text-slate-500 mb-6">You guessed <span className="font-semibold text-slate-700">"{wrongGuess}"</span> but the answer was:</p>
+              <p className="text-slate-500 mb-6">You guessed <span className="font-semibold text-slate-700">&quot;{wrongGuess}&quot;</span> but the answer was:</p>
             )}
 
-            {/* Player reveal */}
             <div className="flex items-center gap-4 bg-teal-50 rounded-2xl p-4 mb-6 text-left">
               <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center font-black text-white text-xl shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
                 <span className="leading-none">{player.jersey}</span>
@@ -103,9 +109,8 @@ export default function GuessWhoPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-teal-50">
-      <Header />
+      <Header era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-lg mx-auto w-full">
-        {/* Title */}
         <div className="text-center mb-6 animate-fade-in">
           <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
             Clue {cluesRevealed} of 5
@@ -116,12 +121,10 @@ export default function GuessWhoPage() {
           </p>
         </div>
 
-        {/* Mystery player avatar */}
         <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center text-4xl mb-6 shadow-inner">
           🏀
         </div>
 
-        {/* Clues */}
         <div className="w-full flex flex-col gap-3 mb-6">
           {player.clues.slice(0, cluesRevealed).map((clue, i) => (
             <div
@@ -137,17 +140,15 @@ export default function GuessWhoPage() {
           ))}
         </div>
 
-        {/* Wrong guess feedback */}
         {wrongGuess && (
           <p className="text-red-500 text-sm mb-3 font-medium animate-fade-in">
-            ❌ "{wrongGuess}" — not correct. Next clue revealed!
+            ❌ &quot;{wrongGuess}&quot; — not correct. Next clue revealed!
           </p>
         )}
 
-        {/* Guess input */}
         <div className="w-full flex gap-2 mb-4">
           <PlayerAutocomplete
-            players={ALL_PLAYER_NAMES}
+            players={playerNames}
             value={guess}
             onChange={setGuess}
             onSubmit={checkGuess}
@@ -162,7 +163,6 @@ export default function GuessWhoPage() {
           </button>
         </div>
 
-        {/* Reveal / Skip */}
         <div className="flex gap-3 w-full">
           {!allCluesShown && (
             <button
@@ -180,7 +180,6 @@ export default function GuessWhoPage() {
           </button>
         </div>
 
-        {/* Stars preview */}
         <p className="text-slate-300 text-xs mt-6">
           {allCluesShown ? "⭐ — 1 star remaining" : `Current score if correct: ${STARS[clueIndex]}`}
         </p>
@@ -189,14 +188,27 @@ export default function GuessWhoPage() {
   );
 }
 
-function Header() {
+export default function GuessWhoPage() {
+  return (
+    <Suspense>
+      <GuessWhoGame />
+    </Suspense>
+  );
+}
+
+function Header({ era }: { era: string }) {
   return (
     <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
       <a href="/" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
         <span className="text-lg">🏀</span>
         <span className="font-black text-sm tracking-wide">COURTSIDE CENTRAL</span>
       </a>
-      <span className="text-xs text-slate-400 uppercase tracking-widest">Guess Who</span>
+      <div className="flex items-center gap-2">
+        {era === "current" && (
+          <span className="text-xs bg-teal-100 text-teal-700 border border-teal-200 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
+        )}
+        <span className="text-xs text-slate-400 uppercase tracking-widest">Guess Who</span>
+      </div>
     </header>
   );
 }

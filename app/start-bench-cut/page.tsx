@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { TRIOS, type Trio } from "@/lib/playerData";
+import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import PlayerCard from "./PlayerCard";
 import ResultScreen from "./ResultScreen";
 
@@ -17,14 +19,18 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-export default function StartBenchCutPage() {
-  const [shuffledTrios] = useState(() => shuffleArray([...Array(TRIOS.length).keys()]));
+function StartBenchCutGame() {
+  const searchParams = useSearchParams();
+  const era = searchParams.get("era") === "current" ? "current" : "alltime";
+  const trios = era === "current" ? CURRENT_TRIOS : TRIOS;
+
+  const [shuffledTrios] = useState(() => shuffleArray([...Array(trios.length).keys()]));
   const [roundIndex, setRoundIndex] = useState(0);
   const [assignments, setAssignments] = useState<Assignments>({});
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const trio: Trio = TRIOS[shuffledTrios[roundIndex]];
+  const trio: Trio = trios[shuffledTrios[roundIndex]];
   const assignedRoles = Object.values(assignments) as Role[];
   const takenRoles = new Set(assignedRoles);
 
@@ -51,7 +57,7 @@ export default function StartBenchCutPage() {
   };
 
   const handleNextRound = () => {
-    setRoundIndex((roundIndex + 1) % TRIOS.length);
+    setRoundIndex((roundIndex + 1) % trios.length);
     setAssignments({});
     setSelectedPlayer(null);
     setSubmitted(false);
@@ -70,13 +76,18 @@ export default function StartBenchCutPage() {
           <span className="text-lg">🏀</span>
           <span className="font-black text-sm tracking-wide">COURTSIDE CENTRAL</span>
         </a>
-        <span className="text-xs text-slate-400 uppercase tracking-widest">Start · Bench · Cut</span>
+        <div className="flex items-center gap-2">
+          {era === "current" && (
+            <span className="text-xs bg-teal-100 text-teal-700 border border-teal-200 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
+          )}
+          <span className="text-xs text-slate-400 uppercase tracking-widest">Start · Bench · Cut</span>
+        </div>
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
         <div className="text-center mb-8 animate-fade-in">
           <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
-            Round {roundIndex + 1} of {TRIOS.length}
+            Round {roundIndex + 1} of {trios.length}
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{trio.category}</h1>
           <p className="text-slate-500 text-sm mt-1">{trio.description}</p>
@@ -126,6 +137,14 @@ export default function StartBenchCutPage() {
         </button>
       </main>
     </div>
+  );
+}
+
+export default function StartBenchCutPage() {
+  return (
+    <Suspense>
+      <StartBenchCutGame />
+    </Suspense>
   );
 }
 

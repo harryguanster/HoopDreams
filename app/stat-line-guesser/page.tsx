@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { STAT_LINE_PLAYERS, type StatLinePlayer } from "@/lib/statLineData";
-import { ALL_PLAYER_NAMES } from "@/lib/allPlayers";
+import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
+import { ALL_PLAYER_NAMES, CURRENT_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
 
 function shuffleArray<T>(arr: T[]): T[] {
@@ -18,7 +20,6 @@ type GameState = "playing" | "correct" | "wrong";
 
 const STARS = ["⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐", "⭐⭐", "⭐"];
 
-// What each reveal step shows
 const REVEAL_STEPS = [
   { label: "Points Per Game", key: "ppg" },
   { label: "Rebounds Per Game", key: "rpg" },
@@ -27,10 +28,15 @@ const REVEAL_STEPS = [
   { label: "Team", key: "team" },
 ];
 
-export default function StatLineGuesserPage() {
-  const [shuffled] = useState(() => shuffleArray(STAT_LINE_PLAYERS));
+function StatLineGuesserGame() {
+  const searchParams = useSearchParams();
+  const era = searchParams.get("era") === "current" ? "current" : "alltime";
+  const players = era === "current" ? CURRENT_STAT_LINE_PLAYERS : STAT_LINE_PLAYERS;
+  const playerNames = era === "current" ? CURRENT_PLAYER_NAMES : ALL_PLAYER_NAMES;
+
+  const [shuffled] = useState(() => shuffleArray(players));
   const [playerIndex, setPlayerIndex] = useState(0);
-  const [revealStep, setRevealStep] = useState(0); // 0 = only PPG shown
+  const [revealStep, setRevealStep] = useState(0);
   const [guess, setGuess] = useState("");
   const [gameState, setGameState] = useState<GameState>("playing");
   const [wrongGuess, setWrongGuess] = useState("");
@@ -68,7 +74,7 @@ export default function StatLineGuesserPage() {
   if (gameState === "correct" || gameState === "wrong") {
     return (
       <div className="min-h-screen flex flex-col bg-teal-50">
-        <Header />
+        <Header era={era} />
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full animate-fade-in">
           <div className={`w-full rounded-3xl border-2 p-8 text-center shadow-lg bg-white ${gameState === "correct" ? "border-teal-300" : "border-red-200"}`}>
             <div className="text-6xl mb-4">{gameState === "correct" ? "🎯" : "😬"}</div>
@@ -81,7 +87,7 @@ export default function StatLineGuesserPage() {
                 <p className="text-3xl mb-6">{STARS[revealStep]}</p>
               </>
             ) : (
-              <p className="text-slate-500 mb-6">You guessed <span className="font-semibold text-slate-700">"{wrongGuess}"</span> — the answer was:</p>
+              <p className="text-slate-500 mb-6">You guessed <span className="font-semibold text-slate-700">&quot;{wrongGuess}&quot;</span> — the answer was:</p>
             )}
 
             <div className="flex items-center gap-4 bg-teal-50 rounded-2xl p-4 mb-4 text-left">
@@ -95,7 +101,6 @@ export default function StatLineGuesserPage() {
               </div>
             </div>
 
-            {/* Full stat line */}
             <div className="grid grid-cols-4 gap-2 mb-6">
               <StatBox label="PPG" value={player.stats.ppg} />
               <StatBox label="RPG" value={player.stats.rpg} />
@@ -117,7 +122,7 @@ export default function StatLineGuesserPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-teal-50">
-      <Header />
+      <Header era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-lg mx-auto w-full">
         <div className="text-center mb-6 animate-fade-in">
           <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
@@ -129,12 +134,10 @@ export default function StatLineGuesserPage() {
           </p>
         </div>
 
-        {/* Mystery player */}
         <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center text-4xl mb-6 shadow-inner">
           ❓
         </div>
 
-        {/* Stat cards */}
         <div className="w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
           <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Career Averages</p>
@@ -152,7 +155,6 @@ export default function StatLineGuesserPage() {
                 </span>
               </div>
             ))}
-            {/* Hidden remaining rows as placeholders */}
             {REVEAL_STEPS.slice(stepsRevealed).map((step) => (
               <div key={step.key} className="flex items-center justify-between px-4 py-3 opacity-30">
                 <span className="text-sm text-slate-400 font-medium">{step.label}</span>
@@ -164,14 +166,13 @@ export default function StatLineGuesserPage() {
 
         {wrongGuess && (
           <p className="text-red-500 text-sm mb-3 font-medium animate-fade-in">
-            ❌ "{wrongGuess}" — not correct. Next stat revealed!
+            ❌ &quot;{wrongGuess}&quot; — not correct. Next stat revealed!
           </p>
         )}
 
-        {/* Guess input */}
         <div className="w-full flex gap-2 mb-4">
           <PlayerAutocomplete
-            players={ALL_PLAYER_NAMES}
+            players={playerNames}
             value={guess}
             onChange={setGuess}
             onSubmit={checkGuess}
@@ -205,6 +206,14 @@ export default function StatLineGuesserPage() {
   );
 }
 
+export default function StatLineGuesserPage() {
+  return (
+    <Suspense>
+      <StatLineGuesserGame />
+    </Suspense>
+  );
+}
+
 function StatBox({ label, value, suffix = "" }: { label: string; value: number; suffix?: string }) {
   return (
     <div className="bg-teal-50 rounded-xl p-2 text-center">
@@ -214,14 +223,19 @@ function StatBox({ label, value, suffix = "" }: { label: string; value: number; 
   );
 }
 
-function Header() {
+function Header({ era }: { era: string }) {
   return (
     <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
       <a href="/" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
         <span className="text-lg">🏀</span>
         <span className="font-black text-sm tracking-wide">COURTSIDE CENTRAL</span>
       </a>
-      <span className="text-xs text-slate-400 uppercase tracking-widest">Stat Line Guesser</span>
+      <div className="flex items-center gap-2">
+        {era === "current" && (
+          <span className="text-xs bg-teal-100 text-teal-700 border border-teal-200 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
+        )}
+        <span className="text-xs text-slate-400 uppercase tracking-widest">Stat Line Guesser</span>
+      </div>
     </header>
   );
 }
