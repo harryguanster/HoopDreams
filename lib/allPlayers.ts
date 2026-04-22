@@ -1,6 +1,9 @@
 // Current NBA players for autocomplete (2025–26 season)
 export { CURRENT_NBA_PLAYER_NAMES as CURRENT_PLAYER_NAMES } from "./currentNBAPlayers";
 
+// All-time players for Guess Who Wordle
+export { ALL_TIME_GW_PLAYER_NAMES } from "./allTimePlayersGW";
+
 // All-time NBA players for autocomplete
 export const ALL_PLAYER_NAMES: string[] = [
   "LeBron James", "Michael Jordan", "Kobe Bryant", "Stephen Curry", "Kevin Durant",
