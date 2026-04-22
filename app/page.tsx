@@ -2,7 +2,7 @@ import Link from "next/link";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import { GUESS_WHO_PLAYERS } from "@/lib/guessWhoData";
-import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
+import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 
@@ -160,7 +160,7 @@ export default function Home() {
               description="Clues revealed one by one. Can you ID today's NBA stars before running out of hints?"
               meta={
                 <>
-                  <span>{CURRENT_GUESS_WHO_PLAYERS.length} players</span>
+                  <span>{CURRENT_NBA_PLAYERS.length} players</span>
                   <span>·</span>
                   <span>2025–26</span>
                   <span>·</span>

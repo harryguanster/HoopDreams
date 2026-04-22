@@ -1,23 +1,5 @@
 // Current NBA players for autocomplete (2025–26 season)
-export const CURRENT_PLAYER_NAMES: string[] = [
-  "Nikola Jokic", "Giannis Antetokounmpo", "Luka Doncic", "Shai Gilgeous-Alexander", "Jayson Tatum",
-  "Joel Embiid", "Stephen Curry", "Kevin Durant", "LeBron James", "Anthony Davis",
-  "Devin Booker", "Damian Lillard", "Donovan Mitchell", "Trae Young", "Ja Morant",
-  "Anthony Edwards", "Victor Wembanyama", "Jalen Brunson", "Karl-Anthony Towns", "Bam Adebayo",
-  "Jimmy Butler", "Kyrie Irving", "James Harden", "Kawhi Leonard", "Paul George",
-  "Zion Williamson", "Chet Holmgren", "Paolo Banchero", "Evan Mobley", "Scottie Barnes",
-  "De'Aaron Fox", "Tyrese Haliburton", "Darius Garland", "Dejounte Murray", "Brandon Ingram",
-  "CJ McCollum", "Jarrett Allen", "Brook Lopez", "Draymond Green", "Klay Thompson",
-  "Tyler Herro", "Alperen Sengun", "Amen Thompson", "Scoot Henderson", "Ausar Thompson",
-  "Josh Giddey", "Luguentz Dort", "Jalen Williams", "Isaiah Hartenstein", "OG Anunoby",
-  "Mikal Bridges", "RJ Barrett", "Miles Bridges", "LaMelo Ball", "Brandon Miller",
-  "Jaylen Brown", "Al Horford", "Kristaps Porzingis", "Derrick White", "Marcus Smart",
-  "Fred VanVleet", "Pascal Siakam", "Julius Randle", "Keldon Johnson", "Devin Vassell",
-  "DeMar DeRozan", "Zach LaVine", "Nikola Vucevic", "Patrick Williams", "Coby White",
-  "Andrew Wiggins", "Jonathan Kuminga", "Moses Moody", "Gary Payton II", "Donte DiVincenzo",
-  "Aaron Gordon", "Michael Porter Jr.", "Jamal Murray", "Kentavious Caldwell-Pope",
-  "Reggie Jackson", "Norman Powell", "Terance Mann", "James Harden", "Russell Westbrook",
-];
+export { CURRENT_NBA_PLAYER_NAMES as CURRENT_PLAYER_NAMES } from "./currentNBAPlayers";
 
 // All-time NBA players for autocomplete
 export const ALL_PLAYER_NAMES: string[] = [

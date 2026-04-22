@@ -3,7 +3,7 @@
 import { useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { GUESS_WHO_PLAYERS, type GuessWhoPlayer } from "@/lib/guessWhoData";
-import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
+import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 import { ALL_PLAYER_NAMES, CURRENT_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
 
@@ -20,27 +20,56 @@ type GameState = "playing" | "correct" | "wrong";
 
 const STARS = ["⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐", "⭐⭐", "⭐"];
 
+// Stat reveals for current NBA players
+const CURRENT_REVEAL_STEPS = [
+  { label: "PPG This Season", key: "ppg" },
+  { label: "Draft Year", key: "draftYear" },
+  { label: "Draft Pick", key: "draftPick" },
+  { label: "RPG / APG", key: "rpgapg" },
+  { label: "Position", key: "position" },
+];
+
+function formatReveal(step: { key: string }, player: CurrentNBAPlayer): string {
+  if (step.key === "ppg") return `${player.ppg} PPG`;
+  if (step.key === "draftYear") return player.draftYear ? `${player.draftYear}` : "Undrafted";
+  if (step.key === "draftPick") return player.draftPick ? `#${player.draftPick} overall` : "—";
+  if (step.key === "rpgapg") return `${player.rpg} RPG / ${player.apg} APG`;
+  if (step.key === "position") return player.position;
+  return "";
+}
+
 function GuessWhoGame() {
   const searchParams = useSearchParams();
   const era = searchParams.get("era") === "current" ? "current" : "alltime";
-  const players = era === "current" ? CURRENT_GUESS_WHO_PLAYERS : GUESS_WHO_PLAYERS;
+
+  const allTimePlayers = GUESS_WHO_PLAYERS;
+  const currentPlayers = CURRENT_NBA_PLAYERS;
   const playerNames = era === "current" ? CURRENT_PLAYER_NAMES : ALL_PLAYER_NAMES;
 
-  const [shuffled] = useState(() => shuffleArray(players));
+  const [shuffledAllTime] = useState(() => shuffleArray(allTimePlayers));
+  const [shuffledCurrent] = useState(() => shuffleArray(currentPlayers));
   const [playerIndex, setPlayerIndex] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
   const [guess, setGuess] = useState("");
   const [gameState, setGameState] = useState<GameState>("playing");
   const [wrongGuess, setWrongGuess] = useState("");
 
-  const player: GuessWhoPlayer = shuffled[playerIndex];
+  const allTimePlayer: GuessWhoPlayer = shuffledAllTime[playerIndex % shuffledAllTime.length];
+  const currentPlayer: CurrentNBAPlayer = shuffledCurrent[playerIndex % shuffledCurrent.length];
+  const playerName = era === "current" ? currentPlayer.name : allTimePlayer.name;
+  const playerTeam = era === "current" ? currentPlayer.team : allTimePlayer.team;
+  const playerTeamColor = era === "current" ? currentPlayer.teamColor : allTimePlayer.teamColor;
+  const playerJersey = era === "current" ? currentPlayer.jersey : allTimePlayer.jersey;
+  const playerPosition = era === "current" ? currentPlayer.position : allTimePlayer.position;
+  const playerAliases = era === "current" ? currentPlayer.aliases : allTimePlayer.aliases;
+
   const cluesRevealed = clueIndex + 1;
   const allCluesShown = clueIndex === 4;
 
   const checkGuess = useCallback(() => {
     const trimmed = guess.trim().toLowerCase();
     if (!trimmed) return;
-    const correct = player.aliases.some((a) => a.toLowerCase() === trimmed);
+    const correct = playerAliases.some((a) => a.toLowerCase() === trimmed);
     if (correct) {
       setGameState("correct");
     } else {
@@ -52,10 +81,10 @@ function GuessWhoGame() {
         setGuess("");
       }
     }
-  }, [guess, player, allCluesShown]);
+  }, [guess, playerAliases, allCluesShown]);
 
   const handleNextPlayer = () => {
-    setPlayerIndex((i) => (i + 1) % shuffled.length);
+    setPlayerIndex((i) => i + 1);
     setClueIndex(0);
     setGuess("");
     setGameState("playing");
@@ -88,13 +117,13 @@ function GuessWhoGame() {
             )}
 
             <div className="flex items-center gap-4 bg-teal-50 rounded-2xl p-4 mb-6 text-left">
-              <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center font-black text-white text-xl shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
-                <span className="leading-none">{player.jersey}</span>
-                <span className="text-[8px] font-bold opacity-80">{player.position}</span>
+              <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center font-black text-white text-xl shadow-md shrink-0" style={{ backgroundColor: playerTeamColor }}>
+                <span className="leading-none">{playerJersey}</span>
+                <span className="text-[8px] font-bold opacity-80">{playerPosition}</span>
               </div>
               <div>
-                <p className="font-black text-slate-900 text-lg">{player.name}</p>
-                <p className="text-slate-500 text-sm">{player.team}</p>
+                <p className="font-black text-slate-900 text-lg">{playerName}</p>
+                <p className="text-slate-500 text-sm">{playerTeam}</p>
               </div>
             </div>
 
@@ -125,20 +154,42 @@ function GuessWhoGame() {
           🏀
         </div>
 
-        <div className="w-full flex flex-col gap-3 mb-6">
-          {player.clues.slice(0, cluesRevealed).map((clue, i) => (
-            <div
-              key={i}
-              className="bg-white border border-teal-200 rounded-2xl px-4 py-3 shadow-sm animate-slide-down"
-              style={{ animationDelay: `${i * 0.05}s` }}
-            >
-              <div className="flex gap-3 items-start">
-                <span className="text-teal-500 font-black text-sm shrink-0 mt-0.5">#{i + 1}</span>
-                <p className="text-slate-700 text-sm leading-relaxed">{clue}</p>
-              </div>
+        {era === "current" ? (
+          <div className="w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+            <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Player Info</p>
             </div>
-          ))}
-        </div>
+            <div className="divide-y divide-slate-100">
+              {CURRENT_REVEAL_STEPS.slice(0, cluesRevealed).map((step, i) => (
+                <div key={step.key} className="flex items-center justify-between px-4 py-3 animate-slide-down" style={{ animationDelay: `${i * 0.04}s` }}>
+                  <span className="text-sm text-slate-500 font-medium">{step.label}</span>
+                  <span className="text-sm font-black text-slate-900">{formatReveal(step, currentPlayer)}</span>
+                </div>
+              ))}
+              {CURRENT_REVEAL_STEPS.slice(cluesRevealed).map((step) => (
+                <div key={step.key} className="flex items-center justify-between px-4 py-3 opacity-30">
+                  <span className="text-sm text-slate-400 font-medium">{step.label}</span>
+                  <span className="text-sm font-black text-slate-300">• • •</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="w-full flex flex-col gap-3 mb-6">
+            {allTimePlayer.clues.slice(0, cluesRevealed).map((clue, i) => (
+              <div
+                key={i}
+                className="bg-white border border-teal-200 rounded-2xl px-4 py-3 shadow-sm animate-slide-down"
+                style={{ animationDelay: `${i * 0.05}s` }}
+              >
+                <div className="flex gap-3 items-start">
+                  <span className="text-teal-500 font-black text-sm shrink-0 mt-0.5">#{i + 1}</span>
+                  <p className="text-slate-700 text-sm leading-relaxed">{clue}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {wrongGuess && (
           <p className="text-red-500 text-sm mb-3 font-medium animate-fade-in">
