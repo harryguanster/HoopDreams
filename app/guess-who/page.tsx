@@ -45,7 +45,12 @@ function compareDraftYear(guess: number | null, answer: number | null): CellColo
 function compareDraftPick(guess: number | null, answer: number | null): CellColor {
   if (guess === answer) return "green";
   if (guess === null || answer === null) return "gray";
-  return Math.abs(guess - answer) <= 15 ? "yellow" : "gray";
+  return Math.abs(guess - answer) <= 3 ? "yellow" : "gray";
+}
+
+function compareAge(guess: number, answer: number): CellColor {
+  if (guess === answer) return "green";
+  return Math.abs(guess - answer) <= 2 ? "yellow" : "gray";
 }
 
 const CELL_BG: Record<CellColor, string> = {
@@ -74,17 +79,22 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
         <p className="text-sm font-bold text-slate-800 truncate">{guess.name}</p>
         {isCorrect && <span className="ml-auto text-green-600 text-xs font-bold shrink-0">✓ Correct!</span>}
       </div>
-      <div className="grid grid-cols-6 gap-1">
+      <div className="grid grid-cols-9 gap-0.5">
         <StatCell label="PPG" value={`${guess.ppg}`} color={compareStat(guess.ppg, answer.ppg, 4)} />
         <StatCell label="RPG" value={`${guess.rpg}`} color={compareStat(guess.rpg, answer.rpg, 2)} />
         <StatCell label="APG" value={`${guess.apg}`} color={compareStat(guess.apg, answer.apg, 2)} />
+        <StatCell label="SPG" value={`${guess.spg}`} color={compareStat(guess.spg, answer.spg, 0.5)} />
+        <StatCell label="BPG" value={`${guess.bpg}`} color={compareStat(guess.bpg, answer.bpg, 0.5)} />
+        <StatCell label="AGE" value={`${guess.age}`} color={compareAge(guess.age, answer.age)} />
         <StatCell label="POS" value={guess.position} color={comparePosition(guess.position, answer.position)} />
-        <StatCell label="YEAR" value={guess.draftYear ? `'${String(guess.draftYear).slice(2)}` : "UD"} color={compareDraftYear(guess.draftYear, answer.draftYear)} />
+        <StatCell label="DRAFT YR" value={guess.draftYear ? `'${String(guess.draftYear).slice(2)}` : "UD"} color={compareDraftYear(guess.draftYear, answer.draftYear)} />
         <StatCell label="PICK" value={guess.draftPick ? `#${guess.draftPick}` : "UD"} color={compareDraftPick(guess.draftPick, answer.draftPick)} />
       </div>
     </div>
   );
 }
+
+const MAX_GUESSES = 10;
 
 function CurrentNBAWordleGame() {
   const [shuffled] = useState(() => shuffleArray(CURRENT_NBA_PLAYERS));
@@ -120,7 +130,11 @@ function CurrentNBAWordleGame() {
     setGuesses(next);
     setGuess("");
 
-    if (guessedPlayer.id === answer.id) setWon(true);
+    if (guessedPlayer.id === answer.id) {
+      setWon(true);
+    } else if (next.length >= MAX_GUESSES) {
+      setGaveUp(true);
+    }
   }, [guess, guesses, answer]);
 
   const handleNext = () => {
@@ -142,7 +156,7 @@ function CurrentNBAWordleGame() {
             <h2 className="text-2xl font-black text-slate-900 mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
               ? <p className="text-slate-500 mb-4">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
-              : <p className="text-slate-500 mb-4">The answer was:</p>
+              : <p className="text-slate-500 mb-4">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
             <div className="flex items-center gap-4 bg-teal-50 rounded-2xl p-4 mb-6 text-left">
               <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center font-black text-white text-xl shadow-md shrink-0" style={{ backgroundColor: answer.teamColor }}>
@@ -170,7 +184,7 @@ function CurrentNBAWordleGame() {
       <main className="flex-1 flex flex-col items-center px-4 py-6 max-w-lg mx-auto w-full">
         <div className="text-center mb-5 animate-fade-in">
           <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
-            {guesses.length === 0 ? "Start guessing" : `${guesses.length} guess${guesses.length !== 1 ? "es" : ""} so far`}
+            {guesses.length === 0 ? "Start guessing" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
           </p>
           <h1 className="text-2xl font-black text-slate-900">Who Am I?</h1>
           <p className="text-slate-400 text-sm mt-1">Guess a player — green = match, yellow = close</p>
