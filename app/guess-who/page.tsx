@@ -60,12 +60,124 @@ const CELL_BG: Record<CellColor, string> = {
   gray: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
+// ── Team / Division helpers ────────────────────────────────────────────────────
+
+const TEAM_DIVISION: Record<string, string> = {
+  // East – Atlantic
+  "Boston Celtics": "Atlantic", "Brooklyn Nets": "Atlantic",
+  "New Jersey Nets": "Atlantic", "New York Nets": "Atlantic",
+  "New York Knicks": "Atlantic", "Philadelphia 76ers": "Atlantic",
+  "Syracuse Nationals": "Atlantic", "Philadelphia Warriors": "Atlantic",
+  "Buffalo Braves": "Atlantic", "Toronto Raptors": "Atlantic",
+  "Rochester Royals": "Atlantic",
+  // East – Central
+  "Chicago Bulls": "Central", "Chicago Stags": "Central",
+  "Cleveland Cavaliers": "Central", "Detroit Pistons": "Central",
+  "Fort Wayne Pistons": "Central", "Indiana Pacers": "Central",
+  "Milwaukee Bucks": "Central", "Milwaukee Hawks": "Central",
+  "Cincinnati Royals": "Central",
+  // East – Southeast
+  "Atlanta Hawks": "Southeast", "St. Louis Hawks": "Southeast",
+  "Tri-Cities Blackhawks": "Southeast",
+  "Charlotte Hornets": "Southeast", "Charlotte Bobcats": "Southeast",
+  "Miami Heat": "Southeast", "Orlando Magic": "Southeast",
+  "Washington Wizards": "Southeast", "Washington Bullets": "Southeast",
+  "Capital Bullets": "Southeast", "Baltimore Bullets": "Southeast",
+  // West – Northwest
+  "Denver Nuggets": "Northwest", "Minnesota Timberwolves": "Northwest",
+  "Oklahoma City Thunder": "Northwest", "Seattle SuperSonics": "Northwest",
+  "Portland Trail Blazers": "Northwest", "Utah Jazz": "Northwest",
+  "Vancouver Grizzlies": "Northwest", "Minneapolis Lakers": "Northwest",
+  // West – Pacific
+  "Golden State Warriors": "Pacific", "San Francisco Warriors": "Pacific",
+  "LA Clippers": "Pacific", "Los Angeles Clippers": "Pacific",
+  "San Diego Clippers": "Pacific", "Los Angeles Lakers": "Pacific",
+  "Phoenix Suns": "Pacific", "Sacramento Kings": "Pacific",
+  "Kansas City Kings": "Pacific", "Kansas City-Omaha Kings": "Pacific",
+  // West – Southwest
+  "Dallas Mavericks": "Southwest", "Houston Rockets": "Southwest",
+  "San Diego Rockets": "Southwest", "Memphis Grizzlies": "Southwest",
+  "New Orleans Pelicans": "Southwest", "New Orleans Hornets": "Southwest",
+  "New Orleans Jazz": "Southwest", "San Antonio Spurs": "Southwest",
+};
+
+const DIVISION_ABBR: Record<string, string> = {
+  "Atlantic": "ATL", "Central": "CEN", "Southeast": "SE",
+  "Northwest": "NW", "Pacific": "PAC", "Southwest": "SW",
+};
+
+const DIV_CONFERENCE: Record<string, string> = {
+  "Atlantic": "East", "Central": "East", "Southeast": "East",
+  "Northwest": "West", "Pacific": "West", "Southwest": "West",
+};
+
+const TEAM_ABBR: Record<string, string> = {
+  "Atlanta Hawks": "ATL", "Boston Celtics": "BOS", "Brooklyn Nets": "BKN",
+  "New Jersey Nets": "NJN", "New York Nets": "NNE", "Charlotte Hornets": "CHA",
+  "Charlotte Bobcats": "CHA", "Chicago Bulls": "CHI", "Cleveland Cavaliers": "CLE",
+  "Dallas Mavericks": "DAL", "Denver Nuggets": "DEN", "Detroit Pistons": "DET",
+  "Fort Wayne Pistons": "FWP", "Golden State Warriors": "GSW",
+  "San Francisco Warriors": "SFW", "Philadelphia Warriors": "PHW",
+  "Houston Rockets": "HOU", "San Diego Rockets": "SDR",
+  "Indiana Pacers": "IND", "LA Clippers": "LAC", "Los Angeles Clippers": "LAC",
+  "San Diego Clippers": "SDC", "Buffalo Braves": "BUF",
+  "Los Angeles Lakers": "LAL", "Minneapolis Lakers": "MNL",
+  "Memphis Grizzlies": "MEM", "Vancouver Grizzlies": "VAN",
+  "Miami Heat": "MIA", "Milwaukee Bucks": "MIL", "Milwaukee Hawks": "MLH",
+  "Minnesota Timberwolves": "MIN", "New Orleans Pelicans": "NOP",
+  "New Orleans Hornets": "NOH", "New Orleans Jazz": "NOJ",
+  "New York Knicks": "NYK", "Oklahoma City Thunder": "OKC",
+  "Seattle SuperSonics": "SEA", "Orlando Magic": "ORL",
+  "Philadelphia 76ers": "PHI", "Syracuse Nationals": "SYR",
+  "Rochester Royals": "ROC", "Cincinnati Royals": "CIN",
+  "Sacramento Kings": "SAC", "Kansas City Kings": "KCK",
+  "Kansas City-Omaha Kings": "KCO", "San Antonio Spurs": "SAS",
+  "Toronto Raptors": "TOR", "Utah Jazz": "UTA",
+  "Washington Wizards": "WAS", "Washington Bullets": "WSB",
+  "Capital Bullets": "CAP", "Baltimore Bullets": "BAL",
+  "St. Louis Hawks": "STL", "Tri-Cities Blackhawks": "TRI",
+  "Chicago Stags": "CHG", "Portland Trail Blazers": "POR",
+};
+
+function getDivision(team: string): string {
+  return TEAM_DIVISION[team] ?? "Unknown";
+}
+function getConference(team: string): string {
+  return DIV_CONFERENCE[getDivision(team)] ?? "Unknown";
+}
+function getTeamAbbr(team: string): string {
+  return TEAM_ABBR[team] ?? team.slice(0, 3).toUpperCase();
+}
+function compareTeam(guessTeam: string, answerTeam: string): CellColor {
+  if (guessTeam === answerTeam) return "green";
+  if (getConference(guessTeam) === getConference(answerTeam)) return "yellow";
+  return "gray";
+}
+function compareDivisionFn(guessTeam: string, answerTeam: string): CellColor {
+  if (getDivision(guessTeam) === getDivision(answerTeam)) return "green";
+  if (getConference(guessTeam) === getConference(answerTeam)) return "yellow";
+  return "gray";
+}
+
 function StatCell({ value, color, label }: { value: string; color: CellColor; label: string }) {
   return (
-    <div className={`flex flex-col items-center justify-center rounded-lg border text-center py-2 px-0.5 ${CELL_BG[color]}`}>
+    <div className={`flex flex-col items-center justify-center rounded-lg border text-center py-2.5 px-1 ${CELL_BG[color]}`}>
       <span className="text-[9px] font-semibold opacity-70 uppercase tracking-wide leading-none mb-0.5">{label}</span>
-      <span className="text-xs font-black leading-tight">{value}</span>
+      <span className="text-[11px] font-black leading-tight">{value}</span>
     </div>
+  );
+}
+
+function PlayerSilhouette({ teamColor }: { teamColor: string }) {
+  return (
+    <svg width="30" height="40" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="30" cy="11" rx="10" ry="11" fill={teamColor} opacity="0.9"/>
+      <path d="M14 25 L16 22 L30 28 L44 22 L46 25 L50 52 L10 52 Z" fill={teamColor} opacity="0.9"/>
+      <path d="M14 25 L5 42 L9 44 L16 32 Z" fill={teamColor} opacity="0.85"/>
+      <path d="M46 25 L55 42 L51 44 L44 32 Z" fill={teamColor} opacity="0.85"/>
+      <path d="M18 52 L14 76 L22 76 L28 56 Z" fill={teamColor} opacity="0.8"/>
+      <path d="M42 52 L46 76 L38 76 L32 56 Z" fill={teamColor} opacity="0.8"/>
+    </svg>
   );
 }
 
@@ -73,14 +185,18 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
   const isCorrect = guess.id === answer.id;
   return (
     <div className={`w-full rounded-xl p-3 border ${isCorrect ? "border-green-300 bg-green-50" : "border-slate-200 bg-white"}`}>
-      <div className="flex items-center gap-2 mb-2.5">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-white text-[10px] shrink-0" style={{ backgroundColor: guess.teamColor }}>
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <PlayerSilhouette teamColor={guess.teamColor} />
+        <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-white text-[11px] shrink-0 shadow-sm" style={{ backgroundColor: guess.teamColor }}>
           {guess.jersey}
         </div>
-        <p className="text-sm font-bold text-slate-800 truncate">{guess.name}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-slate-800 truncate">{guess.name}</p>
+          <p className="text-[10px] text-slate-400 truncate">{guess.team}</p>
+        </div>
         {isCorrect && <span className="ml-auto text-green-600 text-xs font-bold shrink-0">✓ Correct!</span>}
       </div>
-      <div className="grid grid-cols-8 gap-1">
+      <div className="grid grid-cols-10 gap-1">
         <StatCell label="PPG" value={`${guess.ppg}`} color={compareStat(guess.ppg, answer.ppg, 4)} />
         <StatCell label="RPG" value={`${guess.rpg}`} color={compareStat(guess.rpg, answer.rpg, 2)} />
         <StatCell label="APG" value={`${guess.apg}`} color={compareStat(guess.apg, answer.apg, 2)} />
@@ -89,6 +205,8 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
         <StatCell label="AGE" value={`${guess.age}`} color={compareAge(guess.age, answer.age)} />
         <StatCell label="HT" value={formatHeight(guess.height)} color={compareHeight(guess.height, answer.height)} />
         <StatCell label="DRAFT" value={guess.draftYear ? `'${String(guess.draftYear).slice(2)}` : "UD"} color={compareDraftYear(guess.draftYear, answer.draftYear)} />
+        <StatCell label="TEAM" value={getTeamAbbr(guess.team)} color={compareTeam(guess.team, answer.team)} />
+        <StatCell label="DIV" value={DIVISION_ABBR[getDivision(guess.team)] ?? "?"} color={compareDivisionFn(guess.team, answer.team)} />
       </div>
     </div>
   );
@@ -156,7 +274,7 @@ function WordleGame({ players, playerNames, era }: {
     return (
       <div className="min-h-screen flex flex-col bg-teal-50">
         <Header era={era} />
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-2xl mx-auto w-full animate-fade-in">
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-4xl mx-auto w-full animate-fade-in">
           <div className={`w-full rounded-3xl border-2 p-8 text-center shadow-lg bg-white ${won ? "border-teal-300" : "border-red-200"}`}>
             <div className="text-6xl mb-4">{won ? "🎉" : "😬"}</div>
             <h2 className="text-2xl font-black text-slate-900 mb-1">{won ? "Correct!" : "Not quite!"}</h2>
@@ -186,7 +304,7 @@ function WordleGame({ players, playerNames, era }: {
   return (
     <div className="min-h-screen flex flex-col bg-teal-50">
       <Header era={era} />
-      <main className="flex-1 flex flex-col items-center px-4 py-6 max-w-2xl mx-auto w-full">
+      <main className="flex-1 flex flex-col items-center px-4 py-6 max-w-4xl mx-auto w-full">
         <div className="text-center mb-5 animate-fade-in">
           <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
             {guesses.length === 0 ? "Start guessing" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
