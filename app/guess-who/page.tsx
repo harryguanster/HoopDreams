@@ -168,6 +168,72 @@ function StatCell({ value, color, label }: { value: string; color: CellColor; la
   );
 }
 
+// ── NBA headshot IDs (cdn.nba.com/headshots/nba/latest/260x190/{id}.png) ──────
+
+const NBA_HEADSHOT_IDS: Record<string, number> = {
+  // Atlanta Hawks
+  trae: 1629027, jjohnson: 1630553, dehunter: 1629631,
+  capela: 203991, okongwu: 1630168, bogdan: 203992, lnance: 1626204, ddaniels: 1631101,
+  // Boston Celtics
+  tatum: 1628369, jbrown: 1627759, holiday: 201950,
+  horford: 201143, porzingis: 204001, dwhite: 1628401, ppritchard: 1630202, shauser: 1630554,
+  // Brooklyn Nets
+  camthomas: 1630560, nclaxton: 1629651, bsimmons: 1627732, schroder: 203471, cjohnson: 1629011,
+  // Charlotte Hornets
+  lamelo: 1630163, bmiller: 1631109, mbridges: 1628970,
+  // Chicago Bulls
+  lavine: 203897, vucevic: 202696, cwhite: 1629632, giddey: 1630581,
+  // Cleveland Cavaliers
+  dmitchell: 1628378, garland: 1629636, mobley: 1630596, jallen: 1628386,
+  // Dallas Mavericks
+  kyrie: 202681, kthompson: 202691, pjwash: 1629023, dlively: 1641706, dgafford: 1629655,
+  // Denver Nuggets
+  jokic: 203999, jmurray: 1627750, mporter: 1629008, agordon: 203932,
+  kcpp: 203484, cbraun: 1631248,
+  // Golden State Warriors
+  curry: 201939, dgreen: 203110, awiggins: 203952, kuminga: 1630228, mmoody: 1630541,
+  jbutler: 202710,
+  // Houston Rockets
+  sengun: 1641706, jgreen2: 1630224, fvv: 1627832,
+  // Indiana Pacers
+  haliburton: 1630169, siakam: 1627783, mturner: 1626167, bmathurin: 1631109,
+  // LA Clippers
+  kawhi: 202695, harden: 201935,
+  // LA Lakers
+  lebron: 2544, luka: 1629029, areaves: 1630559, hachimura: 1629637, dlrussell: 1626156,
+  // Memphis Grizzlies
+  ja: 1629630, dbane: 1630217, jjackson: 1628991, msmart: 203935,
+  // Miami Heat
+  bam: 1628389, therro: 1629639,
+  // Milwaukee Bucks
+  giannis: 203507, dame: 203081, kmiddleton: 203114, blopez: 201572, bportis: 1626172,
+  // Minnesota Timberwolves
+  ant: 1630162, gobert: 203497, jrandle: 203944, mconley: 1626192,
+  // New Orleans Pelicans
+  zion: 1629627, bingram: 1627742, cjmcc: 203468,
+  // New York Knicks
+  brunson: 1628973, kat: 1626157, oganunoby: 1628384, jhart: 1628404,
+  mikalbridg: 1628969, ddivincenzo: 1628976,
+  // OKC Thunder
+  sga: 1628983, cholmgren: 1631096, ihartenstein: 1628432, acaruso: 1627936,
+  // Orlando Magic
+  banchero: 1631094, fwagner: 1631011, jsuggs: 1630580,
+  // Philadelphia 76ers
+  embiid: 203954, pgeorge: 202331, tmaxey: 1630178,
+  // Phoenix Suns
+  durant: 201142, booker: 1626164, bbeal: 203078,
+  // Sacramento Kings
+  defox: 1628368, sabonis: 1627734, lmarkkanen: 1628374,
+  // San Antonio Spurs
+  wemby: 1641705, dvassell: 1630170,
+  // Toronto Raptors
+  sbarnes: 1630567, rjbarrett: 1629628, iquickley: 1630193,
+  // Utah Jazz
+  jclarkson: 203546,
+  // Washington Wizards
+  kuzma: 1628398,
+};
+
 function PlayerSilhouette({ teamColor }: { teamColor: string }) {
   return (
     <svg width="30" height="40" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -181,12 +247,28 @@ function PlayerSilhouette({ teamColor }: { teamColor: string }) {
   );
 }
 
+function PlayerHeadshot({ player }: { player: CurrentNBAPlayer }) {
+  const [failed, setFailed] = useState(false);
+  const nbaId = NBA_HEADSHOT_IDS[player.id];
+  if (!nbaId || failed) return <PlayerSilhouette teamColor={player.teamColor} />;
+  return (
+    <div className="w-14 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+      <img
+        src={`https://cdn.nba.com/headshots/nba/latest/260x190/${nbaId}.png`}
+        alt={player.name}
+        className="w-full h-auto -mt-0.5"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
+
 function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentNBAPlayer }) {
   const isCorrect = guess.id === answer.id;
   return (
     <div className={`w-full rounded-xl p-3 border ${isCorrect ? "border-green-300 bg-green-50" : "border-slate-200 bg-white"}`}>
       <div className="flex items-center gap-2.5 mb-2.5">
-        <PlayerSilhouette teamColor={guess.teamColor} />
+        <PlayerHeadshot player={guess} />
         <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-white text-[11px] shrink-0 shadow-sm" style={{ backgroundColor: guess.teamColor }}>
           {guess.jersey}
         </div>
