@@ -159,11 +159,19 @@ function compareDivisionFn(guessTeam: string, answerTeam: string): CellColor {
   return "gray";
 }
 
-function StatCell({ value, color, label }: { value: string; color: CellColor; label: string }) {
+function getArrow(guess: number, answer: number): "up" | "down" | null {
+  if (Math.round(guess * 10) === Math.round(answer * 10)) return null;
+  return answer > guess ? "up" : "down";
+}
+function compareConference(guessTeam: string, answerTeam: string): CellColor {
+  return getConference(guessTeam) === getConference(answerTeam) ? "green" : "gray";
+}
+
+function StatCellH({ value, color, arrow }: { value: string; color: CellColor; arrow?: "up" | "down" | null }) {
   return (
-    <div className={`flex flex-col items-center justify-center rounded-lg border text-center py-2.5 px-1 ${CELL_BG[color]}`}>
-      <span className="text-[9px] font-semibold opacity-70 uppercase tracking-wide leading-none mb-0.5">{label}</span>
-      <span className="text-[11px] font-black leading-tight">{value}</span>
+    <div className={`flex flex-col items-center justify-center rounded h-12 text-center ${CELL_BG[color]}`}>
+      <span className="text-[11px] font-black leading-none">{value}</span>
+      {arrow && <span className="text-[11px] leading-none mt-0.5 font-bold">{arrow === "up" ? "↑" : "↓"}</span>}
     </div>
   );
 }
@@ -187,6 +195,8 @@ const NBA_HEADSHOT_IDS: Record<string, number> = {
   dmitchell: 1628378, garland: 1629636, mobley: 1630596, jallen: 1628386,
   // Dallas Mavericks
   kyrie: 202681, kthompson: 202691, pjwash: 1629023, dlively: 1641706, dgafford: 1629655,
+  // Detroit Pistons
+  cade: 1630595, jivey: 1631099, istewart: 1630191, tharris: 202699,
   // Denver Nuggets
   jokic: 203999, jmurray: 1627750, mporter: 1629008, agordon: 203932,
   kcpp: 203484, cbraun: 1631248,
@@ -234,62 +244,78 @@ const NBA_HEADSHOT_IDS: Record<string, number> = {
   kuzma: 1628398,
 };
 
-function PlayerSilhouette({ teamColor }: { teamColor: string }) {
+const GRID_COLS = "minmax(140px,2.5fr) repeat(12,minmax(0,1fr))";
+
+function PlayerFace({ player }: { player: CurrentNBAPlayer }) {
+  const [failed, setFailed] = useState(false);
+  const nbaId = NBA_HEADSHOT_IDS[player.id];
+  if (!nbaId || failed) {
+    return (
+      <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-white text-[10px] shrink-0" style={{backgroundColor: player.teamColor}}>
+        {player.jersey}
+      </div>
+    );
+  }
   return (
-    <svg width="30" height="40" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <ellipse cx="30" cy="11" rx="10" ry="11" fill={teamColor} opacity="0.9"/>
-      <path d="M14 25 L16 22 L30 28 L44 22 L46 25 L50 52 L10 52 Z" fill={teamColor} opacity="0.9"/>
-      <path d="M14 25 L5 42 L9 44 L16 32 Z" fill={teamColor} opacity="0.85"/>
-      <path d="M46 25 L55 42 L51 44 L44 32 Z" fill={teamColor} opacity="0.85"/>
-      <path d="M18 52 L14 76 L22 76 L28 56 Z" fill={teamColor} opacity="0.8"/>
-      <path d="M42 52 L46 76 L38 76 L32 56 Z" fill={teamColor} opacity="0.8"/>
-    </svg>
+    <div className="w-10 h-8 rounded overflow-hidden shrink-0 bg-slate-100">
+      <img src={`https://cdn.nba.com/headshots/nba/latest/260x190/${nbaId}.png`} alt={player.name} className="w-full h-auto" onError={() => setFailed(true)} />
+    </div>
   );
 }
 
-function PlayerHeadshot({ player }: { player: CurrentNBAPlayer }) {
-  const [failed, setFailed] = useState(false);
-  const nbaId = NBA_HEADSHOT_IDS[player.id];
-  if (!nbaId || failed) return <PlayerSilhouette teamColor={player.teamColor} />;
+function GuessTableHeader() {
+  const cols = ["NAME", "TEAM", "CONF", "DIV", "PPG", "RPG", "APG", "SPG", "BPG", "HT", "AGE", "DRFT", "#"];
   return (
-    <div className="w-14 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
-      <img
-        src={`https://cdn.nba.com/headshots/nba/latest/260x190/${nbaId}.png`}
-        alt={player.name}
-        className="w-full h-auto -mt-0.5"
-        onError={() => setFailed(true)}
-      />
+    <div className="grid gap-1 pb-1 border-b border-slate-200" style={{gridTemplateColumns: GRID_COLS}}>
+      {cols.map((c, i) => (
+        <div key={c} className={`text-[10px] font-bold text-slate-400 uppercase tracking-wider ${i === 0 ? "pl-2" : "text-center"}`}>{c}</div>
+      ))}
+    </div>
+  );
+}
+
+function EmptyRow({ num }: { num: number }) {
+  return (
+    <div className="w-full h-12 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center">
+      <span className="text-slate-300 font-bold text-sm">{num}</span>
     </div>
   );
 }
 
 function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentNBAPlayer }) {
   const isCorrect = guess.id === answer.id;
+  const arrowFor = (g: number, a: number, color: CellColor) => color !== "green" ? getArrow(g, a) : null;
+  const ppgC = compareStat(guess.ppg, answer.ppg, 4);
+  const rpgC = compareStat(guess.rpg, answer.rpg, 2);
+  const apgC = compareStat(guess.apg, answer.apg, 2);
+  const spgC = compareStat(guess.spg, answer.spg, 0.5);
+  const bpgC = compareStat(guess.bpg, answer.bpg, 0.5);
+  const htC  = compareHeight(guess.height, answer.height);
+  const ageC = compareAge(guess.age, answer.age);
+  const drfC = compareDraftYear(guess.draftYear, answer.draftYear);
+
   return (
-    <div className={`w-full rounded-xl p-3 border ${isCorrect ? "border-green-300 bg-green-50" : "border-slate-200 bg-white"}`}>
-      <div className="flex items-center gap-2.5 mb-2.5">
-        <PlayerHeadshot player={guess} />
-        <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-white text-[11px] shrink-0 shadow-sm" style={{ backgroundColor: guess.teamColor }}>
-          {guess.jersey}
+    <div className="grid gap-1" style={{gridTemplateColumns: GRID_COLS}}>
+      {/* Name */}
+      <div className={`flex items-center gap-2 rounded-lg px-2 h-12 ${isCorrect ? "bg-green-500 text-white" : "bg-white border border-slate-200 text-slate-800"}`}>
+        <PlayerFace player={guess} />
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-bold leading-tight truncate">{guess.name}</p>
+          <p className={`text-[9px] leading-tight truncate ${isCorrect ? "text-green-100" : "text-slate-400"}`}>{getTeamAbbr(guess.team)}</p>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-slate-800 truncate">{guess.name}</p>
-          <p className="text-[10px] text-slate-400 truncate">{guess.team}</p>
-        </div>
-        {isCorrect && <span className="ml-auto text-green-600 text-xs font-bold shrink-0">✓ Correct!</span>}
       </div>
-      <div className="grid grid-cols-10 gap-1">
-        <StatCell label="PPG" value={`${guess.ppg}`} color={compareStat(guess.ppg, answer.ppg, 4)} />
-        <StatCell label="RPG" value={`${guess.rpg}`} color={compareStat(guess.rpg, answer.rpg, 2)} />
-        <StatCell label="APG" value={`${guess.apg}`} color={compareStat(guess.apg, answer.apg, 2)} />
-        <StatCell label="SPG" value={`${guess.spg}`} color={compareStat(guess.spg, answer.spg, 0.5)} />
-        <StatCell label="BPG" value={`${guess.bpg}`} color={compareStat(guess.bpg, answer.bpg, 0.5)} />
-        <StatCell label="AGE" value={`${guess.age}`} color={compareAge(guess.age, answer.age)} />
-        <StatCell label="HT" value={formatHeight(guess.height)} color={compareHeight(guess.height, answer.height)} />
-        <StatCell label="DRAFT" value={guess.draftYear ? `'${String(guess.draftYear).slice(2)}` : "UD"} color={compareDraftYear(guess.draftYear, answer.draftYear)} />
-        <StatCell label="TEAM" value={getTeamAbbr(guess.team)} color={compareTeam(guess.team, answer.team)} />
-        <StatCell label="DIV" value={DIVISION_ABBR[getDivision(guess.team)] ?? "?"} color={compareDivisionFn(guess.team, answer.team)} />
-      </div>
+      <StatCellH value={getTeamAbbr(guess.team)} color={compareTeam(guess.team, answer.team)} />
+      <StatCellH value={getConference(guess.team) === "East" ? "E" : "W"} color={compareConference(guess.team, answer.team)} />
+      <StatCellH value={DIVISION_ABBR[getDivision(guess.team)] ?? "?"} color={compareDivisionFn(guess.team, answer.team)} />
+      <StatCellH value={`${guess.ppg}`} color={ppgC} arrow={arrowFor(guess.ppg, answer.ppg, ppgC)} />
+      <StatCellH value={`${guess.rpg}`} color={rpgC} arrow={arrowFor(guess.rpg, answer.rpg, rpgC)} />
+      <StatCellH value={`${guess.apg}`} color={apgC} arrow={arrowFor(guess.apg, answer.apg, apgC)} />
+      <StatCellH value={`${guess.spg}`} color={spgC} arrow={arrowFor(guess.spg, answer.spg, spgC)} />
+      <StatCellH value={`${guess.bpg}`} color={bpgC} arrow={arrowFor(guess.bpg, answer.bpg, bpgC)} />
+      <StatCellH value={formatHeight(guess.height)} color={htC} arrow={arrowFor(guess.height, answer.height, htC)} />
+      <StatCellH value={`${guess.age}`} color={ageC} arrow={arrowFor(guess.age, answer.age, ageC)} />
+      <StatCellH value={guess.draftYear ? `'${String(guess.draftYear).slice(2)}` : "UD"} color={drfC} arrow={guess.draftYear && answer.draftYear ? arrowFor(guess.draftYear, answer.draftYear, drfC) : null} />
+      <StatCellH value={`#${guess.jersey}`} color={guess.jersey === answer.jersey ? "green" : "gray"} />
     </div>
   );
 }
@@ -386,66 +412,61 @@ function WordleGame({ players, playerNames, era }: {
   return (
     <div className="min-h-screen flex flex-col bg-teal-50">
       <Header era={era} />
-      <main className="flex-1 flex flex-col items-center px-4 py-6 max-w-4xl mx-auto w-full">
-        <div className="text-center mb-5 animate-fade-in">
-          <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
-            {guesses.length === 0 ? "Start guessing" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
-          </p>
-          <h1 className="text-3xl font-black text-slate-900">Who Am I?</h1>
-          <p className="text-slate-400 text-sm mt-1">Guess a player — green = match, yellow = close</p>
+      <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
+        {/* Title + input row */}
+        <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+          <div className="shrink-0">
+            <h1 className="text-2xl font-black text-slate-900 leading-none">Who Am I?</h1>
+            <p className="text-xs text-teal-600 font-semibold mt-0.5">
+              {guesses.length === 0 ? "Guess a current NBA player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
+            </p>
+          </div>
+          <div className="flex gap-2 flex-1">
+            <PlayerAutocomplete
+              players={playerNames}
+              value={guess}
+              onChange={(v) => { setGuess(v); setError(""); }}
+              onSubmit={checkGuess}
+              autoFocus
+            />
+            <button
+              onClick={checkGuess}
+              disabled={!guess.trim()}
+              className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+            >
+              Guess
+            </button>
+            <button
+              onClick={() => setGaveUp(true)}
+              className="py-3 px-4 bg-white hover:bg-red-50 text-slate-400 hover:text-red-400 border border-slate-200 font-bold rounded-xl transition-all text-sm shrink-0"
+            >
+              Give Up
+            </button>
+          </div>
         </div>
 
         {/* Legend */}
-        <div className="flex gap-4 text-[11px] text-slate-500 font-semibold mb-5">
-          <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 bg-green-500 rounded inline-block" /> Match</span>
-          <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 bg-yellow-400 rounded inline-block" /> Close</span>
-          <span className="flex items-center gap-1"><span className="w-3.5 h-3.5 bg-slate-200 rounded inline-block" /> Off</span>
+        <div className="w-full flex gap-4 text-[11px] text-slate-500 font-semibold mb-3">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-slate-200 rounded inline-block" /> Off</span>
+          <span className="flex items-center gap-1 text-slate-400">↑↓ = direction to answer</span>
         </div>
 
-        {/* Input */}
-        <div className="w-full flex gap-2 mb-4">
-          <PlayerAutocomplete
-            players={playerNames}
-            value={guess}
-            onChange={(v) => { setGuess(v); setError(""); }}
-            onSubmit={checkGuess}
-            autoFocus
-          />
-          <button
-            onClick={checkGuess}
-            disabled={!guess.trim()}
-            className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
-          >
-            Guess
-          </button>
-        </div>
+        {error && <p className="w-full text-red-500 text-sm mb-2 font-medium">{error}</p>}
 
-        {error && (
-          <p className="text-red-500 text-sm mb-3 font-medium animate-fade-in">{error}</p>
-        )}
-
-        {/* Guess history */}
-        {guesses.length > 0 && (
-          <div className="w-full flex flex-col gap-2 mb-4">
-            {guesses.map((g, i) => (
+        {/* Guess table */}
+        <div className="w-full overflow-x-auto">
+          <div className="flex flex-col gap-1" style={{minWidth: "700px"}}>
+            <GuessTableHeader />
+            {[...guesses].reverse().map((g, i) => (
               <GuessRow key={i} guess={g} answer={answer} />
             ))}
+            {Array.from({length: Math.max(0, MAX_GUESSES - guesses.length)}).map((_, i) => (
+              <EmptyRow key={i} num={guesses.length + i + 1} />
+            ))}
           </div>
-        )}
-
-        {guesses.length === 0 && (
-          <div className="w-full rounded-xl border-2 border-dashed border-slate-200 p-10 text-center text-slate-300">
-            <p className="text-4xl mb-2">❓</p>
-            <p className="text-sm font-medium">Your guesses will appear here</p>
-          </div>
-        )}
-
-        <button
-          onClick={() => setGaveUp(true)}
-          className="mt-4 py-2 px-4 bg-white hover:bg-red-50 text-slate-400 hover:text-red-400 border border-slate-200 font-bold rounded-xl transition-all text-sm"
-        >
-          Give Up
-        </button>
+        </div>
       </main>
     </div>
   );
