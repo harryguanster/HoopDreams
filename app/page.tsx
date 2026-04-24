@@ -47,10 +47,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-teal-200 bg-white px-6 py-4 flex items-center gap-3 shadow-sm">
-        <span className="text-2xl">🏀</span>
-        <span className="font-black text-xl tracking-tight text-slate-900">
-          Courtside <span className="text-teal-500">Central</span>
-        </span>
+        <img src="/logo.png" alt="Courtside Central" className="h-10 w-auto" />
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 py-16">

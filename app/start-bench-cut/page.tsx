@@ -73,8 +73,7 @@ function StartBenchCutGame() {
     <div className="min-h-screen flex flex-col bg-teal-50">
       <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
         <a href="/" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
-          <span className="text-lg">🏀</span>
-          <span className="font-black text-sm tracking-wide">COURTSIDE CENTRAL</span>
+          <img src="/logo.png" alt="Courtside Central" className="h-8 w-auto" />
         </a>
         <div className="flex items-center gap-2">
           {era === "current" && (
