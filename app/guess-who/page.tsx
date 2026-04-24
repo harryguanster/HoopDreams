@@ -344,13 +344,10 @@ function WordleGame({ players, playerNames, era }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [era]);
 
-  if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen bg-black"><Header era={era} /></div>;
-  }
-
   const answer = shuffled[answerIndex % shuffled.length];
 
   const checkGuess = useCallback(() => {
+    if (!answer) return;
     const trimmed = guess.trim().toLowerCase();
     if (!trimmed) return;
 
@@ -388,6 +385,10 @@ function WordleGame({ players, playerNames, era }: {
     setGaveUp(false);
     setError("");
   };
+
+  if (!mounted || shuffled.length === 0) {
+    return <div className="min-h-screen bg-black"><Header era={era} /></div>;
+  }
 
   if (won || gaveUp) {
     return (
