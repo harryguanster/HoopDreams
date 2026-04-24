@@ -128,9 +128,8 @@ export default function HomePage() {
               NBA Knowledge Games
             </p>
             <h1 className="text-white font-black uppercase leading-[0.88] tracking-tight">
-              <span className="block text-6xl sm:text-8xl lg:text-[7rem]">KNOW</span>
-              <span className="block text-6xl sm:text-8xl lg:text-[7rem] text-teal-400">THE</span>
-              <span className="block text-6xl sm:text-8xl lg:text-[7rem]">GAME.</span>
+              <span className="block text-6xl sm:text-8xl lg:text-[7rem]">COURTSIDE</span>
+              <span className="block text-6xl sm:text-8xl lg:text-[7rem] text-teal-400">CENTRAL</span>
             </h1>
           </div>
           <div className="sm:text-right max-w-xs">

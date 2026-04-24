@@ -70,38 +70,38 @@ function StartBenchCutGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-teal-50">
-      <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
-        <a href="/home" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
+    <div className="min-h-screen flex flex-col bg-black">
+      <header className="border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
+        <a href="/home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
         </a>
         <div className="flex items-center gap-2">
           {era === "current" && (
-            <span className="text-xs bg-teal-100 text-teal-700 border border-teal-200 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
+            <span className="text-xs bg-teal-400/10 text-teal-400 border border-teal-400/30 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
           )}
-          <span className="text-xs text-slate-400 uppercase tracking-widest">Start · Bench · Cut</span>
+          <span className="text-xs text-zinc-600 uppercase tracking-widest">Start · Bench · Cut</span>
         </div>
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
         <div className="text-center mb-8 animate-fade-in">
-          <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-1">
+          <p className="text-xs text-teal-400 uppercase tracking-widest font-semibold mb-1">
             Round {roundIndex + 1} of {trios.length}
           </p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{trio.category}</h1>
-          <p className="text-slate-500 text-sm mt-1">{trio.description}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">{trio.category}</h1>
+          <p className="text-zinc-500 text-sm mt-1">{trio.description}</p>
         </div>
 
         <div className="mb-6 text-center">
           {selectedPlayer ? (
-            <p className="text-teal-600 text-sm font-medium animate-fade-in">
+            <p className="text-teal-400 text-sm font-medium animate-fade-in">
               Now pick a role for{" "}
-              <span className="text-slate-900 font-bold">
+              <span className="text-white font-bold">
                 {trio.players.find((p) => p.id === selectedPlayer)?.name.split(" ")[0]}
               </span>
             </p>
           ) : (
-            <p className="text-slate-400 text-sm">Tap a player to select, then assign their role below</p>
+            <p className="text-zinc-600 text-sm">Tap a player to select, then assign their role below</p>
           )}
         </div>
 
@@ -128,8 +128,8 @@ function StartBenchCutGame() {
           disabled={!allAssigned}
           className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-200
             ${allAssigned
-              ? "bg-teal-500 hover:bg-teal-400 text-white shadow-lg shadow-teal-200 active:scale-95"
-              : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              ? "bg-teal-500 hover:bg-teal-400 text-white active:scale-95"
+              : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
             }`}
         >
           {allAssigned ? "Submit My Picks" : `Assign all ${3 - Object.keys(assignments).length} remaining`}

@@ -44,19 +44,19 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   const roleOrder: Role[] = ["start", "bench", "cut"];
 
   return (
-    <div className="min-h-screen flex flex-col bg-teal-50">
-      <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
-        <a href="/home" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
+    <div className="min-h-screen flex flex-col bg-black">
+      <header className="border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
+        <a href="/home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
         </a>
-        <span className="text-xs text-slate-400 uppercase tracking-widest">Start · Bench · Cut</span>
+        <span className="text-xs text-zinc-600 uppercase tracking-widest">Start · Bench · Cut</span>
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-2xl mx-auto w-full animate-fade-in">
         <div className="text-center mb-8">
-          <p className="text-xs text-teal-600 uppercase tracking-widest font-semibold mb-2">{trio.category}</p>
-          <h2 className="text-3xl font-black text-slate-900">Your Picks</h2>
-          <p className="text-slate-500 text-sm mt-2 italic">"{comment}"</p>
+          <p className="text-xs text-teal-400 uppercase tracking-widest font-semibold mb-2">{trio.category}</p>
+          <h2 className="text-3xl font-black text-white">Your Picks</h2>
+          <p className="text-zinc-500 text-sm mt-2 italic">"{comment}"</p>
         </div>
 
         <div className="flex flex-col gap-4 w-full mb-10">
@@ -65,7 +65,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
             if (!player) return null;
             const cfg = ROLE_CONFIG[role];
             return (
-              <div key={role} className={`flex items-center gap-4 rounded-2xl border-2 p-4 shadow-sm ${cfg.bg} ${cfg.border} animate-scale-in`}>
+              <div key={role} className={`flex items-center gap-4 rounded-2xl border-2 p-4 ${cfg.bg} ${cfg.border} animate-scale-in`}>
                 <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-black text-white text-lg shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
                   <span className="leading-none">{player.jersey}</span>
                   <span className="text-[8px] font-bold opacity-80">{player.position}</span>
@@ -85,7 +85,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
         </div>
 
         <div className="flex gap-3 flex-wrap justify-center">
-          <button onClick={onPlayAgain} className="px-8 py-3 bg-teal-500 hover:bg-teal-400 text-white font-bold text-sm rounded-xl tracking-wide uppercase transition-all active:scale-95 shadow-md shadow-teal-200">
+          <button onClick={onPlayAgain} className="px-8 py-3 bg-teal-500 hover:bg-teal-400 text-white font-bold text-sm rounded-xl tracking-wide uppercase transition-all active:scale-95">
             Next Trio →
           </button>
           <button
@@ -93,7 +93,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
               const lines = [`🏀 Courtside Central — ${trio.category}`, "", ...roleOrder.map((r) => { const p = trio.players.find((p) => assignments[p.id] === r); const cfg = ROLE_CONFIG[r]; return `${cfg.emoji} ${cfg.label}: ${p?.name}`; }), "", "Play at courtsidecentral.com"];
               navigator.clipboard.writeText(lines.join("\n")).catch(() => {});
             }}
-            className="px-8 py-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-sm rounded-xl tracking-wide uppercase transition-all active:scale-95 shadow-sm"
+            className="px-8 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-sm rounded-xl tracking-wide uppercase transition-all active:scale-95"
           >
             Copy Results
           </button>

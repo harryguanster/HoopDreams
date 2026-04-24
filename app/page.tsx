@@ -1,6 +1,6 @@
 export default function StartPage() {
   return (
-    <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
 
       {/* ── Grain texture ─────────────────────────────────────────────────── */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
@@ -15,12 +15,12 @@ export default function StartPage() {
 
       {/* ── Radial atmosphere ─────────────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: "radial-gradient(ellipse 80% 60% at 50% 45%, rgba(20,184,166,0.13) 0%, transparent 70%)"
+        background: "radial-gradient(ellipse 80% 60% at 50% 45%, rgba(20,184,166,0.10) 0%, transparent 70%)"
       }}/>
 
       {/* ── Subtle dot grid ───────────────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.18) 1px, transparent 1px)",
+        backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.14) 1px, transparent 1px)",
         backgroundSize: "48px 48px"
       }}/>
 
@@ -28,7 +28,7 @@ export default function StartPage() {
       <div className="relative z-10 flex flex-col items-center text-center px-6 select-none">
 
         {/* Logo */}
-        <img src="/logo.png" alt="Courtside Central" className="w-64 mb-10 drop-shadow-[0_0_40px_rgba(20,184,166,0.4)]"/>
+        <img src="/logo.png" alt="Courtside Central" className="w-56 mb-8"/>
 
         {/* Divider line */}
         <div className="flex items-center gap-4 mb-10 w-72">
@@ -39,11 +39,10 @@ export default function StartPage() {
           <div className="h-px flex-1 bg-teal-400/20"/>
         </div>
 
-        {/* Tagline */}
-        <h1 className="text-white font-black uppercase leading-[0.9] mb-12 tracking-tight">
-          <span className="block text-5xl sm:text-7xl">KNOW</span>
-          <span className="block text-5xl sm:text-7xl text-teal-400">THE</span>
-          <span className="block text-5xl sm:text-7xl">GAME.</span>
+        {/* Title */}
+        <h1 className="text-white font-black uppercase leading-[0.88] mb-12 tracking-tight">
+          <span className="block text-4xl sm:text-6xl">COURTSIDE</span>
+          <span className="block text-4xl sm:text-6xl text-teal-400">CENTRAL</span>
         </h1>
 
         {/* CTA */}
