@@ -1,14 +1,15 @@
 "use client";
 
 import type { Trio } from "@/lib/playerData";
+import GameHeader from "@/app/components/GameHeader";
 
 type Role = "start" | "bench" | "cut";
 type Assignments = { [playerId: string]: Role };
 
 const ROLE_CONFIG = {
-  start: { label: "STARTED", emoji: "⭐", bg: "bg-green-50",  border: "border-green-300", text: "text-green-600", desc: "Your franchise player. Built different." },
-  bench: { label: "BENCHED", emoji: "🪑", bg: "bg-yellow-50", border: "border-yellow-300", text: "text-yellow-600", desc: "Valuable piece, but not in the starting five." },
-  cut:   { label: "CUT",     emoji: "✂️", bg: "bg-red-50",    border: "border-red-300",   text: "text-red-600",   desc: "Cleared some cap space." },
+  start: { label: "STARTED", emoji: "⭐", bg: "bg-green-50",  border: "border-green-200", text: "text-green-700", desc: "Your franchise player. Built different." },
+  bench: { label: "BENCHED", emoji: "🪑", bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-700", desc: "Valuable piece, but not in the starting five." },
+  cut:   { label: "CUT",     emoji: "✂️", bg: "bg-red-50",    border: "border-red-200",   text: "text-red-600",   desc: "Cleared some cap space." },
 };
 
 function getResultComment(assignments: Assignments, trio: Trio): string {
@@ -44,58 +45,53 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   const roleOrder: Role[] = ["start", "bench", "cut"];
 
   return (
-    <div className="min-h-screen flex flex-col bg-black">
-      <header className="border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
-        <a href="/home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
-        </a>
-        <span className="text-xs text-zinc-600 uppercase tracking-widest">Start · Bench · Cut</span>
-      </header>
+    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+      <GameHeader title="Start · Bench · Cut" />
 
-      <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-2xl mx-auto w-full animate-fade-in">
-        <div className="text-center mb-8">
-          <p className="text-xs text-teal-400 uppercase tracking-widest font-semibold mb-2">{trio.category}</p>
-          <h2 className="text-3xl font-black text-white">Your Picks</h2>
-          <p className="text-zinc-500 text-sm mt-2 italic">"{comment}"</p>
+      <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
+        <div className="text-center mb-6">
+          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
+          <h2 className="text-2xl font-bold text-zinc-900">Your Picks</h2>
+          <p className="text-zinc-400 text-sm mt-2 italic">"{comment}"</p>
         </div>
 
-        <div className="flex flex-col gap-4 w-full mb-10">
+        <div className="flex flex-col gap-3 w-full mb-8">
           {roleOrder.map((role) => {
             const player = trio.players.find((p) => assignments[p.id] === role);
             if (!player) return null;
             const cfg = ROLE_CONFIG[role];
             return (
-              <div key={role} className={`flex items-center gap-4 rounded-2xl border-2 p-4 ${cfg.bg} ${cfg.border} animate-scale-in`}>
-                <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-black text-white text-lg shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
+              <div key={role} className={`flex items-center gap-4 rounded-2xl border p-4 shadow-sm ${cfg.bg} ${cfg.border}`}>
+                <div className="w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-white text-base shadow-sm shrink-0" style={{ backgroundColor: player.teamColor }}>
                   <span className="leading-none">{player.jersey}</span>
-                  <span className="text-[8px] font-bold opacity-80">{player.position}</span>
+                  <span className="text-[7px] font-semibold opacity-90">{player.position}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-900 text-base leading-tight truncate">{player.name}</p>
-                  <p className="text-slate-400 text-xs truncate">{player.team}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{cfg.desc}</p>
+                  <p className="font-bold text-zinc-900 text-sm leading-tight truncate">{player.name}</p>
+                  <p className="text-zinc-400 text-xs truncate">{player.team}</p>
+                  <p className="text-zinc-400 text-xs mt-0.5">{cfg.desc}</p>
                 </div>
                 <div className={`text-right shrink-0 ${cfg.text}`}>
-                  <div className="text-2xl">{cfg.emoji}</div>
-                  <div className="text-xs font-bold tracking-wider mt-0.5">{cfg.label}</div>
+                  <div className="text-xl">{cfg.emoji}</div>
+                  <div className="text-[10px] font-bold tracking-wider mt-0.5">{cfg.label}</div>
                 </div>
               </div>
             );
           })}
         </div>
 
-        <div className="flex gap-3 flex-wrap justify-center">
-          <button onClick={onPlayAgain} className="px-8 py-3 bg-teal-500 hover:bg-teal-400 text-white font-bold text-sm rounded-xl tracking-wide uppercase transition-all active:scale-95">
-            Next Trio →
+        <div className="flex gap-3 w-full">
+          <button onClick={onPlayAgain} className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-sm rounded-xl tracking-wide transition-all active:scale-95 shadow-sm">
+            Next Round →
           </button>
           <button
             onClick={() => {
-              const lines = [`🏀 Courtside Central — ${trio.category}`, "", ...roleOrder.map((r) => { const p = trio.players.find((p) => assignments[p.id] === r); const cfg = ROLE_CONFIG[r]; return `${cfg.emoji} ${cfg.label}: ${p?.name}`; }), "", "Play at courtsidecentral.com"];
+              const lines = [`🏀 Courtside Central — ${trio.category}`, "", ...roleOrder.map((r) => { const p = trio.players.find((p) => assignments[p.id] === r); const cfg = ROLE_CONFIG[r]; return `${cfg.emoji} ${cfg.label}: ${p?.name}`; }), "", "courtsidecentral.com"];
               navigator.clipboard.writeText(lines.join("\n")).catch(() => {});
             }}
-            className="px-8 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold text-sm rounded-xl tracking-wide uppercase transition-all active:scale-95"
+            className="px-5 py-3 bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 font-semibold text-sm rounded-xl tracking-wide transition-all active:scale-95 shadow-sm"
           >
-            Copy Results
+            Share
           </button>
         </div>
       </main>

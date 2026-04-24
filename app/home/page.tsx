@@ -5,204 +5,152 @@ import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 
-// ── Dark game card ─────────────────────────────────────────────────────────────
+// ── Game card ───────────────────────────────────────────────────────────────
 
 function GameCard({
-  href,
-  tag,
-  title,
-  description,
-  meta,
+  href, emoji, title, description, meta, tag,
 }: {
-  href: string;
-  tag: string;
-  title: string;
-  description: string;
-  meta: string;
+  href: string; emoji: string; title: string;
+  description: string; meta: string; tag: string;
 }) {
   return (
     <Link
       href={href}
-      className="group relative flex flex-col border border-zinc-800 hover:border-teal-400/60 bg-zinc-900/40 hover:bg-zinc-900/80 p-7 transition-all duration-200 overflow-hidden active:scale-[0.98]"
+      className="group bg-white rounded-2xl border border-zinc-200 p-6 flex flex-col hover:shadow-md hover:border-zinc-300 transition-all duration-200 active:scale-[0.98]"
     >
-      {/* Left accent */}
-      <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-teal-400 opacity-70 group-hover:opacity-100 transition-opacity"/>
-
-      {/* Tag + play arrow */}
-      <div className="flex items-center justify-between mb-5">
-        <span className="text-teal-400 text-[9px] font-bold uppercase tracking-[0.3em] border border-teal-400/30 px-2 py-0.5">
+      <div className="flex items-start justify-between mb-4">
+        <span className="text-2xl">{emoji}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 bg-zinc-100 px-2 py-1 rounded-full">
           {tag}
         </span>
-        <span className="text-zinc-700 group-hover:text-teal-400 transition-colors text-xs font-black uppercase tracking-wider">
-          PLAY →
-        </span>
       </div>
-
-      {/* Title */}
-      <h2 className="text-white text-xl font-black uppercase tracking-tight mb-2 group-hover:text-teal-400 transition-colors leading-tight">
+      <h2 className="text-base font-bold text-zinc-900 mb-1 group-hover:text-teal-600 transition-colors">
         {title}
       </h2>
-
-      {/* Description */}
-      <p className="text-zinc-500 text-sm leading-relaxed flex-1 mb-5">{description}</p>
-
-      {/* Meta */}
-      <p className="text-zinc-700 text-[9px] uppercase tracking-[0.3em] font-medium border-t border-zinc-800 pt-4">
+      <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-4">{description}</p>
+      <p className="text-[11px] text-zinc-400 font-medium border-t border-zinc-100 pt-3">
         {meta}
       </p>
     </Link>
   );
 }
 
-// ── Section label ──────────────────────────────────────────────────────────────
+// ── Section heading ─────────────────────────────────────────────────────────
 
-function SectionLabel({ children, accent }: { children: React.ReactNode; accent?: boolean }) {
+function SectionHeading({ label, sub }: { label: string; sub: string }) {
   return (
-    <div className="flex items-center gap-4 mb-3">
-      <span className={`text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1.5 ${
-        accent ? "bg-teal-400 text-black" : "bg-zinc-900 border border-zinc-700 text-zinc-300"
-      }`}>
-        {children}
-      </span>
-      <div className="h-px flex-1 bg-zinc-800"/>
+    <div className="mb-6">
+      <h2 className="text-lg font-bold text-zinc-900">{label}</h2>
+      <p className="text-sm text-zinc-400 mt-0.5">{sub}</p>
     </div>
   );
 }
 
-// ── Texture background component ───────────────────────────────────────────────
-
-function DarkTextureBg() {
-  return (
-    <>
-      {/* Grain */}
-      <svg className="fixed inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="grain-home">
-            <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch"/>
-            <feColorMatrix type="saturate" values="0"/>
-          </filter>
-        </defs>
-        <rect width="100%" height="100%" filter="url(#grain-home)" opacity="0.07"/>
-      </svg>
-
-      {/* Dot grid */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.14) 1px, transparent 1px)",
-        backgroundSize: "52px 52px"
-      }}/>
-
-      {/* Radial glow top-left */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        background: "radial-gradient(ellipse 60% 50% at 10% 0%, rgba(20,184,166,0.10) 0%, transparent 70%)"
-      }}/>
-
-      {/* Radial glow bottom-right */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        background: "radial-gradient(ellipse 50% 40% at 90% 100%, rgba(20,184,166,0.07) 0%, transparent 60%)"
-      }}/>
-    </>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
+// ── Page ────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#080808] relative">
-      <DarkTextureBg />
+    <div className="min-h-screen bg-[#f9f8f6]">
+      <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 via-teal-500 to-teal-400 z-50"/>
 
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header className="relative z-10 border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-6 py-4 flex items-center justify-between">
-        <img src="/logo.png" alt="Courtside Central" className="h-14 w-auto"/>
-        <span className="text-zinc-600 text-[10px] uppercase tracking-[0.4em] font-semibold hidden sm:block">
-          Season 2025–26
-        </span>
+      {/* Header */}
+      <header className="bg-white border-b border-zinc-200 px-6 py-4 flex items-center justify-between sticky top-1 z-40">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center shrink-0">
+            <span className="text-base">🏀</span>
+          </div>
+          <span className="font-bold text-zinc-900 text-base tracking-tight">Courtside Central</span>
+        </div>
+        <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
       </header>
 
-      <main className="relative z-10 px-4 sm:px-8 pb-20">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-20">
 
-        {/* ── Hero ───────────────────────────────────────────────────────── */}
-        <section className="max-w-6xl mx-auto pt-16 pb-16 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8 border-b border-zinc-900">
-          <div>
-            <p className="text-teal-400 text-[10px] font-bold uppercase tracking-[0.5em] mb-5">
-              NBA Knowledge Games
-            </p>
-            <h1 className="text-white font-black uppercase leading-[0.88] tracking-tight">
-              <span className="block text-6xl sm:text-8xl lg:text-[7rem]">COURTSIDE</span>
-              <span className="block text-6xl sm:text-8xl lg:text-[7rem] text-teal-400">CENTRAL</span>
-            </h1>
-          </div>
-          <div className="sm:text-right max-w-xs">
-            <img src="/logo.png" alt="" className="h-24 w-auto mb-4 opacity-20 sm:ml-auto hidden sm:block"/>
-            <p className="text-zinc-500 text-sm leading-relaxed">
-              Test your NBA knowledge across all eras. Stats, legends, and today's best players.
-            </p>
-          </div>
-        </section>
-
-        {/* ── All-Time Legends ───────────────────────────────────────────── */}
-        <section className="max-w-6xl mx-auto pt-14 mb-14">
-          <SectionLabel>🏆 All-Time Legends</SectionLabel>
-          <p className="text-zinc-600 text-xs uppercase tracking-widest mb-7">
-            Jordan · Kobe · Shaq · Magic · Bird — the greatest of all time
+        {/* Hero */}
+        <div className="text-center mb-12 pt-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-teal-500 mb-3">
+            NBA Knowledge Games
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <h1 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3">
+            Test Your Game IQ
+          </h1>
+          <p className="text-zinc-500 text-base max-w-md mx-auto">
+            Stats, legends, and today's stars — across all eras.
+          </p>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-zinc-200 mb-10"/>
+
+        {/* All-Time section */}
+        <section className="mb-12">
+          <SectionHeading
+            label="🏆 All-Time Legends"
+            sub="Jordan · Kobe · Shaq · Magic · Bird"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <GameCard
               href="/start-bench-cut?era=alltime"
+              emoji="⭐"
               tag="Opinion"
               title="Start, Bench, Cut"
-              description="Pick 3 NBA legends and decide — who starts, who rides the pine, and who gets waived?"
-              meta={`${TRIOS.length} rounds · All eras · Opinion-based`}
+              description="Three NBA legends — who starts, who rides the pine, and who gets waived?"
+              meta={`${TRIOS.length} rounds · All eras`}
             />
             <GameCard
               href="/guess-who?era=alltime"
-              tag="Stat Puzzle"
+              emoji="🔍"
+              tag="Puzzle"
               title="Guess Who"
-              description="Decode a mystery legend using stat comparisons. Green = match, yellow = close, arrows guide you."
-              meta="302 all-time players · 10 guesses"
+              description="Decode a mystery legend from stat clues. Green = match, yellow = close."
+              meta="302 players · 10 guesses"
             />
             <GameCard
               href="/stat-line-guesser?era=alltime"
+              emoji="📊"
               tag="Stats"
               title="Stat Line Guesser"
-              description="A career stat line flashes on screen. How fast can you name the legend?"
-              meta={`${STAT_LINE_PLAYERS.length} players · All eras · 5 reveals`}
+              description="A career stat line reveals one clue at a time. Name the player first."
+              meta={`${STAT_LINE_PLAYERS.length} players · 5 reveals`}
             />
           </div>
         </section>
 
-        {/* ── Current NBA ────────────────────────────────────────────────── */}
-        <section className="max-w-6xl mx-auto">
-          <SectionLabel accent>⚡ Current NBA</SectionLabel>
-          <p className="text-zinc-600 text-xs uppercase tracking-widest mb-7">
-            Jokic · Wemby · Tatum · SGA — today's best
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {/* Current section */}
+        <section>
+          <SectionHeading
+            label="⚡ Current NBA"
+            sub="Jokic · Wemby · Tatum · SGA"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <GameCard
               href="/start-bench-cut?era=current"
+              emoji="⭐"
               tag="Opinion"
               title="Start, Bench, Cut"
-              description="Today's stars face off — who starts, who sits, and who gets cut from the current crop?"
+              description="Today's stars face off — who starts, who sits, and who gets cut?"
               meta={`${CURRENT_TRIOS.length} rounds · 2025–26`}
             />
             <GameCard
               href="/guess-who?era=current"
-              tag="Stat Puzzle"
+              emoji="🔍"
+              tag="Puzzle"
               title="Guess Who"
-              description="Decode a current NBA player using stats. PPG, RPG, APG, team, division — piece it together."
-              meta={`${CURRENT_NBA_PLAYERS.length} current players · 10 guesses`}
+              description="Identify a current NBA player from stats — PPG, team, division, and more."
+              meta={`${CURRENT_NBA_PLAYERS.length} players · 10 guesses`}
             />
             <GameCard
               href="/stat-line-guesser?era=current"
+              emoji="📊"
               tag="Stats"
               title="Stat Line Guesser"
-              description="A current player's stat line appears one stat at a time. Name them before the full reveal."
+              description="Current player stats, revealed one at a time. How fast can you name them?"
               meta={`${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`}
             />
           </div>
         </section>
 
-        <p className="text-zinc-800 text-[10px] uppercase tracking-widest text-center mt-16">
+        <p className="text-zinc-400 text-xs text-center mt-14">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
       </main>

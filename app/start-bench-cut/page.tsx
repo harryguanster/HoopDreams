@@ -6,6 +6,7 @@ import { TRIOS, type Trio } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import PlayerCard from "./PlayerCard";
 import ResultScreen from "./ResultScreen";
+import GameHeader from "@/app/components/GameHeader";
 
 type Role = "start" | "bench" | "cut";
 type Assignments = { [playerId: string]: Role };
@@ -71,42 +72,32 @@ function StartBenchCutGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-black">
-      <header className="border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
-        <a href="/home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
-        </a>
-        <div className="flex items-center gap-2">
-          {era === "current" && (
-            <span className="text-xs bg-teal-400/10 text-teal-400 border border-teal-400/30 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
-          )}
-          <span className="text-xs text-zinc-600 uppercase tracking-widest">Start · Bench · Cut</span>
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+      <GameHeader title="Start · Bench · Cut" era={era} />
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
-        <div className="text-center mb-8 animate-fade-in">
-          <p className="text-xs text-teal-400 uppercase tracking-widest font-semibold mb-1">
+        <div className="text-center mb-6">
+          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">
             Round {roundIndex + 1} of {trios.length}
           </p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">{trio.category}</h1>
-          <p className="text-zinc-500 text-sm mt-1">{trio.description}</p>
+          <h1 className="text-2xl font-bold text-zinc-900">{trio.category}</h1>
+          <p className="text-zinc-400 text-sm mt-1">{trio.description}</p>
         </div>
 
-        <div className="mb-6 text-center">
+        <div className="mb-5 text-center">
           {selectedPlayer ? (
-            <p className="text-teal-400 text-sm font-medium animate-fade-in">
-              Now pick a role for{" "}
-              <span className="text-white font-bold">
+            <p className="text-teal-600 text-sm font-semibold">
+              Assign a role for{" "}
+              <span className="text-zinc-900 font-bold">
                 {trio.players.find((p) => p.id === selectedPlayer)?.name.split(" ")[0]}
               </span>
             </p>
           ) : (
-            <p className="text-zinc-600 text-sm">Tap a player to select, then assign their role below</p>
+            <p className="text-zinc-400 text-sm">Tap a player, then assign their role</p>
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-6">
           {trio.players.map((player) => (
             <PlayerCard
               key={player.id}
@@ -118,7 +109,7 @@ function StartBenchCutGame() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-3 w-full max-w-xl mb-8">
+        <div className="grid grid-cols-3 gap-3 w-full max-w-md mb-6">
           <RoleButton role="start" label="START" emoji="⭐" color="green" taken={takenRoles.has("start")} active={!!selectedPlayer} onClick={() => handleRoleClick("start")} />
           <RoleButton role="bench" label="BENCH" emoji="🪑" color="yellow" taken={takenRoles.has("bench")} active={!!selectedPlayer} onClick={() => handleRoleClick("bench")} />
           <RoleButton role="cut" label="CUT" emoji="✂️" color="red" taken={takenRoles.has("cut")} active={!!selectedPlayer} onClick={() => handleRoleClick("cut")} />
@@ -127,13 +118,13 @@ function StartBenchCutGame() {
         <button
           onClick={handleSubmit}
           disabled={!allAssigned}
-          className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-200
+          className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-200
             ${allAssigned
-              ? "bg-teal-500 hover:bg-teal-400 text-white active:scale-95"
-              : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+              ? "bg-zinc-900 hover:bg-zinc-700 text-white active:scale-95 shadow-sm"
+              : "bg-zinc-200 text-zinc-400 cursor-not-allowed"
             }`}
         >
-          {allAssigned ? "Submit My Picks" : `Assign all ${3 - Object.keys(assignments).length} remaining`}
+          {allAssigned ? "Submit My Picks →" : `Assign ${3 - Object.keys(assignments).length} more`}
         </button>
       </main>
     </div>

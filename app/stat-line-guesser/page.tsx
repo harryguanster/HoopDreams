@@ -6,6 +6,7 @@ import { STAT_LINE_PLAYERS, type StatLinePlayer } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import { ALL_PLAYER_NAMES, CURRENT_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
+import GameHeader from "@/app/components/GameHeader";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -49,7 +50,7 @@ function StatLineGuesserGame() {
   }, [era]);
 
   if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen bg-black"><Header era={era} /></div>;
+    return <div className="min-h-screen bg-[#f9f8f6]"><GameHeader title="Stat Line Guesser" era={era} /></div>;
   }
 
   const player: StatLinePlayer = shuffled[playerIndex];
@@ -84,35 +85,35 @@ function StatLineGuesserGame() {
 
   if (gameState === "correct" || gameState === "wrong") {
     return (
-      <div className="min-h-screen flex flex-col bg-black">
-        <Header era={era} />
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full animate-fade-in">
-          <div className={`w-full rounded-3xl border-2 p-8 text-center bg-zinc-900 ${gameState === "correct" ? "border-teal-500/50" : "border-red-500/40"}`}>
-            <div className="text-6xl mb-4">{gameState === "correct" ? "🎯" : "😬"}</div>
-            <h2 className="text-2xl font-black text-white mb-1">
+      <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+        <GameHeader title="Stat Line Guesser" era={era} />
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-md mx-auto w-full">
+          <div className={`w-full rounded-2xl border-2 p-7 text-center bg-white shadow-sm ${gameState === "correct" ? "border-teal-200" : "border-red-200"}`}>
+            <div className="text-5xl mb-3">{gameState === "correct" ? "🎯" : "😬"}</div>
+            <h2 className="text-xl font-bold text-zinc-900 mb-1">
               {gameState === "correct" ? "Correct!" : "Not quite!"}
             </h2>
             {gameState === "correct" ? (
               <>
-                <p className="text-zinc-400 mb-3">You got it after {stepsRevealed} stat{stepsRevealed !== 1 ? "s" : ""}!</p>
-                <p className="text-3xl mb-6">{STARS[revealStep]}</p>
+                <p className="text-zinc-500 text-sm mb-2">You got it after {stepsRevealed} stat{stepsRevealed !== 1 ? "s" : ""}!</p>
+                <p className="text-2xl mb-5">{STARS[revealStep]}</p>
               </>
             ) : (
-              <p className="text-zinc-400 mb-6">You guessed <span className="font-semibold text-zinc-300">&quot;{wrongGuess}&quot;</span> — the answer was:</p>
+              <p className="text-zinc-500 text-sm mb-5">You guessed <span className="font-semibold text-zinc-700">&quot;{wrongGuess}&quot;</span> — the answer was:</p>
             )}
 
-            <div className="flex items-center gap-4 bg-zinc-800 rounded-2xl p-4 mb-4 text-left">
-              <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center font-black text-white text-xl shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
+            <div className="flex items-center gap-3 bg-zinc-50 rounded-xl p-4 mb-4 text-left border border-zinc-100">
+              <div className="w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-white text-base shrink-0" style={{ backgroundColor: player.teamColor }}>
                 <span className="leading-none">{player.jersey}</span>
-                <span className="text-[8px] font-bold opacity-80">{player.position}</span>
+                <span className="text-[8px] font-semibold opacity-90">{player.position}</span>
               </div>
               <div>
-                <p className="font-black text-white text-lg">{player.name}</p>
-                <p className="text-zinc-400 text-sm">{player.team} · {player.era}</p>
+                <p className="font-bold text-zinc-900">{player.name}</p>
+                <p className="text-zinc-500 text-sm">{player.team} · {player.era}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 mb-6">
+            <div className="grid grid-cols-4 gap-2 mb-5">
               <StatBox label="PPG" value={player.stats.ppg} />
               <StatBox label="RPG" value={player.stats.rpg} />
               <StatBox label="APG" value={player.stats.apg} />
@@ -122,7 +123,7 @@ function StatLineGuesserGame() {
               {player.stats.threePct !== null && <StatBox label="3P%" value={player.stats.threePct} suffix="%" />}
             </div>
 
-            <button onClick={handleNext} className="w-full py-3 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl tracking-wide uppercase transition-all active:scale-95">
+            <button onClick={handleNext} className="w-full py-3 bg-zinc-900 hover:bg-zinc-700 text-white font-bold rounded-xl tracking-wide text-sm transition-all active:scale-95">
               Next Player →
             </button>
           </div>
@@ -132,32 +133,33 @@ function StatLineGuesserGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-black">
-      <Header era={era} />
-      <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-lg mx-auto w-full">
-        <div className="text-center mb-6 animate-fade-in">
-          <p className="text-xs text-teal-400 uppercase tracking-widest font-semibold mb-1">
-            {stepsRevealed} of 5 stats revealed
+    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+      <GameHeader title="Stat Line Guesser" era={era} />
+      <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-md mx-auto w-full">
+
+        <div className="text-center mb-6">
+          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">
+            {stepsRevealed} of 5 clues revealed
           </p>
-          <h1 className="text-2xl font-black text-white">Stat Line Guesser</h1>
-          <p className="text-zinc-500 text-sm mt-1">
-            {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next stat"}
+          <h1 className="text-2xl font-bold text-zinc-900">Who Am I?</h1>
+          <p className="text-zinc-400 text-sm mt-1">
+            {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next clue"}
           </p>
         </div>
 
-        <div className="w-24 h-24 rounded-full bg-zinc-800 flex items-center justify-center text-4xl mb-6">
+        <div className="w-20 h-20 rounded-full bg-zinc-200 flex items-center justify-center text-3xl mb-6">
           ❓
         </div>
 
-        <div className="w-full bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden mb-6">
-          <div className="px-4 py-3 border-b border-zinc-800 bg-zinc-900/80">
-            <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Career Averages</p>
+        <div className="w-full bg-white rounded-2xl border border-zinc-200 overflow-hidden mb-5 shadow-sm">
+          <div className="px-4 py-3 border-b border-zinc-100 bg-zinc-50">
+            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Career Averages</p>
           </div>
-          <div className="divide-y divide-zinc-800">
+          <div className="divide-y divide-zinc-100">
             {REVEAL_STEPS.slice(0, stepsRevealed).map((step, i) => (
-              <div key={step.key} className="flex items-center justify-between px-4 py-3 animate-slide-down" style={{ animationDelay: `${i * 0.04}s` }}>
-                <span className="text-sm text-zinc-400 font-medium">{step.label}</span>
-                <span className="text-sm font-black text-white">
+              <div key={step.key} className="flex items-center justify-between px-4 py-3" style={{ animationDelay: `${i * 0.04}s` }}>
+                <span className="text-sm text-zinc-500 font-medium">{step.label}</span>
+                <span className="text-sm font-bold text-zinc-900">
                   {step.key === "ppg" && `${player.stats.ppg}`}
                   {step.key === "rpg" && `${player.stats.rpg}`}
                   {step.key === "apg" && `${player.stats.apg}`}
@@ -168,20 +170,20 @@ function StatLineGuesserGame() {
             ))}
             {REVEAL_STEPS.slice(stepsRevealed).map((step) => (
               <div key={step.key} className="flex items-center justify-between px-4 py-3 opacity-30">
-                <span className="text-sm text-zinc-500 font-medium">{step.label}</span>
-                <span className="text-sm font-black text-zinc-600">• • •</span>
+                <span className="text-sm text-zinc-400 font-medium">{step.label}</span>
+                <span className="text-sm font-bold text-zinc-300">• • •</span>
               </div>
             ))}
           </div>
         </div>
 
         {wrongGuess && (
-          <p className="text-red-400 text-sm mb-3 font-medium animate-fade-in">
-            ❌ &quot;{wrongGuess}&quot; — not correct. Next stat revealed!
+          <p className="text-red-500 text-sm mb-3 font-medium">
+            ❌ &quot;{wrongGuess}&quot; — not quite. Next clue revealed!
           </p>
         )}
 
-        <div className="w-full flex gap-2 mb-4">
+        <div className="w-full flex gap-2 mb-3">
           <PlayerAutocomplete
             players={playerNames}
             value={guess}
@@ -192,24 +194,30 @@ function StatLineGuesserGame() {
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-5 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+            className="px-5 py-3 bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
           >
             Guess
           </button>
         </div>
 
-        <div className="flex gap-3 w-full">
+        <div className="flex gap-2 w-full">
           {!allRevealed && (
-            <button onClick={() => setRevealStep((s) => Math.min(s + 1, 4))} className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 font-bold rounded-xl transition-all active:scale-95 text-sm">
-              Reveal Next Stat 👀
+            <button
+              onClick={() => setRevealStep((s) => Math.min(s + 1, 4))}
+              className="flex-1 py-3 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 font-semibold rounded-xl transition-all active:scale-95 text-sm shadow-sm"
+            >
+              Reveal Clue 👀
             </button>
           )}
-          <button onClick={() => setGameState("wrong")} className="py-3 px-4 bg-zinc-900 hover:bg-red-950 text-zinc-500 hover:text-red-400 border border-zinc-800 font-bold rounded-xl transition-all text-sm">
+          <button
+            onClick={() => setGameState("wrong")}
+            className="py-3 px-4 bg-white hover:bg-red-50 text-zinc-400 hover:text-red-500 border border-zinc-200 font-semibold rounded-xl transition-all text-sm shadow-sm"
+          >
             Give Up
           </button>
         </div>
 
-        <p className="text-zinc-700 text-xs mt-6">
+        <p className="text-zinc-400 text-xs mt-5">
           {allRevealed ? "⭐ — 1 star remaining" : `Correct now: ${STARS[revealStep]}`}
         </p>
       </main>
@@ -227,25 +235,9 @@ export default function StatLineGuesserPage() {
 
 function StatBox({ label, value, suffix = "" }: { label: string; value: number; suffix?: string }) {
   return (
-    <div className="bg-zinc-800 rounded-xl p-2 text-center">
-      <p className="text-xs text-zinc-400 font-medium">{label}</p>
-      <p className="text-base font-black text-white">{value}{suffix}</p>
+    <div className="bg-zinc-50 border border-zinc-100 rounded-xl p-2 text-center">
+      <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wide">{label}</p>
+      <p className="text-sm font-bold text-zinc-900">{value}{suffix}</p>
     </div>
-  );
-}
-
-function Header({ era }: { era: string }) {
-  return (
-    <header className="border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
-      <a href="/home" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
-        <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
-      </a>
-      <div className="flex items-center gap-2">
-        {era === "current" && (
-          <span className="text-xs bg-teal-400/10 text-teal-400 border border-teal-400/30 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
-        )}
-        <span className="text-xs text-zinc-600 uppercase tracking-widest">Stat Line Guesser</span>
-      </div>
-    </header>
   );
 }

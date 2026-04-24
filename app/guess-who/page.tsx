@@ -6,6 +6,7 @@ import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlay
 import { ALL_TIME_GW_PLAYERS } from "@/lib/allTimePlayersGW";
 import { CURRENT_PLAYER_NAMES, ALL_TIME_GW_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
+import GameHeader from "@/app/components/GameHeader";
 
 function shuffleArray<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -387,32 +388,32 @@ function WordleGame({ players, playerNames, era }: {
   };
 
   if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen bg-black"><Header era={era} /></div>;
+    return <div className="min-h-screen bg-[#f9f8f6]"><GameHeader title="Guess Who" era={era} /></div>;
   }
 
   if (won || gaveUp) {
     return (
-      <div className="min-h-screen flex flex-col bg-black">
-        <Header era={era} />
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-4xl mx-auto w-full animate-fade-in">
-          <div className={`w-full rounded-3xl border-2 p-8 text-center bg-zinc-900 ${won ? "border-teal-500/50" : "border-red-500/40"}`}>
-            <div className="text-6xl mb-4">{won ? "🎉" : "😬"}</div>
-            <h2 className="text-2xl font-black text-white mb-1">{won ? "Correct!" : "Not quite!"}</h2>
+      <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+        <GameHeader title="Guess Who" era={era} />
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-4xl mx-auto w-full">
+          <div className={`w-full rounded-2xl border p-7 text-center bg-white shadow-sm ${won ? "border-teal-200" : "border-red-200"}`}>
+            <div className="text-5xl mb-3">{won ? "🎉" : "😬"}</div>
+            <h2 className="text-xl font-bold text-zinc-900 mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
-              ? <p className="text-zinc-400 mb-4">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
-              : <p className="text-zinc-400 mb-4">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
+              ? <p className="text-zinc-500 text-sm mb-4">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
+              : <p className="text-zinc-500 text-sm mb-4">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
-            <div className="flex items-center gap-4 bg-zinc-800 rounded-2xl p-4 mb-6 text-left">
-              <div className="w-16 h-16 rounded-full flex flex-col items-center justify-center font-black text-white text-xl shadow-md shrink-0" style={{ backgroundColor: answer.teamColor }}>
+            <div className="flex items-center gap-3 bg-zinc-50 rounded-xl p-4 mb-5 text-left border border-zinc-100">
+              <div className="w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-white text-base shadow-sm shrink-0" style={{ backgroundColor: answer.teamColor }}>
                 <span className="leading-none">{answer.jersey}</span>
               </div>
               <div>
-                <p className="font-black text-white text-lg">{answer.name}</p>
-                <p className="text-zinc-400 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
-                <p className="text-zinc-500 text-xs mt-0.5">{answer.ppg} PPG · {answer.rpg} RPG · {answer.apg} APG</p>
+                <p className="font-bold text-zinc-900">{answer.name}</p>
+                <p className="text-zinc-500 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
+                <p className="text-zinc-400 text-xs mt-0.5">{answer.ppg} PPG · {answer.rpg} RPG · {answer.apg} APG</p>
               </div>
             </div>
-            <button onClick={handleNext} className="w-full py-3 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl tracking-wide uppercase transition-all active:scale-95">
+            <button onClick={handleNext} className="w-full py-3 bg-zinc-900 hover:bg-zinc-700 text-white font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95">
               Next Player →
             </button>
           </div>
@@ -422,15 +423,15 @@ function WordleGame({ players, playerNames, era }: {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-black">
-      <Header era={era} />
+    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+      <GameHeader title="Guess Who" era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
         {/* Title + input row */}
         <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           <div className="shrink-0">
-            <h1 className="text-2xl font-black text-white leading-none">Who Am I?</h1>
-            <p className="text-xs text-teal-400 font-semibold mt-0.5">
-              {guesses.length === 0 ? "Guess a current NBA player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
+            <h1 className="text-2xl font-bold text-zinc-900 leading-none">Who Am I?</h1>
+            <p className="text-xs text-teal-600 font-semibold mt-0.5">
+              {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
             </p>
           </div>
           <div className="flex gap-2 flex-1">
@@ -444,13 +445,13 @@ function WordleGame({ players, playerNames, era }: {
             <button
               onClick={checkGuess}
               disabled={!guess.trim()}
-              className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+              className="px-6 py-3 bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
             >
               Guess
             </button>
             <button
               onClick={() => setGaveUp(true)}
-              className="py-3 px-4 bg-zinc-900 hover:bg-red-950 text-zinc-500 hover:text-red-400 border border-zinc-800 font-bold rounded-xl transition-all text-sm shrink-0"
+              className="py-3 px-4 bg-white hover:bg-red-50 text-zinc-400 hover:text-red-500 border border-zinc-200 font-semibold rounded-xl transition-all text-sm shrink-0 shadow-sm"
             >
               Give Up
             </button>
@@ -461,8 +462,8 @@ function WordleGame({ players, playerNames, era }: {
         <div className="w-full flex gap-4 text-[11px] text-zinc-500 font-semibold mb-3">
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-zinc-700 rounded inline-block" /> Off</span>
-          <span className="flex items-center gap-1 text-zinc-600">↑↓ = direction to answer</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 bg-zinc-300 rounded inline-block" /> Off</span>
+          <span className="flex items-center gap-1 text-zinc-400">↑↓ = direction to answer</span>
         </div>
 
         {error && <p className="w-full text-red-500 text-sm mb-2 font-medium">{error}</p>}
@@ -504,19 +505,3 @@ export default function GuessWhoPage() {
   );
 }
 
-function Header({ era }: { era: string }) {
-  return (
-    <header className="border-b border-zinc-900 bg-[#080808]/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
-      <a href="/home" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
-        <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
-      </a>
-      <div className="flex items-center gap-2">
-        {era === "current"
-          ? <span className="text-xs bg-teal-400/10 text-teal-400 border border-teal-400/30 px-2 py-0.5 rounded-full font-semibold">Current NBA</span>
-          : <span className="text-xs bg-zinc-800 text-zinc-300 border border-zinc-700 px-2 py-0.5 rounded-full font-semibold">All-Time</span>
-        }
-        <span className="text-xs text-zinc-600 uppercase tracking-widest">Guess Who</span>
-      </div>
-    </header>
-  );
-}

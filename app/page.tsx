@@ -1,63 +1,38 @@
 export default function StartPage() {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-[#f9f8f6] flex flex-col items-center justify-center px-6">
 
-      {/* ── Grain texture ─────────────────────────────────────────────────── */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="grain-splash">
-            <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch"/>
-            <feColorMatrix type="saturate" values="0"/>
-          </filter>
-        </defs>
-        <rect width="100%" height="100%" filter="url(#grain-splash)" opacity="0.09"/>
-      </svg>
+      {/* Subtle top border accent */}
+      <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 via-teal-500 to-teal-400"/>
 
-      {/* ── Radial atmosphere ─────────────────────────────────────────────── */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: "radial-gradient(ellipse 80% 60% at 50% 45%, rgba(20,184,166,0.10) 0%, transparent 70%)"
-      }}/>
+      <div className="flex flex-col items-center text-center max-w-sm w-full">
 
-      {/* ── Subtle dot grid ───────────────────────────────────────────────── */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.14) 1px, transparent 1px)",
-        backgroundSize: "48px 48px"
-      }}/>
-
-      {/* ── Content ───────────────────────────────────────────────────────── */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6 select-none">
-
-        {/* Logo */}
-        <img src="/logo.png" alt="Courtside Central" className="w-56 mb-8"/>
-
-        {/* Divider line */}
-        <div className="flex items-center gap-4 mb-10 w-72">
-          <div className="h-px flex-1 bg-teal-400/20"/>
-          <span className="text-teal-400/50 text-[10px] uppercase tracking-[0.5em] font-semibold">
-            Season 2025–26
-          </span>
-          <div className="h-px flex-1 bg-teal-400/20"/>
+        {/* Icon */}
+        <div className="w-16 h-16 rounded-2xl bg-teal-500 flex items-center justify-center mb-6 shadow-sm">
+          <span className="text-3xl">🏀</span>
         </div>
 
-        {/* Title */}
-        <h1 className="text-white font-black uppercase leading-[0.88] mb-12 tracking-tight">
-          <span className="block text-4xl sm:text-6xl">COURTSIDE</span>
-          <span className="block text-4xl sm:text-6xl text-teal-400">CENTRAL</span>
+        {/* Brand */}
+        <h1 className="text-3xl font-bold text-zinc-900 tracking-tight mb-1">
+          Courtside Central
         </h1>
+        <p className="text-zinc-500 text-sm mb-10">
+          NBA knowledge games, daily.
+        </p>
+
+        {/* Divider */}
+        <div className="w-full h-px bg-zinc-200 mb-10"/>
 
         {/* CTA */}
         <a
           href="/home"
-          className="px-16 py-5 bg-teal-400 text-black font-black text-sm uppercase tracking-[0.35em] hover:bg-white transition-all duration-200 active:scale-95 shadow-[0_0_40px_rgba(20,184,166,0.35)]"
+          className="w-full py-4 bg-zinc-900 text-white font-bold text-sm uppercase tracking-widest rounded-2xl hover:bg-zinc-700 transition-colors active:scale-95"
         >
-          ENTER
+          Play →
         </a>
 
-        <p className="mt-8 text-zinc-700 text-[10px] uppercase tracking-[0.4em]">
-          NBA Knowledge Games
-        </p>
+        <p className="mt-5 text-zinc-400 text-xs">Season 2025–26</p>
       </div>
-
     </div>
   );
 }
