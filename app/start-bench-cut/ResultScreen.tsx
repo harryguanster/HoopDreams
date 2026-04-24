@@ -46,8 +46,8 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   return (
     <div className="min-h-screen flex flex-col bg-teal-50">
       <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
-        <a href="/" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
-          <img src="/logo.png" alt="Courtside Central" className="h-8 w-auto" />
+        <a href="/home" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
+          <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
         </a>
         <span className="text-xs text-slate-400 uppercase tracking-widest">Start · Bench · Cut</span>
       </header>

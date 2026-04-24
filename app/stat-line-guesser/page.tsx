@@ -226,8 +226,8 @@ function StatBox({ label, value, suffix = "" }: { label: string; value: number; 
 function Header({ era }: { era: string }) {
   return (
     <header className="border-b border-teal-200 bg-white px-4 py-3 flex items-center justify-between shadow-sm">
-      <a href="/" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
-        <img src="/logo.png" alt="Courtside Central" className="h-8 w-auto" />
+      <a href="/home" className="flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors">
+        <img src="/logo.png" alt="Courtside Central" className="h-12 w-auto" />
       </a>
       <div className="flex items-center gap-2">
         {era === "current" && (
