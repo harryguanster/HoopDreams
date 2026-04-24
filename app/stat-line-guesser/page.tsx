@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { STAT_LINE_PLAYERS, type StatLinePlayer } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
@@ -34,12 +34,23 @@ function StatLineGuesserGame() {
   const players = era === "current" ? CURRENT_STAT_LINE_PLAYERS : STAT_LINE_PLAYERS;
   const playerNames = era === "current" ? CURRENT_PLAYER_NAMES : ALL_PLAYER_NAMES;
 
-  const [shuffled] = useState(() => shuffleArray(players));
+  const [mounted, setMounted] = useState(false);
+  const [shuffled, setShuffled] = useState<StatLinePlayer[]>([]);
   const [playerIndex, setPlayerIndex] = useState(0);
   const [revealStep, setRevealStep] = useState(0);
   const [guess, setGuess] = useState("");
   const [gameState, setGameState] = useState<GameState>("playing");
   const [wrongGuess, setWrongGuess] = useState("");
+
+  useEffect(() => {
+    setShuffled(shuffleArray(players));
+    setMounted(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [era]);
+
+  if (!mounted || shuffled.length === 0) {
+    return <div className="min-h-screen bg-black"><Header era={era} /></div>;
+  }
 
   const player: StatLinePlayer = shuffled[playerIndex];
   const stepsRevealed = revealStep + 1;

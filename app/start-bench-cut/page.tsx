@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { TRIOS, type Trio } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
@@ -24,8 +24,9 @@ function StartBenchCutGame() {
   const era = searchParams.get("era") === "current" ? "current" : "alltime";
   const trios = era === "current" ? CURRENT_TRIOS : TRIOS;
 
-  const [shuffledTrios] = useState(() => shuffleArray([...Array(trios.length).keys()]));
+  const [shuffledTrios, setShuffledTrios] = useState(() => [...Array(trios.length).keys()]);
   const [roundIndex, setRoundIndex] = useState(0);
+  useEffect(() => { setShuffledTrios(shuffleArray([...Array(trios.length).keys()])); }, [era]);
   const [assignments, setAssignments] = useState<Assignments>({});
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);

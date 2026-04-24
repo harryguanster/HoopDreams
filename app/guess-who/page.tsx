@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 import { ALL_TIME_GW_PLAYERS } from "@/lib/allTimePlayersGW";
@@ -329,13 +329,24 @@ function WordleGame({ players, playerNames, era }: {
   playerNames: string[];
   era: string;
 }) {
-  const [shuffled] = useState(() => shuffleArray(players));
+  const [mounted, setMounted] = useState(false);
+  const [shuffled, setShuffled] = useState<CurrentNBAPlayer[]>([]);
   const [answerIndex, setAnswerIndex] = useState(0);
   const [guesses, setGuesses] = useState<CurrentNBAPlayer[]>([]);
   const [guess, setGuess] = useState("");
   const [won, setWon] = useState(false);
   const [gaveUp, setGaveUp] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setShuffled(shuffleArray(players));
+    setMounted(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [era]);
+
+  if (!mounted || shuffled.length === 0) {
+    return <div className="min-h-screen bg-black"><Header era={era} /></div>;
+  }
 
   const answer = shuffled[answerIndex % shuffled.length];
 
