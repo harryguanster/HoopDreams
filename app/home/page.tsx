@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AuthButton from "@/app/components/AuthButton";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
@@ -59,7 +60,10 @@ export default function HomePage() {
           <img src="/logo.svg" alt="Courtside Central" className="h-11 w-auto" />
           <span className="font-bold text-zinc-900 text-base tracking-tight">Courtside Central</span>
         </div>
-        <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
+          <AuthButton />
+        </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-20">
