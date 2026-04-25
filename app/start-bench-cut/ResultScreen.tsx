@@ -45,7 +45,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   const roleOrder: Role[] = ["start", "bench", "cut"];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+    <div className="min-h-screen flex flex-col court-bg">
       <GameHeader title="Start · Bench · Cut" />
 
       <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">

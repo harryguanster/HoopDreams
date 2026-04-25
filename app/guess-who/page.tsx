@@ -388,12 +388,12 @@ function WordleGame({ players, playerNames, era }: {
   };
 
   if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen bg-[#f9f8f6]"><GameHeader title="Guess Who" era={era} /></div>;
+    return <div className="min-h-screen court-bg"><GameHeader title="Guess Who" era={era} /></div>;
   }
 
   if (won || gaveUp) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+      <div className="min-h-screen flex flex-col court-bg">
         <GameHeader title="Guess Who" era={era} />
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-4xl mx-auto w-full">
           <div className={`w-full rounded-2xl border p-7 text-center bg-white shadow-sm ${won ? "border-teal-200" : "border-red-200"}`}>
@@ -423,7 +423,7 @@ function WordleGame({ players, playerNames, era }: {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+    <div className="min-h-screen flex flex-col court-bg">
       <GameHeader title="Guess Who" era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
         {/* Title + input row */}

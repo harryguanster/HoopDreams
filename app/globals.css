@@ -54,3 +54,9 @@ body {
 .card-selected {
   animation: pulse-glow 1.5s infinite;
 }
+
+.court-bg {
+  background-color: #0f766e;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.13) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}

@@ -50,7 +50,7 @@ function StatLineGuesserGame() {
   }, [era]);
 
   if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen bg-[#f9f8f6]"><GameHeader title="Stat Line Guesser" era={era} /></div>;
+    return <div className="min-h-screen court-bg"><GameHeader title="Stat Line Guesser" era={era} /></div>;
   }
 
   const player: StatLinePlayer = shuffled[playerIndex];
@@ -85,7 +85,7 @@ function StatLineGuesserGame() {
 
   if (gameState === "correct" || gameState === "wrong") {
     return (
-      <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+      <div className="min-h-screen flex flex-col court-bg">
         <GameHeader title="Stat Line Guesser" era={era} />
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-md mx-auto w-full">
           <div className={`w-full rounded-2xl border-2 p-7 text-center bg-white shadow-sm ${gameState === "correct" ? "border-teal-200" : "border-red-200"}`}>
@@ -133,7 +133,7 @@ function StatLineGuesserGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+    <div className="min-h-screen flex flex-col court-bg">
       <GameHeader title="Stat Line Guesser" era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-md mx-auto w-full">
 

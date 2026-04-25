@@ -72,7 +72,7 @@ function StartBenchCutGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9f8f6]">
+    <div className="min-h-screen flex flex-col court-bg">
       <GameHeader title="Start · Bench · Cut" era={era} />
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">

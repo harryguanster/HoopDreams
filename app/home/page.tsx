@@ -14,29 +14,27 @@ function GameCard({
   return (
     <Link
       href={href}
-      className="group relative bg-white rounded-3xl border border-amber-100 p-7 flex flex-col hover:shadow-xl hover:border-amber-200 transition-all duration-200 active:scale-[0.98] overflow-hidden min-h-[220px]"
+      className="group relative bg-white rounded-3xl p-7 flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 active:scale-[0.98] overflow-hidden min-h-[220px]"
     >
-      {/* Semi-transparent player image */}
       {playerId && (
         <img
           src={`https://cdn.nba.com/headshots/nba/latest/260x190/${playerId}.png`}
           alt=""
           aria-hidden="true"
-          className="absolute -right-4 -bottom-2 h-[75%] w-auto object-contain pointer-events-none select-none opacity-[0.13]"
+          className="absolute -right-4 -bottom-2 h-[75%] w-auto object-contain pointer-events-none select-none opacity-[0.10]"
         />
       )}
-
       <div className="flex items-start justify-between mb-4 relative">
         <span className="text-2xl">{emoji}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
           {tag}
         </span>
       </div>
-      <h2 className="text-lg font-bold text-stone-900 mb-2 group-hover:text-amber-700 transition-colors relative">
+      <h2 className="text-lg font-bold text-zinc-900 mb-2 group-hover:text-teal-600 transition-colors relative">
         {title}
       </h2>
-      <p className="text-sm text-stone-500 leading-relaxed flex-1 mb-5 relative">{description}</p>
-      <p className="text-[11px] text-stone-400 font-medium border-t border-amber-50 pt-3 relative">
+      <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-5 relative">{description}</p>
+      <p className="text-[11px] text-zinc-400 font-medium border-t border-zinc-100 pt-3 relative">
         {meta}
       </p>
     </Link>
@@ -46,45 +44,48 @@ function GameCard({
 function SectionHeading({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-bold text-stone-900">{label}</h2>
-      <p className="text-sm text-stone-400 mt-0.5">{sub}</p>
+      <h2 className="text-lg font-bold text-white">{label}</h2>
+      <p className="text-sm text-teal-200 mt-0.5">{sub}</p>
     </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#fdf6ec]">
-      <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-300 z-50"/>
-
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundColor: "#0f766e",
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.13) 1.5px, transparent 1.5px)",
+        backgroundSize: "16px 16px",
+      }}
+    >
       {/* Header */}
-      <header className="bg-[#fffdf8] border-b border-amber-100 px-6 py-4 flex items-center justify-between sticky top-1 z-40">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center shrink-0">
-            <span className="text-base">🏀</span>
-          </div>
-          <span className="font-bold text-stone-900 text-base tracking-tight">Courtside Central</span>
+      <header className="bg-black px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+        <div className="flex items-center gap-3">
+          <img src="/logo.png" alt="Courtside Central" className="h-11 w-auto" />
+          <span className="font-bold text-white text-base tracking-tight">Courtside Central</span>
         </div>
-        <span className="text-xs text-stone-400 hidden sm:block">Season 2025–26</span>
+        <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-20">
 
         {/* Hero */}
         <div className="text-center mb-12 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-amber-500 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-teal-200 mb-3">
             NBA Knowledge Games
           </p>
-          <h1 className="text-4xl sm:text-5xl font-bold text-stone-900 tracking-tight mb-3">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-3">
             Test Your Game IQ
           </h1>
-          <p className="text-stone-500 text-base max-w-md mx-auto">
+          <p className="text-teal-100 text-base max-w-md mx-auto">
             Stats, legends, and today's stars — across all eras.
           </p>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-amber-100 mb-10"/>
+        <div className="h-px bg-white/10 mb-10"/>
 
         {/* All-Time section */}
         <section className="mb-12">
@@ -160,7 +161,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <p className="text-stone-400 text-xs text-center mt-14">
+        <p className="text-teal-300/60 text-xs text-center mt-14">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
       </main>
