@@ -15,8 +15,10 @@
 
 body {
   background-color: #ffffff;
-  background-image: radial-gradient(circle, rgba(15,118,110,0.18) 1.5px, transparent 1.5px);
-  background-size: 16px 16px;
+  background-image:
+    radial-gradient(ellipse at bottom right, rgba(15,118,110,0.30) 0%, rgba(15,118,110,0.04) 65%),
+    radial-gradient(circle, rgba(15,118,110,0.22) 1.5px, transparent 1.5px);
+  background-size: 100% 100%, 16px 16px;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
@@ -59,6 +61,12 @@ body {
 
 .court-bg {
   background-color: #ffffff;
-  background-image: radial-gradient(circle, rgba(15,118,110,0.18) 1.5px, transparent 1.5px);
-  background-size: 16px 16px;
+  background-image:
+    radial-gradient(ellipse at bottom right, rgba(15,118,110,0.30) 0%, rgba(15,118,110,0.04) 65%),
+    radial-gradient(circle, rgba(15,118,110,0.22) 1.5px, transparent 1.5px);
+  background-size: 100% 100%, 16px 16px;
+}
+
+.logo-teal {
+  filter: invert(1) sepia(1) saturate(3) hue-rotate(140deg);
 }

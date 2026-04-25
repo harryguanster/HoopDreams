@@ -3,7 +3,7 @@ export default function StartPage() {
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
       <div className="flex flex-col items-center text-center max-w-sm w-full">
 
-        <img src="/logo.png" alt="Courtside Central" className="w-32 h-32 mb-4 rounded-2xl" />
+        <img src="/logo.svg" alt="Courtside Central" className="w-32 h-32 mb-4" />
 
         <h1 className="text-3xl font-bold text-zinc-900 tracking-tight mb-1">
           Courtside Central

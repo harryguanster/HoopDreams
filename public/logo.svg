@@ -1,0 +1,37 @@
+<svg viewBox="0 0 200 148" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#0f766e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Court outline -->
+  <rect x="4" y="4" width="192" height="140" rx="3"/>
+  <!-- Half-court line -->
+  <line x1="100" y1="4" x2="100" y2="144"/>
+  <!-- Center circle -->
+  <circle cx="100" cy="74" r="22"/>
+  <!-- Center dot -->
+  <circle cx="100" cy="74" r="3" fill="#0f766e" stroke="none"/>
+
+  <!-- Left lane (paint) -->
+  <rect x="4" y="44" width="44" height="60"/>
+  <!-- Left free-throw circle (top half solid, bottom dashed) -->
+  <path d="M48,44 A22,22 0 0,1 48,104" stroke-dasharray="0"/>
+  <path d="M48,44 A22,22 0 0,0 48,104" stroke-dasharray="5 4"/>
+  <!-- Left basket -->
+  <line x1="4" y1="64" x2="14" y2="64"/>
+  <line x1="4" y1="84" x2="14" y2="84"/>
+  <rect x="14" y="64" width="6" height="20" rx="1"/>
+  <circle cx="26" cy="74" r="8"/>
+
+  <!-- Right lane (paint) -->
+  <rect x="152" y="44" width="44" height="60"/>
+  <!-- Right free-throw circle -->
+  <path d="M152,44 A22,22 0 0,0 152,104" stroke-dasharray="0"/>
+  <path d="M152,44 A22,22 0 0,1 152,104" stroke-dasharray="5 4"/>
+  <!-- Right basket -->
+  <line x1="196" y1="64" x2="186" y2="64"/>
+  <line x1="196" y1="84" x2="186" y2="84"/>
+  <rect x="180" y="64" width="6" height="20" rx="1"/>
+  <circle cx="174" cy="74" r="8"/>
+
+  <!-- Left three-point arc -->
+  <path d="M4,24 L20,24 A68,68 0 0,1 20,124 L4,124"/>
+  <!-- Right three-point arc -->
+  <path d="M196,24 L180,24 A68,68 0 0,0 180,124 L196,124"/>
+</svg>

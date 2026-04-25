@@ -2,7 +2,7 @@ export default function GameHeader({ title, era }: { title: string; era?: string
   return (
     <header className="bg-white border-b border-zinc-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
       <a href="/home" className="flex items-center gap-2.5 hover:opacity-70 transition-opacity">
-        <img src="/logo.png" alt="Courtside Central" className="h-10 w-auto rounded-lg" />
+        <img src="/logo.svg" alt="Courtside Central" className="h-10 w-auto" />
         <span className="font-bold text-zinc-900 text-sm tracking-tight">Courtside Central</span>
       </a>
       <div className="flex items-center gap-2">

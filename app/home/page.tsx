@@ -56,7 +56,7 @@ export default function HomePage() {
       {/* Header */}
       <header className="bg-white border-b border-zinc-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Courtside Central" className="h-11 w-auto rounded-lg" />
+          <img src="/logo.svg" alt="Courtside Central" className="h-11 w-auto" />
           <span className="font-bold text-zinc-900 text-base tracking-tight">Courtside Central</span>
         </div>
         <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
@@ -66,6 +66,7 @@ export default function HomePage() {
 
         {/* Hero */}
         <div className="text-center mb-12 pt-4">
+          <img src="/logo.svg" alt="" aria-hidden="true" className="w-20 h-20 mx-auto mb-5" />
           <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3">
             NBA Knowledge Games
           </p>
