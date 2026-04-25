@@ -77,23 +77,23 @@ function StartBenchCutGame() {
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
         <div className="text-center mb-6">
-          <p className="text-xs text-teal-200 font-semibold uppercase tracking-widest mb-1">
+          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">
             Round {roundIndex + 1} of {trios.length}
           </p>
-          <h1 className="text-2xl font-bold text-white">{trio.category}</h1>
-          <p className="text-teal-100 text-sm mt-1">{trio.description}</p>
+          <h1 className="text-2xl font-bold text-zinc-900">{trio.category}</h1>
+          <p className="text-zinc-400 text-sm mt-1">{trio.description}</p>
         </div>
 
         <div className="mb-5 text-center">
           {selectedPlayer ? (
-            <p className="text-teal-100 text-sm font-semibold">
+            <p className="text-teal-600 text-sm font-semibold">
               Assign a role for{" "}
-              <span className="text-white font-bold">
+              <span className="text-zinc-900 font-bold">
                 {trio.players.find((p) => p.id === selectedPlayer)?.name.split(" ")[0]}
               </span>
             </p>
           ) : (
-            <p className="text-teal-100 text-sm">Tap a player, then assign their role</p>
+            <p className="text-zinc-400 text-sm">Tap a player, then assign their role</p>
           )}
         </div>
 

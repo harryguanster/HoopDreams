@@ -14,8 +14,8 @@
 }
 
 body {
-  background-color: #0f766e;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.13) 1.5px, transparent 1.5px);
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, rgba(15,118,110,0.18) 1.5px, transparent 1.5px);
   background-size: 16px 16px;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
@@ -58,7 +58,7 @@ body {
 }
 
 .court-bg {
-  background-color: #0f766e;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.13) 1.5px, transparent 1.5px);
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, rgba(15,118,110,0.18) 1.5px, transparent 1.5px);
   background-size: 16px 16px;
 }

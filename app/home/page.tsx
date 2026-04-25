@@ -44,27 +44,20 @@ function GameCard({
 function SectionHeading({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-bold text-white">{label}</h2>
-      <p className="text-sm text-teal-200 mt-0.5">{sub}</p>
+      <h2 className="text-lg font-bold text-zinc-900">{label}</h2>
+      <p className="text-sm text-zinc-400 mt-0.5">{sub}</p>
     </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        backgroundColor: "#0f766e",
-        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.13) 1.5px, transparent 1.5px)",
-        backgroundSize: "16px 16px",
-      }}
-    >
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-black px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+      <header className="bg-white border-b border-zinc-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Courtside Central" className="h-11 w-auto" />
-          <span className="font-bold text-white text-base tracking-tight">Courtside Central</span>
+          <img src="/logo.png" alt="Courtside Central" className="h-11 w-auto rounded-lg" />
+          <span className="font-bold text-zinc-900 text-base tracking-tight">Courtside Central</span>
         </div>
         <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
       </header>
@@ -73,19 +66,19 @@ export default function HomePage() {
 
         {/* Hero */}
         <div className="text-center mb-12 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-teal-200 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3">
             NBA Knowledge Games
           </p>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-3">
+          <h1 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3">
             Test Your Game IQ
           </h1>
-          <p className="text-teal-100 text-base max-w-md mx-auto">
+          <p className="text-zinc-500 text-base max-w-md mx-auto">
             Stats, legends, and today's stars — across all eras.
           </p>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-white/10 mb-10"/>
+        <div className="h-px bg-zinc-200 mb-10"/>
 
         {/* All-Time section */}
         <section className="mb-12">
@@ -161,7 +154,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <p className="text-teal-300/60 text-xs text-center mt-14">
+        <p className="text-zinc-400 text-xs text-center mt-14">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
       </main>
