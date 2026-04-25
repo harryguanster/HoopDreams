@@ -277,8 +277,8 @@ function GuessTableHeader() {
 
 function EmptyRow({ num }: { num: number }) {
   return (
-    <div className="w-full h-12 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center">
-      <span className="text-slate-300 font-bold text-sm">{num}</span>
+    <div className="w-full h-12 rounded-lg bg-white border border-zinc-200 flex items-center justify-center shadow-sm">
+      <span className="text-zinc-300 font-bold text-sm">{num}</span>
     </div>
   );
 }
