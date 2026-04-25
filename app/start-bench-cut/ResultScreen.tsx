@@ -50,9 +50,9 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
 
       <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
         <div className="text-center mb-6">
-          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
-          <h2 className="text-2xl font-bold text-zinc-900">Your Picks</h2>
-          <p className="text-zinc-400 text-sm mt-2 italic">"{comment}"</p>
+          <p className="text-xs text-teal-200 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
+          <h2 className="text-2xl font-bold text-white">Your Picks</h2>
+          <p className="text-teal-100 text-sm mt-2 italic">"{comment}"</p>
         </div>
 
         <div className="flex flex-col gap-3 w-full mb-8">

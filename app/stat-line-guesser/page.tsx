@@ -138,11 +138,11 @@ function StatLineGuesserGame() {
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-md mx-auto w-full">
 
         <div className="text-center mb-6">
-          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">
+          <p className="text-xs text-teal-200 font-semibold uppercase tracking-widest mb-1">
             {stepsRevealed} of 5 clues revealed
           </p>
-          <h1 className="text-2xl font-bold text-zinc-900">Who Am I?</h1>
-          <p className="text-zinc-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-white">Who Am I?</h1>
+          <p className="text-teal-100 text-sm mt-1">
             {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next clue"}
           </p>
         </div>
@@ -217,7 +217,7 @@ function StatLineGuesserGame() {
           </button>
         </div>
 
-        <p className="text-zinc-400 text-xs mt-5">
+        <p className="text-teal-200 text-xs mt-5">
           {allRevealed ? "⭐ — 1 star remaining" : `Correct now: ${STARS[revealStep]}`}
         </p>
       </main>

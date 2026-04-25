@@ -429,8 +429,8 @@ function WordleGame({ players, playerNames, era }: {
         {/* Title + input row */}
         <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           <div className="shrink-0">
-            <h1 className="text-2xl font-bold text-zinc-900 leading-none">Who Am I?</h1>
-            <p className="text-xs text-teal-600 font-semibold mt-0.5">
+            <h1 className="text-2xl font-bold text-white leading-none">Who Am I?</h1>
+            <p className="text-xs text-teal-200 font-semibold mt-0.5">
               {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
             </p>
           </div>
@@ -459,11 +459,11 @@ function WordleGame({ players, playerNames, era }: {
         </div>
 
         {/* Legend */}
-        <div className="w-full flex gap-4 text-[11px] text-zinc-500 font-semibold mb-3">
+        <div className="w-full flex gap-4 text-[11px] text-teal-100 font-semibold mb-3">
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-zinc-300 rounded inline-block" /> Off</span>
-          <span className="flex items-center gap-1 text-zinc-400">↑↓ = direction to answer</span>
+          <span className="flex items-center gap-1 text-teal-200">↑↓ = direction to answer</span>
         </div>
 
         {error && <p className="w-full text-red-500 text-sm mb-2 font-medium">{error}</p>}
