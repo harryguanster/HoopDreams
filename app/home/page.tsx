@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AuthButton from "@/app/components/AuthButton";
+import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
@@ -85,10 +86,31 @@ export default function HomePage() {
         {/* Divider */}
         <div className="h-px bg-zinc-200 mb-10"/>
 
+        {/* Lineup Guesser */}
+        <section className="mb-12">
+          <SectionHeading
+            label="Starting 5"
+            sub="Identify iconic NBA teams from their starting lineup"
+          />
+          <div className="grid grid-cols-1 gap-5">
+            <GameCard
+              href="/lineup-guesser"
+              emoji="🏀"
+              tag="New"
+              title="Lineup Guesser"
+              description="A half-court shows 5 starters with their stats. Which NBA team and season is it?"
+              meta={`${LINEUPS.length} lineups · All eras`}
+              playerId={893}
+            />
+          </div>
+        </section>
+
+        <div className="h-px bg-zinc-200 mb-10"/>
+
         {/* All-Time section */}
         <section className="mb-12">
           <SectionHeading
-            label="🏆 All-Time Legends"
+            label="All-Time Legends"
             sub="Jordan · Kobe · Shaq · Magic · Bird"
           />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
