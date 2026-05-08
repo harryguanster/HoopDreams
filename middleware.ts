@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/start-bench-cut(.*)",
   "/guess-who(.*)",
   "/stat-line-guesser(.*)",
+  "/lineup-guesser(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
