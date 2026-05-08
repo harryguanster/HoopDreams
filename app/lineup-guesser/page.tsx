@@ -50,22 +50,48 @@ function PlayerCard({ player }: { player: LineupPlayer }) {
   const pos = POSITION_COORDS[player.position];
   return (
     <div
-      className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+      className="absolute z-10 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
     >
-      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-white text-center px-2 py-1.5 w-[72px]">
-        <div className="text-[8px] font-bold text-teal-600 uppercase tracking-wide leading-none mb-0.5">
+      {/* Jersey SVG */}
+      <div className="w-14 drop-shadow-xl">
+        <svg viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+          {/* Jersey body: V-neck collar, angled shoulders, straight body */}
+          <path
+            d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z"
+            fill="#0f766e"
+          />
+          {/* White trim outline */}
+          <path
+            d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z"
+            fill="none"
+            stroke="white"
+            strokeWidth="2.5"
+          />
+          {/* Jersey number */}
+          <text
+            x="40"
+            y="70"
+            textAnchor="middle"
+            fontSize="32"
+            fontWeight="900"
+            fill="white"
+            fontFamily="Arial Black, Arial, sans-serif"
+            letterSpacing="-1"
+          >
+            {player.number}
+          </text>
+        </svg>
+      </div>
+      {/* Stats pill below jersey */}
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-center shadow-md -mt-1">
+        <div className="text-[7px] font-bold text-teal-600 uppercase tracking-wide leading-none mb-0.5">
           {player.position}
         </div>
-        <div className="text-xl font-black text-zinc-800 leading-none">{player.number}</div>
-        <div className="text-[9px] font-bold text-zinc-700 leading-tight mt-0.5 truncate">
-          {player.name}
+        <div className="text-[7px] font-semibold text-zinc-700 leading-tight whitespace-nowrap">
+          {player.ppg} · {player.apg} · {player.rpg}
         </div>
-        <div className="text-[7px] text-zinc-400 mt-1 space-y-px leading-tight">
-          <div><span className="font-semibold text-zinc-600">{player.ppg}</span> PPG</div>
-          <div><span className="font-semibold text-zinc-600">{player.apg}</span> APG</div>
-          <div><span className="font-semibold text-zinc-600">{player.rpg}</span> RPG</div>
-        </div>
+        <div className="text-[5.5px] text-zinc-400 leading-none">PPG · APG · RPG</div>
       </div>
     </div>
   );
