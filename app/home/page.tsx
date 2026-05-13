@@ -86,6 +86,34 @@ export default function HomePage() {
         {/* Divider */}
         <div className="h-px bg-zinc-200 mb-10"/>
 
+        {/* Challenges */}
+        <section className="mb-12">
+          <SectionHeading
+            label="Challenges"
+            sub="Race the clock — listing games"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <GameCard
+              href="/challenges/name-teams"
+              emoji="🏟️"
+              tag="5 min"
+              title="Name All NBA Teams"
+              description="Can you name all 30 NBA franchises before time runs out? Type the city or nickname."
+              meta="30 teams · 5:00 timer"
+            />
+            <GameCard
+              href="/challenges/name-players"
+              emoji="👕"
+              tag="15 min"
+              title="Name 10 Players Per Team"
+              description="For each of the 30 teams, name 10 players — current stars or all-time legends."
+              meta="30 teams · 15:00 timer"
+            />
+          </div>
+        </section>
+
+        <div className="h-px bg-zinc-200 mb-10"/>
+
         {/* Lineup Guesser */}
         <section className="mb-12">
           <SectionHeading
