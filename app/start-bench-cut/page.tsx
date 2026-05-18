@@ -72,28 +72,28 @@ function StartBenchCutGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col court-bg">
+    <div className="min-h-screen flex flex-col">
       <GameHeader title="Start · Bench · Cut" era={era} />
 
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
         <div className="text-center mb-6">
-          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">
+          <p className="text-xs text-teal-400 font-semibold uppercase tracking-widest mb-1">
             Round {roundIndex + 1} of {trios.length}
           </p>
-          <h1 className="text-2xl font-bold text-zinc-900">{trio.category}</h1>
-          <p className="text-zinc-400 text-sm mt-1">{trio.description}</p>
+          <h1 className="text-2xl font-bold text-white">{trio.category}</h1>
+          <p className="text-white/45 text-sm mt-1">{trio.description}</p>
         </div>
 
         <div className="mb-5 text-center">
           {selectedPlayer ? (
-            <p className="text-teal-600 text-sm font-semibold">
+            <p className="text-teal-400 text-sm font-semibold">
               Assign a role for{" "}
-              <span className="text-zinc-900 font-bold">
+              <span className="text-white font-bold">
                 {trio.players.find((p) => p.id === selectedPlayer)?.name.split(" ")[0]}
               </span>
             </p>
           ) : (
-            <p className="text-zinc-400 text-sm">Tap a player, then assign their role</p>
+            <p className="text-white/40 text-sm">Tap a player, then assign their role</p>
           )}
         </div>
 
@@ -120,8 +120,8 @@ function StartBenchCutGame() {
           disabled={!allAssigned}
           className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-200
             ${allAssigned
-              ? "bg-zinc-900 hover:bg-zinc-700 text-white active:scale-95 shadow-sm"
-              : "bg-zinc-200 text-zinc-400 cursor-not-allowed"
+              ? "bg-teal-500 hover:bg-teal-400 text-black active:scale-95"
+              : "bg-white/8 text-white/30 cursor-not-allowed"
             }`}
         >
           {allAssigned ? "Submit My Picks →" : `Assign ${3 - Object.keys(assignments).length} more`}
@@ -147,19 +147,19 @@ function RoleButton({ label, emoji, color, taken, active, onClick }: {
 }) {
   const colorMap = {
     green: {
-      base: "border-green-200 bg-green-50 text-green-400",
-      active: "border-green-400 bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer",
-      taken: "border-green-400 bg-green-100 text-green-700",
+      base: "border-green-400/20 bg-green-500/8 text-green-400/50",
+      active: "border-green-400/60 bg-green-500/20 text-green-300 hover:bg-green-500/30 cursor-pointer",
+      taken: "border-green-400/60 bg-green-500/25 text-green-300",
     },
     yellow: {
-      base: "border-yellow-200 bg-yellow-50 text-yellow-400",
-      active: "border-yellow-400 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer",
-      taken: "border-yellow-400 bg-yellow-100 text-yellow-700",
+      base: "border-yellow-400/20 bg-yellow-500/8 text-yellow-400/50",
+      active: "border-yellow-400/60 bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 cursor-pointer",
+      taken: "border-yellow-400/60 bg-yellow-500/25 text-yellow-300",
     },
     red: {
-      base: "border-red-200 bg-red-50 text-red-300",
-      active: "border-red-400 bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer",
-      taken: "border-red-400 bg-red-100 text-red-700",
+      base: "border-red-400/20 bg-red-500/8 text-red-400/50",
+      active: "border-red-400/60 bg-red-500/20 text-red-300 hover:bg-red-500/30 cursor-pointer",
+      taken: "border-red-400/60 bg-red-500/25 text-red-300",
     },
   };
 

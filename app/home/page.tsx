@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import { AnimatedGrid, AnimatedItem } from "@/app/components/AnimatedGrid";
@@ -11,6 +12,7 @@ import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
+import { mascotStore } from "@/lib/mascotStore";
 
 const topScorers = [...CURRENT_NBA_PLAYERS].sort((a, b) => b.ppg - a.ppg).slice(0, 5);
 const maxPpg = topScorers[0]?.ppg ?? 35;
@@ -27,51 +29,65 @@ const areaPath =
   linePoints.map((v, i) => `${(i / (linePoints.length - 1)) * 180},${48 - norm(v)}`).join(" ") +
   ` L180,48 Z`;
 
-const GAMES = [
+type Game = {
+  href: string; tag: string; title: string; description: string; meta: string;
+  playerId: number; playerPos: string; category: "games" | "timed";
+};
+
+const GAMES: Game[] = [
   {
-    href: "/challenges/name-teams", emoji: "🏟️", tag: "5 min", title: "Name All NBA Teams",
-    description: "Can you name all 30 NBA franchises before time runs out?",
-    meta: "30 teams · 5:00 timer",
-  },
-  {
-    href: "/challenges/name-players", emoji: "👕", tag: "15 min", title: "Name 10 Players Per Team",
-    description: "For each team, name 10 players — stars or all-time legends.",
-    meta: "30 teams · 15:00 timer",
-  },
-  {
-    href: "/lineup-guesser", emoji: "🏀", tag: "New", title: "Lineup Guesser",
+    href: "/lineup-guesser", tag: "New", title: "Lineup Guesser",
     description: "5 starters, their stats. Which NBA team and season is it?",
     meta: `${LINEUPS.length} lineups · All eras`,
+    playerId: 203999, playerPos: "top center", category: "games",
   },
   {
-    href: "/start-bench-cut?era=alltime", emoji: "⭐", tag: "Opinion", title: "Start, Bench, Cut · Legends",
+    href: "/start-bench-cut?era=alltime", tag: "Opinion", title: "Start, Bench, Cut · Legends",
     description: "Jordan vs Kobe vs LeBron — who starts, who rides pine, who gets cut?",
     meta: `${TRIOS.length} rounds · All eras`,
+    playerId: 2544, playerPos: "top center", category: "games",
   },
   {
-    href: "/guess-who?era=alltime", emoji: "🔍", tag: "Puzzle", title: "Guess Who · Legends",
+    href: "/guess-who?era=alltime", tag: "Puzzle", title: "Guess Who · Legends",
     description: "Decode a mystery legend from stat clues. Green = match, yellow = close.",
     meta: "302 players · 10 guesses",
+    playerId: 977, playerPos: "top center", category: "games",
   },
   {
-    href: "/stat-line-guesser?era=alltime", emoji: "📊", tag: "Stats", title: "Stat Line · Legends",
+    href: "/stat-line-guesser?era=alltime", tag: "Stats", title: "Stat Line · Legends",
     description: "A career stat line revealed one clue at a time. Name the player.",
     meta: `${STAT_LINE_PLAYERS.length} players · 5 reveals`,
+    playerId: 201142, playerPos: "top center", category: "games",
   },
   {
-    href: "/start-bench-cut?era=current", emoji: "⚡", tag: "Current", title: "Start, Bench, Cut · Now",
+    href: "/start-bench-cut?era=current", tag: "Current", title: "Start, Bench, Cut · Now",
     description: "Jokic, Wemby, SGA — who runs your squad?",
     meta: `${CURRENT_TRIOS.length} rounds · 2025–26`,
+    playerId: 1641705, playerPos: "top center", category: "games",
   },
   {
-    href: "/guess-who?era=current", emoji: "🔍", tag: "Current", title: "Guess Who · Current",
+    href: "/guess-who?era=current", tag: "Current", title: "Guess Who · Current",
     description: "Identify today's stars from stats — PPG, team, division, and more.",
     meta: `${CURRENT_NBA_PLAYERS.length} players · 10 guesses`,
+    playerId: 203507, playerPos: "top center", category: "games",
   },
   {
-    href: "/stat-line-guesser?era=current", emoji: "📊", tag: "Current", title: "Stat Line · Current",
+    href: "/stat-line-guesser?era=current", tag: "Current", title: "Stat Line · Current",
     description: "Current player stats, revealed one at a time. How fast can you name them?",
     meta: `${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`,
+    playerId: 1629029, playerPos: "top center", category: "games",
+  },
+  {
+    href: "/challenges/name-teams", tag: "5 min", title: "Name All NBA Teams",
+    description: "Can you name all 30 NBA franchises before time runs out?",
+    meta: "30 teams · 5:00 timer",
+    playerId: 201939, playerPos: "top center", category: "timed",
+  },
+  {
+    href: "/challenges/name-players", tag: "15 min", title: "Name 10 Players Per Team",
+    description: "For each team, name 10 players — stars or all-time legends.",
+    meta: "30 teams · 15:00 timer",
+    playerId: 1628983, playerPos: "top center", category: "timed",
   },
 ];
 
@@ -171,35 +187,114 @@ function StatCounter({ value, label }: { value: string; label: string }) {
   );
 }
 
-function GameCard({ href, emoji, title, description, meta, tag }: typeof GAMES[0]) {
-  const isNew = tag === "New";
-  const isCurrent = tag === "Current";
+function tagStyle(tag: string) {
+  if (tag === "New")     return { chip: "text-orange-300 bg-orange-500/12 border-orange-400/30", glow: "rgba(251,146,60,0.35)" };
+  if (tag === "Current") return { chip: "text-sky-300 bg-sky-500/12 border-sky-400/25", glow: "rgba(56,189,248,0.35)" };
+  if (tag === "Opinion") return { chip: "text-purple-300 bg-purple-500/12 border-purple-400/25", glow: "rgba(168,85,247,0.3)" };
+  if (tag === "Puzzle")  return { chip: "text-amber-300 bg-amber-500/12 border-amber-400/25", glow: "rgba(251,191,36,0.3)" };
+  if (tag === "Stats")   return { chip: "text-emerald-300 bg-emerald-500/12 border-emerald-400/25", glow: "rgba(52,211,153,0.3)" };
+  if (tag.includes("min")) return { chip: "text-red-300 bg-red-500/12 border-red-400/25 animate-pulse", glow: "rgba(248,113,113,0.35)" };
+  return { chip: "text-teal-300 bg-teal-500/12 border-teal-400/20", glow: "rgba(20,184,166,0.3)" };
+}
+
+function GameCard({ href, tag, title, description, meta, playerId, playerPos }: Game) {
+  const imgUrl = `https://cdn.nba.com/headshots/nba/latest/1040x760/${playerId}.png`;
+  const { chip, glow } = tagStyle(tag);
   return (
-    <motion.div whileHover={{ y: -4, scale: 1.01 }} whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 340, damping: 22 }}>
-      <Link href={href} className="group relative bg-white/5 border border-teal-500/15 backdrop-blur-sm rounded-2xl p-6 flex flex-col hover:border-teal-400/40 hover:bg-white/8 transition-all duration-200 min-h-[190px] block">
-        <div className="flex items-start justify-between mb-4">
-          <span className="text-2xl">{emoji}</span>
-          <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${
-            isNew ? "text-orange-300 bg-orange-500/10 border-orange-400/30 animate-pulse"
-            : isCurrent ? "text-sky-300 bg-sky-500/10 border-sky-400/30"
-            : "text-teal-300 bg-teal-500/10 border-teal-400/20"
-          }`}>
-            {tag}
-          </span>
+    <motion.div
+      whileHover={{ y: -5, scale: 1.015 }} whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+    >
+      <Link href={href} className="group relative overflow-hidden rounded-2xl border border-white/10 backdrop-blur-sm block"
+        style={{
+          minHeight: 170,
+          background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.025) 100%)",
+        }}>
+
+        {/* Scan-line texture */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(20,184,166,0.025) 3px, rgba(20,184,166,0.025) 4px)",
+        }} />
+
+        {/* Player image — circular hologram right side */}
+        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none">
+          {/* Outer glow ring */}
+          <div className="absolute inset-0 rounded-full -m-3" style={{
+            background: `radial-gradient(circle, ${glow} 0%, transparent 70%)`,
+            filter: "blur(10px)",
+          }} />
+          {/* Teal ring border */}
+          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-teal-400/30 relative"
+            style={{ boxShadow: `0 0 20px ${glow}, inset 0 0 0 1px rgba(255,255,255,0.08)` }}>
+            {/* Inner color tint overlay */}
+            <div className="absolute inset-0 rounded-full z-10 mix-blend-color-dodge opacity-20"
+              style={{ background: glow }} />
+            <img
+              src={imgUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ objectPosition: playerPos, filter: "contrast(1.08) brightness(0.92)" }}
+            />
+          </div>
+          {/* Corner bracket decoration */}
+          <div className="absolute -top-1 -left-1 w-4 h-4 border-l-2 border-t-2 border-teal-400/50" />
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 border-r-2 border-b-2 border-teal-400/50" />
         </div>
-        <h3 className="text-base font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">{title}</h3>
-        <p className="text-sm text-white/40 leading-relaxed flex-1 mb-4">{description}</p>
-        <div className="flex items-center justify-between border-t border-white/5 pt-3">
-          <p className="text-[10px] text-white/25 font-mono">{meta}</p>
-          <span className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">Play →</span>
+
+        {/* Corner brackets */}
+        <div className="absolute top-3 left-3 w-4 h-4 border-l-2 border-t-2 border-white/15 pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-4 h-4 border-l-2 border-b-2 border-white/15 pointer-events-none" />
+
+        {/* Text content */}
+        <div className="relative z-10 p-5 pr-40">
+          <div className="mb-3">
+            <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${chip}`}>
+              {tag}
+            </span>
+          </div>
+          <h3 className="text-base font-black text-white mb-1.5 leading-tight group-hover:text-teal-300 transition-colors duration-200">
+            {title}
+          </h3>
+          <p className="text-xs text-white/40 leading-relaxed mb-4">{description}</p>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-white/25 font-mono">{meta}</span>
+            <span className="text-teal-400 text-xs font-black opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 transform">
+              Play →
+            </span>
+          </div>
         </div>
+
+        {/* Hover glow */}
+        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: `radial-gradient(ellipse at 25% 50%, ${glow.replace("0.3", "0.06")} 0%, transparent 65%)` }} />
+
+        {/* Bottom edge accent */}
+        <div className="absolute bottom-0 inset-x-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: `linear-gradient(to right, transparent, ${glow}, transparent)` }} />
       </Link>
     </motion.div>
   );
 }
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<"games" | "timed">("games");
+  const mascotRef = useRef<HTMLDivElement>(null);
+
+  // Notify PageTransitionMascot when hero mascot scrolls out of view
+  useEffect(() => {
+    const el = mascotRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => mascotStore.setHeroVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => { obs.disconnect(); mascotStore.setHeroVisible(true); };
+  }, []);
+
+  const gamesTab = GAMES.filter(g => g.category === "games");
+  const timedTab = GAMES.filter(g => g.category === "timed");
+
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #050e1a 0%, #071520 40%, #091c22 70%, #071018 100%)" }}>
 
@@ -304,8 +399,8 @@ export default function HomePage() {
             <TopScorersCard />
           </motion.div>
 
-          {/* Mascot */}
-          <motion.div className="flex flex-col items-center gap-3"
+          {/* Mascot — scroll-tracked: when out of view, it "flies" in PageTransitionMascot */}
+          <motion.div ref={mascotRef} className="flex flex-col items-center gap-3"
             initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15, duration: 0.65, type: "spring", stiffness: 180, damping: 18 }}>
             {/* Hot / Cold labels */}
@@ -355,24 +450,51 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ── Section divider ────────────────────────────────────── */}
-      <div className="relative flex items-center justify-center py-4">
-        <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-teal-500/25 to-transparent" />
-        <div className="relative bg-[#07101e] px-6 z-10">
-          <span className="text-[9px] font-mono uppercase tracking-[0.4em] text-teal-500/50">All Games</span>
+      {/* ── Tab nav ────────────────────────────────────────────── */}
+      <div className="sticky top-14 z-40 bg-[#05101a]/80 backdrop-blur-md border-b border-white/6">
+        <div className="max-w-5xl mx-auto px-4 flex items-center gap-1 py-3">
+          {(["games", "timed"] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`relative px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                activeTab === tab
+                  ? "text-black bg-teal-400"
+                  : "text-white/50 hover:text-white/80 hover:bg-white/5"
+              }`}
+            >
+              {tab === "games" ? "Games" : "Timed Challenges"}
+              {activeTab === tab && (
+                <span className="absolute inset-0 rounded-lg"
+                  style={{ boxShadow: "0 0 18px rgba(45,212,191,0.45)" }} />
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* ── Games section ──────────────────────────────────────── */}
-      <main className="max-w-5xl mx-auto px-4 py-10 pb-24">
+      <main className="max-w-5xl mx-auto px-4 pt-8 pb-24">
 
-        <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {GAMES.map((g) => (
-            <AnimatedItem key={g.href}>
-              <GameCard {...g} />
-            </AnimatedItem>
-          ))}
-        </AnimatedGrid>
+        {activeTab === "games" && (
+          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {gamesTab.map((g) => (
+              <AnimatedItem key={g.href}>
+                <GameCard {...g} />
+              </AnimatedItem>
+            ))}
+          </AnimatedGrid>
+        )}
+
+        {activeTab === "timed" && (
+          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {timedTab.map((g) => (
+              <AnimatedItem key={g.href}>
+                <GameCard {...g} />
+              </AnimatedItem>
+            ))}
+          </AnimatedGrid>
+        )}
 
         <p className="text-center text-white/15 text-[10px] font-mono mt-14 tracking-widest uppercase">
           Stats are career averages · Accolades are highlights, not exhaustive

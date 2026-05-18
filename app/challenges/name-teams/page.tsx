@@ -102,23 +102,23 @@ export default function NameTeamsPage() {
         {/* Stats bar */}
         <div className="flex items-center justify-between mb-4">
           <div className="text-center">
-            <div className={`text-3xl font-black tabular-nums ${timeLeft <= 30 && started && !gameOver ? "text-red-500" : "text-zinc-800"}`}>
+            <div className={`text-3xl font-black tabular-nums ${timeLeft <= 30 && started && !gameOver ? "text-red-500" : "text-white"}`}>
               {fmt(timeLeft)}
             </div>
-            <div className="text-[10px] text-zinc-400 uppercase tracking-wide">Time Left</div>
+            <div className="text-[10px] text-white/40 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-teal-600 tabular-nums">{guessed.length}</div>
-            <div className="text-[10px] text-zinc-400 uppercase tracking-wide">Guessed</div>
+            <div className="text-3xl font-black text-teal-400 tabular-nums">{guessed.length}</div>
+            <div className="text-[10px] text-white/40 uppercase tracking-wide">Guessed</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-zinc-400 tabular-nums">{remaining}</div>
-            <div className="text-[10px] text-zinc-400 uppercase tracking-wide">Remaining</div>
+            <div className="text-3xl font-black text-white/40 tabular-nums">{remaining}</div>
+            <div className="text-[10px] text-white/40 uppercase tracking-wide">Remaining</div>
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-2 bg-zinc-100 rounded-full mb-6 overflow-hidden">
+        <div className="w-full h-2 bg-white/8 rounded-full mb-6 overflow-hidden">
           <div
             className="h-full bg-teal-500 rounded-full transition-all duration-300"
             style={{ width: `${pct}%` }}
@@ -135,8 +135,8 @@ export default function NameTeamsPage() {
               onKeyDown={handleKey}
               placeholder={started ? "Type a team name…" : "Click here or press Enter to start"}
               disabled={gameOver}
-              className={`flex-1 bg-white border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all
-                ${shake ? "border-red-400 animate-pulse" : "border-zinc-200 focus:border-teal-500"}
+              className={`flex-1 bg-white/6 border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all
+                ${shake ? "border-red-400 animate-pulse" : "border-white/10 focus:border-teal-500"}
                 ${gameOver ? "opacity-50" : ""}
               `}
               autoComplete="off"
@@ -144,7 +144,7 @@ export default function NameTeamsPage() {
             />
             <button
               onClick={() => { if (!started) start(); else tryGuess(); }}
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-3 rounded-xl transition-colors"
+              className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-5 py-3 rounded-xl transition-colors"
             >
               {started ? "Enter" : "Start"}
             </button>
@@ -152,26 +152,26 @@ export default function NameTeamsPage() {
         )}
 
         {lastGuess && !gameOver && (
-          <p className="text-center text-sm text-teal-600 font-semibold mb-4 animate-pulse">
+          <p className="text-center text-sm text-teal-400 font-semibold mb-4 animate-pulse">
             ✓ {lastGuess}
           </p>
         )}
 
         {/* Game over */}
         {gameOver && (
-          <div className={`text-center py-6 mb-6 rounded-2xl ${guessed.length === TOTAL ? "bg-teal-50 border border-teal-200" : "bg-zinc-50 border border-zinc-200"}`}>
+          <div className={`text-center py-6 mb-6 rounded-2xl ${guessed.length === TOTAL ? "bg-teal-500/12 border border-teal-400/30" : "bg-white/5 border border-white/10"}`}>
             <div className="text-4xl mb-2">{guessed.length === TOTAL ? "🏆" : "⏱️"}</div>
-            <h2 className="text-xl font-bold text-zinc-900 mb-1">
+            <h2 className="text-xl font-bold text-white mb-1">
               {guessed.length === TOTAL ? "You got them all!" : `You got ${guessed.length} / ${TOTAL}`}
             </h2>
-            <p className="text-sm text-zinc-500 mb-4">
+            <p className="text-sm text-white/45 mb-4">
               {guessed.length === TOTAL
                 ? `Finished with ${fmt(timeLeft)} remaining!`
                 : `${remaining} team${remaining !== 1 ? "s" : ""} remaining`}
             </p>
             <button
               onClick={restart}
-              className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-2.5 rounded-xl transition-colors"
+              className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors"
             >
               Play Again
             </button>
@@ -187,10 +187,10 @@ export default function NameTeamsPage() {
                 key={team.name}
                 className={`rounded-xl px-3 py-2 text-sm font-semibold text-center transition-all duration-300
                   ${done
-                    ? "bg-teal-500 text-white shadow-sm"
+                    ? "bg-teal-500 text-white "
                     : gameOver
-                      ? "bg-zinc-100 text-zinc-600 border border-zinc-200"
-                      : "bg-zinc-50 text-transparent border border-dashed border-zinc-200"
+                      ? "bg-white/8 text-white/55 border border-white/10"
+                      : "bg-white/5 text-transparent border border-dashed border-white/10"
                   }`}
               >
                 {done || gameOver ? team.name : "?"}
@@ -200,7 +200,7 @@ export default function NameTeamsPage() {
         </div>
 
         {!started && !gameOver && (
-          <p className="text-center text-xs text-zinc-400 mt-6">
+          <p className="text-center text-xs text-white/40 mt-6">
             Type a city name, nickname, or abbreviation (e.g. "Lakers", "GSW", "OKC")
           </p>
         )}

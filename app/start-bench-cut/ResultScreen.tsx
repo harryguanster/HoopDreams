@@ -9,9 +9,9 @@ type Role = "start" | "bench" | "cut";
 type Assignments = { [playerId: string]: Role };
 
 const ROLE_CONFIG = {
-  start: { label: "STARTED", emoji: "⭐", bg: "bg-green-50",  border: "border-green-200", text: "text-green-700", desc: "Your franchise player. Built different." },
-  bench: { label: "BENCHED", emoji: "🪑", bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-700", desc: "Valuable piece, but not in the starting five." },
-  cut:   { label: "CUT",     emoji: "✂️", bg: "bg-red-50",    border: "border-red-200",   text: "text-red-600",   desc: "Cleared some cap space." },
+  start: { label: "STARTED", emoji: "⭐", bg: "bg-green-500/12",  border: "border-green-400/40", text: "text-green-300", desc: "Your franchise player. Built different." },
+  bench: { label: "BENCHED", emoji: "🪑", bg: "bg-yellow-500/12", border: "border-yellow-400/40", text: "text-yellow-300", desc: "Valuable piece, but not in the starting five." },
+  cut:   { label: "CUT",     emoji: "✂️", bg: "bg-red-500/12",    border: "border-red-400/40",   text: "text-red-300",   desc: "Cleared some cap space." },
 };
 
 function getResultComment(assignments: Assignments, trio: Trio): string {
@@ -57,7 +57,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col court-bg relative">
+    <div className="min-h-screen flex flex-col relative">
       <GameHeader title="Start · Bench · Cut" />
 
       <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
@@ -67,9 +67,9 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
-          <h2 className="text-2xl font-bold text-zinc-900 mb-2">Your Picks</h2>
-          <p className="text-zinc-400 text-sm italic bg-white/70 rounded-xl px-4 py-2 border border-zinc-100">
+          <p className="text-xs text-teal-400 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Your Picks</h2>
+          <p className="text-white/45 text-sm italic bg-white/5 rounded-xl px-4 py-2 border border-white/10">
             &ldquo;{comment}&rdquo;
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
                 variants={cardVariants}
                 initial="hidden"
                 animate="show"
-                className={`flex items-center gap-4 rounded-2xl border-2 p-4 shadow-sm ${cfg.bg} ${cfg.border}`}
+                className={`flex items-center gap-4 rounded-2xl border-2 p-4 backdrop-blur-sm ${cfg.bg} ${cfg.border}`}
                 whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
               >
                 <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold text-white text-lg shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
@@ -94,8 +94,8 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
                   <span className="text-[7px] font-semibold opacity-90">{player.position}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-zinc-900 text-base leading-tight truncate">{player.name}</p>
-                  <p className="text-zinc-500 text-xs truncate">{player.team}</p>
+                  <p className="font-bold text-white text-base leading-tight truncate">{player.name}</p>
+                  <p className="text-white/45 text-xs truncate">{player.team}</p>
                   <p className={`text-xs mt-1 font-medium ${cfg.text}`}>{cfg.desc}</p>
                 </div>
                 <div className={`text-right shrink-0 ${cfg.text}`}>
@@ -115,8 +115,8 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
         >
           <motion.button
             onClick={onPlayAgain}
-            className="flex-1 py-3.5 bg-zinc-900 text-white font-bold text-sm rounded-2xl tracking-wide shadow-sm"
-            whileHover={{ scale: 1.02, backgroundColor: "#3f3f46" }}
+            className="flex-1 py-3.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-sm rounded-2xl tracking-wide"
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
             transition={{ duration: 0.15 }}
           >

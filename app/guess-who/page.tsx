@@ -59,7 +59,7 @@ function formatHeight(inches: number): string {
 const CELL_BG: Record<CellColor, string> = {
   green: "bg-green-500 text-white border-green-500",
   yellow: "bg-yellow-400 text-white border-yellow-400",
-  gray: "bg-slate-100 text-slate-600 border-slate-200",
+  gray: "bg-white/8 text-white/55 border-white/10",
 };
 
 // ── Team / Division helpers ────────────────────────────────────────────────────
@@ -259,7 +259,7 @@ function PlayerFace({ player }: { player: CurrentNBAPlayer }) {
     );
   }
   return (
-    <div className="w-10 h-8 rounded overflow-hidden shrink-0 bg-slate-100">
+    <div className="w-10 h-8 rounded overflow-hidden shrink-0 bg-white/8">
       <img src={`https://cdn.nba.com/headshots/nba/latest/260x190/${nbaId}.png`} alt={player.name} className="w-full h-auto" onError={() => setFailed(true)} />
     </div>
   );
@@ -268,9 +268,9 @@ function PlayerFace({ player }: { player: CurrentNBAPlayer }) {
 function GuessTableHeader() {
   const cols = ["NAME", "TEAM", "CONF", "DIV", "PPG", "RPG", "APG", "SPG", "BPG", "HT", "AGE", "DRFT", "#"];
   return (
-    <div className="grid gap-1 pb-1 border-b border-slate-200" style={{gridTemplateColumns: GRID_COLS}}>
+    <div className="grid gap-1 pb-1 border-b border-white/10" style={{gridTemplateColumns: GRID_COLS}}>
       {cols.map((c, i) => (
-        <div key={c} className={`text-[10px] font-bold text-slate-400 uppercase tracking-wider ${i === 0 ? "pl-2" : "text-center"}`}>{c}</div>
+        <div key={c} className={`text-[10px] font-bold text-white/40 uppercase tracking-wider ${i === 0 ? "pl-2" : "text-center"}`}>{c}</div>
       ))}
     </div>
   );
@@ -278,8 +278,8 @@ function GuessTableHeader() {
 
 function EmptyRow({ num }: { num: number }) {
   return (
-    <div className="w-full h-12 rounded-lg bg-white/60 border border-zinc-200 flex items-center justify-center shadow-sm">
-      <span className="text-zinc-300 font-bold text-sm">{num}</span>
+    <div className="w-full h-12 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center ">
+      <span className="text-white/30 font-bold text-sm">{num}</span>
     </div>
   );
 }
@@ -299,11 +299,11 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
   return (
     <div className="grid gap-1" style={{gridTemplateColumns: GRID_COLS}}>
       {/* Name */}
-      <div className={`flex items-center gap-2 rounded-lg px-2 h-12 ${isCorrect ? "bg-green-500 text-white" : "bg-white border border-slate-200 text-slate-800"}`}>
+      <div className={`flex items-center gap-2 rounded-lg px-2 h-12 ${isCorrect ? "bg-green-500 text-white" : "bg-white/6 border border-white/10 text-white"}`}>
         <PlayerFace player={guess} />
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold leading-tight truncate">{guess.name}</p>
-          <p className={`text-[9px] leading-tight truncate ${isCorrect ? "text-green-100" : "text-slate-400"}`}>{getTeamAbbr(guess.team)}</p>
+          <p className={`text-[9px] leading-tight truncate ${isCorrect ? "text-green-100" : "text-white/40"}`}>{getTeamAbbr(guess.team)}</p>
         </div>
       </div>
       <StatCellH value={getTeamAbbr(guess.team)} color={compareTeam(guess.team, answer.team)} />
@@ -419,18 +419,18 @@ function WordleGame({ players, playerNames, era }: {
   };
 
   if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen court-bg"><GameHeader title="Guess Who" era={era} /></div>;
+    return <div className="min-h-screen "><GameHeader title="Guess Who" era={era} /></div>;
   }
 
   if (won || gaveUp) {
     const guessScore = won ? ["🏆","🔥","💯","⭐","👍","🤔","😅","😬","😓","😱"][Math.min(guesses.length - 1, 9)] : "😬";
     return (
-      <div className="min-h-screen flex flex-col court-bg relative overflow-hidden">
+      <div className="min-h-screen flex flex-col  relative overflow-hidden">
         <GameHeader title="Guess Who" era={era} />
         {won && <Confetti />}
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full">
           <motion.div
-            className={`w-full rounded-3xl border-2 p-7 text-center bg-white shadow-xl ${won ? "border-teal-300" : "border-red-200"}`}
+            className={`w-full rounded-3xl border-2 p-7 text-center bg-white/6 backdrop-blur-xl ${won ? "border-teal-400/40" : "border-red-400/40"}`}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -443,13 +443,13 @@ function WordleGame({ players, playerNames, era }: {
             >
               {guessScore}
             </motion.div>
-            <h2 className="text-2xl font-bold text-zinc-900 mb-1">{won ? "Correct!" : "Not quite!"}</h2>
+            <h2 className="text-2xl font-bold text-white mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
-              ? <p className="text-teal-600 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
-              : <p className="text-zinc-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
+              ? <p className="text-teal-400 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
+              : <p className="text-white/45 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
             <motion.div
-              className="flex items-center gap-4 bg-zinc-50 rounded-2xl p-4 mb-6 text-left border border-zinc-100"
+              className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 mb-6 text-left border border-white/8"
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
@@ -458,9 +458,9 @@ function WordleGame({ players, playerNames, era }: {
                 <span className="leading-none">{answer.jersey}</span>
               </div>
               <div>
-                <p className="font-bold text-zinc-900 text-base">{answer.name}</p>
-                <p className="text-zinc-500 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
-                <div className="flex gap-3 mt-1 text-xs font-semibold text-zinc-400">
+                <p className="font-bold text-white text-base">{answer.name}</p>
+                <p className="text-white/45 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
+                <div className="flex gap-3 mt-1 text-xs font-semibold text-white/40">
                   <span>{answer.ppg} PPG</span>
                   <span>{answer.rpg} RPG</span>
                   <span>{answer.apg} APG</span>
@@ -469,7 +469,7 @@ function WordleGame({ players, playerNames, era }: {
             </motion.div>
             <motion.button
               onClick={handleNext}
-              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-700 text-white font-bold rounded-2xl text-sm tracking-wide transition-all shadow-sm"
+              className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-2xl text-sm tracking-wide transition-all "
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
             >
@@ -482,14 +482,14 @@ function WordleGame({ players, playerNames, era }: {
   }
 
   return (
-    <div className="min-h-screen flex flex-col court-bg">
+    <div className="min-h-screen flex flex-col ">
       <GameHeader title="Guess Who" era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
         {/* Title + input row */}
         <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           <div className="shrink-0">
-            <h1 className="text-2xl font-bold text-zinc-900 leading-none">Who Am I?</h1>
-            <p className="text-xs text-teal-600 font-semibold mt-0.5">
+            <h1 className="text-2xl font-bold text-white leading-none">Who Am I?</h1>
+            <p className="text-xs text-teal-400 font-semibold mt-0.5">
               {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
             </p>
           </div>
@@ -504,13 +504,13 @@ function WordleGame({ players, playerNames, era }: {
             <button
               onClick={checkGuess}
               disabled={!guess.trim()}
-              className="px-6 py-3 bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+              className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-white/12 disabled:text-white/40 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
             >
               Guess
             </button>
             <button
               onClick={() => setGaveUp(true)}
-              className="py-3 px-4 bg-white hover:bg-red-50 text-zinc-400 hover:text-red-500 border border-zinc-200 font-semibold rounded-xl transition-all text-sm shrink-0 shadow-sm"
+              className="py-3 px-4 bg-white/6 hover:bg-red-500/15 text-white/40 hover:text-red-500 border border-white/10 font-semibold rounded-xl transition-all text-sm shrink-0 "
             >
               Give Up
             </button>
@@ -518,11 +518,11 @@ function WordleGame({ players, playerNames, era }: {
         </div>
 
         {/* Legend */}
-        <div className="w-full flex gap-4 text-[11px] text-zinc-500 font-semibold mb-3">
+        <div className="w-full flex gap-4 text-[11px] text-white/45 font-semibold mb-3">
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 bg-zinc-300 rounded inline-block" /> Off</span>
-          <span className="flex items-center gap-1 text-zinc-400">↑↓ = direction to answer</span>
+          <span className="flex items-center gap-1 text-white/40">↑↓ = direction to answer</span>
         </div>
 
         <AnimatePresence>

@@ -6,9 +6,9 @@ import type { Player } from "@/lib/playerData";
 type Role = "start" | "bench" | "cut" | null;
 
 const ROLE_CONFIG = {
-  start: { label: "START", bg: "bg-green-50", border: "border-green-400", text: "text-green-700", badge: "bg-green-500 text-white", emoji: "⭐" },
-  bench: { label: "BENCH", bg: "bg-yellow-50", border: "border-yellow-400", text: "text-yellow-700", badge: "bg-yellow-400 text-slate-900", emoji: "🪑" },
-  cut:   { label: "CUT",   bg: "bg-red-50",    border: "border-red-400",   text: "text-red-700",   badge: "bg-red-500 text-white",      emoji: "✂️" },
+  start: { label: "START", bg: "bg-green-500/15", border: "border-green-400/50", text: "text-green-300", badge: "bg-green-500 text-white", emoji: "⭐" },
+  bench: { label: "BENCH", bg: "bg-yellow-500/15", border: "border-yellow-400/50", text: "text-yellow-300", badge: "bg-yellow-400 text-slate-900", emoji: "🪑" },
+  cut:   { label: "CUT",   bg: "bg-red-500/15",    border: "border-red-400/50",   text: "text-red-300",   badge: "bg-red-500 text-white",      emoji: "✂️" },
 };
 
 export default function PlayerCard({ player, role, isSelected, onClick }: {
@@ -17,18 +17,17 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
   const roleConfig = role ? ROLE_CONFIG[role] : null;
 
   const borderClass = isSelected
-    ? "border-teal-400 ring-2 ring-teal-300/50"
+    ? "border-teal-400 ring-2 ring-teal-400/30"
     : roleConfig ? roleConfig.border
-    : "border-slate-200 hover:border-teal-300";
+    : "border-white/15 hover:border-teal-400/40";
 
-  const bgClass = roleConfig ? roleConfig.bg : isSelected ? "bg-teal-50" : "bg-white";
+  const bgClass = roleConfig ? roleConfig.bg : isSelected ? "bg-teal-500/10" : "bg-white/5";
 
   return (
     <motion.div
       onClick={onClick}
-      className={`relative rounded-2xl border-2 p-5 flex flex-col gap-3 cursor-pointer select-none shadow-sm
-        ${bgClass} ${borderClass}
-        ${isSelected ? "card-selected" : ""}`}
+      className={`relative rounded-2xl border-2 p-5 flex flex-col gap-3 cursor-pointer select-none backdrop-blur-sm
+        ${bgClass} ${borderClass}`}
       animate={{ scale: isSelected ? 1.02 : 1 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -59,11 +58,11 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
       </div>
 
       <div className="text-center">
-        <p className="font-bold text-slate-900 text-base leading-tight">{player.name}</p>
-        <p className="text-slate-400 text-xs mt-0.5 truncate">{player.team}</p>
+        <p className="font-bold text-white text-base leading-tight">{player.name}</p>
+        <p className="text-white/40 text-xs mt-0.5 truncate">{player.team}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-1 border-t border-slate-100 pt-3">
+      <div className="grid grid-cols-3 gap-1 border-t border-white/10 pt-3">
         <StatPill label="PPG" value={player.stats.ppg} />
         <StatPill label="RPG" value={player.stats.rpg} />
         <StatPill label="APG" value={player.stats.apg} />
@@ -71,13 +70,13 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
 
       <div className="flex flex-wrap gap-1 justify-center">
         {player.accolades.slice(0, 2).map((a) => (
-          <span key={a} className="text-[10px] bg-slate-100 text-slate-500 rounded-full px-2 py-0.5 leading-tight">
+          <span key={a} className="text-[10px] bg-white/8 text-white/50 rounded-full px-2 py-0.5 leading-tight border border-white/10">
             {a}
           </span>
         ))}
       </div>
 
-      <p className="text-center text-slate-300 text-[10px] font-mono">{player.era}</p>
+      <p className="text-center text-white/25 text-[10px] font-mono">{player.era}</p>
     </motion.div>
   );
 }
@@ -85,8 +84,8 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
 function StatPill({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col items-center">
-      <span className="text-slate-900 font-bold text-sm leading-tight">{value}</span>
-      <span className="text-slate-400 text-[10px] font-medium">{label}</span>
+      <span className="text-white font-bold text-sm leading-tight">{value}</span>
+      <span className="text-white/40 text-[10px] font-medium">{label}</span>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`}>
-        <body className="min-h-full flex flex-col bg-teal-50 text-slate-900 antialiased">
+        <body className="min-h-full flex flex-col text-white antialiased" style={{ background: "#05101a" }}>
           <PageTransitionMascot />
           {children}
         </body>

@@ -80,7 +80,7 @@ function StatLineGuesserGame() {
   }, [era]);
 
   if (!mounted || shuffled.length === 0) {
-    return <div className="min-h-screen court-bg"><GameHeader title="Stat Line Guesser" era={era} /></div>;
+    return <div className="min-h-screen "><GameHeader title="Stat Line Guesser" era={era} /></div>;
   }
 
   const player: StatLinePlayer = shuffled[playerIndex];
@@ -117,12 +117,12 @@ function StatLineGuesserGame() {
   if (gameState === "correct" || gameState === "wrong") {
     const starCount = 5 - revealStep;
     return (
-      <div className="min-h-screen flex flex-col court-bg relative overflow-hidden">
+      <div className="min-h-screen flex flex-col  relative overflow-hidden">
         <GameHeader title="Stat Line Guesser" era={era} />
         {gameState === "correct" && <SLConfetti />}
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-md mx-auto w-full">
           <motion.div
-            className={`w-full rounded-3xl border-2 p-7 text-center bg-white shadow-xl ${gameState === "correct" ? "border-teal-300" : "border-red-200"}`}
+            className={`w-full rounded-3xl border-2 p-7 text-center bg-white/6 backdrop-blur-xl ${gameState === "correct" ? "border-teal-400/40" : "border-red-400/40"}`}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -135,12 +135,12 @@ function StatLineGuesserGame() {
             >
               {gameState === "correct" ? "🎯" : "😬"}
             </motion.div>
-            <h2 className="text-2xl font-bold text-zinc-900 mb-1">
+            <h2 className="text-2xl font-bold text-white mb-1">
               {gameState === "correct" ? "Correct!" : "Not quite!"}
             </h2>
             {gameState === "correct" ? (
               <>
-                <p className="text-teal-600 font-semibold text-sm mb-2">Got it after {stepsRevealed} clue{stepsRevealed !== 1 ? "s" : ""}!</p>
+                <p className="text-teal-400 font-semibold text-sm mb-2">Got it after {stepsRevealed} clue{stepsRevealed !== 1 ? "s" : ""}!</p>
                 <div className="flex justify-center gap-1 text-2xl mb-5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <motion.span
@@ -156,11 +156,11 @@ function StatLineGuesserGame() {
                 </div>
               </>
             ) : (
-              <p className="text-zinc-500 text-sm mb-5">You guessed <span className="font-semibold text-zinc-700">&quot;{wrongGuess}&quot;</span> — the answer was:</p>
+              <p className="text-white/45 text-sm mb-5">You guessed <span className="font-semibold text-white/80">&quot;{wrongGuess}&quot;</span> — the answer was:</p>
             )}
 
             <motion.div
-              className="flex items-center gap-4 bg-zinc-50 rounded-2xl p-4 mb-5 text-left border border-zinc-100"
+              className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 mb-5 text-left border border-white/8"
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
@@ -170,8 +170,8 @@ function StatLineGuesserGame() {
                 <span className="text-[8px] font-semibold opacity-90">{player.position}</span>
               </div>
               <div>
-                <p className="font-bold text-zinc-900 text-base">{player.name}</p>
-                <p className="text-zinc-500 text-sm">{player.team} · {player.era}</p>
+                <p className="font-bold text-white text-base">{player.name}</p>
+                <p className="text-white/45 text-sm">{player.team} · {player.era}</p>
               </div>
             </motion.div>
 
@@ -187,7 +187,7 @@ function StatLineGuesserGame() {
 
             <motion.button
               onClick={handleNext}
-              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-700 text-white font-bold rounded-2xl tracking-wide text-sm transition-all shadow-sm"
+              className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-2xl tracking-wide text-sm transition-all "
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
             >
@@ -200,16 +200,16 @@ function StatLineGuesserGame() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col court-bg">
+    <div className="min-h-screen flex flex-col ">
       <GameHeader title="Stat Line Guesser" era={era} />
       <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-md mx-auto w-full">
 
         <div className="text-center mb-6">
-          <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">
+          <p className="text-xs text-teal-400 font-semibold uppercase tracking-widest mb-1">
             {stepsRevealed} of 5 clues revealed
           </p>
-          <h1 className="text-2xl font-bold text-zinc-900">Who Am I?</h1>
-          <p className="text-zinc-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-white">Who Am I?</h1>
+          <p className="text-white/40 text-sm mt-1">
             {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next clue"}
           </p>
         </div>
@@ -222,9 +222,9 @@ function StatLineGuesserGame() {
           ❓
         </motion.div>
 
-        <div className="w-full bg-white rounded-2xl border border-zinc-200 overflow-hidden mb-5 shadow-sm">
-          <div className="px-4 py-3 border-b border-zinc-100 bg-zinc-50 flex items-center justify-between">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Career Averages</p>
+        <div className="w-full bg-white/6 rounded-2xl border border-white/10 overflow-hidden mb-5 ">
+          <div className="px-4 py-3 border-b border-white/8 bg-white/5 flex items-center justify-between">
+            <p className="text-xs font-semibold text-white/45 uppercase tracking-wider">Career Averages</p>
             <div className="flex gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span key={i} className={`text-xs transition-all duration-300 ${i < stepsRevealed ? "opacity-100" : "opacity-20"}`}>
@@ -233,19 +233,19 @@ function StatLineGuesserGame() {
               ))}
             </div>
           </div>
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y divide-white/8">
             <AnimatePresence initial={false}>
               {REVEAL_STEPS.slice(0, stepsRevealed).map((step) => (
                 <motion.div
                   key={step.key}
-                  className="flex items-center justify-between px-4 py-3 bg-teal-50/40"
+                  className="flex items-center justify-between px-4 py-3"
                   initial={{ opacity: 0, x: -14, backgroundColor: "rgba(20,184,166,0.15)" }}
                   animate={{ opacity: 1, x: 0, backgroundColor: "rgba(20,184,166,0)" }}
                   transition={{ duration: 0.45, ease: "easeOut" }}
                 >
-                  <span className="text-sm text-zinc-500 font-medium">{step.label}</span>
+                  <span className="text-sm text-white/45 font-medium">{step.label}</span>
                   <motion.span
-                    className="text-sm font-bold text-teal-700"
+                    className="text-sm font-bold text-teal-300"
                     initial={{ scale: 1.15 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.3 }}
@@ -261,8 +261,8 @@ function StatLineGuesserGame() {
             </AnimatePresence>
             {REVEAL_STEPS.slice(stepsRevealed).map((step) => (
               <div key={step.key} className="flex items-center justify-between px-4 py-3 opacity-25">
-                <span className="text-sm text-zinc-400 font-medium">{step.label}</span>
-                <span className="text-sm font-bold text-zinc-300">• • •</span>
+                <span className="text-sm text-white/40 font-medium">{step.label}</span>
+                <span className="text-sm font-bold text-white/30">• • •</span>
               </div>
             ))}
           </div>
@@ -272,7 +272,7 @@ function StatLineGuesserGame() {
           {wrongGuess && (
             <motion.p
               key={shakeKey}
-              className="text-red-500 text-sm mb-3 font-medium bg-red-50 border border-red-100 rounded-xl px-3 py-2 w-full text-center"
+              className="text-red-400 text-sm mb-3 font-medium bg-red-500/10 border border-red-400/25 rounded-xl px-3 py-2 w-full text-center"
               initial={{ opacity: 0, x: 0 }}
               animate={{ opacity: 1, x: [0, -8, 8, -5, 5, 0] }}
               exit={{ opacity: 0 }}
@@ -294,7 +294,7 @@ function StatLineGuesserGame() {
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-5 py-3 bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+            className="px-5 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-white/12 disabled:text-white/40 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
           >
             Guess
           </button>
@@ -304,21 +304,21 @@ function StatLineGuesserGame() {
           {!allRevealed && (
             <button
               onClick={() => setRevealStep((s) => Math.min(s + 1, 4))}
-              className="flex-1 py-3 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 font-semibold rounded-xl transition-all active:scale-95 text-sm shadow-sm"
+              className="flex-1 py-3 bg-white/6 hover:bg-white/10 text-white/80 border border-white/10 font-semibold rounded-xl transition-all active:scale-95 text-sm "
             >
               Reveal Clue 👀
             </button>
           )}
           <button
             onClick={() => setGameState("wrong")}
-            className="py-3 px-4 bg-white hover:bg-red-50 text-zinc-400 hover:text-red-500 border border-zinc-200 font-semibold rounded-xl transition-all text-sm shadow-sm"
+            className="py-3 px-4 bg-white/6 hover:bg-red-500/15 text-white/40 hover:text-red-500 border border-white/10 font-semibold rounded-xl transition-all text-sm "
           >
             Give Up
           </button>
         </div>
 
         <div className="flex items-center gap-1 mt-5">
-          <span className="text-zinc-400 text-xs mr-1">Guess now:</span>
+          <span className="text-white/40 text-xs mr-1">Guess now:</span>
           {Array.from({ length: 5 }).map((_, i) => (
             <span key={i} className={`text-base transition-all duration-300 ${i < (5 - revealStep) ? "opacity-100" : "opacity-20 grayscale"}`}>
               ⭐
@@ -340,9 +340,9 @@ export default function StatLineGuesserPage() {
 
 function StatBox({ label, value, suffix = "" }: { label: string; value: number; suffix?: string }) {
   return (
-    <div className="bg-zinc-50 border border-zinc-100 rounded-xl p-2 text-center">
-      <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wide">{label}</p>
-      <p className="text-sm font-bold text-zinc-900">{value}{suffix}</p>
+    <div className="bg-white/5 border border-white/8 rounded-xl p-2 text-center">
+      <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wide">{label}</p>
+      <p className="text-sm font-bold text-white">{value}{suffix}</p>
     </div>
   );
 }
