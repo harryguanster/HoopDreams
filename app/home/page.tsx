@@ -201,7 +201,7 @@ function GameCard({ href, emoji, title, description, meta, tag }: typeof GAMES[0
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#07101e] text-white overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #050e1a 0%, #071520 40%, #091c22 70%, #071018 100%)" }}>
 
       {/* ── Header ─────────────────────────────────────────────── */}
       <header className="relative z-50 bg-black/30 backdrop-blur-md border-b border-teal-500/10 px-6 py-3 flex items-center justify-between sticky top-0">
@@ -218,34 +218,65 @@ export default function HomePage() {
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden px-4">
 
-        {/* Blueprint dot grid */}
+        {/* ── Atmospheric background ─────────────────────────────── */}
+        <style>{`
+          @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(40px,-30px) scale(1.08)} 70%{transform:translate(-20px,20px) scale(0.95)} }
+          @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
+          @keyframes floatC { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(15px,-18px) scale(1.12)} }
+        `}</style>
+
+        {/* Orange warm blob — bottom-left */}
+        <div className="absolute pointer-events-none" style={{
+          width: 680, height: 540,
+          bottom: "-120px", left: "-140px",
+          background: "radial-gradient(ellipse, rgba(251,146,60,0.22) 0%, rgba(234,88,12,0.10) 45%, transparent 70%)",
+          filter: "blur(52px)",
+          animation: "floatA 9s ease-in-out infinite",
+          borderRadius: "50%",
+        }} />
+
+        {/* Teal blob — top-right */}
+        <div className="absolute pointer-events-none" style={{
+          width: 620, height: 500,
+          top: "-100px", right: "-120px",
+          background: "radial-gradient(ellipse, rgba(20,184,166,0.20) 0%, rgba(13,148,136,0.09) 50%, transparent 70%)",
+          filter: "blur(55px)",
+          animation: "floatB 11s ease-in-out infinite",
+          borderRadius: "50%",
+        }} />
+
+        {/* Cyan accent — top-center */}
+        <div className="absolute pointer-events-none" style={{
+          width: 320, height: 260,
+          top: "5%", left: "38%",
+          background: "radial-gradient(ellipse, rgba(34,211,238,0.12) 0%, transparent 65%)",
+          filter: "blur(40px)",
+          animation: "floatC 7s ease-in-out infinite",
+          borderRadius: "50%",
+        }} />
+
+        {/* Deep teal horizon glow — bottom center */}
+        <div className="absolute pointer-events-none" style={{
+          width: "100%", height: 280,
+          bottom: 0, left: 0,
+          background: "linear-gradient(to top, rgba(13,148,136,0.15) 0%, transparent 100%)",
+          filter: "blur(2px)",
+        }} />
+
+        {/* Edge vignette — keeps edges dark */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.14) 1px, transparent 1px)",
+          background: "radial-gradient(ellipse 90% 90% at 50% 50%, transparent 30%, rgba(5,14,26,0.75) 100%)",
+        }} />
+
+        {/* Dot grid on top of blobs */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.12) 1px, transparent 1px)",
           backgroundSize: "28px 28px",
         }} />
 
-        {/* Gradient vignette */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, #07101e 75%)" }} />
-
-        {/* Top/bottom fades */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#07101e] to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#07101e] to-transparent pointer-events-none" />
-
-        {/* Center glow orb */}
-        <div className="absolute pointer-events-none" style={{
-          width: 520, height: 520,
-          background: "radial-gradient(circle, rgba(20,184,166,0.10) 0%, transparent 70%)",
-          top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-        }} />
-
-        {/* Blueprint arc */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-t-full border border-teal-400/8 pointer-events-none" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[450px] h-[225px] rounded-t-full border border-teal-400/6 pointer-events-none" />
-
-        {/* Vertical grid lines */}
-        <div className="absolute inset-y-0 left-1/4 w-px bg-gradient-to-b from-transparent via-teal-500/8 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-1/4 w-px bg-gradient-to-b from-transparent via-teal-500/8 to-transparent pointer-events-none" />
+        {/* Subtle arc rings */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-t-full border border-teal-400/10 pointer-events-none" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[450px] h-[225px] rounded-t-full border border-teal-400/7 pointer-events-none" />
 
         {/* Title */}
         <motion.div className="text-center z-10 mb-10"
