@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -13,6 +14,10 @@ import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import { mascotStore } from "@/lib/mascotStore";
+import {
+  SBCScene, GuessWhoScene, StatLineScene, LineupScene,
+  TimedTeamsScene, TimedPlayersScene,
+} from "@/app/components/GameIllustrations";
 
 const topScorers = [...CURRENT_NBA_PLAYERS].sort((a, b) => b.ppg - a.ppg).slice(0, 5);
 const maxPpg = topScorers[0]?.ppg ?? 35;
@@ -276,6 +281,171 @@ function GameCard({ href, tag, title, description, meta, playerId, playerPos }: 
   );
 }
 
+// ─── Showcase section data ────────────────────────────────────────────────
+type ShowcaseGame = {
+  href: string; tag: string; title: string; description: string; meta: string;
+  accentColor: string;
+  Scene: React.ComponentType;
+};
+
+const SHOWCASE_GAMES: ShowcaseGame[] = [
+  {
+    href: "/start-bench-cut?era=alltime", tag: "Opinion",
+    title: "Start · Bench · Cut", description: "Jordan, Kobe, LeBron — who starts, who rides pine, who gets cut? Make the call with over a hundred legendary trios.",
+    meta: `${TRIOS.length} rounds · All-time legends`,
+    accentColor: "#f97316",
+    Scene: () => <SBCScene era="alltime" />,
+  },
+  {
+    href: "/start-bench-cut?era=current", tag: "Current",
+    title: "Start · Bench · Cut · Now", description: "Jokic, Wemby, SGA — build your dream 2025–26 roster one impossible trio at a time.",
+    meta: `${CURRENT_TRIOS.length} rounds · 2025–26 season`,
+    accentColor: "#0ea5e9",
+    Scene: () => <SBCScene era="current" />,
+  },
+  {
+    href: "/guess-who?era=alltime", tag: "Puzzle",
+    title: "Guess Who · Legends", description: "Decode a mystery all-time great from Wordle-style stat clues. Green = exact match, yellow = close.",
+    meta: "302 players · up to 10 guesses",
+    accentColor: "#a855f7",
+    Scene: () => <GuessWhoScene era="alltime" />,
+  },
+  {
+    href: "/guess-who?era=current", tag: "Current",
+    title: "Guess Who · Current", description: "Identify today's stars from PPG, team, division, position clues and more. How many guesses do you need?",
+    meta: `${CURRENT_NBA_PLAYERS.length} players · 2025–26`,
+    accentColor: "#0ea5e9",
+    Scene: () => <GuessWhoScene era="current" />,
+  },
+  {
+    href: "/stat-line-guesser?era=alltime", tag: "Stats",
+    title: "Stat Line · Legends", description: "One clue at a time, a career stat line is revealed. Name the all-time great before all five clues drop.",
+    meta: `${STAT_LINE_PLAYERS.length} players · 5 reveals`,
+    accentColor: "#10b981",
+    Scene: () => <StatLineScene era="alltime" />,
+  },
+  {
+    href: "/stat-line-guesser?era=current", tag: "Current",
+    title: "Stat Line · Current", description: "Current-season averages, drip-fed one stat at a time. Fewer clues = bigger bragging rights.",
+    meta: `${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`,
+    accentColor: "#3b82f6",
+    Scene: () => <StatLineScene era="current" />,
+  },
+  {
+    href: "/lineup-guesser", tag: "New",
+    title: "Lineup Guesser", description: "Five starters, their stat lines. You have three guesses to name the NBA team and season.",
+    meta: `${LINEUPS.length} puzzles · All eras`,
+    accentColor: "#14b8a6",
+    Scene: LineupScene,
+  },
+];
+
+const SHOWCASE_TIMED: ShowcaseGame[] = [
+  {
+    href: "/challenges/name-teams", tag: "5 min",
+    title: "Name All NBA Teams", description: "30 franchises, 5 minutes. Type every team name before the clock hits zero — nicknames count.",
+    meta: "30 teams · 5:00 timer",
+    accentColor: "#f59e0b",
+    Scene: TimedTeamsScene,
+  },
+  {
+    href: "/challenges/name-players", tag: "15 min",
+    title: "Name 10 Per Team", description: "For each of the 30 teams, name 10 players — current stars or all-time legends. Beat the 15-minute clock.",
+    meta: "30 teams · 300 players · 15:00 timer",
+    accentColor: "#f97316",
+    Scene: TimedPlayersScene,
+  },
+];
+
+// ─── Full-viewport showcase section ──────────────────────────────────────
+function GameShowcaseSection({ href, tag, title, description, meta, accentColor, Scene, flip, index }: ShowcaseGame & { flip: boolean; index: number }) {
+  const { chip } = tagStyle(tag);
+  return (
+    <motion.section
+      className="relative min-h-[88vh] flex items-center overflow-hidden border-b border-white/5"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Per-section atmosphere blob */}
+      <div className="absolute pointer-events-none" style={{
+        width: "65%", height: "100%",
+        left: flip ? "auto" : 0, right: flip ? 0 : "auto",
+        background: `radial-gradient(ellipse at ${flip ? "70%" : "30%"} 50%, ${accentColor}18 0%, transparent 65%)`,
+      }} />
+      {/* Subtle grid */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
+        backgroundSize: "32px 32px",
+      }} />
+
+      <div className={`relative z-10 w-full max-w-7xl mx-auto px-8 flex flex-col sm:flex-row items-center gap-8 sm:gap-16 py-16 ${flip ? "sm:flex-row-reverse" : ""}`}>
+
+        {/* ── Illustration ── */}
+        <motion.div className="flex-1 w-full max-w-lg"
+          initial={{ opacity: 0, x: flip ? 60 : -60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          <Scene />
+        </motion.div>
+
+        {/* ── Text ── */}
+        <motion.div className="flex-1 max-w-xl"
+          initial={{ opacity: 0, x: flip ? -60 : 60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
+          {/* Section number */}
+          <p className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] mb-4">
+            {String(index + 1).padStart(2, "0")} / GAME MODE
+          </p>
+
+          {/* Tag */}
+          <span className={`inline-block text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border mb-5 ${chip}`}>
+            {tag}
+          </span>
+
+          {/* Title */}
+          <h2 className="text-4xl sm:text-6xl font-black text-white leading-none mb-6 tracking-tight">
+            {title.split("·").map((part, i) => (
+              <span key={i}>
+                {i > 0 && <span className="text-white/30"> · </span>}
+                <span style={{ color: i === 0 ? "white" : accentColor }}>{part.trim()}</span>
+              </span>
+            ))}
+          </h2>
+
+          {/* Description */}
+          <p className="text-white/55 text-lg leading-relaxed mb-8 max-w-md">
+            {description}
+          </p>
+
+          {/* CTA row */}
+          <div className="flex items-center gap-6">
+            <Link href={href}>
+              <motion.div
+                className="px-8 py-3.5 rounded-full font-black text-sm uppercase tracking-[0.2em] text-black"
+                style={{ background: accentColor, boxShadow: `0 0 30px ${accentColor}60, 0 2px 12px rgba(0,0,0,0.3)` }}
+                whileHover={{ scale: 1.06, boxShadow: `0 0 50px ${accentColor}80, 0 4px 20px rgba(0,0,0,0.3)` }}
+                whileTap={{ scale: 0.96 }}
+              >
+                Play Now
+              </motion.div>
+            </Link>
+            <span className="text-[11px] text-white/25 font-mono">{meta}</span>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Divider line at bottom */}
+      <div className="absolute bottom-0 inset-x-0 h-px"
+        style={{ background: `linear-gradient(to right, transparent, ${accentColor}30, transparent)` }} />
+    </motion.section>
+  );
+}
+
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"games" | "timed">("games");
   const mascotRef = useRef<HTMLDivElement>(null);
@@ -451,55 +621,32 @@ export default function HomePage() {
       </section>
 
       {/* ── Tab nav ────────────────────────────────────────────── */}
-      <div className="sticky top-14 z-40 bg-[#05101a]/80 backdrop-blur-md border-b border-white/6">
-        <div className="max-w-5xl mx-auto px-4 flex items-center gap-1 py-3">
+      <div className="sticky top-14 z-40 bg-[#05101a]/85 backdrop-blur-md border-b border-white/6">
+        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 py-3">
           {(["games", "timed"] as const).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+            <button key={tab} onClick={() => setActiveTab(tab)}
               className={`relative px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                activeTab === tab
-                  ? "text-black bg-teal-400"
-                  : "text-white/50 hover:text-white/80 hover:bg-white/5"
-              }`}
-            >
+                activeTab === tab ? "text-black bg-teal-400" : "text-white/50 hover:text-white/80 hover:bg-white/5"
+              }`}>
               {tab === "games" ? "Games" : "Timed Challenges"}
               {activeTab === tab && (
-                <span className="absolute inset-0 rounded-lg"
-                  style={{ boxShadow: "0 0 18px rgba(45,212,191,0.45)" }} />
+                <span className="absolute inset-0 rounded-lg" style={{ boxShadow: "0 0 18px rgba(45,212,191,0.45)" }} />
               )}
             </button>
           ))}
         </div>
       </div>
 
-      {/* ── Games section ──────────────────────────────────────── */}
-      <main className="max-w-5xl mx-auto px-4 pt-8 pb-24">
-
-        {activeTab === "games" && (
-          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {gamesTab.map((g) => (
-              <AnimatedItem key={g.href}>
-                <GameCard {...g} />
-              </AnimatedItem>
-            ))}
-          </AnimatedGrid>
-        )}
-
-        {activeTab === "timed" && (
-          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {timedTab.map((g) => (
-              <AnimatedItem key={g.href}>
-                <GameCard {...g} />
-              </AnimatedItem>
-            ))}
-          </AnimatedGrid>
-        )}
-
-        <p className="text-center text-white/15 text-[10px] font-mono mt-14 tracking-widest uppercase">
+      {/* ── Full-screen game showcase sections ─────────────────── */}
+      <div>
+        {(activeTab === "games" ? SHOWCASE_GAMES : SHOWCASE_TIMED).map((s, i) => (
+          <GameShowcaseSection key={s.href} {...s} flip={i % 2 === 1} index={i} />
+        ))}
+        <div className="h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
+        <p className="text-center text-white/12 text-[10px] font-mono py-10 tracking-widest uppercase">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
-      </main>
+      </div>
     </div>
   );
 }
