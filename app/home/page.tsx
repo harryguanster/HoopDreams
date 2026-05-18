@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
+import { AnimatedGrid, AnimatedItem } from "@/app/components/AnimatedGrid";
 import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
@@ -13,33 +17,43 @@ function GameCard({
   href: string; emoji: string; title: string;
   description: string; meta: string; tag: string; playerId?: number;
 }) {
+  const isNew = tag === "New";
   return (
-    <Link
-      href={href}
-      className="group relative bg-white rounded-3xl p-7 flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 active:scale-[0.98] overflow-hidden min-h-[220px]"
-    >
-      {playerId && (
-        <img
-          src={`https://cdn.nba.com/headshots/nba/latest/260x190/${playerId}.png`}
-          alt=""
-          aria-hidden="true"
-          className="absolute -right-4 -bottom-2 h-[75%] w-auto object-contain pointer-events-none select-none opacity-[0.10]"
-        />
-      )}
-      <div className="flex items-start justify-between mb-4 relative">
-        <span className="text-2xl">{emoji}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
-          {tag}
-        </span>
-      </div>
-      <h2 className="text-lg font-bold text-zinc-900 mb-2 group-hover:text-teal-600 transition-colors relative">
-        {title}
-      </h2>
-      <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-5 relative">{description}</p>
-      <p className="text-[11px] text-zinc-400 font-medium border-t border-zinc-100 pt-3 relative">
-        {meta}
-      </p>
-    </Link>
+    <motion.div whileHover={{ y: -4, scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 340, damping: 22 }}>
+      <Link
+        href={href}
+        className="group relative bg-white rounded-3xl p-7 flex flex-col shadow-sm hover:shadow-2xl transition-shadow duration-200 overflow-hidden min-h-[220px] block"
+      >
+        {playerId && (
+          <img
+            src={`https://cdn.nba.com/headshots/nba/latest/260x190/${playerId}.png`}
+            alt=""
+            aria-hidden="true"
+            className="absolute -right-4 -bottom-2 h-[75%] w-auto object-contain pointer-events-none select-none opacity-[0.10] group-hover:opacity-[0.16] transition-opacity duration-300"
+          />
+        )}
+        <div className="flex items-start justify-between mb-4 relative">
+          <motion.span
+            className="text-2xl"
+            animate={isNew ? { rotate: [0, -8, 8, -4, 0] } : {}}
+            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+          >
+            {emoji}
+          </motion.span>
+          <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full border ${isNew ? "text-orange-700 bg-orange-50 border-orange-200 animate-pulse" : "text-teal-700 bg-teal-50 border-teal-100"}`}>
+            {tag}
+          </span>
+        </div>
+        <h2 className="text-lg font-bold text-zinc-900 mb-2 group-hover:text-teal-600 transition-colors relative">
+          {title}
+        </h2>
+        <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-5 relative">{description}</p>
+        <p className="text-[11px] text-zinc-400 font-medium border-t border-zinc-100 pt-3 relative flex items-center justify-between">
+          <span>{meta}</span>
+          <span className="text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity font-bold text-xs">Play →</span>
+        </p>
+      </Link>
+    </motion.div>
   );
 }
 
@@ -70,17 +84,56 @@ export default function HomePage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-20">
 
         {/* Hero */}
-        <div className="text-center mb-12 pt-4">
-          <img src="/logo.svg" alt="" aria-hidden="true" className="w-20 h-20 mx-auto mb-5" />
-          <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3">
+        <div className="text-center mb-12 pt-4 relative">
+          {/* Floating basketball decoration */}
+          <motion.div
+            className="absolute -right-2 top-0 text-4xl pointer-events-none select-none opacity-20 hidden sm:block"
+            animate={{ y: [0, -14, 0], rotate: [0, 8, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            🏀
+          </motion.div>
+          <motion.div
+            className="absolute -left-2 bottom-4 text-3xl pointer-events-none select-none opacity-15 hidden sm:block"
+            animate={{ y: [0, 10, 0], rotate: [0, -6, 0] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          >
+            🏀
+          </motion.div>
+
+          <motion.img
+            src="/logo.svg"
+            alt=""
+            aria-hidden="true"
+            className="w-20 h-20 mx-auto mb-5"
+            initial={{ opacity: 0, scale: 0.6, rotate: -10 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 280, damping: 20 }}
+          />
+          <motion.p
+            className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
+          >
             NBA Knowledge Games
-          </p>
-          <h1 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3">
+          </motion.p>
+          <motion.h1
+            className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22, duration: 0.45 }}
+          >
             Test Your Game IQ
-          </h1>
-          <p className="text-zinc-500 text-base max-w-md mx-auto">
-            Stats, legends, and today's stars — across all eras.
-          </p>
+          </motion.h1>
+          <motion.p
+            className="text-zinc-500 text-base max-w-md mx-auto"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+          >
+            Stats, legends, and today&apos;s stars — across all eras.
+          </motion.p>
         </div>
 
         {/* Divider */}
@@ -92,24 +145,28 @@ export default function HomePage() {
             label="Challenges"
             sub="Race the clock — listing games"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <GameCard
-              href="/challenges/name-teams"
-              emoji="🏟️"
-              tag="5 min"
-              title="Name All NBA Teams"
-              description="Can you name all 30 NBA franchises before time runs out? Type the city or nickname."
-              meta="30 teams · 5:00 timer"
-            />
-            <GameCard
-              href="/challenges/name-players"
-              emoji="👕"
-              tag="15 min"
-              title="Name 10 Players Per Team"
-              description="For each of the 30 teams, name 10 players — current stars or all-time legends."
-              meta="30 teams · 15:00 timer"
-            />
-          </div>
+          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <AnimatedItem>
+              <GameCard
+                href="/challenges/name-teams"
+                emoji="🏟️"
+                tag="5 min"
+                title="Name All NBA Teams"
+                description="Can you name all 30 NBA franchises before time runs out? Type the city or nickname."
+                meta="30 teams · 5:00 timer"
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <GameCard
+                href="/challenges/name-players"
+                emoji="👕"
+                tag="15 min"
+                title="Name 10 Players Per Team"
+                description="For each of the 30 teams, name 10 players — current stars or all-time legends."
+                meta="30 teams · 15:00 timer"
+              />
+            </AnimatedItem>
+          </AnimatedGrid>
         </section>
 
         <div className="h-px bg-zinc-200 mb-10"/>
@@ -120,17 +177,19 @@ export default function HomePage() {
             label="Starting 5"
             sub="Identify iconic NBA teams from their starting lineup"
           />
-          <div className="grid grid-cols-1 gap-5">
-            <GameCard
-              href="/lineup-guesser"
-              emoji="🏀"
-              tag="New"
-              title="Lineup Guesser"
-              description="A half-court shows 5 starters with their stats. Which NBA team and season is it?"
-              meta={`${LINEUPS.length} lineups · All eras`}
-              playerId={893}
-            />
-          </div>
+          <AnimatedGrid className="grid grid-cols-1 gap-5">
+            <AnimatedItem>
+              <GameCard
+                href="/lineup-guesser"
+                emoji="🏀"
+                tag="New"
+                title="Lineup Guesser"
+                description="A half-court shows 5 starters with their stats. Which NBA team and season is it?"
+                meta={`${LINEUPS.length} lineups · All eras`}
+                playerId={893}
+              />
+            </AnimatedItem>
+          </AnimatedGrid>
         </section>
 
         <div className="h-px bg-zinc-200 mb-10"/>
@@ -141,35 +200,41 @@ export default function HomePage() {
             label="All-Time Legends"
             sub="Jordan · Kobe · Shaq · Magic · Bird"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <GameCard
-              href="/start-bench-cut?era=alltime"
-              emoji="⭐"
-              tag="Opinion"
-              title="Start, Bench, Cut"
-              description="Three NBA legends — who starts, who rides the pine, and who gets waived?"
-              meta={`${TRIOS.length} rounds · All eras`}
-              playerId={977}
-            />
-            <GameCard
-              href="/guess-who?era=alltime"
-              emoji="🔍"
-              tag="Puzzle"
-              title="Guess Who"
-              description="Decode a mystery legend from stat clues. Green = match, yellow = close."
-              meta="302 players · 10 guesses"
-              playerId={893}
-            />
-            <GameCard
-              href="/stat-line-guesser?era=alltime"
-              emoji="📊"
-              tag="Stats"
-              title="Stat Line Guesser"
-              description="A career stat line reveals one clue at a time. Name the player first."
-              meta={`${STAT_LINE_PLAYERS.length} players · 5 reveals`}
-              playerId={2544}
-            />
-          </div>
+          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <AnimatedItem>
+              <GameCard
+                href="/start-bench-cut?era=alltime"
+                emoji="⭐"
+                tag="Opinion"
+                title="Start, Bench, Cut"
+                description="Three NBA legends — who starts, who rides the pine, and who gets waived?"
+                meta={`${TRIOS.length} rounds · All eras`}
+                playerId={977}
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <GameCard
+                href="/guess-who?era=alltime"
+                emoji="🔍"
+                tag="Puzzle"
+                title="Guess Who"
+                description="Decode a mystery legend from stat clues. Green = match, yellow = close."
+                meta="302 players · 10 guesses"
+                playerId={893}
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <GameCard
+                href="/stat-line-guesser?era=alltime"
+                emoji="📊"
+                tag="Stats"
+                title="Stat Line Guesser"
+                description="A career stat line reveals one clue at a time. Name the player first."
+                meta={`${STAT_LINE_PLAYERS.length} players · 5 reveals`}
+                playerId={2544}
+              />
+            </AnimatedItem>
+          </AnimatedGrid>
         </section>
 
         {/* Current section */}
@@ -178,35 +243,41 @@ export default function HomePage() {
             label="⚡ Current NBA"
             sub="Jokic · Wemby · Tatum · SGA"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <GameCard
-              href="/start-bench-cut?era=current"
-              emoji="⭐"
-              tag="Opinion"
-              title="Start, Bench, Cut"
-              description="Today's stars face off — who starts, who sits, and who gets cut?"
-              meta={`${CURRENT_TRIOS.length} rounds · 2025–26`}
-              playerId={203507}
-            />
-            <GameCard
-              href="/guess-who?era=current"
-              emoji="🔍"
-              tag="Puzzle"
-              title="Guess Who"
-              description="Identify a current NBA player from stats — PPG, team, division, and more."
-              meta={`${CURRENT_NBA_PLAYERS.length} players · 10 guesses`}
-              playerId={201939}
-            />
-            <GameCard
-              href="/stat-line-guesser?era=current"
-              emoji="📊"
-              tag="Stats"
-              title="Stat Line Guesser"
-              description="Current player stats, revealed one at a time. How fast can you name them?"
-              meta={`${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`}
-              playerId={1629029}
-            />
-          </div>
+          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <AnimatedItem>
+              <GameCard
+                href="/start-bench-cut?era=current"
+                emoji="⭐"
+                tag="Opinion"
+                title="Start, Bench, Cut"
+                description="Today's stars face off — who starts, who sits, and who gets cut?"
+                meta={`${CURRENT_TRIOS.length} rounds · 2025–26`}
+                playerId={203507}
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <GameCard
+                href="/guess-who?era=current"
+                emoji="🔍"
+                tag="Puzzle"
+                title="Guess Who"
+                description="Identify a current NBA player from stats — PPG, team, division, and more."
+                meta={`${CURRENT_NBA_PLAYERS.length} players · 10 guesses`}
+                playerId={201939}
+              />
+            </AnimatedItem>
+            <AnimatedItem>
+              <GameCard
+                href="/stat-line-guesser?era=current"
+                emoji="📊"
+                tag="Stats"
+                title="Stat Line Guesser"
+                description="Current player stats, revealed one at a time. How fast can you name them?"
+                meta={`${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`}
+                playerId={1629029}
+              />
+            </AnimatedItem>
+          </AnimatedGrid>
         </section>
 
         <p className="text-zinc-400 text-xs text-center mt-14">

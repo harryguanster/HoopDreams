@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import BasketballCursor from "@/app/components/BasketballCursor";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +28,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full`}>
         <body className="min-h-full flex flex-col bg-teal-50 text-slate-900 antialiased">
+          <BasketballCursor />
           {children}
         </body>
       </html>

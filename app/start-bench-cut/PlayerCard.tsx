@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import type { Player } from "@/lib/playerData";
 
 type Role = "start" | "bench" | "cut" | null;
@@ -23,17 +24,29 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
   const bgClass = roleConfig ? roleConfig.bg : isSelected ? "bg-teal-50" : "bg-white";
 
   return (
-    <div
+    <motion.div
       onClick={onClick}
-      className={`relative rounded-2xl border-2 p-5 flex flex-col gap-3 cursor-pointer transition-all duration-200 select-none shadow-sm
+      className={`relative rounded-2xl border-2 p-5 flex flex-col gap-3 cursor-pointer select-none shadow-sm
         ${bgClass} ${borderClass}
-        ${isSelected ? "card-selected scale-[1.02]" : "hover:scale-[1.01] active:scale-[0.99] hover:shadow-md"}`}
+        ${isSelected ? "card-selected" : ""}`}
+      animate={{ scale: isSelected ? 1.02 : 1 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
-      {roleConfig && (
-        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${roleConfig.badge} animate-scale-in`}>
-          {roleConfig.emoji} {roleConfig.label}
-        </div>
-      )}
+      <AnimatePresence>
+        {roleConfig && (
+          <motion.div
+            key={role}
+            className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${roleConfig.badge}`}
+            initial={{ opacity: 0, scale: 0.6, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.6, y: -4 }}
+            transition={{ type: "spring", stiffness: 500, damping: 28 }}
+          >
+            {roleConfig.emoji} {roleConfig.label}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="flex justify-center pt-2">
         <div
@@ -65,7 +78,7 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
       </div>
 
       <p className="text-center text-slate-300 text-[10px] font-mono">{player.era}</p>
-    </div>
+    </motion.div>
   );
 }
 

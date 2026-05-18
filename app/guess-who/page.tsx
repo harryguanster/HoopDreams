@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect, Suspense } from "react";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 import { ALL_TIME_GW_PLAYERS } from "@/lib/allTimePlayersGW";
@@ -277,7 +278,7 @@ function GuessTableHeader() {
 
 function EmptyRow({ num }: { num: number }) {
   return (
-    <div className="w-full h-12 rounded-lg bg-white border border-zinc-200 flex items-center justify-center shadow-sm">
+    <div className="w-full h-12 rounded-lg bg-white/60 border border-zinc-200 flex items-center justify-center shadow-sm">
       <span className="text-zinc-300 font-bold text-sm">{num}</span>
     </div>
   );
@@ -322,6 +323,36 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
 }
 
 const MAX_GUESSES = 10;
+
+// ── Confetti ──────────────────────────────────────────────────────────────────
+
+const CONFETTI_COLORS = ["#14b8a6","#f59e0b","#ef4444","#3b82f6","#8b5cf6","#10b981"];
+
+function Confetti() {
+  const pieces = Array.from({ length: 28 }, (_, i) => ({
+    id: i,
+    x: 20 + Math.random() * 60,
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    delay: Math.random() * 0.4,
+    duration: 1.2 + Math.random() * 0.8,
+    rotate: Math.random() * 720,
+    size: 8 + Math.random() * 8,
+  }));
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden z-10">
+      {pieces.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-sm top-0"
+          style={{ left: `${p.x}%`, width: p.size, height: p.size, backgroundColor: p.color }}
+          initial={{ y: -20, opacity: 1, rotate: 0 }}
+          animate={{ y: "110vh", opacity: [1, 1, 0], rotate: p.rotate }}
+          transition={{ duration: p.duration, delay: p.delay, ease: "easeIn" }}
+        />
+      ))}
+    </div>
+  );
+}
 
 // ── Shared Wordle game component ──────────────────────────────────────────────
 
@@ -392,31 +423,59 @@ function WordleGame({ players, playerNames, era }: {
   }
 
   if (won || gaveUp) {
+    const guessScore = won ? ["🏆","🔥","💯","⭐","👍","🤔","😅","😬","😓","😱"][Math.min(guesses.length - 1, 9)] : "😬";
     return (
-      <div className="min-h-screen flex flex-col court-bg">
+      <div className="min-h-screen flex flex-col court-bg relative overflow-hidden">
         <GameHeader title="Guess Who" era={era} />
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-4xl mx-auto w-full">
-          <div className={`w-full rounded-2xl border p-7 text-center bg-white shadow-sm ${won ? "border-teal-200" : "border-red-200"}`}>
-            <div className="text-5xl mb-3">{won ? "🎉" : "😬"}</div>
-            <h2 className="text-xl font-bold text-zinc-900 mb-1">{won ? "Correct!" : "Not quite!"}</h2>
+        {won && <Confetti />}
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full">
+          <motion.div
+            className={`w-full rounded-3xl border-2 p-7 text-center bg-white shadow-xl ${won ? "border-teal-300" : "border-red-200"}`}
+            initial={{ opacity: 0, scale: 0.88, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 320, damping: 26 }}
+          >
+            <motion.div
+              className="text-6xl mb-3"
+              initial={{ scale: 0.3, rotate: -15 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.1 }}
+            >
+              {guessScore}
+            </motion.div>
+            <h2 className="text-2xl font-bold text-zinc-900 mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
-              ? <p className="text-zinc-500 text-sm mb-4">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
-              : <p className="text-zinc-500 text-sm mb-4">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
+              ? <p className="text-teal-600 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
+              : <p className="text-zinc-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
-            <div className="flex items-center gap-3 bg-zinc-50 rounded-xl p-4 mb-5 text-left border border-zinc-100">
-              <div className="w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-white text-base shadow-sm shrink-0" style={{ backgroundColor: answer.teamColor }}>
+            <motion.div
+              className="flex items-center gap-4 bg-zinc-50 rounded-2xl p-4 mb-6 text-left border border-zinc-100"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.22, duration: 0.38 }}
+            >
+              <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold text-white text-lg shadow-md shrink-0" style={{ backgroundColor: answer.teamColor }}>
                 <span className="leading-none">{answer.jersey}</span>
               </div>
               <div>
-                <p className="font-bold text-zinc-900">{answer.name}</p>
+                <p className="font-bold text-zinc-900 text-base">{answer.name}</p>
                 <p className="text-zinc-500 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
-                <p className="text-zinc-400 text-xs mt-0.5">{answer.ppg} PPG · {answer.rpg} RPG · {answer.apg} APG</p>
+                <div className="flex gap-3 mt-1 text-xs font-semibold text-zinc-400">
+                  <span>{answer.ppg} PPG</span>
+                  <span>{answer.rpg} RPG</span>
+                  <span>{answer.apg} APG</span>
+                </div>
               </div>
-            </div>
-            <button onClick={handleNext} className="w-full py-3 bg-zinc-900 hover:bg-zinc-700 text-white font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95">
+            </motion.div>
+            <motion.button
+              onClick={handleNext}
+              className="w-full py-3.5 bg-zinc-900 hover:bg-zinc-700 text-white font-bold rounded-2xl text-sm tracking-wide transition-all shadow-sm"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+            >
               Next Player →
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </main>
       </div>
     );
@@ -466,15 +525,36 @@ function WordleGame({ players, playerNames, era }: {
           <span className="flex items-center gap-1 text-zinc-400">↑↓ = direction to answer</span>
         </div>
 
-        {error && <p className="w-full text-red-500 text-sm mb-2 font-medium">{error}</p>}
+        <AnimatePresence>
+          {error && (
+            <motion.p
+              className="w-full text-red-500 text-sm mb-2 font-medium bg-red-50 border border-red-100 rounded-xl px-3 py-2"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: [0, -6, 6, -4, 4, 0] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {error}
+            </motion.p>
+          )}
+        </AnimatePresence>
 
         {/* Guess table */}
         <div className="w-full overflow-x-auto">
           <div className="flex flex-col gap-1" style={{minWidth: "700px"}}>
             <GuessTableHeader />
-            {[...guesses].reverse().map((g, i) => (
-              <GuessRow key={i} guess={g} answer={answer} />
-            ))}
+            <AnimatePresence initial={false}>
+              {guesses.map((g, i) => (
+                <motion.div
+                  key={`${g.id}-${i}`}
+                  initial={{ opacity: 0, y: -18, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 28, delay: i === 0 ? 0 : 0 }}
+                >
+                  <GuessRow guess={g} answer={answer} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
             {Array.from({length: Math.max(0, MAX_GUESSES - guesses.length)}).map((_, i) => (
               <EmptyRow key={i} num={guesses.length + i + 1} />
             ))}

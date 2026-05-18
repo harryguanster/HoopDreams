@@ -1,5 +1,7 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import type { Trio } from "@/lib/playerData";
 import GameHeader from "@/app/components/GameHeader";
 
@@ -38,62 +40,123 @@ function getResultComment(assignments: Assignments, trio: Trio): string {
   return `${startPlayer?.name ?? "Your pick"} leads the squad. Solid choice.`;
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, x: -24 },
+  show: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.12, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  }),
+};
+
 export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   trio: Trio; assignments: Assignments; onPlayAgain: () => void;
 }) {
   const comment = getResultComment(assignments, trio);
   const roleOrder: Role[] = ["start", "bench", "cut"];
+  const [copied, setCopied] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col court-bg">
+    <div className="min-h-screen flex flex-col court-bg relative">
       <GameHeader title="Start · Bench · Cut" />
 
       <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
-        <div className="text-center mb-6">
+        <motion.div
+          className="text-center mb-7"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
           <p className="text-xs text-teal-600 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
-          <h2 className="text-2xl font-bold text-zinc-900">Your Picks</h2>
-          <p className="text-zinc-400 text-sm mt-2 italic">"{comment}"</p>
-        </div>
+          <h2 className="text-2xl font-bold text-zinc-900 mb-2">Your Picks</h2>
+          <p className="text-zinc-400 text-sm italic bg-white/70 rounded-xl px-4 py-2 border border-zinc-100">
+            &ldquo;{comment}&rdquo;
+          </p>
+        </motion.div>
 
         <div className="flex flex-col gap-3 w-full mb-8">
-          {roleOrder.map((role) => {
+          {roleOrder.map((role, i) => {
             const player = trio.players.find((p) => assignments[p.id] === role);
             if (!player) return null;
             const cfg = ROLE_CONFIG[role];
             return (
-              <div key={role} className={`flex items-center gap-4 rounded-2xl border p-4 shadow-sm ${cfg.bg} ${cfg.border}`}>
-                <div className="w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-white text-base shadow-sm shrink-0" style={{ backgroundColor: player.teamColor }}>
+              <motion.div
+                key={role}
+                custom={i}
+                variants={cardVariants}
+                initial="hidden"
+                animate="show"
+                className={`flex items-center gap-4 rounded-2xl border-2 p-4 shadow-sm ${cfg.bg} ${cfg.border}`}
+                whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
+              >
+                <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold text-white text-lg shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
                   <span className="leading-none">{player.jersey}</span>
                   <span className="text-[7px] font-semibold opacity-90">{player.position}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-zinc-900 text-sm leading-tight truncate">{player.name}</p>
-                  <p className="text-zinc-400 text-xs truncate">{player.team}</p>
-                  <p className="text-zinc-400 text-xs mt-0.5">{cfg.desc}</p>
+                  <p className="font-bold text-zinc-900 text-base leading-tight truncate">{player.name}</p>
+                  <p className="text-zinc-500 text-xs truncate">{player.team}</p>
+                  <p className={`text-xs mt-1 font-medium ${cfg.text}`}>{cfg.desc}</p>
                 </div>
                 <div className={`text-right shrink-0 ${cfg.text}`}>
-                  <div className="text-xl">{cfg.emoji}</div>
-                  <div className="text-[10px] font-bold tracking-wider mt-0.5">{cfg.label}</div>
+                  <div className="text-2xl">{cfg.emoji}</div>
+                  <div className="text-[9px] font-bold tracking-widest mt-1 uppercase">{cfg.label}</div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
-        <div className="flex gap-3 w-full">
-          <button onClick={onPlayAgain} className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-700 text-white font-bold text-sm rounded-xl tracking-wide transition-all active:scale-95 shadow-sm">
-            Next Round →
-          </button>
-          <button
-            onClick={() => {
-              const lines = [`🏀 Courtside Central — ${trio.category}`, "", ...roleOrder.map((r) => { const p = trio.players.find((p) => assignments[p.id] === r); const cfg = ROLE_CONFIG[r]; return `${cfg.emoji} ${cfg.label}: ${p?.name}`; }), "", "courtsidecentral.com"];
-              navigator.clipboard.writeText(lines.join("\n")).catch(() => {});
-            }}
-            className="px-5 py-3 bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 font-semibold text-sm rounded-xl tracking-wide transition-all active:scale-95 shadow-sm"
+        <motion.div
+          className="flex gap-3 w-full"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.38, ease: "easeOut" }}
+        >
+          <motion.button
+            onClick={onPlayAgain}
+            className="flex-1 py-3.5 bg-zinc-900 text-white font-bold text-sm rounded-2xl tracking-wide shadow-sm"
+            whileHover={{ scale: 1.02, backgroundColor: "#3f3f46" }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ duration: 0.15 }}
           >
-            Share
-          </button>
-        </div>
+            Next Round →
+          </motion.button>
+          <motion.button
+            onClick={() => {
+              const lines = [
+                `🏀 Courtside Central — ${trio.category}`,
+                "",
+                ...roleOrder.map((r) => {
+                  const p = trio.players.find((p) => assignments[p.id] === r);
+                  const cfg = ROLE_CONFIG[r];
+                  return `${cfg.emoji} ${cfg.label}: ${p?.name}`;
+                }),
+                "",
+                "courtsidecentral.com",
+              ];
+              navigator.clipboard.writeText(lines.join("\n")).catch(() => {});
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+            className="px-5 py-3.5 bg-white text-zinc-600 border border-zinc-200 font-semibold text-sm rounded-2xl tracking-wide shadow-sm min-w-[80px]"
+            whileHover={{ scale: 1.02, backgroundColor: "#f4f4f5" }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ duration: 0.15 }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={copied ? "copied" : "share"}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.18 }}
+              >
+                {copied ? "✓ Copied!" : "Share"}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
+        </motion.div>
       </main>
     </div>
   );
