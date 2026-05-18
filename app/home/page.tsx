@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import { AnimatedGrid, AnimatedItem } from "@/app/components/AnimatedGrid";
+import BballMascot from "@/app/components/BballMascot";
 import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
@@ -11,276 +12,338 @@ import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 
-function GameCard({
-  href, emoji, title, description, meta, tag, playerId,
-}: {
-  href: string; emoji: string; title: string;
-  description: string; meta: string; tag: string; playerId?: number;
-}) {
-  const isNew = tag === "New";
+const topScorers = [...CURRENT_NBA_PLAYERS].sort((a, b) => b.ppg - a.ppg).slice(0, 5);
+const maxPpg = topScorers[0]?.ppg ?? 35;
+
+const linePoints = [22, 19, 26, 21, 30, 25, 34, 28, 38, 32, 42, 36];
+const lMin = Math.min(...linePoints);
+const lMax = Math.max(...linePoints);
+const norm = (v: number) => ((v - lMin) / (lMax - lMin)) * 44;
+const svgPath = linePoints
+  .map((v, i) => `${(i / (linePoints.length - 1)) * 180},${48 - norm(v)}`)
+  .join(" ");
+const areaPath =
+  `M0,48 ` +
+  linePoints.map((v, i) => `${(i / (linePoints.length - 1)) * 180},${48 - norm(v)}`).join(" ") +
+  ` L180,48 Z`;
+
+const GAMES = [
+  {
+    href: "/challenges/name-teams", emoji: "🏟️", tag: "5 min", title: "Name All NBA Teams",
+    description: "Can you name all 30 NBA franchises before time runs out?",
+    meta: "30 teams · 5:00 timer",
+  },
+  {
+    href: "/challenges/name-players", emoji: "👕", tag: "15 min", title: "Name 10 Players Per Team",
+    description: "For each team, name 10 players — stars or all-time legends.",
+    meta: "30 teams · 15:00 timer",
+  },
+  {
+    href: "/lineup-guesser", emoji: "🏀", tag: "New", title: "Lineup Guesser",
+    description: "5 starters, their stats. Which NBA team and season is it?",
+    meta: `${LINEUPS.length} lineups · All eras`,
+  },
+  {
+    href: "/start-bench-cut?era=alltime", emoji: "⭐", tag: "Opinion", title: "Start, Bench, Cut · Legends",
+    description: "Jordan vs Kobe vs LeBron — who starts, who rides pine, who gets cut?",
+    meta: `${TRIOS.length} rounds · All eras`,
+  },
+  {
+    href: "/guess-who?era=alltime", emoji: "🔍", tag: "Puzzle", title: "Guess Who · Legends",
+    description: "Decode a mystery legend from stat clues. Green = match, yellow = close.",
+    meta: "302 players · 10 guesses",
+  },
+  {
+    href: "/stat-line-guesser?era=alltime", emoji: "📊", tag: "Stats", title: "Stat Line · Legends",
+    description: "A career stat line revealed one clue at a time. Name the player.",
+    meta: `${STAT_LINE_PLAYERS.length} players · 5 reveals`,
+  },
+  {
+    href: "/start-bench-cut?era=current", emoji: "⚡", tag: "Current", title: "Start, Bench, Cut · Now",
+    description: "Jokic, Wemby, SGA — who runs your squad?",
+    meta: `${CURRENT_TRIOS.length} rounds · 2025–26`,
+  },
+  {
+    href: "/guess-who?era=current", emoji: "🔍", tag: "Current", title: "Guess Who · Current",
+    description: "Identify today's stars from stats — PPG, team, division, and more.",
+    meta: `${CURRENT_NBA_PLAYERS.length} players · 10 guesses`,
+  },
+  {
+    href: "/stat-line-guesser?era=current", emoji: "📊", tag: "Current", title: "Stat Line · Current",
+    description: "Current player stats, revealed one at a time. How fast can you name them?",
+    meta: `${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`,
+  },
+];
+
+function TopScorersCard() {
   return (
-    <motion.div whileHover={{ y: -4, scale: 1.01 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 340, damping: 22 }}>
-      <Link
-        href={href}
-        className="group relative bg-white rounded-3xl p-7 flex flex-col shadow-sm hover:shadow-2xl transition-shadow duration-200 overflow-hidden min-h-[220px] block"
-      >
-        {playerId && (
-          <img
-            src={`https://cdn.nba.com/headshots/nba/latest/260x190/${playerId}.png`}
-            alt=""
-            aria-hidden="true"
-            className="absolute -right-4 -bottom-2 h-[75%] w-auto object-contain pointer-events-none select-none opacity-[0.10] group-hover:opacity-[0.16] transition-opacity duration-300"
-          />
-        )}
-        <div className="flex items-start justify-between mb-4 relative">
-          <motion.span
-            className="text-2xl"
-            animate={isNew ? { rotate: [0, -8, 8, -4, 0] } : {}}
-            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
-          >
-            {emoji}
-          </motion.span>
-          <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full border ${isNew ? "text-orange-700 bg-orange-50 border-orange-200 animate-pulse" : "text-teal-700 bg-teal-50 border-teal-100"}`}>
+    <div className="w-52 bg-white/5 backdrop-blur-xl border border-teal-500/25 rounded-2xl p-4 shadow-2xl">
+      <p className="text-[10px] font-mono uppercase tracking-widest text-teal-400 mb-3">🏀 Top Scorers</p>
+      <div className="flex flex-col gap-2.5">
+        {topScorers.map((p, i) => (
+          <div key={p.id} className="flex items-center gap-2">
+            <span className="text-white/30 text-[9px] font-mono w-3">{i + 1}</span>
+            <span className="text-white/80 text-[11px] font-semibold truncate" style={{ maxWidth: 72 }}>
+              {p.name.split(" ").slice(-1)[0]}
+            </span>
+            <div className="flex-1 bg-white/10 rounded-full overflow-hidden h-1">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ background: `hsl(${170 - i * 20}, 80%, 55%)` }}
+                initial={{ width: 0 }}
+                animate={{ width: `${(p.ppg / maxPpg) * 100}%` }}
+                transition={{ delay: 0.6 + i * 0.1, duration: 0.9, ease: "easeOut" }}
+              />
+            </div>
+            <span className="text-teal-300 text-[10px] font-black tabular-nums">{p.ppg}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-[9px] text-white/25 font-mono uppercase tracking-widest">PPG · 2025–26</p>
+    </div>
+  );
+}
+
+function WinRateCard() {
+  return (
+    <div className="w-52 bg-white/5 backdrop-blur-xl border border-teal-500/25 rounded-2xl p-4 shadow-2xl">
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-[10px] font-mono uppercase tracking-widest text-teal-400">Win Rate</p>
+        <span className="text-green-400 text-[10px] font-black">+4.8%</span>
+      </div>
+      <p className="text-white text-2xl font-black mb-3">68.2%</p>
+      <svg viewBox="0 0 180 52" className="w-full" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#14b8a6" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <motion.polygon
+          points={areaPath.replace("M0,48 ", "").replace(" Z", "").split(" ").join(",")}
+          fill="url(#areaGrad)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        />
+        <motion.polyline
+          points={svgPath}
+          fill="none"
+          stroke="#14b8a6"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
+        />
+        {/* Last point dot */}
+        <circle
+          cx={(((linePoints.length - 1) / (linePoints.length - 1)) * 180)}
+          cy={48 - norm(linePoints[linePoints.length - 1])}
+          r="3.5"
+          fill="#14b8a6"
+        />
+        <circle
+          cx={(((linePoints.length - 1) / (linePoints.length - 1)) * 180)}
+          cy={48 - norm(linePoints[linePoints.length - 1])}
+          r="6"
+          fill="#14b8a6"
+          opacity="0.25"
+        />
+      </svg>
+      <p className="mt-2 text-[9px] text-white/25 font-mono uppercase tracking-widest">Top teams avg · 2025–26</p>
+    </div>
+  );
+}
+
+function StatCounter({ value, label }: { value: string; label: string }) {
+  return (
+    <motion.div
+      className="text-center"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.9, duration: 0.5 }}
+    >
+      <p className="text-2xl font-black text-teal-400">{value}</p>
+      <p className="text-[9px] text-white/30 font-mono uppercase tracking-widest mt-0.5">{label}</p>
+    </motion.div>
+  );
+}
+
+function GameCard({ href, emoji, title, description, meta, tag }: typeof GAMES[0]) {
+  const isNew = tag === "New";
+  const isCurrent = tag === "Current";
+  return (
+    <motion.div whileHover={{ y: -4, scale: 1.01 }} whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 340, damping: 22 }}>
+      <Link href={href} className="group relative bg-white/5 border border-teal-500/15 backdrop-blur-sm rounded-2xl p-6 flex flex-col hover:border-teal-400/40 hover:bg-white/8 transition-all duration-200 min-h-[190px] block">
+        <div className="flex items-start justify-between mb-4">
+          <span className="text-2xl">{emoji}</span>
+          <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${
+            isNew ? "text-orange-300 bg-orange-500/10 border-orange-400/30 animate-pulse"
+            : isCurrent ? "text-sky-300 bg-sky-500/10 border-sky-400/30"
+            : "text-teal-300 bg-teal-500/10 border-teal-400/20"
+          }`}>
             {tag}
           </span>
         </div>
-        <h2 className="text-lg font-bold text-zinc-900 mb-2 group-hover:text-teal-600 transition-colors relative">
-          {title}
-        </h2>
-        <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-5 relative">{description}</p>
-        <p className="text-[11px] text-zinc-400 font-medium border-t border-zinc-100 pt-3 relative flex items-center justify-between">
-          <span>{meta}</span>
-          <span className="text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity font-bold text-xs">Play →</span>
-        </p>
+        <h3 className="text-base font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">{title}</h3>
+        <p className="text-sm text-white/40 leading-relaxed flex-1 mb-4">{description}</p>
+        <div className="flex items-center justify-between border-t border-white/5 pt-3">
+          <p className="text-[10px] text-white/25 font-mono">{meta}</p>
+          <span className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">Play →</span>
+        </div>
       </Link>
     </motion.div>
   );
 }
 
-function SectionHeading({ label, sub }: { label: string; sub: string }) {
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-bold text-zinc-900">{label}</h2>
-      <p className="text-sm text-zinc-400 mt-0.5">{sub}</p>
-    </div>
-  );
-}
-
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="bg-white border-b border-zinc-200 px-6 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+    <div className="min-h-screen bg-[#07101e] text-white overflow-x-hidden">
+
+      {/* ── Header ─────────────────────────────────────────────── */}
+      <header className="relative z-50 bg-black/30 backdrop-blur-md border-b border-teal-500/10 px-6 py-3 flex items-center justify-between sticky top-0">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Courtside Central" className="h-11 w-auto" />
-          <span className="font-bold text-zinc-900 text-base tracking-tight">Courtside Central</span>
+          <img src="/logo.svg" alt="Courtside Central" className="h-10 w-auto" />
+          <span className="font-bold text-white text-base tracking-tight">Courtside Central</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-zinc-400 hidden sm:block">Season 2025–26</span>
+          <span className="text-xs text-teal-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
           <AuthButton />
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-20">
+      {/* ── Hero ───────────────────────────────────────────────── */}
+      <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden px-4">
 
-        {/* Hero */}
-        <div className="text-center mb-12 pt-4 relative">
-          {/* Floating basketball decoration */}
-          <motion.div
-            className="absolute -right-2 top-0 text-4xl pointer-events-none select-none opacity-20 hidden sm:block"
-            animate={{ y: [0, -14, 0], rotate: [0, 8, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            🏀
-          </motion.div>
-          <motion.div
-            className="absolute -left-2 bottom-4 text-3xl pointer-events-none select-none opacity-15 hidden sm:block"
-            animate={{ y: [0, 10, 0], rotate: [0, -6, 0] }}
-            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          >
-            🏀
-          </motion.div>
+        {/* Blueprint dot grid */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.14) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }} />
 
-          <motion.img
-            src="/logo.svg"
-            alt=""
-            aria-hidden="true"
-            className="w-20 h-20 mx-auto mb-5"
-            initial={{ opacity: 0, scale: 0.6, rotate: -10 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 280, damping: 20 }}
-          />
-          <motion.p
-            className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.4 }}
-          >
+        {/* Gradient vignette */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, #07101e 75%)" }} />
+
+        {/* Top/bottom fades */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#07101e] to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#07101e] to-transparent pointer-events-none" />
+
+        {/* Center glow orb */}
+        <div className="absolute pointer-events-none" style={{
+          width: 520, height: 520,
+          background: "radial-gradient(circle, rgba(20,184,166,0.10) 0%, transparent 70%)",
+          top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+        }} />
+
+        {/* Blueprint arc */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-t-full border border-teal-400/8 pointer-events-none" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[450px] h-[225px] rounded-t-full border border-teal-400/6 pointer-events-none" />
+
+        {/* Vertical grid lines */}
+        <div className="absolute inset-y-0 left-1/4 w-px bg-gradient-to-b from-transparent via-teal-500/8 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 right-1/4 w-px bg-gradient-to-b from-transparent via-teal-500/8 to-transparent pointer-events-none" />
+
+        {/* Title */}
+        <motion.div className="text-center z-10 mb-10"
+          initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, ease: "easeOut" }}>
+          <p className="text-[10px] font-mono uppercase tracking-[0.4em] text-teal-400/80 mb-5">
             NBA Knowledge Games
-          </motion.p>
-          <motion.h1
-            className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.22, duration: 0.45 }}
-          >
-            Test Your Game IQ
-          </motion.h1>
-          <motion.p
-            className="text-zinc-500 text-base max-w-md mx-auto"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-          >
-            Stats, legends, and today&apos;s stars — across all eras.
-          </motion.p>
+          </p>
+          <h1 className="text-6xl sm:text-8xl font-black tracking-tight leading-none uppercase">
+            <span className="text-teal-400">Test</span>{" "}
+            <span className="text-white">Your</span>
+          </h1>
+          <h1 className="text-6xl sm:text-8xl font-black tracking-tight leading-none uppercase text-white">
+            NBA IQ
+          </h1>
+        </motion.div>
+
+        {/* 3-column: card | mascot | card */}
+        <div className="relative z-10 flex items-center justify-center gap-8 sm:gap-16 w-full max-w-5xl">
+
+          {/* Left card */}
+          <motion.div className="hidden sm:block"
+            initial={{ opacity: 0, x: -50, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}>
+            <TopScorersCard />
+          </motion.div>
+
+          {/* Mascot */}
+          <motion.div className="flex flex-col items-center gap-3"
+            initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15, duration: 0.65, type: "spring", stiffness: 180, damping: 18 }}>
+            {/* Hot / Cold labels */}
+            <div className="flex items-center gap-28 text-[9px] font-mono text-white/35 uppercase tracking-[0.25em]">
+              <span>Hot 🔥</span>
+              <span>Cold ❄️</span>
+            </div>
+            <div className="flex items-center gap-5">
+              <div className="w-2 h-2 rounded-full bg-orange-400" style={{ boxShadow: "0 0 10px #fb923c" }} />
+              <BballMascot size={180} glow idle />
+              <div className="w-2 h-2 rounded-full bg-blue-400" style={{ boxShadow: "0 0 10px #60a5fa" }} />
+            </div>
+          </motion.div>
+
+          {/* Right card */}
+          <motion.div className="hidden sm:block"
+            initial={{ opacity: 0, x: 50, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}>
+            <WinRateCard />
+          </motion.div>
         </div>
 
-        {/* Divider */}
-        <div className="h-px bg-zinc-200 mb-10"/>
+        {/* CTA */}
+        <motion.div className="z-10 mt-10"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55, duration: 0.5 }}>
+          <motion.a
+            href="/challenges"
+            className="inline-block px-14 py-4 bg-teal-500 text-black font-black text-sm uppercase tracking-[0.22em] rounded-full"
+            style={{ boxShadow: "0 0 28px rgba(20,184,166,0.45), 0 2px 12px rgba(0,0,0,0.3)" }}
+            whileHover={{ scale: 1.06, boxShadow: "0 0 50px rgba(20,184,166,0.65), 0 4px 20px rgba(0,0,0,0.3)" }}
+            whileTap={{ scale: 0.96 }}
+          >
+            Start Playing
+          </motion.a>
+        </motion.div>
 
-        {/* Challenges */}
-        <section className="mb-12">
-          <SectionHeading
-            label="Challenges"
-            sub="Race the clock — listing games"
-          />
-          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <AnimatedItem>
-              <GameCard
-                href="/challenges/name-teams"
-                emoji="🏟️"
-                tag="5 min"
-                title="Name All NBA Teams"
-                description="Can you name all 30 NBA franchises before time runs out? Type the city or nickname."
-                meta="30 teams · 5:00 timer"
-              />
-            </AnimatedItem>
-            <AnimatedItem>
-              <GameCard
-                href="/challenges/name-players"
-                emoji="👕"
-                tag="15 min"
-                title="Name 10 Players Per Team"
-                description="For each of the 30 teams, name 10 players — current stars or all-time legends."
-                meta="30 teams · 15:00 timer"
-              />
-            </AnimatedItem>
-          </AnimatedGrid>
-        </section>
+        {/* Stats row */}
+        <motion.div className="z-10 mt-12 flex items-center gap-10"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 0.75 }}>
+          <StatCounter value={`${TRIOS.length + CURRENT_TRIOS.length}+`} label="Start Bench Cut Rounds" />
+          <div className="h-8 w-px bg-teal-500/15" />
+          <StatCounter value={`${LINEUPS.length}+`} label="Lineup Puzzles" />
+          <div className="h-8 w-px bg-teal-500/15" />
+          <StatCounter value={`${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length}+`} label="Players" />
+        </motion.div>
+      </section>
 
-        <div className="h-px bg-zinc-200 mb-10"/>
+      {/* ── Section divider ────────────────────────────────────── */}
+      <div className="relative flex items-center justify-center py-4">
+        <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-teal-500/25 to-transparent" />
+        <div className="relative bg-[#07101e] px-6 z-10">
+          <span className="text-[9px] font-mono uppercase tracking-[0.4em] text-teal-500/50">All Games</span>
+        </div>
+      </div>
 
-        {/* Lineup Guesser */}
-        <section className="mb-12">
-          <SectionHeading
-            label="Starting 5"
-            sub="Identify iconic NBA teams from their starting lineup"
-          />
-          <AnimatedGrid className="grid grid-cols-1 gap-5">
-            <AnimatedItem>
-              <GameCard
-                href="/lineup-guesser"
-                emoji="🏀"
-                tag="New"
-                title="Lineup Guesser"
-                description="A half-court shows 5 starters with their stats. Which NBA team and season is it?"
-                meta={`${LINEUPS.length} lineups · All eras`}
-                playerId={893}
-              />
-            </AnimatedItem>
-          </AnimatedGrid>
-        </section>
+      {/* ── Games section ──────────────────────────────────────── */}
+      <main className="max-w-5xl mx-auto px-4 py-10 pb-24">
 
-        <div className="h-px bg-zinc-200 mb-10"/>
+        <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {GAMES.map((g) => (
+            <AnimatedItem key={g.href}>
+              <GameCard {...g} />
+            </AnimatedItem>
+          ))}
+        </AnimatedGrid>
 
-        {/* All-Time section */}
-        <section className="mb-12">
-          <SectionHeading
-            label="All-Time Legends"
-            sub="Jordan · Kobe · Shaq · Magic · Bird"
-          />
-          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <AnimatedItem>
-              <GameCard
-                href="/start-bench-cut?era=alltime"
-                emoji="⭐"
-                tag="Opinion"
-                title="Start, Bench, Cut"
-                description="Three NBA legends — who starts, who rides the pine, and who gets waived?"
-                meta={`${TRIOS.length} rounds · All eras`}
-                playerId={977}
-              />
-            </AnimatedItem>
-            <AnimatedItem>
-              <GameCard
-                href="/guess-who?era=alltime"
-                emoji="🔍"
-                tag="Puzzle"
-                title="Guess Who"
-                description="Decode a mystery legend from stat clues. Green = match, yellow = close."
-                meta="302 players · 10 guesses"
-                playerId={893}
-              />
-            </AnimatedItem>
-            <AnimatedItem>
-              <GameCard
-                href="/stat-line-guesser?era=alltime"
-                emoji="📊"
-                tag="Stats"
-                title="Stat Line Guesser"
-                description="A career stat line reveals one clue at a time. Name the player first."
-                meta={`${STAT_LINE_PLAYERS.length} players · 5 reveals`}
-                playerId={2544}
-              />
-            </AnimatedItem>
-          </AnimatedGrid>
-        </section>
-
-        {/* Current section */}
-        <section>
-          <SectionHeading
-            label="⚡ Current NBA"
-            sub="Jokic · Wemby · Tatum · SGA"
-          />
-          <AnimatedGrid className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <AnimatedItem>
-              <GameCard
-                href="/start-bench-cut?era=current"
-                emoji="⭐"
-                tag="Opinion"
-                title="Start, Bench, Cut"
-                description="Today's stars face off — who starts, who sits, and who gets cut?"
-                meta={`${CURRENT_TRIOS.length} rounds · 2025–26`}
-                playerId={203507}
-              />
-            </AnimatedItem>
-            <AnimatedItem>
-              <GameCard
-                href="/guess-who?era=current"
-                emoji="🔍"
-                tag="Puzzle"
-                title="Guess Who"
-                description="Identify a current NBA player from stats — PPG, team, division, and more."
-                meta={`${CURRENT_NBA_PLAYERS.length} players · 10 guesses`}
-                playerId={201939}
-              />
-            </AnimatedItem>
-            <AnimatedItem>
-              <GameCard
-                href="/stat-line-guesser?era=current"
-                emoji="📊"
-                tag="Stats"
-                title="Stat Line Guesser"
-                description="Current player stats, revealed one at a time. How fast can you name them?"
-                meta={`${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`}
-                playerId={1629029}
-              />
-            </AnimatedItem>
-          </AnimatedGrid>
-        </section>
-
-        <p className="text-zinc-400 text-xs text-center mt-14">
+        <p className="text-center text-white/15 text-[10px] font-mono mt-14 tracking-widest uppercase">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
       </main>
