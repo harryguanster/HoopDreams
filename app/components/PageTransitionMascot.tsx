@@ -99,9 +99,9 @@ export default function PageTransitionMascot() {
                 translateY: "-50%",
               }}
               animate={{
-                // Trail center ≈ mascot center (mascot is ~80px wide, 104px tall)
-                x: `calc(${pos.xVw}vw + 60px)`,
-                y: `calc(${pos.yVh}vh + 72px)`,
+                // Trail center ≈ mascot center (mascot is ~90px wide, ~117px tall)
+                x: `calc(${pos.xVw}vw + 45px)`,
+                y: `calc(${pos.yVh}vh + 58px)`,
               }}
               transition={{
                 x: { duration: 0.85 * t.mult, ease },
@@ -133,7 +133,7 @@ export default function PageTransitionMascot() {
               className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-black/20 rounded-full"
               style={{ width: 80, height: 16, filter: "blur(8px)" }}
             />
-            <BballMascot size={160} idle glow />
+            <BballMascot size={90} idle glow flying />
           </motion.div>
         </motion.div>
       )}
