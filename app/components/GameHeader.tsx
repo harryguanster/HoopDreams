@@ -7,9 +7,9 @@ export default function GameHeader({ title, era }: { title: string; era?: string
         href="/home"
         className="group flex items-center gap-2 hover:opacity-80 transition-all duration-150"
       >
-        <span className="text-white/40 group-hover:text-teal-400 transition-colors text-sm font-bold leading-none">←</span>
+        <span className="text-white/70 group-hover:text-teal-400 transition-colors text-sm font-bold leading-none">←</span>
         <img src="/logo.svg" alt="Courtside Central" className="h-9 w-auto" />
-        <span className="font-bold text-white/70 text-sm tracking-tight hidden sm:block">Courtside Central</span>
+        <span className="font-bold text-white text-sm tracking-tight hidden sm:block">Courtside Central</span>
       </a>
       <div className="flex items-center gap-2">
         {era === "current" && (
@@ -22,7 +22,7 @@ export default function GameHeader({ title, era }: { title: string; era?: string
             🏆 All-Time
           </span>
         )}
-        <span className="text-xs text-white/50 font-semibold">{title}</span>
+        <span className="text-xs text-white/80 font-semibold">{title}</span>
       </div>
     </header>
   );

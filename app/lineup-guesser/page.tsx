@@ -85,13 +85,13 @@ function PlayerCard({ player }: { player: LineupPlayer }) {
       </div>
       {/* Stats pill below jersey */}
       <div className="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-center shadow-md -mt-1">
-        <div className="text-[7px] font-bold text-teal-600 uppercase tracking-wide leading-none mb-0.5">
+        <div className="text-[7px] font-bold text-teal-700 uppercase tracking-wide leading-none mb-0.5">
           {player.position}
         </div>
-        <div className="text-[7px] font-semibold text-white/80 leading-tight whitespace-nowrap">
+        <div className="text-[7px] font-semibold text-gray-800 leading-tight whitespace-nowrap">
           {player.ppg} · {player.apg} · {player.rpg}
         </div>
-        <div className="text-[5.5px] text-white/40 leading-none">PPG · APG · RPG</div>
+        <div className="text-[5.5px] text-gray-500 leading-none">PPG · APG · RPG</div>
       </div>
     </div>
   );
@@ -163,13 +163,13 @@ export default function LineupGuesserPage() {
         {/* Header row */}
         <div className="flex items-end justify-between mb-5">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Season</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Season</p>
             <p className="text-3xl font-black text-white leading-none">{team.season}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Score</p>
-            <p className="text-3xl font-black text-teal-700 leading-none">
-              {score.correct}<span className="text-white/30 font-light">/</span>{score.total}
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Score</p>
+            <p className="text-3xl font-black text-teal-400 leading-none">
+              {score.correct}<span className="text-white/40 font-light">/</span>{score.total}
             </p>
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function LineupGuesserPage() {
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                className="flex-1 px-4 py-3 rounded-xl border border-white/10 bg-white text-white placeholder-zinc-400 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+                className="flex-1 px-4 py-3 rounded-xl border border-white/15 bg-white/10 text-white placeholder-white/40 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
               />
               <button
                 type="submit"
@@ -214,7 +214,7 @@ export default function LineupGuesserPage() {
                     <span className="mr-1">✕</span>{g}
                   </div>
                 ))}
-                <p className="text-xs text-white/40">
+                <p className="text-xs text-white/65">
                   {MAX_GUESSES - guesses.length} guess{MAX_GUESSES - guesses.length !== 1 ? "es" : ""} remaining
                 </p>
               </div>
@@ -226,7 +226,7 @@ export default function LineupGuesserPage() {
                   setStatus("lost");
                   setScore((s) => ({ ...s, total: s.total + 1 }));
                 }}
-                className="text-xs text-white/40 underline underline-offset-2 hover:text-white/55 transition-colors"
+                className="text-xs text-white/60 underline underline-offset-2 hover:text-white/80 transition-colors"
               >
                 Give up
               </button>
@@ -236,9 +236,9 @@ export default function LineupGuesserPage() {
 
         {/* Won */}
         {status === "won" && (
-          <div className="text-center py-6 bg-teal-50 rounded-2xl border border-teal-100">
-            <p className="text-3xl font-black text-teal-700 mb-1">Correct!</p>
-            <p className="text-white/45 font-medium mb-4">
+          <div className="text-center py-6 bg-teal-500/15 rounded-2xl border border-teal-400/30">
+            <p className="text-3xl font-black text-teal-300 mb-1">Correct!</p>
+            <p className="text-white/80 font-medium mb-4">
               {team.season} {team.answer}
             </p>
             <button
@@ -253,7 +253,7 @@ export default function LineupGuesserPage() {
         {/* Lost */}
         {status === "lost" && (
           <div className="text-center py-6 bg-white/5 rounded-2xl border border-white/10">
-            <p className="text-base font-semibold text-white/40 mb-1">The answer was</p>
+            <p className="text-base font-semibold text-white/65 mb-1">The answer was</p>
             <p className="text-2xl font-black text-white mb-4">
               {team.season} {team.answer}
             </p>
@@ -266,7 +266,7 @@ export default function LineupGuesserPage() {
           </div>
         )}
 
-        <p className="text-[11px] text-white/40 text-center mt-8">
+        <p className="text-[11px] text-white/60 text-center mt-8">
           Stats are regular season averages for that season
         </p>
       </main>
