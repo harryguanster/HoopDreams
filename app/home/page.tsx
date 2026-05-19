@@ -16,7 +16,7 @@ import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import { mascotStore } from "@/lib/mascotStore";
 import {
   SBCScene, GuessWhoScene, StatLineScene, LineupScene,
-  TimedTeamsScene, TimedPlayersScene,
+  TimedTeamsScene, TimedPlayersScene, DraftClassScene,
 } from "@/app/components/GameIllustrations";
 
 const topScorers = [...CURRENT_NBA_PLAYERS].sort((a, b) => b.ppg - a.ppg).slice(0, 5);
@@ -91,8 +91,14 @@ const GAMES: Game[] = [
   {
     href: "/challenges/name-players", tag: "10 min", title: "Name the Starters",
     description: "For each team, name the 5 current starters plus 1 bench player.",
-    meta: "30 teams · 15:00 timer",
+    meta: "30 teams · 10:00 timer",
     playerId: 1628983, playerPos: "top center", category: "timed",
+  },
+  {
+    href: "/challenges/draft-class", tag: "12 min", title: "Draft Class Challenge",
+    description: "Name 5 players from every NBA draft class, 2010–2025. One hint provided per year.",
+    meta: "16 classes · 80 players · 12:00 timer",
+    playerId: 1629627, playerPos: "top center", category: "timed",
   },
 ];
 
@@ -351,9 +357,16 @@ const SHOWCASE_TIMED: ShowcaseGame[] = [
   {
     href: "/challenges/name-players", tag: "10 min",
     title: "Name the Starters", description: "For each of the 30 teams, name the 5 current starters plus 1 bench player. Beat the 10-minute clock.",
-    meta: "30 teams · 300 players · 15:00 timer",
+    meta: "30 teams · 180 players · 10:00 timer",
     accentColor: "#f97316",
     Scene: (p) => <TimedPlayersScene {...p} />,
+  },
+  {
+    href: "/challenges/draft-class", tag: "12 min",
+    title: "Draft Class Challenge", description: "2010 through 2025 — name 5 players from every draft class. One hint is given per year.",
+    meta: "16 classes · 80 players · 12:00 timer",
+    accentColor: "#8b5cf6",
+    Scene: (p) => <DraftClassScene {...p} />,
   },
 ];
 

@@ -208,3 +208,16 @@ export function TimedPlayersScene({ accentColor }: { accentColor?: string }) {
     />
   );
 }
+
+export function DraftClassScene({ accentColor }: { accentColor?: string }) {
+  return (
+    <MomentScene
+      img={IMGS.wemby}
+      sub="2010–2025 Draft Classes"
+      label="Wembanyama — 2023 #1 Pick"
+      credit="Photo: Wikimedia Commons · CC BY-SA 4.0"
+      pos="center 20%"
+      accentColor={accentColor}
+    />
+  );
+}

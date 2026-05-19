@@ -65,6 +65,14 @@ export default function ChallengesPage() {
             description="For each of the 30 NBA teams, name the 5 current starters plus 1 bench player. Skip teams you're stuck on."
             meta={`30 teams · 6 players per team · 10:00 timer`}
           />
+          <ChallengeCard
+            href="/challenges/draft-class"
+            emoji="🎓"
+            tag="12 min"
+            title="Draft Class Challenge"
+            description="For each NBA draft class from 2010 to 2025, name 5 players. One hint player is shown — they don't count."
+            meta="16 draft classes · 5 per class · 12:00 timer"
+          />
         </div>
 
         <p className="text-zinc-400 text-xs text-center mt-14">
