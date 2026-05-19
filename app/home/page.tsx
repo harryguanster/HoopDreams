@@ -357,6 +357,104 @@ const SHOWCASE_TIMED: ShowcaseGame[] = [
   },
 ];
 
+// ─── Hero photo plates ────────────────────────────────────────────────────────
+const HERO_PHOTOS = [
+  { src: "https://upload.wikimedia.org/wikipedia/commons/6/60/Lebron_dunking_finals_2016.jpg",                    label: "The Block · 2016 Finals",  pos: "center 30%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg",   label: "Michael Jordan · 1997",    pos: "center 35%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/f/fc/Kobe_Bryant_81.jpg",                                label: "Kobe 81 Pts · 2006",       pos: "center 25%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Dream_Team_at_the_1992_Summer_Olympics.JPEG",       label: "Dream Team · 1992",        pos: "center 20%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Stephen_Curry_shooting.jpg",                        label: "Steph Curry · Warriors",   pos: "center 30%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg", label: "Wemby · Spurs 2025",    pos: "center 20%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/5/5e/LeBron_James_vs._Steph_Curry_%2827676810241%29.jpg", label: "LeBron vs Steph · 2016", pos: "center 30%" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Ray_Allen_Heat.jpg",                                label: "Ray Allen · Heat",         pos: "center 15%" },
+];
+
+// x/y = offset from hero center in vw/vh; zLayer 0 = behind title, 1 = in front
+const PLATE_LAYOUT = [
+  { x: -43, y: -24, rx:  14, ry: -28, rz: -13, w: 275, zLayer: 0 },
+  { x:  37, y: -27, rx: -11, ry:  24, rz:  11, w: 250, zLayer: 0 },
+  { x: -47, y:   9, rx:  20, ry: -18, rz:   8, w: 268, zLayer: 1 },
+  { x:  43, y:   7, rx: -16, ry: -24, rz:  -7, w: 248, zLayer: 0 },
+  { x: -13, y: -43, rx:   9, ry: -16, rz:  17, w: 205, zLayer: 1 },
+  { x:  11, y:  41, rx: -11, ry:  17, rz: -14, w: 225, zLayer: 0 },
+  { x:  45, y:  33, rx: -21, ry: -27, rz:  -5, w: 215, zLayer: 1 },
+  { x: -40, y:  33, rx:  17, ry:  21, rz:   5, w: 198, zLayer: 0 },
+];
+
+function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
+  src: string; label: string; pos: string;
+  x: number; y: number; rx: number; ry: number; rz: number;
+  w: number; idx: number; zLayer: number;
+}) {
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        width: w,
+        aspectRatio: "4/3",
+        left: `calc(50% + ${x}vw)`,
+        top: `calc(50% + ${y}vh)`,
+        translateX: "-50%",
+        translateY: "-50%",
+        rotateX: rx,
+        rotateY: ry,
+        rotateZ: rz,
+        transformPerspective: 950,
+        borderRadius: 16,
+        overflow: "hidden",
+        zIndex: zLayer === 0 ? 5 : 15,
+        boxShadow: "0 50px 130px rgba(0,0,0,0.88), 0 24px 65px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1)",
+        willChange: "transform",
+        pointerEvents: "none",
+      }}
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        y: [0, -(14 + idx * 2.5), 0],
+        rotateZ: [rz - 2.5, rz + 2.5],
+      }}
+      transition={{
+        opacity: { duration: 1.1, delay: 0.08 + idx * 0.13 },
+        scale: { duration: 1.1, delay: 0.08 + idx * 0.13, ease: [0.22, 1, 0.36, 1] },
+        y: { duration: 5.5 + idx * 0.75, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.65 },
+        rotateZ: { duration: 6.5 + idx * 0.6, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.5 },
+      }}
+    >
+      <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: pos }} />
+      {/* Glossy sheen */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 48%, rgba(0,0,0,0.08) 100%)", pointerEvents: "none" }} />
+      {/* Label */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px", background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)" }}>
+        <p style={{ color: "rgba(45,212,191,0.9)", fontSize: "7.5px", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>{label}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+function HeroMascot() {
+  const [target, setTarget] = useState({ x: 50, y: 80, rot: 14 });
+  useEffect(() => {
+    const move = () => setTarget({
+      x: (Math.random() - 0.5) * 350,
+      y: (Math.random() - 0.5) * 250,
+      rot: (Math.random() - 0.5) * 44,
+    });
+    const id = setInterval(move, 2700);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <motion.div
+        animate={{ x: target.x, y: target.y, rotate: target.rot }}
+        transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <BballMascot size={130} glow idle flying />
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── Full-viewport showcase section ──────────────────────────────────────
 function GameShowcaseSection({ href, tag, title, description, meta, accentColor, Scene, flip, index }: ShowcaseGame & { flip: boolean; index: number }) {
   const { chip } = tagStyle(tag);
@@ -481,122 +579,73 @@ export default function HomePage() {
       </header>
 
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden px-4">
-
-        {/* ── Atmospheric background ─────────────────────────────── */}
+      <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden">
         <style>{`
           @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(40px,-30px) scale(1.08)} 70%{transform:translate(-20px,20px) scale(0.95)} }
           @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
-          @keyframes floatC { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(15px,-18px) scale(1.12)} }
         `}</style>
 
-        {/* Orange warm blob — bottom-left */}
-        <div className="absolute pointer-events-none" style={{
-          width: 680, height: 540,
-          bottom: "-120px", left: "-140px",
-          background: "radial-gradient(ellipse, rgba(251,146,60,0.22) 0%, rgba(234,88,12,0.10) 45%, transparent 70%)",
-          filter: "blur(52px)",
-          animation: "floatA 9s ease-in-out infinite",
-          borderRadius: "50%",
-        }} />
+        {/* Orange blob */}
+        <div className="absolute pointer-events-none" style={{ width: 780, height: 620, bottom: "-140px", left: "-160px", background: "radial-gradient(ellipse, rgba(251,146,60,0.28) 0%, rgba(234,88,12,0.12) 45%, transparent 70%)", filter: "blur(60px)", animation: "floatA 9s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
+        {/* Teal blob */}
+        <div className="absolute pointer-events-none" style={{ width: 720, height: 580, top: "-120px", right: "-140px", background: "radial-gradient(ellipse, rgba(20,184,166,0.25) 0%, rgba(13,148,136,0.10) 50%, transparent 70%)", filter: "blur(65px)", animation: "floatB 11s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
+        {/* Horizon glow */}
+        <div className="absolute pointer-events-none" style={{ width: "100%", height: 300, bottom: 0, left: 0, background: "linear-gradient(to top, rgba(13,148,136,0.18) 0%, transparent 100%)", filter: "blur(2px)", zIndex: 1 }} />
+        {/* Edge vignette */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(5,14,26,0.82) 100%)", zIndex: 2 }} />
+        {/* Dot grid */}
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.10) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
 
-        {/* Teal blob — top-right */}
-        <div className="absolute pointer-events-none" style={{
-          width: 620, height: 500,
-          top: "-100px", right: "-120px",
-          background: "radial-gradient(ellipse, rgba(20,184,166,0.20) 0%, rgba(13,148,136,0.09) 50%, transparent 70%)",
-          filter: "blur(55px)",
-          animation: "floatB 11s ease-in-out infinite",
-          borderRadius: "50%",
-        }} />
+        {/* 3D floating photo plates */}
+        {PLATE_LAYOUT.map((pl, i) => (
+          <PhotoPlate3D
+            key={i}
+            src={HERO_PHOTOS[i].src}
+            label={HERO_PHOTOS[i].label}
+            pos={HERO_PHOTOS[i].pos}
+            x={pl.x} y={pl.y}
+            rx={pl.rx} ry={pl.ry} rz={pl.rz}
+            w={pl.w} idx={i} zLayer={pl.zLayer}
+          />
+        ))}
 
-        {/* Cyan accent — top-center */}
-        <div className="absolute pointer-events-none" style={{
-          width: 320, height: 260,
-          top: "5%", left: "38%",
-          background: "radial-gradient(ellipse, rgba(34,211,238,0.12) 0%, transparent 65%)",
-          filter: "blur(40px)",
-          animation: "floatC 7s ease-in-out infinite",
-          borderRadius: "50%",
-        }} />
+        {/* Flying mascot — ref tracked by IntersectionObserver */}
+        <div ref={mascotRef} style={{ position: "absolute", inset: 0, zIndex: 12, pointerEvents: "none" }}>
+          <HeroMascot />
+        </div>
 
-        {/* Deep teal horizon glow — bottom center */}
-        <div className="absolute pointer-events-none" style={{
-          width: "100%", height: 280,
-          bottom: 0, left: 0,
-          background: "linear-gradient(to top, rgba(13,148,136,0.15) 0%, transparent 100%)",
-          filter: "blur(2px)",
-        }} />
-
-        {/* Edge vignette — keeps edges dark */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 90% 90% at 50% 50%, transparent 30%, rgba(5,14,26,0.75) 100%)",
-        }} />
-
-        {/* Dot grid on top of blobs */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.12) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-        }} />
-
-        {/* Subtle arc rings */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] rounded-t-full border border-teal-400/10 pointer-events-none" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[450px] h-[225px] rounded-t-full border border-teal-400/7 pointer-events-none" />
-
-        {/* Title */}
-        <motion.div className="text-center z-10 mb-10"
-          initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: "easeOut" }}>
+        {/* Title — z-10, sandwiched between behind/in-front plates */}
+        <motion.div
+          className="relative text-center pointer-events-none"
+          style={{ zIndex: 10 }}
+          initial={{ opacity: 0, y: -28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, ease: "easeOut" }}
+        >
           <p className="text-[10px] font-mono uppercase tracking-[0.4em] text-teal-400/80 mb-5">
             NBA Knowledge Games
           </p>
-          <h1 className="text-6xl sm:text-8xl font-black tracking-tight leading-none uppercase">
-            <span className="text-teal-400">Test</span>{" "}
-            <span className="text-white">Your</span>
-          </h1>
-          <h1 className="text-6xl sm:text-8xl font-black tracking-tight leading-none uppercase text-white">
-            NBA IQ
+          <h1
+            className="font-black uppercase text-white"
+            style={{
+              fontSize: "clamp(52px, 11vw, 175px)",
+              lineHeight: 0.88,
+              letterSpacing: "-0.02em",
+              textShadow: "0 0 100px rgba(20,184,166,0.45), 0 4px 40px rgba(0,0,0,0.8)",
+            }}
+          >
+            Courtside<br />Central
           </h1>
         </motion.div>
 
-        {/* 3-column: card | mascot | card */}
-        <div className="relative z-10 flex items-center justify-center gap-8 sm:gap-16 w-full max-w-5xl">
-
-          {/* Left card */}
-          <motion.div className="hidden sm:block"
-            initial={{ opacity: 0, x: -50, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}>
-            <TopScorersCard />
-          </motion.div>
-
-          {/* Mascot — scroll-tracked: when out of view, it "flies" in PageTransitionMascot */}
-          <motion.div ref={mascotRef} className="flex flex-col items-center gap-3"
-            initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15, duration: 0.65, type: "spring", stiffness: 180, damping: 18 }}>
-            {/* Hot / Cold labels */}
-            <div className="flex items-center gap-28 text-[9px] font-mono text-white/35 uppercase tracking-[0.25em]">
-              <span>Hot 🔥</span>
-              <span>Cold ❄️</span>
-            </div>
-            <div className="flex items-center gap-5">
-              <div className="w-2 h-2 rounded-full bg-orange-400" style={{ boxShadow: "0 0 10px #fb923c" }} />
-              <BballMascot size={180} glow idle />
-              <div className="w-2 h-2 rounded-full bg-blue-400" style={{ boxShadow: "0 0 10px #60a5fa" }} />
-            </div>
-          </motion.div>
-
-          {/* Right card */}
-          <motion.div className="hidden sm:block"
-            initial={{ opacity: 0, x: 50, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}>
-            <WinRateCard />
-          </motion.div>
-        </div>
-
         {/* CTA */}
-        <motion.div className="z-10 mt-10"
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 0.5 }}>
+        <motion.div
+          className="relative mt-10"
+          style={{ zIndex: 20 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
           <motion.a
             href="/challenges"
             className="inline-block px-14 py-4 bg-teal-500 text-black font-black text-sm uppercase tracking-[0.22em] rounded-full"
@@ -608,14 +657,18 @@ export default function HomePage() {
           </motion.a>
         </motion.div>
 
-        {/* Stats row */}
-        <motion.div className="z-10 mt-12 flex items-center gap-10"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 0.75 }}>
+        {/* Stats row — pinned to bottom */}
+        <motion.div
+          className="absolute bottom-7 flex items-center gap-10"
+          style={{ zIndex: 20 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.85 }}
+        >
           <StatCounter value={`${TRIOS.length + CURRENT_TRIOS.length}+`} label="Start Bench Cut Rounds" />
-          <div className="h-8 w-px bg-teal-500/15" />
+          <div className="h-8 w-px bg-teal-500/20" />
           <StatCounter value={`${LINEUPS.length}+`} label="Lineup Puzzles" />
-          <div className="h-8 w-px bg-teal-500/15" />
+          <div className="h-8 w-px bg-teal-500/20" />
           <StatCounter value={`${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length}+`} label="Players" />
         </motion.div>
       </section>

@@ -19,8 +19,8 @@ export default function BballMascot({ size = 120, glow = false, idle = true, fly
     >
       <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" style={{
         filter: glow
-          ? "drop-shadow(0 0 16px rgba(251,146,60,0.7)) drop-shadow(0 0 40px rgba(20,184,166,0.35))"
-          : "drop-shadow(0 4px 12px rgba(0,0,0,0.35))",
+          ? "drop-shadow(0 0 22px rgba(251,146,60,0.9)) drop-shadow(0 0 55px rgba(20,184,166,0.5)) drop-shadow(0 10px 28px rgba(0,0,0,0.7))"
+          : "drop-shadow(0 10px 28px rgba(0,0,0,0.6)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
         overflow: "visible",
       }}>
         <defs>
@@ -126,6 +126,16 @@ export default function BballMascot({ size = 120, glow = false, idle = true, fly
 
         {/* Basketball body */}
         <circle cx="60" cy="57" r="37" fill="url(#bm-body)" />
+
+        {/* 3-D depth shading */}
+        {/* Specular highlight — upper-left gloss */}
+        <ellipse cx="45" cy="37" rx="17" ry="10" fill="rgba(255,255,255,0.22)" transform="rotate(-22 45 37)" />
+        {/* Micro glint */}
+        <circle cx="40" cy="32" r="5" fill="rgba(255,255,255,0.42)" />
+        {/* Ambient occlusion — lower-right shadow */}
+        <ellipse cx="76" cy="73" rx="14" ry="9" fill="rgba(0,0,0,0.16)" transform="rotate(-15 76 73)" />
+        {/* Top rim light */}
+        <path d="M26 26 Q60 10 94 26" stroke="rgba(255,255,255,0.15)" strokeWidth="5" fill="none" strokeLinecap="round" />
 
         {/* Seam lines */}
         <path d="M23 57 Q60 37 97 57" stroke="#7c2d12" strokeWidth="2.5" fill="none" opacity="0.65" />
