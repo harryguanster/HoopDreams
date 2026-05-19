@@ -244,7 +244,7 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
           <stop offset="0%"  stopColor="#fbbf24" stopOpacity="0.55"/>
           <stop offset="100%" stopColor="#fbbf24" stopOpacity="0"/>
         </radialGradient>
-        {pls.map((_, i) => grads(
+        {pls.flatMap((_, i) => grads(
           `sbc${i}`,
           pls[i].sL, pls[i].sM, pls[i].sD,
           pls[i].jA, pls[i].jB,
@@ -436,18 +436,21 @@ export function StatLineScene({ era = "alltime" }: { era?: string }) {
 // SCENE 4 — Lineup Guesser
 // ════════════════════════════════════════════════════════════════════════════
 export function LineupScene() {
+  // Back row (3) rendered first → appears behind front row (2)
+  // x-ranges: back [74-146] [284-356] [494-566], front [173-257] [383-467]
+  // All gaps ≥26px — zero overlap between any pair
   const players = [
-    { cx:320, fy:420, S:0.44, d:0,    sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#CE1141", jB:"#8b0d2c", shA:"#1a1a1a", shB:"#0a0a0a", hc:"#0a0404", hs:"bald"  as const, beard:false, jt:"white",   num:"PG", team:"POINT" },
-    { cx:178, fy:405, S:0.42, d:0.15, sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#007A33", jB:"#004d20", shA:"#007A33", shB:"#004d20", hc:"#140808", hs:"fade"  as const, beard:false, jt:"white",   num:"SG", team:"SHOOT" },
-    { cx:462, fy:405, S:0.42, d:0.3,  sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866", hc:"#2a1408", hs:"short" as const, beard:false, jt:"#FFC72C", num:"SF", team:"SMALL" },
-    { cx:228, fy:390, S:0.40, d:0.45, sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#F58426", jB:"#b85e10", shA:"#006BB6", shB:"#004a80", hc:"#0a0404", hs:"curly" as const, beard:true,  jt:"white",   num:"PF", team:"POWER" },
-    { cx:412, fy:390, S:0.40, d:0.6,  sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e", hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"#552583", num:"C",  team:"CNTRI" },
+    { cx:110, fy:376, S:0.36, d:0.15, sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#007A33", jB:"#004d20", shA:"#007A33", shB:"#004d20", hc:"#140808", hs:"fade"  as const, beard:false, jt:"white",   num:"SG", team:"SHOOT" },
+    { cx:320, fy:376, S:0.36, d:0,    sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#CE1141", jB:"#8b0d2c", shA:"#1a1a1a", shB:"#0a0a0a", hc:"#0a0404", hs:"bald"  as const, beard:false, jt:"white",   num:"PG", team:"POINT" },
+    { cx:530, fy:376, S:0.36, d:0.3,  sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866", hc:"#2a1408", hs:"short" as const, beard:false, jt:"#FFC72C", num:"SF", team:"SMALL" },
+    { cx:215, fy:406, S:0.42, d:0.45, sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#F58426", jB:"#b85e10", shA:"#006BB6", shB:"#004a80", hc:"#0a0404", hs:"curly" as const, beard:true,  jt:"white",   num:"PF", team:"POWER" },
+    { cx:425, fy:406, S:0.42, d:0.6,  sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e", hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"#552583", num:"C",  team:"CNTRI" },
   ];
 
   return (
     <svg viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" style={{ overflow:"visible" }}>
       <defs>
-        {players.map(pl => grads(`lu${pl.num}`, pl.sL, pl.sM, pl.sD, pl.jA, pl.jB, pl.shA, pl.shB))}
+        {players.flatMap(pl => grads(`lu${pl.num}`, pl.sL, pl.sM, pl.sD, pl.jA, pl.jB, pl.shA, pl.shB))}
       </defs>
 
       <ellipse cx="320" cy="345" rx="288" ry="110" fill="rgba(255,255,255,0.025)"/>
