@@ -411,14 +411,21 @@ function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
       animate={{
         opacity: 1,
         scale: 1,
-        y: [0, -(14 + idx * 2.5), 0],
-        rotateZ: [rz - 2.5, rz + 2.5],
+        // Each plate gets a unique 3-waypoint path so x and y drift out of phase → organic loop
+        x: [0, (idx % 2 === 0 ? 1 : -1) * (28 + (idx * 13) % 42), (idx % 2 === 0 ? -1 : 1) * (14 + (idx * 7) % 28), 0],
+        y: [0, -(20 + (idx * 9) % 35), -(8 + (idx * 5) % 22), 0],
+        rotateZ: [rz - 3, rz + 3, rz - 1.5, rz + 3],
+        rotateX: [rx - 1.5, rx + 1.5, rx - 1.5],
+        rotateY: [ry - 2, ry + 2, ry - 2],
       }}
       transition={{
         opacity: { duration: 1.1, delay: 0.08 + idx * 0.13 },
         scale: { duration: 1.1, delay: 0.08 + idx * 0.13, ease: [0.22, 1, 0.36, 1] },
-        y: { duration: 5.5 + idx * 0.75, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.65 },
-        rotateZ: { duration: 6.5 + idx * 0.6, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.5 },
+        x: { duration: 17 + idx * 2.8, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: idx * 0.8 },
+        y: { duration: 13 + idx * 2.2, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: idx * 0.6 },
+        rotateZ: { duration: 11 + idx * 1.8, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: idx * 0.5 },
+        rotateX: { duration: 19 + idx * 2.5, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.7 },
+        rotateY: { duration: 15 + idx * 2.1, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.9 },
       }}
     >
       <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: pos }} />
