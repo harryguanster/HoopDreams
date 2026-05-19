@@ -3,12 +3,18 @@ import { motion } from "framer-motion";
 
 // All images: Wikipedia Commons, freely licensed (see credit strings)
 const IMGS = {
+  // All-time legends
   lebron2016:  "https://upload.wikimedia.org/wikipedia/commons/6/60/Lebron_dunking_finals_2016.jpg",
   lebronSteph: "https://upload.wikimedia.org/wikipedia/commons/5/5e/LeBron_James_vs._Steph_Curry_%2827676810241%29.jpg",
   jordan97:    "https://upload.wikimedia.org/wikipedia/commons/4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg",
   kobe81:      "https://upload.wikimedia.org/wikipedia/commons/f/fc/Kobe_Bryant_81.jpg",
   dreamTeam:   "https://upload.wikimedia.org/wikipedia/commons/a/a0/Dream_Team_at_the_1992_Summer_Olympics.JPEG",
   rayAllen:    "https://upload.wikimedia.org/wikipedia/commons/f/f7/Ray_Allen_Heat.jpg",
+  // Current era
+  curry:       "https://upload.wikimedia.org/wikipedia/commons/b/b6/Stephen_Curry_shooting.jpg",
+  jokic:       "https://upload.wikimedia.org/wikipedia/commons/6/6b/Nikola_Jokic_%2840980299891%29.jpg",
+  luka:        "https://upload.wikimedia.org/wikipedia/commons/7/73/Luka_Doncic_%28cropped%29.jpg",
+  wemby:       "https://upload.wikimedia.org/wikipedia/commons/2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg",
 };
 
 interface SceneProps {
@@ -18,9 +24,11 @@ interface SceneProps {
   credit: string;
   pos?: string;
   filter?: string;
+  accentColor?: string;
 }
 
-function MomentScene({ img, sub, label, credit, pos = "center center", filter }: SceneProps) {
+function MomentScene({ img, sub, label, credit, pos = "center center", filter, accentColor }: SceneProps) {
+  const subColor = accentColor ?? "rgba(45,212,191,0.92)";
   return (
     <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "4/3" }}>
       {/* Ken Burns slow zoom */}
@@ -49,7 +57,7 @@ function MomentScene({ img, sub, label, credit, pos = "center center", filter }:
       <div className="absolute bottom-0 left-0 right-0 px-4 py-3 select-none">
         <p
           style={{
-            color: "rgba(45,212,191,0.92)",
+            color: subColor,
             fontSize: "9px",
             fontFamily: "monospace",
             letterSpacing: "0.15em",
@@ -80,8 +88,19 @@ function MomentScene({ img, sub, label, credit, pos = "center center", filter }:
 
 // ── Scenes ────────────────────────────────────────────────────────────────────
 
-export function SBCScene({ era = "alltime" }: { era?: string }) {
-  void era;
+export function SBCScene({ era = "alltime", accentColor }: { era?: string; accentColor?: string }) {
+  if (era === "current") {
+    return (
+      <MomentScene
+        img={IMGS.wemby}
+        sub="2025–26 Season · Spurs"
+        label="Victor Wembanyama — The Future Is Now"
+        credit="Photo: Daiei Onoguchi · CC BY 4.0"
+        pos="center 20%"
+        accentColor={accentColor}
+      />
+    );
+  }
   return (
     <MomentScene
       img={IMGS.lebron2016}
@@ -89,26 +108,49 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
       label="LeBron's Chase-Down Block on Iguodala"
       credit="Photo: Erik Drost · CC BY 2.0"
       pos="center 30%"
+      accentColor={accentColor}
     />
   );
 }
 
-export function GuessWhoScene({ era = "alltime" }: { era?: string }) {
-  void era;
+export function GuessWhoScene({ era = "alltime", accentColor }: { era?: string; accentColor?: string }) {
+  if (era === "current") {
+    return (
+      <MomentScene
+        img={IMGS.jokic}
+        sub="Guess the Star"
+        label="Who Is This Current NBA Star?"
+        credit="Photo: Keith Allison · CC BY-SA 2.0"
+        filter="grayscale(75%) brightness(0.7) contrast(1.1)"
+        accentColor={accentColor}
+      />
+    );
+  }
   return (
     <MomentScene
       img={IMGS.jordan97}
       sub="Guess the Legend"
       label="Who Is This NBA Icon?"
       credit="Photo: Steve Lipofsky · CC BY-SA 3.0"
-      // grayscale + slight brightness dip for "mystery silhouette" feel
       filter="grayscale(75%) brightness(0.7) contrast(1.1)"
+      accentColor={accentColor}
     />
   );
 }
 
-export function StatLineScene({ era = "alltime" }: { era?: string }) {
-  void era;
+export function StatLineScene({ era = "alltime", accentColor }: { era?: string; accentColor?: string }) {
+  if (era === "current") {
+    return (
+      <MomentScene
+        img={IMGS.curry}
+        sub="Golden State Warriors"
+        label="Stephen Curry — Greatest Shooter Ever"
+        credit="via Wikimedia Commons · CC BY-SA 2.0"
+        pos="center 25%"
+        accentColor={accentColor}
+      />
+    );
+  }
   return (
     <MomentScene
       img={IMGS.kobe81}
@@ -116,11 +158,12 @@ export function StatLineScene({ era = "alltime" }: { era?: string }) {
       label="Kobe Bryant — 81 Points"
       credit="Photo: endlessbender · CC BY 2.0"
       pos="center 25%"
+      accentColor={accentColor}
     />
   );
 }
 
-export function LineupScene() {
+export function LineupScene({ accentColor }: { accentColor?: string }) {
   return (
     <MomentScene
       img={IMGS.dreamTeam}
@@ -128,11 +171,12 @@ export function LineupScene() {
       label="The Dream Team — Greatest Lineup Ever"
       credit="Photo: Ken Hackman, U.S. Air Force · Public Domain"
       pos="center 20%"
+      accentColor={accentColor}
     />
   );
 }
 
-export function TimedTeamsScene() {
+export function TimedTeamsScene({ accentColor }: { accentColor?: string }) {
   return (
     <MomentScene
       img={IMGS.rayAllen}
@@ -140,11 +184,12 @@ export function TimedTeamsScene() {
       label="Ray Allen — Miami Heat"
       credit="Photo: Keith Allison · CC BY-SA 2.0"
       pos="center 15%"
+      accentColor={accentColor}
     />
   );
 }
 
-export function TimedPlayersScene() {
+export function TimedPlayersScene({ accentColor }: { accentColor?: string }) {
   return (
     <MomentScene
       img={IMGS.lebronSteph}
@@ -152,6 +197,7 @@ export function TimedPlayersScene() {
       label="LeBron vs. Steph — Name Every Player"
       credit="Photo: Erik Drost · CC BY 2.0"
       pos="center 30%"
+      accentColor={accentColor}
     />
   );
 }

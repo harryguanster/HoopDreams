@@ -285,7 +285,7 @@ function GameCard({ href, tag, title, description, meta, playerId, playerPos }: 
 type ShowcaseGame = {
   href: string; tag: string; title: string; description: string; meta: string;
   accentColor: string;
-  Scene: React.ComponentType;
+  Scene: React.ComponentType<{ accentColor?: string }>;
 };
 
 const SHOWCASE_GAMES: ShowcaseGame[] = [
@@ -294,49 +294,49 @@ const SHOWCASE_GAMES: ShowcaseGame[] = [
     title: "Start · Bench · Cut", description: "Jordan, Kobe, LeBron — who starts, who rides pine, who gets cut? Make the call with over a hundred legendary trios.",
     meta: `${TRIOS.length} rounds · All-time legends`,
     accentColor: "#f97316",
-    Scene: () => <SBCScene era="alltime" />,
+    Scene: (p) => <SBCScene era="alltime" {...p} />,
   },
   {
     href: "/start-bench-cut?era=current", tag: "Current",
     title: "Start · Bench · Cut · Now", description: "Jokic, Wemby, SGA — build your dream 2025–26 roster one impossible trio at a time.",
     meta: `${CURRENT_TRIOS.length} rounds · 2025–26 season`,
     accentColor: "#0ea5e9",
-    Scene: () => <SBCScene era="current" />,
+    Scene: (p) => <SBCScene era="current" {...p} />,
   },
   {
     href: "/guess-who?era=alltime", tag: "Puzzle",
     title: "Guess Who · Legends", description: "Decode a mystery all-time great from Wordle-style stat clues. Green = exact match, yellow = close.",
     meta: "302 players · up to 10 guesses",
     accentColor: "#a855f7",
-    Scene: () => <GuessWhoScene era="alltime" />,
+    Scene: (p) => <GuessWhoScene era="alltime" {...p} />,
   },
   {
     href: "/guess-who?era=current", tag: "Current",
     title: "Guess Who · Current", description: "Identify today's stars from PPG, team, division, position clues and more. How many guesses do you need?",
     meta: `${CURRENT_NBA_PLAYERS.length} players · 2025–26`,
     accentColor: "#0ea5e9",
-    Scene: () => <GuessWhoScene era="current" />,
+    Scene: (p) => <GuessWhoScene era="current" {...p} />,
   },
   {
     href: "/stat-line-guesser?era=alltime", tag: "Stats",
     title: "Stat Line · Legends", description: "One clue at a time, a career stat line is revealed. Name the all-time great before all five clues drop.",
     meta: `${STAT_LINE_PLAYERS.length} players · 5 reveals`,
     accentColor: "#10b981",
-    Scene: () => <StatLineScene era="alltime" />,
+    Scene: (p) => <StatLineScene era="alltime" {...p} />,
   },
   {
     href: "/stat-line-guesser?era=current", tag: "Current",
     title: "Stat Line · Current", description: "Current-season averages, drip-fed one stat at a time. Fewer clues = bigger bragging rights.",
     meta: `${CURRENT_STAT_LINE_PLAYERS.length} players · 2025–26`,
     accentColor: "#3b82f6",
-    Scene: () => <StatLineScene era="current" />,
+    Scene: (p) => <StatLineScene era="current" {...p} />,
   },
   {
     href: "/lineup-guesser", tag: "New",
     title: "Lineup Guesser", description: "Five starters, their stat lines. You have three guesses to name the NBA team and season.",
     meta: `${LINEUPS.length} puzzles · All eras`,
     accentColor: "#14b8a6",
-    Scene: LineupScene,
+    Scene: (p) => <LineupScene {...p} />,
   },
 ];
 
@@ -346,14 +346,14 @@ const SHOWCASE_TIMED: ShowcaseGame[] = [
     title: "Name All NBA Teams", description: "30 franchises, 5 minutes. Type every team name before the clock hits zero — nicknames count.",
     meta: "30 teams · 5:00 timer",
     accentColor: "#f59e0b",
-    Scene: TimedTeamsScene,
+    Scene: (p) => <TimedTeamsScene {...p} />,
   },
   {
     href: "/challenges/name-players", tag: "15 min",
     title: "Name 10 Per Team", description: "For each of the 30 teams, name 10 players — current stars or all-time legends. Beat the 15-minute clock.",
     meta: "30 teams · 300 players · 15:00 timer",
     accentColor: "#f97316",
-    Scene: TimedPlayersScene,
+    Scene: (p) => <TimedPlayersScene {...p} />,
   },
 ];
 
@@ -388,7 +388,7 @@ function GameShowcaseSection({ href, tag, title, description, meta, accentColor,
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-          <Scene />
+          <Scene accentColor={accentColor} />
         </motion.div>
 
         {/* ── Text ── */}
