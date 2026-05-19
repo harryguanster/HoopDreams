@@ -120,7 +120,7 @@ function TopScorersCard() {
           </div>
         ))}
       </div>
-      <p className="mt-3 text-[9px] text-white/25 font-mono uppercase tracking-widest">PPG · 2025–26</p>
+      <p className="mt-3 text-[9px] text-white/50 font-mono uppercase tracking-widest">PPG · 2025–26</p>
     </div>
   );
 }
@@ -173,7 +173,7 @@ function WinRateCard() {
           opacity="0.25"
         />
       </svg>
-      <p className="mt-2 text-[9px] text-white/25 font-mono uppercase tracking-widest">Top teams avg · 2025–26</p>
+      <p className="mt-2 text-[9px] text-white/50 font-mono uppercase tracking-widest">Top teams avg · 2025–26</p>
     </div>
   );
 }
@@ -187,7 +187,7 @@ function StatCounter({ value, label }: { value: string; label: string }) {
       transition={{ delay: 0.9, duration: 0.5 }}
     >
       <p className="text-2xl font-black text-teal-400">{value}</p>
-      <p className="text-[9px] text-white/30 font-mono uppercase tracking-widest mt-0.5">{label}</p>
+      <p className="text-[9px] text-white/55 font-mono uppercase tracking-widest mt-0.5">{label}</p>
     </motion.div>
   );
 }
@@ -260,9 +260,9 @@ function GameCard({ href, tag, title, description, meta, playerId, playerPos }: 
           <h3 className="text-base font-black text-white mb-1.5 leading-tight group-hover:text-teal-300 transition-colors duration-200">
             {title}
           </h3>
-          <p className="text-xs text-white/40 leading-relaxed mb-4">{description}</p>
+          <p className="text-xs text-white/70 leading-relaxed mb-4">{description}</p>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-white/25 font-mono">{meta}</span>
+            <span className="text-[10px] text-white/50 font-mono">{meta}</span>
             <span className="text-teal-400 text-xs font-black opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 transform">
               Play →
             </span>
@@ -398,7 +398,7 @@ function GameShowcaseSection({ href, tag, title, description, meta, accentColor,
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
           {/* Section number */}
-          <p className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] mb-4">
+          <p className="text-[10px] font-mono text-white/45 uppercase tracking-[0.4em] mb-4">
             {String(index + 1).padStart(2, "0")} / GAME MODE
           </p>
 
@@ -418,7 +418,7 @@ function GameShowcaseSection({ href, tag, title, description, meta, accentColor,
           </h2>
 
           {/* Description */}
-          <p className="text-white/55 text-lg leading-relaxed mb-8 max-w-md">
+          <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
             {description}
           </p>
 
@@ -434,7 +434,7 @@ function GameShowcaseSection({ href, tag, title, description, meta, accentColor,
                 Play Now
               </motion.div>
             </Link>
-            <span className="text-[11px] text-white/25 font-mono">{meta}</span>
+            <span className="text-[11px] text-white/55 font-mono">{meta}</span>
           </div>
         </motion.div>
       </div>
@@ -643,7 +643,7 @@ export default function HomePage() {
           <GameShowcaseSection key={s.href} {...s} flip={i % 2 === 1} index={i} />
         ))}
         <div className="h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
-        <p className="text-center text-white/12 text-[10px] font-mono py-10 tracking-widest uppercase">
+        <p className="text-center text-white/35 text-[10px] font-mono py-10 tracking-widest uppercase">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
       </div>

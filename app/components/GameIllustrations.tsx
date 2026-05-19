@@ -30,7 +30,14 @@ interface SceneProps {
 function MomentScene({ img, sub, label, credit, pos = "center center", filter, accentColor }: SceneProps) {
   const subColor = accentColor ?? "rgba(45,212,191,0.92)";
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "4/3" }}>
+    <motion.div
+      className="relative w-full overflow-hidden rounded-2xl"
+      style={{ aspectRatio: "4/3" }}
+      initial={{ opacity: 0, scale: 0.96 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+    >
       {/* Ken Burns slow zoom */}
       <motion.div
         className="absolute inset-0"
@@ -82,7 +89,7 @@ function MomentScene({ img, sub, label, credit, pos = "center center", filter, a
           {credit}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
