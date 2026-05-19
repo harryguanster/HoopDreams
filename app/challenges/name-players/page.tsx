@@ -3,8 +3,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import GameHeader from "@/app/components/GameHeader";
 import { TEAM_ROSTERS, NBA_TEAMS } from "@/lib/challengeData";
 
-const SLOTS = 10;
-const TIME_LIMIT = 15 * 60;
+const SLOTS = 6;
+const TIME_LIMIT = 10 * 60;
+const POSITIONS = ["PG", "SG", "SF", "PF", "C", "6th"];
 
 const TEAM_NAMES = NBA_TEAMS.map(t => t.name);
 
@@ -141,7 +142,7 @@ export default function NamePlayersPage() {
 
   return (
     <div className="min-h-screen">
-      <GameHeader title="Name 10 Players Per Team" />
+      <GameHeader title="Name the Starting 5" />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-20">
 
         {/* Top stats */}
@@ -153,7 +154,7 @@ export default function NamePlayersPage() {
             <div className="text-[9px] text-white/40 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-black text-teal-400 tabular-nums">{totalGuessed}/300</div>
+            <div className="text-2xl font-black text-teal-400 tabular-nums">{totalGuessed}/180</div>
             <div className="text-[9px] text-white/40 uppercase tracking-wide">Total Players</div>
           </div>
           <div className="text-center">
@@ -166,7 +167,7 @@ export default function NamePlayersPage() {
         <div className="w-full h-1.5 bg-white/8 rounded-full mb-6 overflow-hidden">
           <div
             className="h-full bg-teal-500 rounded-full transition-all duration-300"
-            style={{ width: `${(totalGuessed / 300) * 100}%` }}
+            style={{ width: `${(totalGuessed / 180) * 100}%` }}
           />
         </div>
 
@@ -202,7 +203,7 @@ export default function NamePlayersPage() {
               className={`rounded-xl px-3 py-2.5 text-sm font-semibold flex items-center gap-2 transition-all
                 ${player ? "bg-teal-500 text-white " : "bg-white/6 border-2 border-dashed border-white/10 text-white/30"}`}
             >
-              <span className="text-[10px] font-bold opacity-60">{i + 1}</span>
+              <span className="text-[10px] font-bold opacity-60 w-6 shrink-0">{POSITIONS[i]}</span>
               <span className="truncate">{player ?? "—"}</span>
             </div>
           ))}
@@ -268,7 +269,7 @@ export default function NamePlayersPage() {
           <div className="mt-4 text-center py-6 bg-white/5 border border-white/10 rounded-2xl">
             <div className="text-4xl mb-2">{teamsCompleted === 30 ? "🏆" : "⏱️"}</div>
             <h2 className="text-xl font-bold text-white mb-1">Time&apos;s up!</h2>
-            <p className="text-sm text-white/45 mb-1">{totalGuessed} / 300 players named</p>
+            <p className="text-sm text-white/45 mb-1">{totalGuessed} / 180 players named</p>
             <p className="text-sm text-white/45 mb-5">{teamsCompleted} / 30 teams completed</p>
             <button onClick={restart} className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors">
               Play Again
@@ -278,7 +279,7 @@ export default function NamePlayersPage() {
               {TEAM_NAMES.map(t => (
                 <div key={t} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-xs ${guessedPerTeam[t].length >= SLOTS ? "bg-teal-500/20 text-teal-300 border border-teal-400/20" : "bg-white/5 text-white/40"}`}>
                   <span className="font-medium truncate pr-2">{t.replace(/^(Los Angeles|New York|New Orleans|San Antonio|Oklahoma City|Golden State|Portland Trail|Sacramento|Golden State) /, m => m.slice(0, 2) + ".")}</span>
-                  <span className="font-bold tabular-nums shrink-0">{Math.min(guessedPerTeam[t].length, SLOTS)}/10</span>
+                  <span className="font-bold tabular-nums shrink-0">{Math.min(guessedPerTeam[t].length, SLOTS)}/6</span>
                 </div>
               ))}
             </div>
