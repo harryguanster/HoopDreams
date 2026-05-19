@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import GameHeader from "@/app/components/GameHeader";
-import { NBA_TEAMS } from "@/lib/challengeData";
+import { NBA_TEAMS, NBA_CONFERENCES } from "@/lib/challengeData";
 
 const TOTAL = 30;
 const TIME_LIMIT = 5 * 60; // 5 minutes in seconds
@@ -178,25 +178,49 @@ export default function NameTeamsPage() {
           </div>
         )}
 
-        {/* Team grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {NBA_TEAMS.map(team => {
-            const done = guessed.includes(team.name);
-            return (
-              <div
-                key={team.name}
-                className={`rounded-xl px-3 py-2 text-sm font-semibold text-center transition-all duration-300
-                  ${done
-                    ? "bg-teal-500 text-white "
-                    : gameOver
-                      ? "bg-white/8 text-white/55 border border-white/10"
-                      : "bg-white/5 text-transparent border border-dashed border-white/10"
-                  }`}
-              >
-                {done || gameOver ? team.name : "?"}
+        {/* Teams by conference + division */}
+        <div className="space-y-5">
+          {NBA_CONFERENCES.map(conf => (
+            <div key={conf.name}>
+              {/* Conference header */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${conf.name.startsWith("Eastern") ? "text-sky-300 bg-sky-500/10 border-sky-400/25" : "text-orange-300 bg-orange-500/10 border-orange-400/25"}`}>
+                  {conf.name}
+                </span>
+                <div className="flex-1 h-px bg-white/8" />
               </div>
-            );
-          })}
+
+              {/* Divisions side-by-side */}
+              <div className="grid grid-cols-3 gap-3">
+                {conf.divisions.map(div => (
+                  <div key={div.name}>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/35 mb-1.5 text-center">
+                      {div.name}
+                    </p>
+                    <div className="space-y-1">
+                      {div.teams.map(teamName => {
+                        const done = guessed.includes(teamName);
+                        return (
+                          <div
+                            key={teamName}
+                            className={`rounded-lg px-2 py-1.5 text-xs font-semibold text-center transition-all duration-300
+                              ${done
+                                ? "bg-teal-500 text-white"
+                                : gameOver
+                                  ? "bg-white/8 text-white/55 border border-white/10"
+                                  : "bg-white/5 text-transparent border border-dashed border-white/8 select-none"
+                              }`}
+                          >
+                            {done || gameOver ? teamName : "?"}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         {!started && !gameOver && (

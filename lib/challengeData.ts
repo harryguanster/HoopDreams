@@ -1,3 +1,25 @@
+export const NBA_CONFERENCES: {
+  name: string;
+  divisions: { name: string; teams: string[] }[];
+}[] = [
+  {
+    name: "Eastern Conference",
+    divisions: [
+      { name: "Atlantic",  teams: ["Boston Celtics","Brooklyn Nets","New York Knicks","Philadelphia 76ers","Toronto Raptors"] },
+      { name: "Central",   teams: ["Chicago Bulls","Cleveland Cavaliers","Detroit Pistons","Indiana Pacers","Milwaukee Bucks"] },
+      { name: "Southeast", teams: ["Atlanta Hawks","Charlotte Hornets","Miami Heat","Orlando Magic","Washington Wizards"] },
+    ],
+  },
+  {
+    name: "Western Conference",
+    divisions: [
+      { name: "Northwest", teams: ["Denver Nuggets","Minnesota Timberwolves","Oklahoma City Thunder","Portland Trail Blazers","Utah Jazz"] },
+      { name: "Pacific",   teams: ["Golden State Warriors","LA Clippers","Los Angeles Lakers","Phoenix Suns","Sacramento Kings"] },
+      { name: "Southwest", teams: ["Dallas Mavericks","Houston Rockets","Memphis Grizzlies","New Orleans Pelicans","San Antonio Spurs"] },
+    ],
+  },
+];
+
 export const NBA_TEAMS: { name: string; aliases: string[] }[] = [
   { name: "Atlanta Hawks",          aliases: ["hawks","atlanta","atl"] },
   { name: "Boston Celtics",         aliases: ["celtics","boston","bos"] },
