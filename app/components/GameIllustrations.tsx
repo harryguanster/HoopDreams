@@ -22,7 +22,7 @@ interface SceneProps {
 
 function MomentScene({ img, sub, label, credit, pos = "center center", filter }: SceneProps) {
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative w-full overflow-hidden rounded-2xl" style={{ aspectRatio: "4/3" }}>
       {/* Ken Burns slow zoom */}
       <motion.div
         className="absolute inset-0"
