@@ -60,10 +60,10 @@ export default function ChallengesPage() {
           <ChallengeCard
             href="/challenges/name-players"
             emoji="👕"
-            tag="15 min"
-            title="Name 10 Players Per Team"
-            description="For each of the 30 NBA teams, name 10 players — current or historical. Skip teams you're stuck on."
-            meta={`30 teams · ${totalPlayers}+ players in the database · 15:00 timer`}
+            tag="10 min"
+            title="Name the Starters"
+            description="For each of the 30 NBA teams, name the 5 current starters plus 1 bench player. Skip teams you're stuck on."
+            meta={`30 teams · 6 players per team · 10:00 timer`}
           />
         </div>
 

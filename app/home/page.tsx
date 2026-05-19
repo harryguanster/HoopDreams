@@ -89,8 +89,8 @@ const GAMES: Game[] = [
     playerId: 201939, playerPos: "top center", category: "timed",
   },
   {
-    href: "/challenges/name-players", tag: "15 min", title: "Name 10 Players Per Team",
-    description: "For each team, name 10 players — stars or all-time legends.",
+    href: "/challenges/name-players", tag: "10 min", title: "Name the Starters",
+    description: "For each team, name the 5 current starters plus 1 bench player.",
     meta: "30 teams · 15:00 timer",
     playerId: 1628983, playerPos: "top center", category: "timed",
   },
@@ -349,8 +349,8 @@ const SHOWCASE_TIMED: ShowcaseGame[] = [
     Scene: (p) => <TimedTeamsScene {...p} />,
   },
   {
-    href: "/challenges/name-players", tag: "15 min",
-    title: "Name 10 Per Team", description: "For each of the 30 teams, name 10 players — current stars or all-time legends. Beat the 15-minute clock.",
+    href: "/challenges/name-players", tag: "10 min",
+    title: "Name the Starters", description: "For each of the 30 teams, name the 5 current starters plus 1 bench player. Beat the 10-minute clock.",
     meta: "30 teams · 300 players · 15:00 timer",
     accentColor: "#f97316",
     Scene: (p) => <TimedPlayersScene {...p} />,
