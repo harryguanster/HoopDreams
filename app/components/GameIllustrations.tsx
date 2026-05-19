@@ -3,8 +3,7 @@ import { motion } from "framer-motion";
 
 const inf = { repeat: Infinity, ease: "easeInOut" as const };
 
-// Returns a plain ARRAY — safe to spread directly inside <defs>
-// (using a React component/fragment inside <defs> breaks gradient resolution)
+// Returns flat array — safe to spread directly inside <defs>
 function grads(p: string, sL: string, sM: string, sD: string, jA: string, jB: string, shA: string, shB: string) {
   return [
     <radialGradient key={`${p}s`} id={`${p}s`} cx="36%" cy="26%" r="70%">
@@ -27,8 +26,11 @@ function grads(p: string, sL: string, sM: string, sD: string, jA: string, jB: st
   ];
 }
 
-// Character drawn in local 200 × 480 space.
-// Hip is at local y=310. Place with translate(cx−100·s, benchY−310·s) scale(s).
+// ── Cash Inc. chibi block-head style ────────────────────────────────────────
+// Local 200 × 295 space.
+// Head is a wide square block (170×132) — the dominant feature.
+// Shoe bottom at local y=293.  Shorts waist at local y=206.
+// Standing: ty = FLOOR_Y - 293*S    Sitting: ty = BENCH_Y - 206*S
 interface CP {
   p: string;
   hc: string; hs: "bald"|"short"|"fade"|"curly"|"locs";
@@ -37,168 +39,184 @@ interface CP {
   sit?: boolean; sad?: boolean; wave?: boolean; armsup?: boolean;
 }
 function Char({ p, hc, hs, beard, sD, jt, num, team, sit, sad, wave, armsup }: CP) {
-  const sk = `url(#${p}s)`;
-  const jr = `url(#${p}j)`;
-  const sh = `url(#${p}h)`;
+  const sk   = `url(#${p}s)`;
+  const jr   = `url(#${p}j)`;
+  const sh   = `url(#${p}h)`;
   const shoe = `url(#${p}e)`;
 
   return (
     <g>
       {/* Floor shadow */}
-      {!sit && <ellipse cx="100" cy="474" rx="55" ry="12" fill="rgba(0,0,0,0.28)"/>}
+      {!sit && <ellipse cx="100" cy="293" rx="68" ry="10" fill="rgba(0,0,0,0.22)"/>}
 
       {/* ── Shoes ── */}
-      <ellipse cx="64"  cy="460" rx="32" ry="14" fill={shoe}/>
-      <ellipse cx="136" cy="460" rx="32" ry="14" fill={shoe}/>
-      <ellipse cx="54"  cy="452" rx="14" ry="6"  fill="rgba(255,255,255,0.16)" transform="rotate(-14 54 452)"/>
-      <ellipse cx="126" cy="452" rx="14" ry="6"  fill="rgba(255,255,255,0.16)" transform="rotate(14 126 452)"/>
-
-      {/* ── Ankle socks ── */}
-      <rect x="46"  y="435" width="36" height="24" rx="10" fill="#eeeeee"/>
-      <rect x="118" y="435" width="36" height="24" rx="10" fill="#eeeeee"/>
-      <rect x="46"  y="435" width="36" height="5"  rx="2"  fill="#cccccc"/>
-      <rect x="118" y="435" width="36" height="5"  rx="2"  fill="#cccccc"/>
+      <ellipse cx="58"  cy="282" rx="30" ry="11" fill={shoe}/>
+      <ellipse cx="142" cy="282" rx="30" ry="11" fill={shoe}/>
+      <rect x="38"  y="272" width="40" height="11" rx="4" fill="rgba(255,255,255,0.20)"/>
+      <rect x="122" y="272" width="40" height="11" rx="4" fill="rgba(255,255,255,0.20)"/>
 
       {/* ── Legs ── */}
-      <rect x="46"  y="358" width="34" height="80" rx="13" fill={sk}/>
-      <rect x="120" y="358" width="34" height="80" rx="13" fill={sk}/>
+      {sit ? (
+        <>
+          <rect x="40" y="218" width="36" height="58" rx="11" fill={sk}/>
+          <rect x="124" y="218" width="36" height="58" rx="11" fill={sk}/>
+        </>
+      ) : (
+        <>
+          <rect x="40" y="248" width="36" height="30" rx="11" fill={sk}/>
+          <rect x="124" y="248" width="36" height="30" rx="11" fill={sk}/>
+        </>
+      )}
 
       {/* ── Shorts ── */}
-      <rect x="28" y="308" width="144" height="58" rx="10" fill={sh}/>
-      <line x1="100" y1="308" x2="100" y2="362" stroke="rgba(0,0,0,0.14)" strokeWidth="2.5"/>
-      <rect x="28" y="348" width="144" height="12" rx="6" fill="rgba(0,0,0,0.10)"/>
+      <rect x="24" y="206" width="152" height="48" rx="12" fill={sh}/>
+      <rect x="24" y="244" width="152" height="10" rx="5" fill="rgba(0,0,0,0.10)"/>
+      <line x1="100" y1="208" x2="100" y2="248" stroke="rgba(0,0,0,0.08)" strokeWidth="2.5"/>
 
       {/* ── Left arm ── */}
-      {armsup
-        ? <><path d="M 30 195 Q 6 165 2 128" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="1" cy="120" r="20" fill={sk}/></>
-        : sit
-        ? <><path d="M 30 195 Q 18 244 24 298" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="23" cy="303" r="20" fill={sk}/></>
-        : <><path d="M 30 195 Q 8 258 4 314" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="3" cy="318" r="20" fill={sk}/></>
-      }
+      {armsup ? (
+        <>
+          <rect x="0" y="106" width="30" height="58" rx="13" fill={sk} transform="rotate(-38 15 135)"/>
+          <circle cx="6" cy="98" r="16" fill={sk}/>
+        </>
+      ) : sit ? (
+        <>
+          <rect x="4" y="150" width="30" height="50" rx="12" fill={sk} transform="rotate(18 19 175)"/>
+          <circle cx="20" cy="202" r="15" fill={sk}/>
+        </>
+      ) : (
+        <>
+          <rect x="4" y="146" width="30" height="58" rx="13" fill={sk}/>
+          <circle cx="19" cy="207" r="15" fill={sk}/>
+        </>
+      )}
 
       {/* ── Right arm ── */}
-      {armsup
-        ? <><path d="M 170 195 Q 194 165 198 128" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="199" cy="120" r="20" fill={sk}/></>
-        : wave
-        ? <><path d="M 170 195 Q 196 155 200 112" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="201" cy="104" r="20" fill={sk}/></>
-        : sit
-        ? <><path d="M 170 195 Q 182 244 176 298" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="177" cy="303" r="20" fill={sk}/></>
-        : <><path d="M 170 195 Q 192 258 196 314" stroke={sk} strokeWidth="32" fill="none" strokeLinecap="round"/>
-            <circle cx="197" cy="318" r="20" fill={sk}/></>
-      }
+      {armsup ? (
+        <>
+          <rect x="170" y="106" width="30" height="58" rx="13" fill={sk} transform="rotate(38 185 135)"/>
+          <circle cx="194" cy="98" r="16" fill={sk}/>
+        </>
+      ) : wave ? (
+        <>
+          <rect x="166" y="100" width="30" height="58" rx="13" fill={sk} transform="rotate(-44 181 129)"/>
+          <circle cx="176" cy="92" r="16" fill={sk}/>
+        </>
+      ) : sit ? (
+        <>
+          <rect x="166" y="150" width="30" height="50" rx="12" fill={sk} transform="rotate(-18 181 175)"/>
+          <circle cx="180" cy="202" r="15" fill={sk}/>
+        </>
+      ) : (
+        <>
+          <rect x="166" y="146" width="30" height="58" rx="13" fill={sk}/>
+          <circle cx="181" cy="207" r="15" fill={sk}/>
+        </>
+      )}
 
-      {/* ── Jersey / Torso ── */}
-      <path d="M 26 194 Q 42 178 66 176 L 70 194 Q 100 206 130 194 L 134 176 Q 158 178 174 194 L 176 318 Q 100 334 24 318 Z" fill={jr}/>
-      <path d="M 70 194 Q 100 216 130 194" fill="none" stroke="rgba(0,0,0,0.22)" strokeWidth="3.5"/>
-      <path d="M 26 194 Q 42 178 66 176" fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth="2"/>
-      <path d="M 174 194 Q 158 178 134 176" fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth="2"/>
-      <ellipse cx="66" cy="207" rx="27" ry="18" fill="rgba(255,255,255,0.09)" transform="rotate(-20 66 207)"/>
-      <text x="100" y="256" textAnchor="middle" fill={jt}
-        fontSize="15" fontWeight="900" fontFamily="'Arial Black',Arial,sans-serif" letterSpacing="1" opacity="0.88">{team}</text>
-      <text x="100" y="305" textAnchor="middle" fill={jt}
-        fontSize="48" fontWeight="900" fontFamily="'Arial Black',Arial,sans-serif" opacity="0.90">{num}</text>
+      {/* ── Jersey / torso ── */}
+      <rect x="36" y="138" width="128" height="74" rx="14" fill={jr}/>
+      <path d="M 72 138 Q 100 162 128 138" fill="none" stroke="rgba(0,0,0,0.18)" strokeWidth="3.5"/>
+      <ellipse cx="60" cy="155" rx="22" ry="12" fill="rgba(255,255,255,0.13)" transform="rotate(-20 60 155)"/>
+      <text x="100" y="176" textAnchor="middle" fill={jt}
+        fontSize="12" fontWeight="900" fontFamily="'Arial Black',Arial,sans-serif" letterSpacing="1">{team}</text>
+      <text x="100" y="203" textAnchor="middle" fill={jt}
+        fontSize="30" fontWeight="900" fontFamily="'Arial Black',Arial,sans-serif">{num}</text>
 
-      {/* ── Neck ── */}
-      <rect x="84" y="157" width="32" height="28" rx="12" fill={sk}/>
-      <ellipse cx="100" cy="181" rx="16" ry="5" fill="rgba(0,0,0,0.16)"/>
-
-      {/* ── Head ── */}
-      <ellipse cx="100" cy="88" rx="65" ry="72" fill={sk}/>
-      {/* 3-D shading */}
-      <ellipse cx="132" cy="92" rx="36" ry="56" fill="rgba(0,0,0,0.17)"/>
-      <ellipse cx="100" cy="150" rx="40" ry="16" fill="rgba(0,0,0,0.18)"/>
-      <ellipse cx="76"  cy="50"  rx="30" ry="20" fill="rgba(255,255,255,0.16)" transform="rotate(-22 76 50)"/>
-      <ellipse cx="60"  cy="92"  rx="18" ry="12" fill="rgba(255,255,255,0.09)" transform="rotate(-12 60 92)"/>
-      {/* Jaw */}
-      <path d="M 44 104 Q 54 150 100 160 Q 146 150 156 104" fill={sk}/>
+      {/* ── Head — big square block (Cash Inc. style) ── */}
+      {/* Chin shadow */}
+      <ellipse cx="100" cy="139" rx="58" ry="9" fill="rgba(0,0,0,0.16)"/>
+      {/* Main block */}
+      <rect x="15" y="6" width="170" height="132" rx="24" fill={sk}/>
+      {/* Right-side shading */}
+      <ellipse cx="168" cy="72" rx="22" ry="56" fill="rgba(0,0,0,0.09)"/>
+      {/* Chin extension */}
+      <path d="M 40 110 Q 52 140 100 144 Q 148 140 160 110" fill={sk}/>
+      {/* Top-left highlight */}
+      <ellipse cx="56" cy="34" rx="34" ry="19" fill="rgba(255,255,255,0.22)" transform="rotate(-22 56 34)"/>
 
       {/* ── Ears ── */}
-      <ellipse cx="35" cy="90" rx="9"  ry="13" fill={sk}/>
-      <ellipse cx="165" cy="90" rx="9" ry="13" fill={sk}/>
-      <ellipse cx="35" cy="90" rx="5"  ry="8"  fill="rgba(0,0,0,0.15)"/>
-      <ellipse cx="165" cy="90" rx="5" ry="8"  fill="rgba(0,0,0,0.15)"/>
+      <ellipse cx="15"  cy="72" rx="9" ry="13" fill={sk}/>
+      <ellipse cx="185" cy="72" rx="9" ry="13" fill={sk}/>
+      <ellipse cx="15"  cy="72" rx="5" ry="8"  fill="rgba(0,0,0,0.12)"/>
+      <ellipse cx="185" cy="72" rx="5" ry="8"  fill="rgba(0,0,0,0.12)"/>
 
       {/* ── Hair ── */}
       {hs === "short" && (
-        <path d="M 35 74 Q 40 15 100 10 Q 160 15 165 74 Q 145 28 100 24 Q 55 28 35 74 Z" fill={hc}/>
+        <path d="M 17 52 Q 22 2 100 0 Q 178 2 183 52 Q 160 12 100 8 Q 40 12 17 52 Z" fill={hc}/>
       )}
       {hs === "fade" && (<>
-        <path d="M 35 76 Q 40 18 100 12 Q 160 18 165 76 Q 145 30 100 26 Q 55 30 35 76 Z" fill={hc}/>
-        <path d="M 35 76 Q 36 55 44 46" fill="none" stroke={hc} strokeWidth="5" strokeLinecap="round" opacity="0.7"/>
-        <path d="M 165 76 Q 164 55 156 46" fill="none" stroke={hc} strokeWidth="5" strokeLinecap="round" opacity="0.7"/>
+        <path d="M 17 56 Q 22 2 100 0 Q 178 2 183 56 Q 160 14 100 10 Q 40 14 17 56 Z" fill={hc}/>
+        <path d="M 18 54 Q 17 30 26 20" fill="none" stroke={hc} strokeWidth="4.5" strokeLinecap="round" opacity="0.60"/>
+        <path d="M 182 54 Q 183 30 174 20" fill="none" stroke={hc} strokeWidth="4.5" strokeLinecap="round" opacity="0.60"/>
       </>)}
       {hs === "curly" && (<>
-        <path d="M 33 78 Q 38 14 100 8 Q 162 14 167 78 Q 148 26 100 22 Q 52 26 33 78 Z" fill={hc}/>
-        {[40,54,68,82,96,110,124,138,152].map((x, i) => (
-          <circle key={i} cx={x} cy={19 + (i % 3) * 10} r={13} fill={hc}/>
+        <path d="M 15 58 Q 20 2 100 -1 Q 180 2 185 58 Q 162 12 100 8 Q 38 12 15 58 Z" fill={hc}/>
+        {[34,50,66,82,100,118,134,150,166].map((x, i) => (
+          <circle key={i} cx={x} cy={10+(i%3)*9} r={13} fill={hc}/>
         ))}
       </>)}
       {hs === "locs" && (<>
-        <path d="M 35 74 Q 40 18 100 12 Q 160 18 165 74 Q 145 28 100 24 Q 55 28 35 74 Z" fill={hc}/>
-        {[36, 48, 62, 76, 90, 104, 118, 132, 144, 158].map((x, i) => (
+        <path d="M 17 56 Q 22 2 100 0 Q 178 2 183 56 Q 160 14 100 10 Q 40 14 17 56 Z" fill={hc}/>
+        {[22,38,54,70,86,102,118,134,150,166,180].map((x, i) => (
           <path key={i}
-            d={`M${x} ${68 + (i % 4) * 4} Q${x - 8 + i} ${108 + i * 8} ${x - 4 + i * 0.5} ${145 + i * 6}`}
+            d={`M${x} ${54+(i%4)*5} Q${x-7+i} ${90+i*7} ${x-4+i*0.4} ${130+i*5}`}
             stroke={hc} strokeWidth="9" fill="none" strokeLinecap="round"/>
         ))}
       </>)}
 
       {/* ── Eyebrows ── */}
-      {sad
-        ? <><path d="M 48 62 Q 66 56 78 61" stroke={hc} strokeWidth="6" fill="none" strokeLinecap="round"/>
-            <path d="M 122 61 Q 134 56 152 62" stroke={hc} strokeWidth="6" fill="none" strokeLinecap="round"/></>
-        : <><path d="M 48 58 Q 66 50 80 57" stroke={hc} strokeWidth="6" fill="none" strokeLinecap="round"/>
-            <path d="M 120 57 Q 134 50 152 58" stroke={hc} strokeWidth="6" fill="none" strokeLinecap="round"/></>
-      }
+      {sad ? (
+        <>
+          <path d="M 44 44 Q 62 38 76 44" stroke={hc} strokeWidth="5.5" fill="none" strokeLinecap="round"/>
+          <path d="M 124 44 Q 138 38 156 44" stroke={hc} strokeWidth="5.5" fill="none" strokeLinecap="round"/>
+        </>
+      ) : (
+        <>
+          <path d="M 44 41 Q 62 33 78 41" stroke={hc} strokeWidth="5.5" fill="none" strokeLinecap="round"/>
+          <path d="M 122 41 Q 138 33 156 41" stroke={hc} strokeWidth="5.5" fill="none" strokeLinecap="round"/>
+        </>
+      )}
 
-      {/* ── Eyes ── */}
-      <ellipse cx="72"  cy="76" rx="22" ry="18" fill="rgba(0,0,0,0.13)"/>
-      <ellipse cx="128" cy="76" rx="22" ry="18" fill="rgba(0,0,0,0.13)"/>
-      <ellipse cx="72"  cy="76" rx="18" ry="15" fill="white"/>
-      <ellipse cx="128" cy="76" rx="18" ry="15" fill="white"/>
-      <path d="M 54 68 Q 72 62 90 68" fill={sD} opacity="0.28"/>
-      <path d="M 110 68 Q 128 62 146 68" fill={sD} opacity="0.28"/>
-      <circle cx="74"  cy="77" r="10"  fill="#180e06"/>
-      <circle cx="130" cy="77" r="10"  fill="#180e06"/>
-      <circle cx="75"  cy="78" r="5.5" fill="#040101"/>
-      <circle cx="131" cy="78" r="5.5" fill="#040101"/>
-      <circle cx="80"  cy="71" r="5"   fill="white"/>
-      <circle cx="136" cy="71" r="5"   fill="white"/>
-      <circle cx="68"  cy="81" r="2.2" fill="rgba(255,255,255,0.5)"/>
-      <circle cx="124" cy="81" r="2.2" fill="rgba(255,255,255,0.5)"/>
+      {/* ── Eyes (large, Cash Inc. style) ── */}
+      <ellipse cx="70"  cy="71" rx="23" ry="21" fill="rgba(0,0,0,0.10)"/>
+      <ellipse cx="130" cy="71" rx="23" ry="21" fill="rgba(0,0,0,0.10)"/>
+      <circle cx="70"  cy="71" r="19" fill="white"/>
+      <circle cx="130" cy="71" r="19" fill="white"/>
+      <path d="M 51 63 Q 70 55 89 63" fill="rgba(0,0,0,0.08)"/>
+      <path d="M 111 63 Q 130 55 149 63" fill="rgba(0,0,0,0.08)"/>
+      <circle cx="72"  cy="73" r="11"  fill="#1c0f00"/>
+      <circle cx="132" cy="73" r="11"  fill="#1c0f00"/>
+      <circle cx="73"  cy="74" r="6.5" fill="#040100"/>
+      <circle cx="133" cy="74" r="6.5" fill="#040100"/>
+      <circle cx="78"  cy="65" r="5.5" fill="white"/>
+      <circle cx="138" cy="65" r="5.5" fill="white"/>
+      <circle cx="63"  cy="77" r="2.5" fill="rgba(255,255,255,0.50)"/>
+      <circle cx="123" cy="77" r="2.5" fill="rgba(255,255,255,0.50)"/>
 
-      {/* ── Nose ── */}
-      <ellipse cx="88"  cy="105" rx="7" ry="5" fill={sD} opacity="0.4"/>
-      <ellipse cx="112" cy="105" rx="7" ry="5" fill={sD} opacity="0.4"/>
+      {/* ── Nose (two small dots) ── */}
+      <circle cx="90"  cy="98" r="4" fill={sD} opacity="0.30"/>
+      <circle cx="110" cy="98" r="4" fill={sD} opacity="0.30"/>
 
       {/* ── Mouth ── */}
-      {sad
-        ? <path d="M 68 124 Q 100 114 132 124" stroke={sD} strokeWidth="3.5" fill="none" strokeLinecap="round" opacity="0.7"/>
-        : (<>
-            <path d="M 62 118 Q 100 142 138 118" stroke={sD} strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.65"/>
-            <path d="M 66 119 Q 100 138 134 119" fill="white"/>
-            <line x1="80"  y1="119" x2="78"  y2="133" stroke="rgba(200,200,200,0.5)" strokeWidth="1.3"/>
-            <line x1="100" y1="120" x2="100" y2="136" stroke="rgba(200,200,200,0.5)" strokeWidth="1.3"/>
-            <line x1="120" y1="119" x2="122" y2="133" stroke="rgba(200,200,200,0.5)" strokeWidth="1.3"/>
-            <path d="M 62 118 Q 78 110 100 113 Q 122 110 138 118" fill={sD} opacity="0.48"/>
-          </>)
-      }
+      {sad ? (
+        <path d="M 62 112 Q 100 104 138 112" stroke={sD} strokeWidth="3.5" fill="none" strokeLinecap="round" opacity="0.60"/>
+      ) : (
+        <>
+          <path d="M 58 108 Q 100 130 142 108" stroke={sD} strokeWidth="4" fill="none" strokeLinecap="round" opacity="0.50"/>
+          <path d="M 62 109 Q 100 127 138 109" fill="white"/>
+        </>
+      )}
 
       {/* ── Cheeks ── */}
-      <circle cx="48"  cy="96" r="13" fill="rgba(220,80,60,0.17)"/>
-      <circle cx="152" cy="96" r="13" fill="rgba(220,80,60,0.17)"/>
+      <circle cx="36"  cy="87" r="14" fill="rgba(225,75,55,0.14)"/>
+      <circle cx="164" cy="87" r="14" fill="rgba(225,75,55,0.14)"/>
 
       {/* ── Beard ── */}
       {beard && (<>
-        <path d="M 42 108 Q 46 154 100 165 Q 154 154 158 108 Q 142 136 100 142 Q 58 136 42 108 Z"
-          fill={hc} opacity="0.80"/>
-        <path d="M 64 114 Q 100 106 136 114" fill={hc} opacity="0.72"/>
-        <path d="M 48 116 Q 54 136 62 144" stroke="rgba(255,255,255,0.07)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <path d="M 36 106 Q 42 140 100 148 Q 158 140 164 106 Q 146 130 100 136 Q 54 130 36 106 Z"
+          fill={hc} opacity="0.77"/>
+        <path d="M 60 114 Q 100 108 140 114" fill={hc} opacity="0.62"/>
       </>)}
     </g>
   );
@@ -206,17 +224,13 @@ function Char({ p, hc, hs, beard, sD, jt, num, team, sit, sad, wave, armsup }: C
 
 // ════════════════════════════════════════════════════════════════════════════
 // SCENE 1 — Start · Bench · Cut
-// All three players seated on a wide bench, evenly spread
 // ════════════════════════════════════════════════════════════════════════════
 export function SBCScene({ era = "alltime" }: { era?: string }) {
-  // Positioning: hip=y310 local, bench seat=y355 parent, scale=0.52
-  const S = 0.52;
-  const BENCH = 355; // bench seat y in parent coords
-  const ty = BENCH - 310 * S;   // = 355 - 161.2 = 193.8 ≈ 194
-  const CX = [138, 388, 638];   // player center-x values
+  const S    = 0.56;
+  const BENCH = 355;
+  const ty   = BENCH - 206 * S;   // shorts waist anchored at bench seat
+  const CX   = [138, 388, 638];
 
-  // alltime: Jordan (Bulls), Pippen (Bulls), Kobe (Lakers)
-  // current: Luka (Mavs), Steph (Warriors), random cut
   const pls = era === "current" ? [
     { sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#0053BC", jB:"#003d8a", shA:"#0053BC", shB:"#003d8a",
       hc:"#2a1408", hs:"short" as const, beard:false, jt:"#C4CED4", num:"77", team:"MAVS", armsup:true  },
@@ -241,7 +255,7 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
           <stop offset="100%" stopColor="#7c4b14"/>
         </linearGradient>
         <radialGradient id="sbc-star" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"  stopColor="#fbbf24" stopOpacity="0.55"/>
+          <stop offset="0%"   stopColor="#fbbf24" stopOpacity="0.55"/>
           <stop offset="100%" stopColor="#fbbf24" stopOpacity="0"/>
         </radialGradient>
         {pls.flatMap((_, i) => grads(
@@ -266,9 +280,9 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
         <rect key={x} x={x} y={BENCH - 62} width="14" height="96" rx="7" fill="#7a4c20"/>
       ))}
       {/* Seat */}
-      <rect x="92" y={BENCH} width="596" height="36" rx="10" fill="url(#sbc-bench)"/>
-      <rect x="92" y={BENCH + 30} width="596" height="7" rx="3" fill="#5a3510"/>
-      <rect x="94" y={BENCH + 2} width="592" height="9" rx="4" fill="rgba(255,255,255,0.10)"/>
+      <rect x="92" y={BENCH}      width="596" height="36" rx="10" fill="url(#sbc-bench)"/>
+      <rect x="92" y={BENCH + 30} width="596" height="7"  rx="3"  fill="#5a3510"/>
+      <rect x="94" y={BENCH + 2}  width="592" height="9"  rx="4"  fill="rgba(255,255,255,0.10)"/>
 
       {/* Characters */}
       {pls.map((pl, i) => {
@@ -286,13 +300,14 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
         );
       })}
 
-      {/* Role badges */}
+      {/* Role badges — above characters */}
       <motion.g animate={{ y:[0,-10,0] }} transition={{ ...inf, duration:2.2 }}>
-        <circle cx={CX[0]} cy={ty + 5} r="26" fill="url(#sbc-star)"/>
-        <text x={CX[0]} y={ty + 15} textAnchor="middle" fontSize="28" style={{ filter:"drop-shadow(0 0 8px #fbbf24)" }}>⭐</text>
+        <circle cx={CX[0]} cy={ty - 28} r="26" fill="url(#sbc-star)"/>
+        <text x={CX[0]} y={ty - 16} textAnchor="middle" fontSize="28"
+          style={{ filter:"drop-shadow(0 0 8px #fbbf24)" }}>⭐</text>
       </motion.g>
-      <text x={CX[1]} y={ty + 10} textAnchor="middle" fontSize="22">🪑</text>
-      <text x={CX[2]} y={ty + 10} textAnchor="middle" fontSize="22">✂️</text>
+      <text x={CX[1]} y={ty - 16} textAnchor="middle" fontSize="22">🪑</text>
+      <text x={CX[2]} y={ty - 16} textAnchor="middle" fontSize="22">✂️</text>
 
       {/* Labels */}
       {["START","BENCH","CUT"].map((lbl, i) => (
@@ -308,15 +323,15 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
 // SCENE 2 — Guess Who
 // ════════════════════════════════════════════════════════════════════════════
 export function GuessWhoScene({ era = "alltime" }: { era?: string }) {
-  const S = 0.58;
+  const S = 0.60;
   const pl = era === "current"
     ? { sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866",
         hc:"#140808", hs:"fade" as const, beard:true,  jt:"#FFC72C", num:"30", team:"GSW" }
     : { sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e",
         hc:"#080404", hs:"bald" as const, beard:false, jt:"#552583", num:"23", team:"LAKERS" };
 
-  const S_TX = 118 - 100 * S;
-  const S_TY = 460 - 310 * S;
+  const TX = 118 - 100 * S;
+  const TY = 460 - 293 * S;
 
   const qPos = [
     { x:535, y:72,  s:1.3, d:0   },
@@ -361,7 +376,7 @@ export function GuessWhoScene({ era = "alltime" }: { era?: string }) {
         <ellipse cx="-30" cy="-34" rx="29" ry="19" fill="rgba(255,255,255,0.11)" transform="rotate(-25,-30,-34)"/>
       </motion.g>
 
-      <motion.g transform={`translate(${S_TX},${S_TY}) scale(${S})`}
+      <motion.g transform={`translate(${TX},${TY}) scale(${S})`}
         animate={{ y:[0,-14,0] }} transition={{ ...inf, duration:2.8 }}>
         <Char p="gw0" hc={pl.hc} hs={pl.hs} beard={pl.beard} sD={pl.sD} jt={pl.jt} num={pl.num} team={pl.team}/>
       </motion.g>
@@ -373,7 +388,7 @@ export function GuessWhoScene({ era = "alltime" }: { era?: string }) {
 // SCENE 3 — Stat Line Guesser
 // ════════════════════════════════════════════════════════════════════════════
 export function StatLineScene({ era = "alltime" }: { era?: string }) {
-  const S = 0.60;
+  const S = 0.62;
   const pl = era === "current"
     ? { sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#1D428A", jB:"#102866", shA:"#FFC72C", shB:"#c49a10",
         hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"white",   num:"15", team:"DEN" }
@@ -381,7 +396,7 @@ export function StatLineScene({ era = "alltime" }: { era?: string }) {
         hc:"#0a0403", hs:"locs"  as const, beard:false, jt:"white",   num:"34", team:"BUCKS" };
 
   const TX = 138 - 100 * S;
-  const TY = 460 - 310 * S;
+  const TY = 460 - 293 * S;
   const stats = [
     { label:"PPG", value:"32.1",  delay:0    },
     { label:"RPG", value:"9.4",   delay:0.25 },
@@ -405,13 +420,15 @@ export function StatLineScene({ era = "alltime" }: { era?: string }) {
         <rect x="-145" y="-22" width="290" height="218" rx="16" fill="url(#sl-board)"/>
         <rect x="-145" y="-22" width="290" height="218" rx="16" fill="none" stroke="#14b8a6" strokeWidth="1.5" opacity="0.5"/>
         <rect x="-145" y="-22" width="290" height="44"  rx="16" fill="rgba(20,184,166,0.15)"/>
-        <text x="0" y="12" textAnchor="middle" fill="#2dd4bf" fontSize="13" fontWeight="800" fontFamily="monospace" letterSpacing="4">CAREER STATS</text>
+        <text x="0" y="12" textAnchor="middle" fill="#2dd4bf" fontSize="13" fontWeight="800"
+          fontFamily="monospace" letterSpacing="4">CAREER STATS</text>
         <rect x="-145" y="20" width="290" height="1" fill="rgba(20,184,166,0.3)"/>
         {stats.map((s, i) => (
           <motion.g key={s.label} transform={`translate(0,${46 + i * 36})`}
             initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}
             transition={{ delay:s.delay, duration:0.4 }}>
-            <text x="-120" y="14" fill="rgba(255,255,255,0.5)" fontSize="12" fontWeight="700" fontFamily="monospace">{s.label}</text>
+            <text x="-120" y="14" fill="rgba(255,255,255,0.5)" fontSize="12" fontWeight="700"
+              fontFamily="monospace">{s.label}</text>
             <text x="130" y="14" fill={s.value.includes("•") ? "rgba(255,255,255,0.22)" : "#f0fdf4"}
               fontSize="14" fontWeight="900" fontFamily="monospace" textAnchor="end">{s.value}</text>
             {i < stats.length-1 && <line x1="-130" y1="22" x2="130" y2="22" stroke="rgba(255,255,255,0.06)" strokeWidth="1"/>}
@@ -436,15 +453,15 @@ export function StatLineScene({ era = "alltime" }: { era?: string }) {
 // SCENE 4 — Lineup Guesser
 // ════════════════════════════════════════════════════════════════════════════
 export function LineupScene() {
-  // Back row (3) rendered first → appears behind front row (2)
-  // x-ranges: back [74-146] [284-356] [494-566], front [173-257] [383-467]
-  // All gaps ≥26px — zero overlap between any pair
+  // Back row (3, rendered first = behind): feet at fy=390, S=0.36
+  // Front row (2, rendered last = front): feet at fy=420, S=0.42
+  // x-ranges: back [74-146][284-356][494-566], front[173-257][383-467] — ≥26px gaps
   const players = [
-    { cx:110, fy:376, S:0.36, d:0.15, sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#007A33", jB:"#004d20", shA:"#007A33", shB:"#004d20", hc:"#140808", hs:"fade"  as const, beard:false, jt:"white",   num:"SG", team:"SHOOT" },
-    { cx:320, fy:376, S:0.36, d:0,    sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#CE1141", jB:"#8b0d2c", shA:"#1a1a1a", shB:"#0a0a0a", hc:"#0a0404", hs:"bald"  as const, beard:false, jt:"white",   num:"PG", team:"POINT" },
-    { cx:530, fy:376, S:0.36, d:0.3,  sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866", hc:"#2a1408", hs:"short" as const, beard:false, jt:"#FFC72C", num:"SF", team:"SMALL" },
-    { cx:215, fy:406, S:0.42, d:0.45, sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#F58426", jB:"#b85e10", shA:"#006BB6", shB:"#004a80", hc:"#0a0404", hs:"curly" as const, beard:true,  jt:"white",   num:"PF", team:"POWER" },
-    { cx:425, fy:406, S:0.42, d:0.6,  sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e", hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"#552583", num:"C",  team:"CNTRI" },
+    { cx:110, fy:390, S:0.36, d:0.15, sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#007A33", jB:"#004d20", shA:"#007A33", shB:"#004d20", hc:"#140808", hs:"fade"  as const, beard:false, jt:"white",   num:"SG", team:"SHOOT" },
+    { cx:320, fy:390, S:0.36, d:0,    sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#CE1141", jB:"#8b0d2c", shA:"#1a1a1a", shB:"#0a0a0a", hc:"#0a0404", hs:"bald"  as const, beard:false, jt:"white",   num:"PG", team:"POINT" },
+    { cx:530, fy:390, S:0.36, d:0.3,  sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866", hc:"#2a1408", hs:"short" as const, beard:false, jt:"#FFC72C", num:"SF", team:"SMALL" },
+    { cx:215, fy:420, S:0.42, d:0.45, sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#F58426", jB:"#b85e10", shA:"#006BB6", shB:"#004a80", hc:"#0a0404", hs:"curly" as const, beard:true,  jt:"white",   num:"PF", team:"POWER" },
+    { cx:425, fy:420, S:0.42, d:0.6,  sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e", hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"#552583", num:"C",  team:"CNTRI" },
   ];
 
   return (
@@ -454,18 +471,18 @@ export function LineupScene() {
       </defs>
 
       <ellipse cx="320" cy="345" rx="288" ry="110" fill="rgba(255,255,255,0.025)"/>
-      <ellipse cx="320" cy="345" rx="76" ry="30" fill="none" stroke="rgba(20,184,166,0.20)" strokeWidth="2"/>
+      <ellipse cx="320" cy="345" rx="76"  ry="30"  fill="none" stroke="rgba(20,184,166,0.20)" strokeWidth="2"/>
       <path d="M102 422 Q320 218 538 422" fill="none" stroke="rgba(20,184,166,0.15)" strokeWidth="2" strokeDasharray="6 4"/>
       <path d="M246 218 L246 372 Q320 392 394 372 L394 218" fill="none" stroke="rgba(20,184,166,0.12)" strokeWidth="1.5"/>
       <ellipse cx="320" cy="172" rx="18" ry="8" fill="none" stroke="rgba(251,146,60,0.4)" strokeWidth="2.5"/>
       {players.map((p, i) => (
-        <line key={i} x1="320" y1="298" x2={p.cx} y2={p.fy - 310 * p.S}
+        <line key={i} x1="320" y1="298" x2={p.cx} y2={p.fy - 293 * p.S}
           stroke="rgba(20,184,166,0.08)" strokeWidth="1" strokeDasharray="4 4"/>
       ))}
 
       {players.map((pl, i) => {
         const tx = pl.cx - 100 * pl.S;
-        const ty = pl.fy - 310 * pl.S;
+        const ty = pl.fy - 293 * pl.S;
         return (
           <motion.g key={i} transform={`translate(${tx},${ty}) scale(${pl.S})`}
             animate={{ y:[0,-10,0] }}
@@ -483,9 +500,9 @@ export function LineupScene() {
 // SCENE 5 — Timed: Name All Teams
 // ════════════════════════════════════════════════════════════════════════════
 export function TimedTeamsScene() {
-  const S = 0.60;
+  const S  = 0.62;
   const TX = 198 - 100 * S;
-  const TY = 460 - 310 * S;
+  const TY = 460 - 293 * S;
   const badges = [
     { label:"LAL", color:"#FDB927", x:492, y:118, d:0   },
     { label:"GSW", color:"#006BB6", x:550, y:248, d:0.4 },
@@ -526,7 +543,8 @@ export function TimedTeamsScene() {
         <line x1="0" y1="0" x2="24" y2="0" stroke="white" strokeWidth="2" strokeLinecap="round"/>
         <circle cx="0" cy="0" r="4" fill="#14b8a6"/>
         {Array.from({length:12},(_,i)=>{const a=(i/12)*Math.PI*2-Math.PI/2;return(
-          <line key={i} x1={Math.cos(a)*38} y1={Math.sin(a)*38} x2={Math.cos(a)*44} y2={Math.sin(a)*44} stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
+          <line key={i} x1={Math.cos(a)*38} y1={Math.sin(a)*38} x2={Math.cos(a)*44} y2={Math.sin(a)*44}
+            stroke="rgba(255,255,255,0.3)" strokeWidth="2"/>
         );})}
       </motion.g>
 
@@ -535,7 +553,7 @@ export function TimedTeamsScene() {
         transition={{ y:{...inf,duration:0.9,ease:"easeInOut"}, rotate:{...inf,duration:0.9,ease:"linear"} }}>
         <circle cx="0" cy="0" r="32" fill="url(#tt-ball)"/>
         <path d="M-32 0 Q0 -16 32 0" stroke="#7c2d12" strokeWidth="2" fill="none" opacity="0.6"/>
-        <path d="M-32 0 Q0 16 32 0" stroke="#7c2d12" strokeWidth="2" fill="none" opacity="0.6"/>
+        <path d="M-32 0 Q0 16 32 0"  stroke="#7c2d12" strokeWidth="2" fill="none" opacity="0.6"/>
         <line x1="0" y1="-32" x2="0" y2="32" stroke="#7c2d12" strokeWidth="2" opacity="0.6"/>
         <ellipse cx="-10" cy="-10" rx="10" ry="6" fill="rgba(255,255,255,0.28)" transform="rotate(-25,-10,-10)"/>
       </motion.g>
@@ -552,9 +570,9 @@ export function TimedTeamsScene() {
 // SCENE 6 — Timed: Name Players Per Team
 // ════════════════════════════════════════════════════════════════════════════
 export function TimedPlayersScene() {
-  const S = 0.60;
+  const S  = 0.62;
   const TX = 148 - 100 * S;
-  const TY = 460 - 310 * S;
+  const TY = 460 - 293 * S;
   const roster = [
     { name:"LeBron James",  done:true  },
     { name:"Anthony Davis", done:true  },
@@ -576,9 +594,10 @@ export function TimedPlayersScene() {
       <motion.g transform="translate(422,212)" animate={{ y:[0,-8,0], rotate:[-2,2,-2] }} transition={{ ...inf, duration:3.0 }}>
         <rect x="-130" y="-100" width="260" height="280" rx="14" fill="url(#tp-board)"/>
         <rect x="-130" y="-100" width="260" height="280" rx="14" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
-        <rect x="-30" y="-118" width="60" height="28" rx="8" fill="#374151"/>
-        <rect x="-20" y="-113" width="40" height="18" rx="6" fill="#4b5563"/>
-        <text x="0" y="-70" textAnchor="middle" fill="#14b8a6" fontSize="11" fontWeight="800" fontFamily="monospace" letterSpacing="3">ROSTER</text>
+        <rect x="-30"  y="-118" width="60"  height="28"  rx="8"  fill="#374151"/>
+        <rect x="-20"  y="-113" width="40"  height="18"  rx="6"  fill="#4b5563"/>
+        <text x="0" y="-70" textAnchor="middle" fill="#14b8a6" fontSize="11" fontWeight="800"
+          fontFamily="monospace" letterSpacing="3">ROSTER</text>
         <line x1="-110" y1="-56" x2="110" y2="-56" stroke="rgba(20,184,166,0.3)" strokeWidth="1"/>
         {roster.map((r,i) => (
           <g key={i} transform={`translate(0,${-38+i*44})`}>
