@@ -226,10 +226,10 @@ function Char({ p, hc, hs, beard, sD, jt, num, team, sit, sad, wave, armsup }: C
 // SCENE 1 — Start · Bench · Cut
 // ════════════════════════════════════════════════════════════════════════════
 export function SBCScene({ era = "alltime" }: { era?: string }) {
-  const S    = 0.56;
+  const S    = 0.52;
   const BENCH = 355;
   const ty   = BENCH - 206 * S;   // shorts waist anchored at bench seat
-  const CX   = [138, 388, 638];
+  const CX   = [120, 390, 660];   // wider spread — head gaps ≈ 170px
 
   const pls = era === "current" ? [
     { sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#0053BC", jB:"#003d8a", shA:"#0053BC", shB:"#003d8a",
@@ -271,18 +271,18 @@ export function SBCScene({ era = "alltime" }: { era?: string }) {
       <line x1="0" y1="449" x2="780" y2="449" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
 
       {/* Bench legs */}
-      {[100, 348, 596].map(x => (
+      {[74, 362, 648].map(x => (
         <rect key={x} x={x} y={BENCH + 32} width="14" height="90" rx="7" fill="#5a3510"/>
       ))}
       {/* Back rest */}
-      <rect x="92" y={BENCH - 62} width="596" height="22" rx="8" fill="url(#sbc-bench)"/>
-      {[98, 344, 590].map(x => (
+      <rect x="66" y={BENCH - 62} width="648" height="22" rx="8" fill="url(#sbc-bench)"/>
+      {[72, 358, 644].map(x => (
         <rect key={x} x={x} y={BENCH - 62} width="14" height="96" rx="7" fill="#7a4c20"/>
       ))}
       {/* Seat */}
-      <rect x="92" y={BENCH}      width="596" height="36" rx="10" fill="url(#sbc-bench)"/>
-      <rect x="92" y={BENCH + 30} width="596" height="7"  rx="3"  fill="#5a3510"/>
-      <rect x="94" y={BENCH + 2}  width="592" height="9"  rx="4"  fill="rgba(255,255,255,0.10)"/>
+      <rect x="66" y={BENCH}      width="648" height="36" rx="10" fill="url(#sbc-bench)"/>
+      <rect x="66" y={BENCH + 30} width="648" height="7"  rx="3"  fill="#5a3510"/>
+      <rect x="68" y={BENCH + 2}  width="644" height="9"  rx="4"  fill="rgba(255,255,255,0.10)"/>
 
       {/* Characters */}
       {pls.map((pl, i) => {
@@ -453,15 +453,17 @@ export function StatLineScene({ era = "alltime" }: { era?: string }) {
 // SCENE 4 — Lineup Guesser
 // ════════════════════════════════════════════════════════════════════════════
 export function LineupScene() {
-  // Back row (3, rendered first = behind): feet at fy=390, S=0.36
-  // Front row (2, rendered last = front): feet at fy=420, S=0.42
-  // x-ranges: back [74-146][284-356][494-566], front[173-257][383-467] — ≥26px gaps
+  // Flat single row — all same scale, same foot-level, even spacing.
+  // Head width at S=0.42 ≈ 71px; spacing=116px; gaps ≈ 45px — no blocking.
+  const S  = 0.42;
+  const FY = 450; // feet y for all players
+  const CX = [68, 184, 320, 456, 572];
   const players = [
-    { cx:110, fy:390, S:0.36, d:0.15, sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#007A33", jB:"#004d20", shA:"#007A33", shB:"#004d20", hc:"#140808", hs:"fade"  as const, beard:false, jt:"white",   num:"SG", team:"SHOOT" },
-    { cx:320, fy:390, S:0.36, d:0,    sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#CE1141", jB:"#8b0d2c", shA:"#1a1a1a", shB:"#0a0a0a", hc:"#0a0404", hs:"bald"  as const, beard:false, jt:"white",   num:"PG", team:"POINT" },
-    { cx:530, fy:390, S:0.36, d:0.3,  sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866", hc:"#2a1408", hs:"short" as const, beard:false, jt:"#FFC72C", num:"SF", team:"SMALL" },
-    { cx:215, fy:420, S:0.42, d:0.45, sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#F58426", jB:"#b85e10", shA:"#006BB6", shB:"#004a80", hc:"#0a0404", hs:"curly" as const, beard:true,  jt:"white",   num:"PF", team:"POWER" },
-    { cx:425, fy:420, S:0.42, d:0.6,  sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e", hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"#552583", num:"C",  team:"CNTRI" },
+    { cx:CX[0], fy:FY, S, d:0.4,  sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#CE1141", jB:"#8b0d2c", shA:"#1a1a1a", shB:"#0a0a0a", hc:"#0a0404", hs:"bald"  as const, beard:false, jt:"white",   num:"PG", team:"POINT" },
+    { cx:CX[1], fy:FY, S, d:0.25, sL:"#c08060", sM:"#986040", sD:"#704030", jA:"#007A33", jB:"#004d20", shA:"#007A33", shB:"#004d20", hc:"#140808", hs:"fade"  as const, beard:false, jt:"white",   num:"SG", team:"SHOOT" },
+    { cx:CX[2], fy:FY, S, d:0,    sL:"#e8c090", sM:"#c89060", sD:"#906030", jA:"#1D428A", jB:"#102866", shA:"#1D428A", shB:"#102866", hc:"#2a1408", hs:"short" as const, beard:false, jt:"#FFC72C", num:"SF", team:"SMALL" },
+    { cx:CX[3], fy:FY, S, d:0.25, sL:"#7a4a2a", sM:"#5c3218", sD:"#3c1e0c", jA:"#F58426", jB:"#b85e10", shA:"#006BB6", shB:"#004a80", hc:"#0a0404", hs:"curly" as const, beard:true,  jt:"white",   num:"PF", team:"POWER" },
+    { cx:CX[4], fy:FY, S, d:0.4,  sL:"#f0c898", sM:"#d8a878", sD:"#b08858", jA:"#FDB927", jB:"#c48a10", shA:"#552583", shB:"#3a1a5e", hc:"#5a3010", hs:"curly" as const, beard:true,  jt:"#552583", num:"C",  team:"CNTRI" },
   ];
 
   return (
