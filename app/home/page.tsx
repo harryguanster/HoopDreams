@@ -2,18 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
-import { AnimatedGrid, AnimatedItem } from "@/app/components/AnimatedGrid";
-import BballMascot from "@/app/components/BballMascot";
+import DailyGuessWhoGame from "@/app/components/DailyGuessWhoGame";
+import DailyStatLineGame from "@/app/components/DailyStatLineGame";
 import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
 import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
-import { mascotStore } from "@/lib/mascotStore";
+import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
+import {
+  getTodayStr, getDailyIndex, loadDailyData, saveDailyData, updateStreak,
+  type DailyData,
+} from "@/lib/dailyUtils";
 import {
   SBCScene, GuessWhoScene, StatLineScene, LineupScene,
   TimedTeamsScene, TimedPlayersScene, DraftClassScene,
@@ -453,29 +457,6 @@ function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
   );
 }
 
-function HeroMascot() {
-  const [target, setTarget] = useState({ x: 50, y: 80, rot: 14 });
-  useEffect(() => {
-    const move = () => setTarget({
-      x: (Math.random() - 0.5) * 350,
-      y: (Math.random() - 0.5) * 250,
-      rot: (Math.random() - 0.5) * 44,
-    });
-    const id = setInterval(move, 2700);
-    return () => clearInterval(id);
-  }, []);
-  return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <motion.div
-        animate={{ x: target.x, y: target.y, rotate: target.rot }}
-        transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <BballMascot size={130} glow idle flying />
-      </motion.div>
-    </div>
-  );
-}
-
 // ─── Full-viewport showcase section ──────────────────────────────────────
 function GameShowcaseSection({ href, tag, title, description, meta, accentColor, Scene, flip, index }: ShowcaseGame & { flip: boolean; index: number }) {
   const { chip } = tagStyle(tag);
@@ -604,23 +585,41 @@ function GameShowcaseSection({ href, tag, title, description, meta, accentColor,
 }
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<"games" | "timed">("games");
-  const mascotRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<"games" | "timed" | "daily">("games");
+  const [dailyData, setDailyData] = useState<DailyData>({
+    date: getTodayStr(), guessWhoWon: null, statLineWon: null,
+  });
 
-  // Notify PageTransitionMascot when hero mascot scrolls out of view
   useEffect(() => {
-    const el = mascotRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => mascotStore.setHeroVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-    obs.observe(el);
-    return () => { obs.disconnect(); mascotStore.setHeroVisible(true); };
+    const data = loadDailyData();
+    setDailyData(data);
+    if (data.guessWhoWon === true && data.statLineWon === true) {
+      updateStreak();
+    }
   }, []);
 
-  const gamesTab = GAMES.filter(g => g.category === "games");
-  const timedTab = GAMES.filter(g => g.category === "timed");
+  const guessWhoIdx = getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0);
+  const statLineIdx = getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7);
+  const dailyGuessWhoPlayer = CURRENT_GUESS_WHO_PLAYERS[guessWhoIdx];
+  const dailyStatLinePlayer = CURRENT_STAT_LINE_PLAYERS[statLineIdx];
+
+  function handleGuessWhoComplete(won: boolean) {
+    const newData = { ...dailyData, guessWhoWon: won };
+    setDailyData(newData);
+    saveDailyData(newData);
+    if (won && newData.statLineWon === true) updateStreak();
+  }
+
+  function handleStatLineComplete(won: boolean) {
+    const newData = { ...dailyData, statLineWon: won };
+    setDailyData(newData);
+    saveDailyData(newData);
+    if (won && newData.guessWhoWon === true) updateStreak();
+  }
+
+  const bothWon = dailyData.guessWhoWon === true && dailyData.statLineWon === true;
+  const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
+
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #050e1a 0%, #071520 40%, #091c22 70%, #071018 100%)" }}>
@@ -671,11 +670,6 @@ export default function HomePage() {
             w={pl.w} idx={i} zLayer={pl.zLayer}
           />
         ))}
-
-        {/* Flying mascot — ref tracked by IntersectionObserver */}
-        <div ref={mascotRef} style={{ position: "absolute", inset: 0, zIndex: 12, pointerEvents: "none" }}>
-          <HeroMascot />
-        </div>
 
         {/* Title — z-10, sandwiched between behind/in-front plates */}
         <motion.div
@@ -748,32 +742,178 @@ export default function HomePage() {
       <div className="sticky top-14 z-40 bg-[#05101a]/90 backdrop-blur-md border-b border-white/6 overflow-hidden">
         <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ background: "linear-gradient(to bottom, #ff0062, transparent)" }} />
         <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 py-2.5">
-          {(["games", "timed"] as const).map(tab => (
+          {(["games", "timed", "daily"] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`relative px-5 py-2 text-sm font-bold transition-all duration-200 font-bebas tracking-widest ${
-                activeTab === tab ? "text-black" : "text-white/50 hover:text-white/80 hover:bg-white/5"
+                activeTab === tab ? "text-white" : "text-white/50 hover:text-white/80 hover:bg-white/5"
               }`}
               style={activeTab === tab ? {
-                background: "linear-gradient(90deg, #14b8a6, #00d4ff)",
+                background: tab === "daily"
+                  ? "linear-gradient(90deg, #7c3aed, #a855f7)"
+                  : "linear-gradient(90deg, #14b8a6, #00d4ff)",
                 clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
-                boxShadow: "0 0 18px rgba(20,184,166,0.45)",
+                boxShadow: tab === "daily"
+                  ? "0 0 18px rgba(168,85,247,0.45)"
+                  : "0 0 18px rgba(20,184,166,0.45)",
               } : {}}>
-              {tab === "games" ? "GAMES" : "TIMED CHALLENGES"}
+              {tab === "games" ? "GAMES" : tab === "timed" ? "TIMED CHALLENGES" : "⚡ DAILY"}
             </button>
           ))}
         </div>
       </div>
 
-      {/* ── Full-screen game showcase sections ─────────────────── */}
-      <div>
-        {(activeTab === "games" ? SHOWCASE_GAMES : SHOWCASE_TIMED).map((s, i) => (
-          <GameShowcaseSection key={s.href} {...s} flip={i % 2 === 1} index={i} />
-        ))}
-        <div className="h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
-        <p className="text-center text-white/35 text-[10px] font-mono py-10 tracking-widest uppercase">
-          Stats are career averages · Accolades are highlights, not exhaustive
-        </p>
-      </div>
+      {/* ── Showcase / Daily content ────────────────────────────── */}
+      {activeTab !== "daily" ? (
+        <div>
+          {(activeTab === "games" ? SHOWCASE_GAMES : SHOWCASE_TIMED).map((s, i) => (
+            <GameShowcaseSection key={s.href} {...s} flip={i % 2 === 1} index={i} />
+          ))}
+          <div className="h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
+          <p className="text-center text-white/35 text-[10px] font-mono py-10 tracking-widest uppercase">
+            Stats are career averages · Accolades are highlights, not exhaustive
+          </p>
+        </div>
+      ) : (
+        <div className="max-w-4xl mx-auto px-6 py-12 pb-24">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-purple-400 mb-3">Daily Games</p>
+            <h2
+              className="text-white mb-2"
+              style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(40px, 7vw, 72px)", letterSpacing: "0.06em", lineHeight: 1 }}
+            >
+              Today&apos;s Challenges
+            </h2>
+            <p className="text-white/45 text-sm font-rajdhani">New players every day. Complete both to extend your streak.</p>
+          </div>
+
+          {/* Celebration banner when both won */}
+          {bothWon && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="mb-8 text-center"
+            >
+              <div
+                className="inline-flex items-center gap-4 px-8 py-4"
+                style={{
+                  background: "linear-gradient(135deg, rgba(109,40,217,0.35), rgba(168,85,247,0.20))",
+                  border: "1px solid rgba(168,85,247,0.4)",
+                  clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)",
+                  boxShadow: "0 0 40px rgba(168,85,247,0.4), 0 0 80px rgba(168,85,247,0.15)",
+                }}
+              >
+                <span style={{ fontSize: "1.6rem" }}>🔥</span>
+                <div>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-bebas)",
+                      fontSize: "clamp(22px, 4vw, 34px)",
+                      letterSpacing: "0.12em",
+                      color: "#e9d5ff",
+                      lineHeight: 1,
+                    }}
+                  >
+                    Daily Complete!
+                  </p>
+                  <p className="text-purple-300/70 text-xs font-mono tracking-widest uppercase mt-1">
+                    Check the badge in the top right for your streak
+                  </p>
+                </div>
+                <span style={{ fontSize: "1.6rem" }}>🔥</span>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Game cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Guess Who card */}
+            <div
+              className="rounded-2xl p-6 border border-purple-500/20"
+              style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(255,255,255,0.04) 100%)" }}
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <div
+                  className="w-10 h-10 flex items-center justify-center shrink-0"
+                  style={{
+                    background: "rgba(109,40,217,0.25)",
+                    clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)",
+                    border: "1px solid rgba(168,85,247,0.3)",
+                  }}
+                >
+                  <span style={{ fontSize: 18 }}>🔍</span>
+                </div>
+                <div>
+                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "white", lineHeight: 1 }}>
+                    Daily Guess Who
+                  </h3>
+                  <p className="text-white/40 text-[10px] font-mono uppercase tracking-wider mt-0.5">
+                    Current player · 5 clues · 5 guesses
+                  </p>
+                </div>
+                {dailyData.guessWhoWon !== null && (
+                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.guessWhoWon ? "text-teal-300 bg-teal-500/15 border border-teal-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`}
+                    style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
+                    {dailyData.guessWhoWon ? "✓ Done" : "✗ Done"}
+                  </span>
+                )}
+              </div>
+              <DailyGuessWhoGame
+                player={dailyGuessWhoPlayer}
+                onComplete={handleGuessWhoComplete}
+                alreadyCompleted={dailyData.guessWhoWon !== null}
+                won={dailyData.guessWhoWon}
+              />
+            </div>
+
+            {/* Stat Line card */}
+            <div
+              className="rounded-2xl p-6 border border-blue-500/20"
+              style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(255,255,255,0.04) 100%)" }}
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <div
+                  className="w-10 h-10 flex items-center justify-center shrink-0"
+                  style={{
+                    background: "rgba(37,99,235,0.25)",
+                    clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)",
+                    border: "1px solid rgba(59,130,246,0.3)",
+                  }}
+                >
+                  <span style={{ fontSize: 18 }}>📊</span>
+                </div>
+                <div>
+                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "white", lineHeight: 1 }}>
+                    Daily Stat Line
+                  </h3>
+                  <p className="text-white/40 text-[10px] font-mono uppercase tracking-wider mt-0.5">
+                    Current player · 5 stats · 5 guesses
+                  </p>
+                </div>
+                {dailyData.statLineWon !== null && (
+                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.statLineWon ? "text-teal-300 bg-teal-500/15 border border-teal-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`}
+                    style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
+                    {dailyData.statLineWon ? "✓ Done" : "✗ Done"}
+                  </span>
+                )}
+              </div>
+              <DailyStatLineGame
+                player={dailyStatLinePlayer}
+                onComplete={handleStatLineComplete}
+                alreadyCompleted={dailyData.statLineWon !== null}
+                won={dailyData.statLineWon}
+              />
+            </div>
+          </div>
+
+          {bothDone && !bothWon && (
+            <p className="text-center text-white/30 text-xs font-mono mt-10 uppercase tracking-widest">
+              Come back tomorrow for a new challenge
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

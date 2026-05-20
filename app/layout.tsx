@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bebas_Neue, Rajdhani } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import PageTransitionMascot from "@/app/components/PageTransitionMascot";
+import DailyBadge from "@/app/components/DailyBadge";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,7 +42,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full`}>
         <body className="min-h-full flex flex-col text-white antialiased" style={{ background: "#05101a" }}>
-          <PageTransitionMascot />
+          <DailyBadge />
           {children}
         </body>
       </html>
