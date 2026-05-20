@@ -192,8 +192,8 @@ function StatCounter({ value, label }: { value: string; label: string }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.9, duration: 0.5 }}
     >
-      <p className="text-2xl font-black text-teal-400">{value}</p>
-      <p className="text-[9px] text-white/55 font-mono uppercase tracking-widest mt-0.5">{label}</p>
+      <p className="font-bebas text-teal-400 tabular-nums" style={{ fontSize: "2rem", letterSpacing: "0.04em", lineHeight: 1 }}>{value}</p>
+      <p className="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-1">{label}</p>
     </motion.div>
   );
 }
@@ -263,7 +263,8 @@ function GameCard({ href, tag, title, description, meta, playerId, playerPos }: 
               {tag}
             </span>
           </div>
-          <h3 className="text-base font-black text-white mb-1.5 leading-tight group-hover:text-teal-300 transition-colors duration-200">
+          <h3 className="font-bebas text-white mb-1.5 group-hover:text-teal-300 transition-colors duration-200"
+            style={{ fontSize: "1.35rem", letterSpacing: "0.06em", lineHeight: 1.1 }}>
             {title}
           </h3>
           <p className="text-xs text-white/70 leading-relaxed mb-4">{description}</p>
@@ -483,83 +484,121 @@ function GameShowcaseSection({ href, tag, title, description, meta, accentColor,
       className="relative min-h-[88vh] flex items-center overflow-hidden border-b border-white/5"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.6 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.35 }}
     >
-      {/* Per-section atmosphere blob */}
+      {/* Atmosphere blob */}
       <div className="absolute pointer-events-none" style={{
         width: "65%", height: "100%",
         left: flip ? "auto" : 0, right: flip ? 0 : "auto",
-        background: `radial-gradient(ellipse at ${flip ? "70%" : "30%"} 50%, ${accentColor}18 0%, transparent 65%)`,
+        background: `radial-gradient(ellipse at ${flip ? "70%" : "30%"} 50%, ${accentColor}14 0%, transparent 65%)`,
       }} />
-      {/* Subtle grid */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "32px 32px",
-      }} />
+
+      {/* Diagonal speed lines */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(7)].map((_, i) => (
+          <div key={i} style={{
+            position: "absolute", width: "220%", height: "1px",
+            background: `linear-gradient(to right, transparent, ${accentColor}10, transparent)`,
+            top: `${8 + i * 13}%`, left: "-60%",
+            transform: `rotate(${flip ? -2 : 2}deg)`,
+          }} />
+        ))}
+      </div>
 
       <div className={`relative z-10 w-full max-w-7xl mx-auto px-8 flex flex-col sm:flex-row items-center gap-8 sm:gap-16 py-16 ${flip ? "sm:flex-row-reverse" : ""}`}>
 
         {/* ── Illustration ── */}
         <motion.div className="flex-1 w-full max-w-lg"
-          initial={{ opacity: 0, x: flip ? 60 : -60 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          initial={{ opacity: 0, x: flip ? 100 : -100, scale: 0.9 }}
+          whileInView={{ opacity: 1, x: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           <Scene accentColor={accentColor} />
         </motion.div>
 
-        {/* ── Text ── */}
-        <motion.div className="flex-1 max-w-xl"
-          initial={{ opacity: 0, x: flip ? -60 : 60 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
-          {/* Section number */}
-          <p className="text-[10px] font-mono text-white/45 uppercase tracking-[0.4em] mb-4">
-            {String(index + 1).padStart(2, "0")} / GAME MODE
-          </p>
+        {/* ── Text block ── */}
+        <div className="flex-1 max-w-xl relative">
 
-          {/* Tag */}
-          <span className={`inline-block text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border mb-5 ${chip}`}>
-            {tag}
-          </span>
-
-          {/* Title */}
-          <h2 className="text-4xl sm:text-6xl font-black text-white leading-none mb-6 tracking-tight">
-            {title.split("·").map((part, i) => (
-              <span key={i}>
-                {i > 0 && <span className="text-white/30"> · </span>}
-                <span style={{ color: i === 0 ? "white" : accentColor }}>{part.trim()}</span>
-              </span>
-            ))}
-          </h2>
-
-          {/* Description */}
-          <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
-            {description}
-          </p>
-
-          {/* CTA row */}
-          <div className="flex items-center gap-6">
-            <Link href={href}>
-              <motion.div
-                className="px-8 py-3.5 rounded-full font-black text-sm uppercase tracking-[0.2em] text-black"
-                style={{ background: accentColor, boxShadow: `0 0 30px ${accentColor}60, 0 2px 12px rgba(0,0,0,0.3)` }}
-                whileHover={{ scale: 1.06, boxShadow: `0 0 50px ${accentColor}80, 0 4px 20px rgba(0,0,0,0.3)` }}
-                whileTap={{ scale: 0.96 }}
-              >
-                Play Now
-              </motion.div>
-            </Link>
-            <span className="text-[11px] text-white/55 font-mono">{meta}</span>
+          {/* Ghost chapter number */}
+          <div className="absolute -top-4 select-none pointer-events-none"
+            style={{
+              left: flip ? "auto" : "-0.08em",
+              right: flip ? "-0.08em" : "auto",
+              fontFamily: "var(--font-bebas)",
+              fontSize: "clamp(100px, 18vw, 190px)",
+              lineHeight: 1, letterSpacing: "0.05em",
+              color: "transparent",
+              WebkitTextStroke: `1.5px ${accentColor}16`,
+            }}>
+            {String(index + 1).padStart(2, "0")}
           </div>
-        </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: flip ? -80 : 80, skewX: flip ? 4 : -4 }}
+            whileInView={{ opacity: 1, x: 0, skewX: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Tag with slash accent */}
+            <div className="flex items-center gap-3 mb-5">
+              <div style={{ width: 28, height: 2, background: accentColor, transform: "skewX(-25deg)", flexShrink: 0 }} />
+              <span className={`inline-block text-[9px] font-bold uppercase tracking-widest px-3 py-1 border ${chip}`}
+                style={{ clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)" }}>
+                {tag}
+              </span>
+            </div>
+
+            {/* Title — Bebas Neue */}
+            <h2
+              className="text-white mb-6"
+              style={{
+                fontFamily: "var(--font-bebas)",
+                fontSize: "clamp(54px, 8.5vw, 108px)",
+                letterSpacing: "0.05em",
+                lineHeight: 0.92,
+              }}
+            >
+              {title.split("·").map((part, i) => (
+                <span key={i} style={{ display: "block", color: i === 0 ? "white" : accentColor }}>
+                  {part.trim()}
+                </span>
+              ))}
+            </h2>
+
+            {/* Description */}
+            <p className="text-white/70 text-base leading-relaxed mb-8 max-w-md font-rajdhani" style={{ fontSize: "1.05rem" }}>
+              {description}
+            </p>
+
+            {/* CTA */}
+            <div className="flex items-center gap-6">
+              <Link href={href}>
+                <motion.div
+                  className="px-8 py-3.5 text-black font-bold uppercase"
+                  style={{
+                    fontFamily: "var(--font-bebas)",
+                    fontSize: "1.15rem",
+                    letterSpacing: "0.18em",
+                    background: accentColor,
+                    clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%)",
+                    boxShadow: `0 0 30px ${accentColor}50, 0 2px 12px rgba(0,0,0,0.3)`,
+                  }}
+                  whileHover={{ scale: 1.06, boxShadow: `0 0 55px ${accentColor}80, 0 4px 20px rgba(0,0,0,0.4)` }}
+                  whileTap={{ scale: 0.96 }}
+                >
+                  Play Now
+                </motion.div>
+              </Link>
+              <span className="text-[11px] text-white/45 font-mono">{meta}</span>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Divider line at bottom */}
+      {/* Accent bottom line */}
       <div className="absolute bottom-0 inset-x-0 h-px"
-        style={{ background: `linear-gradient(to right, transparent, ${accentColor}30, transparent)` }} />
+        style={{ background: `linear-gradient(to right, transparent, ${accentColor}40, transparent)` }} />
     </motion.section>
   );
 }
@@ -587,13 +626,15 @@ export default function HomePage() {
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #050e1a 0%, #071520 40%, #091c22 70%, #071018 100%)" }}>
 
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="relative z-50 bg-black/30 backdrop-blur-md border-b border-teal-500/10 px-6 py-3 flex items-center justify-between sticky top-0">
-        <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Courtside Central" className="h-10 w-auto" />
-          <span className="font-bold text-white text-base tracking-tight">Courtside Central</span>
+      <header className="relative z-50 bg-black/40 backdrop-blur-md border-b border-white/8 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56 }}>
+        <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: "linear-gradient(to bottom, #ff0062, #ff006250)" }} />
+        <div className="absolute inset-0 scan-lines pointer-events-none opacity-40" />
+        <div className="flex items-center gap-3 relative z-10 py-3">
+          <img src="/logo.svg" alt="Courtside Central" className="h-9 w-auto" />
+          <span className="font-bebas text-white text-2xl tracking-[0.08em]" style={{ lineHeight: 1 }}>Courtside Central</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-teal-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
+        <div className="flex items-center gap-3 relative z-10 py-3">
+          <span className="text-[10px] text-teal-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
           <AuthButton />
         </div>
       </header>
@@ -615,6 +656,8 @@ export default function HomePage() {
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(5,14,26,0.82) 100%)", zIndex: 2 }} />
         {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.10) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
+        {/* Anime speed lines emanating from center */}
+        <div className="absolute inset-0 pointer-events-none speed-lines-bg" style={{ zIndex: 3 }} />
 
         {/* 3D floating photo plates */}
         {PLATE_LAYOUT.map((pl, i) => (
@@ -642,16 +685,21 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
-          <p className="text-[10px] font-mono uppercase tracking-[0.4em] text-teal-400/80 mb-5">
-            NBA Knowledge Games
-          </p>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div style={{ width: 32, height: 2, background: "#ff0062", transform: "skewX(-20deg)" }} />
+            <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-teal-400">
+              NBA × ANIME
+            </p>
+            <div style={{ width: 32, height: 2, background: "#ff0062", transform: "skewX(-20deg)" }} />
+          </div>
           <h1
-            className="font-black uppercase text-white"
+            className="uppercase text-white"
             style={{
-              fontSize: "clamp(52px, 11vw, 175px)",
+              fontFamily: "var(--font-bebas)",
+              fontSize: "clamp(80px, 14vw, 210px)",
               lineHeight: 0.88,
-              letterSpacing: "-0.02em",
-              textShadow: "0 0 100px rgba(20,184,166,0.45), 0 4px 40px rgba(0,0,0,0.8)",
+              letterSpacing: "0.05em",
+              textShadow: "0 0 120px rgba(20,184,166,0.5), 4px 4px 0px rgba(255,0,98,0.25), 0 4px 40px rgba(0,0,0,0.9)",
             }}
           >
             Courtside<br />Central
@@ -668,9 +716,16 @@ export default function HomePage() {
         >
           <motion.a
             href="/challenges"
-            className="inline-block px-14 py-4 bg-teal-500 text-black font-black text-sm uppercase tracking-[0.22em] rounded-full"
-            style={{ boxShadow: "0 0 28px rgba(20,184,166,0.45), 0 2px 12px rgba(0,0,0,0.3)" }}
-            whileHover={{ scale: 1.06, boxShadow: "0 0 50px rgba(20,184,166,0.65), 0 4px 20px rgba(0,0,0,0.3)" }}
+            className="inline-block px-14 py-4 text-black font-bold uppercase"
+            style={{
+              fontFamily: "var(--font-bebas)",
+              fontSize: "1.35rem",
+              letterSpacing: "0.2em",
+              background: "linear-gradient(90deg, #14b8a6, #00d4ff)",
+              clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)",
+              boxShadow: "0 0 40px rgba(20,184,166,0.55), 0 2px 12px rgba(0,0,0,0.4)",
+            }}
+            whileHover={{ scale: 1.06, boxShadow: "0 0 65px rgba(20,184,166,0.75), 0 4px 24px rgba(0,0,0,0.4)" }}
             whileTap={{ scale: 0.96 }}
           >
             Start Playing
@@ -694,17 +749,20 @@ export default function HomePage() {
       </section>
 
       {/* ── Tab nav ────────────────────────────────────────────── */}
-      <div className="sticky top-14 z-40 bg-[#05101a]/85 backdrop-blur-md border-b border-white/6">
-        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 py-3">
+      <div className="sticky top-14 z-40 bg-[#05101a]/90 backdrop-blur-md border-b border-white/6 overflow-hidden">
+        <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ background: "linear-gradient(to bottom, #ff0062, transparent)" }} />
+        <div className="max-w-7xl mx-auto px-6 flex items-center gap-1 py-2.5">
           {(["games", "timed"] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`relative px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                activeTab === tab ? "text-black bg-teal-400" : "text-white/50 hover:text-white/80 hover:bg-white/5"
-              }`}>
-              {tab === "games" ? "Games" : "Timed Challenges"}
-              {activeTab === tab && (
-                <span className="absolute inset-0 rounded-lg" style={{ boxShadow: "0 0 18px rgba(45,212,191,0.45)" }} />
-              )}
+              className={`relative px-5 py-2 text-sm font-bold transition-all duration-200 font-bebas tracking-widest ${
+                activeTab === tab ? "text-black" : "text-white/50 hover:text-white/80 hover:bg-white/5"
+              }`}
+              style={activeTab === tab ? {
+                background: "linear-gradient(90deg, #14b8a6, #00d4ff)",
+                clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
+                boxShadow: "0 0 18px rgba(20,184,166,0.45)",
+              } : {}}>
+              {tab === "games" ? "GAMES" : "TIMED CHALLENGES"}
             </button>
           ))}
         </div>

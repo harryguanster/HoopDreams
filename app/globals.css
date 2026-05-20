@@ -4,6 +4,9 @@
   --background: #f0fdfa;
   --foreground: #0f172a;
   --teal: #14b8a6;
+  --anime-pink: #ff0062;
+  --anime-cyan: #00d4ff;
+  --anime-gold: #ffd700;
 }
 
 @theme inline {
@@ -11,6 +14,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-bebas: var(--font-bebas);
+  --font-rajdhani: var(--font-rajdhani);
 }
 
 body {
@@ -18,6 +23,8 @@ body {
   color: #f1f5f9;
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* ─── Existing animations ─────────────────────────────────────────────── */
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
@@ -39,21 +46,89 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.35s ease both;
+/* ─── Anime animations ────────────────────────────────────────────────── */
+
+/* Slam in from off-screen — manga panel entrance */
+@keyframes slamIn {
+  0%   { opacity: 0; transform: translateX(-40px) skewX(-6deg) scaleX(0.9); }
+  60%  { transform: translateX(6px) skewX(1deg) scaleX(1.01); }
+  100% { opacity: 1; transform: translateX(0) skewX(0deg) scaleX(1); }
 }
 
-.animate-scale-in {
-  animation: scaleIn 0.3s ease both;
+/* Power-up glow pulse */
+@keyframes powerUp {
+  0%, 100% { text-shadow: 0 0 20px currentColor; filter: brightness(1); }
+  50%       { text-shadow: 0 0 60px currentColor, 0 0 120px currentColor; filter: brightness(1.3); }
 }
 
-.animate-slide-down {
-  animation: slideDown 0.4s ease both;
+/* Speed-line sweep */
+@keyframes speedSweep {
+  from { transform: translateX(-120%) skewX(-15deg); opacity: 0; }
+  30%  { opacity: 1; }
+  to   { transform: translateX(120%) skewX(-15deg); opacity: 0; }
 }
 
-.card-selected {
-  animation: pulse-glow 1.5s infinite;
+/* Glitch flicker */
+@keyframes glitch {
+  0%, 88%, 100% { transform: translate(0); clip-path: none; }
+  90% { transform: translate(-3px, 1px); clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); }
+  92% { transform: translate(3px, -1px); clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%); }
+  94% { transform: translate(-1px, 2px); clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); }
+  96% { transform: translate(0); clip-path: none; }
 }
+
+/* Horizontal scan line pulse */
+@keyframes scanPulse {
+  0%, 100% { opacity: 0.03; }
+  50%       { opacity: 0.07; }
+}
+
+/* ─── Utility classes ────────────────────────────────────────────────── */
+
+.animate-fade-in   { animation: fadeIn 0.35s ease both; }
+.animate-scale-in  { animation: scaleIn 0.3s ease both; }
+.animate-slide-down { animation: slideDown 0.4s ease both; }
+.card-selected     { animation: pulse-glow 1.5s infinite; }
+
+.animate-slam-in   { animation: slamIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-power-up  { animation: powerUp 2.5s ease-in-out infinite; }
+.animate-glitch    { animation: glitch 4s linear infinite; }
+
+/* Manga panel border — bold left accent */
+.panel-border {
+  border-left: 3px solid var(--anime-pink);
+  padding-left: 1rem;
+}
+
+/* Skewed clip button shape */
+.clip-skew {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 100%, 12px 100%);
+}
+
+/* Speed-lines background */
+.speed-lines-bg {
+  background-image: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255, 255, 255, 0.018) 0deg 0.4deg,
+    transparent 0.4deg 5deg
+  );
+}
+
+/* Scan line overlay */
+.scan-lines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 255, 255, 0.018) 3px,
+    rgba(255, 255, 255, 0.018) 4px
+  );
+  animation: scanPulse 3s ease-in-out infinite;
+}
+
+/* Bebas Neue display font helper */
+.font-bebas { font-family: var(--font-bebas), 'Impact', sans-serif; }
+.font-rajdhani { font-family: var(--font-rajdhani), sans-serif; }
 
 .court-bg {
   background-color: #ffffff;
