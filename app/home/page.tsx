@@ -685,6 +685,9 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
+          <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-teal-400 mb-6">
+            Test Your NBA IQ
+          </p>
           <h1
             className="uppercase text-white"
             style={{
