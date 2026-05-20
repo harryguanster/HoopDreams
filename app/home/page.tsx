@@ -685,13 +685,6 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div style={{ width: 32, height: 2, background: "#ff0062", transform: "skewX(-20deg)" }} />
-            <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-teal-400">
-              NBA × ANIME
-            </p>
-            <div style={{ width: 32, height: 2, background: "#ff0062", transform: "skewX(-20deg)" }} />
-          </div>
           <h1
             className="uppercase text-white"
             style={{
