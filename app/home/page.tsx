@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyGuessWhoGame from "@/app/components/DailyGuessWhoGame";
 import DailyStatLineGame from "@/app/components/DailyStatLineGame";
+import DailyBadge from "@/app/components/DailyBadge";
 import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
@@ -15,7 +16,7 @@ import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
 import {
-  getTodayStr, getDailyIndex, loadDailyData, saveDailyData, updateStreak,
+  getTodayStr, getDailyIndex, loadDailyData, saveDailyData, updateStreak, loadStreak,
   type DailyData,
 } from "@/lib/dailyUtils";
 import {
@@ -589,6 +590,7 @@ export default function HomePage() {
   const [dailyData, setDailyData] = useState<DailyData>({
     date: getTodayStr(), guessWhoWon: null, statLineWon: null,
   });
+  const [streakCount, setStreakCount] = useState(0);
 
   useEffect(() => {
     const data = loadDailyData();
@@ -596,6 +598,14 @@ export default function HomePage() {
     if (data.guessWhoWon === true && data.statLineWon === true) {
       updateStreak();
     }
+
+    function refreshStreak() {
+      const s = loadStreak();
+      setStreakCount(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
+    }
+    refreshStreak();
+    window.addEventListener("daily-update", refreshStreak);
+    return () => window.removeEventListener("daily-update", refreshStreak);
   }, []);
 
   const guessWhoIdx = getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0);
@@ -634,6 +644,7 @@ export default function HomePage() {
         </div>
         <div className="flex items-center gap-3 relative z-10 py-3">
           <span className="text-[10px] text-teal-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
+          <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
       </header>
@@ -756,7 +767,7 @@ export default function HomePage() {
                   ? "0 0 18px rgba(168,85,247,0.45)"
                   : "0 0 18px rgba(20,184,166,0.45)",
               } : {}}>
-              {tab === "games" ? "GAMES" : tab === "timed" ? "TIMED CHALLENGES" : "⚡ DAILY"}
+              {tab === "games" ? "GAMES" : tab === "timed" ? "TIMED CHALLENGES" : "DAILY"}
             </button>
           ))}
         </div>
@@ -790,38 +801,71 @@ export default function HomePage() {
           {/* Celebration banner when both won */}
           {bothWon && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="mb-8 text-center"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 22 }}
+              className="mb-8"
             >
               <div
-                className="inline-flex items-center gap-4 px-8 py-4"
                 style={{
-                  background: "linear-gradient(135deg, rgba(109,40,217,0.35), rgba(168,85,247,0.20))",
-                  border: "1px solid rgba(168,85,247,0.4)",
-                  clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)",
-                  boxShadow: "0 0 40px rgba(168,85,247,0.4), 0 0 80px rgba(168,85,247,0.15)",
+                  background: "linear-gradient(135deg, rgba(91,33,182,0.45) 0%, rgba(109,40,217,0.30) 50%, rgba(91,33,182,0.45) 100%)",
+                  border: "1px solid rgba(167,139,250,0.35)",
+                  clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 100%, 16px 100%)",
+                  boxShadow: "0 0 50px rgba(139,92,246,0.35), 0 0 100px rgba(139,92,246,0.12)",
+                  padding: "20px 32px",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                <span style={{ fontSize: "1.6rem" }}>🔥</span>
-                <div>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-bebas)",
-                      fontSize: "clamp(22px, 4vw, 34px)",
-                      letterSpacing: "0.12em",
-                      color: "#e9d5ff",
-                      lineHeight: 1,
-                    }}
-                  >
-                    Daily Complete!
-                  </p>
-                  <p className="text-purple-300/70 text-xs font-mono tracking-widest uppercase mt-1">
-                    Check the badge in the top right for your streak
-                  </p>
+                {/* Diagonal speed lines */}
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} style={{
+                    position: "absolute", width: "200%", height: "1px",
+                    background: "linear-gradient(to right, transparent, rgba(167,139,250,0.15), transparent)",
+                    top: `${15 + i * 18}%`, left: "-50%",
+                    transform: "rotate(-2deg)", pointerEvents: "none",
+                  }} />
+                ))}
+                {/* Left accent bar */}
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #a78bfa, #6d28d9)" }} />
+
+                <div className="flex items-center gap-6">
+                  {/* Left geometric accent */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 3, opacity: 0.6 }}>
+                    {[14, 10, 6].map((w, i) => (
+                      <div key={i} style={{ height: 2, width: w, background: "#a78bfa", transform: `skewX(-20deg)` }} />
+                    ))}
+                  </div>
+
+                  <div>
+                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(24px, 4vw, 36px)", letterSpacing: "0.14em", color: "#ddd6fe", lineHeight: 1 }}>
+                      Daily Complete
+                    </p>
+                    <p className="font-mono text-purple-300/60 tracking-widest uppercase mt-1" style={{ fontSize: "0.6rem" }}>
+                      Streak badge updated in the header
+                    </p>
+                  </div>
+
+                  {/* Streak number display */}
+                  <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 1, height: 32, background: "rgba(167,139,250,0.25)" }} />
+                    <div>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.04em", color: "white", lineHeight: 1, textAlign: "right" }}>
+                        {streakCount}
+                      </p>
+                      <p className="font-mono uppercase tracking-widest text-purple-300/60" style={{ fontSize: "0.52rem", textAlign: "right" }}>
+                        Day Streak
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right geometric accent */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 3, opacity: 0.6 }}>
+                    {[6, 10, 14].map((w, i) => (
+                      <div key={i} style={{ height: 2, width: w, background: "#a78bfa", transform: `skewX(-20deg)` }} />
+                    ))}
+                  </div>
                 </div>
-                <span style={{ fontSize: "1.6rem" }}>🔥</span>
               </div>
             </motion.div>
           )}
@@ -837,12 +881,20 @@ export default function HomePage() {
                 <div
                   className="w-10 h-10 flex items-center justify-center shrink-0"
                   style={{
-                    background: "rgba(109,40,217,0.25)",
+                    background: "rgba(109,40,217,0.30)",
                     clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)",
-                    border: "1px solid rgba(168,85,247,0.3)",
+                    border: "1px solid rgba(168,85,247,0.35)",
                   }}
                 >
-                  <span style={{ fontSize: 18 }}>🔍</span>
+                  {/* Crosshair / target icon */}
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#c4b5fd" strokeWidth="1.5" strokeLinecap="round">
+                    <circle cx="10" cy="10" r="3.5" />
+                    <circle cx="10" cy="10" r="7.5" />
+                    <line x1="10" y1="1" x2="10" y2="4.5" />
+                    <line x1="10" y1="15.5" x2="10" y2="19" />
+                    <line x1="1" y1="10" x2="4.5" y2="10" />
+                    <line x1="15.5" y1="10" x2="19" y2="10" />
+                  </svg>
                 </div>
                 <div>
                   <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "white", lineHeight: 1 }}>
@@ -876,12 +928,18 @@ export default function HomePage() {
                 <div
                   className="w-10 h-10 flex items-center justify-center shrink-0"
                   style={{
-                    background: "rgba(37,99,235,0.25)",
+                    background: "rgba(37,99,235,0.30)",
                     clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)",
-                    border: "1px solid rgba(59,130,246,0.3)",
+                    border: "1px solid rgba(59,130,246,0.35)",
                   }}
                 >
-                  <span style={{ fontSize: 18 }}>📊</span>
+                  {/* Bar chart icon */}
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#93c5fd" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1.5" y="12" width="4" height="6.5" rx="0.5" />
+                    <rect x="8" y="7.5" width="4" height="11" rx="0.5" />
+                    <rect x="14.5" y="3" width="4" height="15.5" rx="0.5" />
+                    <line x1="0" y1="19" x2="20" y2="19" />
+                  </svg>
                 </div>
                 <div>
                   <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "white", lineHeight: 1 }}>
