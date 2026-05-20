@@ -4,7 +4,10 @@ export function getTodayStr(): string {
 }
 
 export function getDailyIndex(poolSize: number, salt = 0): number {
-  const dayNum = Math.floor(Date.now() / 86400000);
+  // Use local midnight so the day boundary matches getTodayStr() (local calendar day)
+  const d = new Date();
+  const localMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const dayNum = Math.floor(localMidnight.getTime() / 86400000);
   return (dayNum + salt) % poolSize;
 }
 

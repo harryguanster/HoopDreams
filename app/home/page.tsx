@@ -591,8 +591,16 @@ export default function HomePage() {
     date: getTodayStr(), guessWhoWon: null, statLineWon: null,
   });
   const [streakCount, setStreakCount] = useState(0);
+  const [dailyGuessWhoPlayer, setDailyGuessWhoPlayer] = useState<typeof CURRENT_GUESS_WHO_PLAYERS[0] | null>(null);
+  const [dailyStatLinePlayer, setDailyStatLinePlayer] = useState<typeof CURRENT_STAT_LINE_PLAYERS[0] | null>(null);
 
   useEffect(() => {
+    // Compute today's players client-side so the local calendar day is used
+    const gwIdx = getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0);
+    const slIdx = getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7);
+    setDailyGuessWhoPlayer(CURRENT_GUESS_WHO_PLAYERS[gwIdx]);
+    setDailyStatLinePlayer(CURRENT_STAT_LINE_PLAYERS[slIdx]);
+
     const data = loadDailyData();
     setDailyData(data);
     if (data.guessWhoWon === true && data.statLineWon === true) {
@@ -607,11 +615,6 @@ export default function HomePage() {
     window.addEventListener("daily-update", refreshStreak);
     return () => window.removeEventListener("daily-update", refreshStreak);
   }, []);
-
-  const guessWhoIdx = getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0);
-  const statLineIdx = getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7);
-  const dailyGuessWhoPlayer = CURRENT_GUESS_WHO_PLAYERS[guessWhoIdx];
-  const dailyStatLinePlayer = CURRENT_STAT_LINE_PLAYERS[statLineIdx];
 
   function handleGuessWhoComplete(won: boolean) {
     const newData = { ...dailyData, guessWhoWon: won };
@@ -911,12 +914,18 @@ export default function HomePage() {
                   </span>
                 )}
               </div>
-              <DailyGuessWhoGame
-                player={dailyGuessWhoPlayer}
-                onComplete={handleGuessWhoComplete}
-                alreadyCompleted={dailyData.guessWhoWon !== null}
-                won={dailyData.guessWhoWon}
-              />
+              {dailyGuessWhoPlayer ? (
+                <DailyGuessWhoGame
+                  player={dailyGuessWhoPlayer}
+                  onComplete={handleGuessWhoComplete}
+                  alreadyCompleted={dailyData.guessWhoWon !== null}
+                  won={dailyData.guessWhoWon}
+                />
+              ) : (
+                <div className="h-32 flex items-center justify-center">
+                  <p className="text-white/25 text-xs font-mono uppercase tracking-widest">Loading…</p>
+                </div>
+              )}
             </div>
 
             {/* Stat Line card */}
@@ -956,12 +965,18 @@ export default function HomePage() {
                   </span>
                 )}
               </div>
-              <DailyStatLineGame
-                player={dailyStatLinePlayer}
-                onComplete={handleStatLineComplete}
-                alreadyCompleted={dailyData.statLineWon !== null}
-                won={dailyData.statLineWon}
-              />
+              {dailyStatLinePlayer ? (
+                <DailyStatLineGame
+                  player={dailyStatLinePlayer}
+                  onComplete={handleStatLineComplete}
+                  alreadyCompleted={dailyData.statLineWon !== null}
+                  won={dailyData.statLineWon}
+                />
+              ) : (
+                <div className="h-32 flex items-center justify-center">
+                  <p className="text-white/25 text-xs font-mono uppercase tracking-widest">Loading…</p>
+                </div>
+              )}
             </div>
           </div>
 
