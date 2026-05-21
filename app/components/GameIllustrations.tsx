@@ -221,3 +221,29 @@ export function DraftClassScene({ accentColor }: { accentColor?: string }) {
     />
   );
 }
+
+export function ConnectionsScene({ accentColor }: { accentColor?: string }) {
+  return (
+    <MomentScene
+      img={IMGS.dreamTeam}
+      sub="NBA Connections · Daily Puzzle"
+      label="Group the Players — 4 Hidden Categories"
+      credit="Photo: Ken Hackman, U.S. Air Force · Public Domain"
+      pos="center 20%"
+      accentColor={accentColor}
+    />
+  );
+}
+
+export function HigherLowerScene({ accentColor }: { accentColor?: string }) {
+  return (
+    <MomentScene
+      img={IMGS.jokic}
+      sub="Higher or Lower · Career Stats"
+      label="Which Player Has the Better Numbers?"
+      credit="Photo: Keith Allison · CC BY-SA 2.0"
+      pos="center 25%"
+      accentColor={accentColor}
+    />
+  );
+}

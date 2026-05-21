@@ -22,6 +22,7 @@ import {
 import {
   SBCScene, GuessWhoScene, StatLineScene, LineupScene,
   TimedTeamsScene, TimedPlayersScene, DraftClassScene,
+  ConnectionsScene, HigherLowerScene,
 } from "@/app/components/GameIllustrations";
 
 const topScorers = [...CURRENT_NBA_PLAYERS].sort((a, b) => b.ppg - a.ppg).slice(0, 5);
@@ -209,6 +210,8 @@ function tagStyle(tag: string) {
   if (tag === "Opinion") return { chip: "text-purple-300 bg-purple-500/12 border-purple-400/25", glow: "rgba(168,85,247,0.3)" };
   if (tag === "Puzzle")  return { chip: "text-amber-300 bg-amber-500/12 border-amber-400/25", glow: "rgba(251,191,36,0.3)" };
   if (tag === "Stats")   return { chip: "text-emerald-300 bg-emerald-500/12 border-emerald-400/25", glow: "rgba(52,211,153,0.3)" };
+  if (tag === "Daily")   return { chip: "text-purple-300 bg-purple-500/12 border-purple-400/25", glow: "rgba(168,85,247,0.35)" };
+  if (tag === "Streak")  return { chip: "text-amber-300 bg-amber-500/12 border-amber-400/25", glow: "rgba(245,158,11,0.35)" };
   if (tag.includes("min")) return { chip: "text-red-300 bg-red-500/12 border-red-400/25 animate-pulse", glow: "rgba(248,113,113,0.35)" };
   return { chip: "text-teal-300 bg-teal-500/12 border-teal-400/20", glow: "rgba(20,184,166,0.3)" };
 }
@@ -349,6 +352,20 @@ const SHOWCASE_GAMES: ShowcaseGame[] = [
     meta: `${LINEUPS.length} puzzles · All eras`,
     accentColor: "#14b8a6",
     Scene: (p) => <LineupScene {...p} />,
+  },
+  {
+    href: "/connections", tag: "Daily",
+    title: "NBA · Connections", description: "16 players, 4 hidden groups. Find what links them before you run out of lives — new puzzle every day.",
+    meta: "4 categories · 4 lives · Daily",
+    accentColor: "#a855f7",
+    Scene: (p) => <ConnectionsScene {...p} />,
+  },
+  {
+    href: "/higher-lower", tag: "Streak",
+    title: "Higher · or Lower", description: "Career PPG, APG, all-star appearances, three-pointers — guess which player's stat is higher. Build your streak.",
+    meta: "5 stat categories · Infinite streak",
+    accentColor: "#f59e0b",
+    Scene: (p) => <HigherLowerScene {...p} />,
   },
 ];
 
