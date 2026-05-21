@@ -3,8 +3,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import GameHeader from "@/app/components/GameHeader";
 import { DRAFT_CLASSES } from "@/lib/draftClassData";
 
-const SLOTS = 5;
-const TIME_LIMIT = 12 * 60;
+const SLOTS = 3;
+const TIME_LIMIT = 8 * 60;
 
 function fmt(s: number) {
   const m = Math.floor(s / 60);
@@ -284,7 +284,7 @@ export default function DraftClassPage() {
               {DRAFT_CLASSES.map(dc => (
                 <div key={dc.year} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-xs ${guessedPerYear[dc.year].length >= SLOTS ? "bg-teal-500/20 text-teal-300 border border-teal-400/20" : "bg-white/5 text-white/40"}`}>
                   <span className="font-medium">{dc.year} Draft</span>
-                  <span className="font-bold tabular-nums shrink-0">{Math.min(guessedPerYear[dc.year].length, SLOTS)}/5</span>
+                  <span className="font-bold tabular-nums shrink-0">{Math.min(guessedPerYear[dc.year].length, SLOTS)}/{SLOTS}</span>
                 </div>
               ))}
             </div>

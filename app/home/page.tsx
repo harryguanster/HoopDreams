@@ -100,9 +100,9 @@ const GAMES: Game[] = [
     playerId: 1628983, playerPos: "top center", category: "timed",
   },
   {
-    href: "/challenges/draft-class", tag: "12 min", title: "Draft Class Challenge",
-    description: "Name 5 players from every NBA draft class, 2010–2025. One hint provided per year.",
-    meta: "16 classes · 80 players · 12:00 timer",
+    href: "/challenges/draft-class", tag: "8 min", title: "Draft Class Challenge",
+    description: "Name 3 players from every NBA draft class, 2010–2025. One hint provided per year.",
+    meta: "16 classes · 48 players · 8:00 timer",
     playerId: 1629627, playerPos: "top center", category: "timed",
   },
 ];
@@ -368,9 +368,9 @@ const SHOWCASE_TIMED: ShowcaseGame[] = [
     Scene: (p) => <TimedPlayersScene {...p} />,
   },
   {
-    href: "/challenges/draft-class", tag: "12 min",
-    title: "Draft Class Challenge", description: "2010 through 2025 — name 5 players from every draft class. One hint is given per year.",
-    meta: "16 classes · 80 players · 12:00 timer",
+    href: "/challenges/draft-class", tag: "8 min",
+    title: "Draft Class Challenge", description: "2010 through 2025 — name 3 players from every draft class. One hint is given per year.",
+    meta: "16 classes · 48 players · 8:00 timer",
     accentColor: "#8b5cf6",
     Scene: (p) => <DraftClassScene {...p} />,
   },

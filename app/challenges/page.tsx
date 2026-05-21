@@ -70,8 +70,8 @@ export default function ChallengesPage() {
             emoji="🎓"
             tag="12 min"
             title="Draft Class Challenge"
-            description="For each NBA draft class from 2010 to 2025, name 5 players. One hint player is shown — they don't count."
-            meta="16 draft classes · 5 per class · 12:00 timer"
+            description="For each NBA draft class from 2010 to 2025, name 3 players. One hint player is shown — they don't count."
+            meta="16 draft classes · 3 per class · 8:00 timer"
           />
         </div>
 
