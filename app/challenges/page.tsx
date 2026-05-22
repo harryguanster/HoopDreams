@@ -73,6 +73,14 @@ export default function ChallengesPage() {
             description="For each NBA draft class from 2010 to 2025, name 3 players. One hint player is shown — they don't count."
             meta="16 draft classes · 3 per class · 8:00 timer"
           />
+          <ChallengeCard
+            href="/challenges/champions"
+            emoji="🏆"
+            tag="6 min"
+            title="Champions by Year"
+            description="Name every NBA champion from 1990 to 2024. Type a team name and all their titles fill in at once."
+            meta="35 years · 13 unique champions · 6:00 timer"
+          />
         </div>
 
         <p className="text-zinc-400 text-xs text-center mt-14">

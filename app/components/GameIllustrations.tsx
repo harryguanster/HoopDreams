@@ -247,3 +247,16 @@ export function HigherLowerScene({ accentColor }: { accentColor?: string }) {
     />
   );
 }
+
+export function ChampionsScene({ accentColor }: { accentColor?: string }) {
+  return (
+    <MomentScene
+      img={IMGS.lebron2016}
+      sub="NBA Champions · 1990–2024"
+      label="Name Every Champion by Year"
+      credit="Photo: Wikimedia Commons · CC BY-SA 2.0"
+      pos="center 30%"
+      accentColor={accentColor}
+    />
+  );
+}

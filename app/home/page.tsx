@@ -22,7 +22,7 @@ import {
 import {
   SBCScene, GuessWhoScene, StatLineScene, LineupScene,
   TimedTeamsScene, TimedPlayersScene, DraftClassScene,
-  ConnectionsScene, HigherLowerScene,
+  ConnectionsScene, HigherLowerScene, ChampionsScene,
 } from "@/app/components/GameIllustrations";
 
 const topScorers = [...CURRENT_NBA_PLAYERS].sort((a, b) => b.ppg - a.ppg).slice(0, 5);
@@ -351,6 +351,13 @@ const SHOWCASE_TIMED: ShowcaseGame[] = [
     meta: "16 classes · 48 players · 8:00 timer",
     accentColor: "#8b5cf6",
     Scene: (p) => <DraftClassScene {...p} />,
+  },
+  {
+    href: "/challenges/champions", tag: "6 min",
+    title: "NBA · Champions", description: "35 years of NBA Finals, one answer box each. Type a team name and all their championships fill in at once.",
+    meta: "1990–2024 · 35 years · 6:00 timer",
+    accentColor: "#eab308",
+    Scene: (p) => <ChampionsScene {...p} />,
   },
 ];
 
