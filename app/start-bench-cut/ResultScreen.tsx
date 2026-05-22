@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import type { Trio } from "@/lib/playerData";
-import GameHeader from "@/app/components/GameHeader";
 
 type Role = "start" | "bench" | "cut";
 type Assignments = { [playerId: string]: Role };
@@ -57,10 +56,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <GameHeader title="Start · Bench · Cut" />
-
-      <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
+    <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
         <motion.div
           className="text-center mb-7"
           initial={{ opacity: 0, y: -16 }}
@@ -158,6 +154,5 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
           </motion.button>
         </motion.div>
       </main>
-    </div>
   );
 }
