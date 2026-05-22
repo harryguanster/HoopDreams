@@ -10,7 +10,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "C",
     jersey: "15",
     era: "2015–present",
-    stats: { ppg: 27.7, rpg: 12.9, apg: 10.7, spg: 1.4, bpg: 0.8, fgPct: 57.3, threePct: 33.7 },
+    stats: { ppg: 27.7, rpg: 12.9, apg: 10.7, spg: 1.4, bpg: 0.8, fgPct: 56.9, threePct: 38.0 },
   },
   {
     id: "giannis_c",
@@ -32,7 +32,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "PG",
     jersey: "77",
     era: "2018–present",
-    stats: { ppg: 33.5, rpg: 7.7, apg: 8.3, spg: 1.6, bpg: 0.5, fgPct: 47.9, threePct: 35.0 },
+    stats: { ppg: 33.5, rpg: 7.7, apg: 8.3, spg: 1.6, bpg: 0.5, fgPct: 47.6, threePct: 36.6 },
   },
   {
     id: "sga",
@@ -43,7 +43,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "SG",
     jersey: "2",
     era: "2018–present",
-    stats: { ppg: 31.1, rpg: 4.3, apg: 6.6, spg: 1.4, bpg: 0.8, fgPct: 51.0, threePct: 34.5 },
+    stats: { ppg: 31.1, rpg: 4.3, apg: 6.6, spg: 1.4, bpg: 0.8, fgPct: 55.3, threePct: 38.6 },
   },
   {
     id: "tatum_c",
@@ -87,7 +87,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "SF",
     jersey: "35",
     era: "2007–present",
-    stats: { ppg: 26.0, rpg: 5.5, apg: 4.8, spg: 0.8, bpg: 0.9, fgPct: 49.6, threePct: 38.4 },
+    stats: { ppg: 26.0, rpg: 5.5, apg: 4.8, spg: 0.8, bpg: 0.9, fgPct: 52.0, threePct: 41.3 },
   },
   {
     id: "lebron_c",
@@ -98,7 +98,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "SF",
     jersey: "23",
     era: "2003–present",
-    stats: { ppg: 20.9, rpg: 6.1, apg: 7.2, spg: 1.2, bpg: 0.6, fgPct: 50.4, threePct: 34.5 },
+    stats: { ppg: 20.9, rpg: 6.1, apg: 7.2, spg: 1.2, bpg: 0.6, fgPct: 51.5, threePct: 31.7 },
   },
   {
     id: "ad_c",
@@ -120,7 +120,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "SG",
     jersey: "5",
     era: "2020–present",
-    stats: { ppg: 28.8, rpg: 4.9, apg: 3.7, spg: 1.4, bpg: 0.8, fgPct: 45.5, threePct: 36.0 },
+    stats: { ppg: 28.8, rpg: 5.0, apg: 3.7, spg: 1.4, bpg: 0.8, fgPct: 48.9, threePct: 39.9 },
   },
   {
     id: "wemby_c",
@@ -131,7 +131,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "C",
     jersey: "1",
     era: "2023–present",
-    stats: { ppg: 25.0, rpg: 11.5, apg: 3.1, spg: 1.0, bpg: 3.1, fgPct: 47.5, threePct: 32.5 },
+    stats: { ppg: 25.0, rpg: 11.5, apg: 3.1, spg: 0.9, bpg: 3.1, fgPct: 51.1, threePct: 34.9 },
   },
   {
     id: "trae_c",
@@ -164,7 +164,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "SG",
     jersey: "1",
     era: "2015–present",
-    stats: { ppg: 26.1, rpg: 3.9, apg: 6.0, spg: 0.8, bpg: 0.3, fgPct: 46.0, threePct: 36.5 },
+    stats: { ppg: 26.1, rpg: 3.6, apg: 6.8, spg: 0.8, bpg: 0.3, fgPct: 46.7, threePct: 36.9 },
   },
   {
     id: "dame_c",
@@ -186,7 +186,7 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "SF",
     jersey: "2",
     era: "2011–present",
-    stats: { ppg: 27.9, rpg: 6.4, apg: 3.6, spg: 1.8, bpg: 0.8, fgPct: 49.5, threePct: 37.5 },
+    stats: { ppg: 27.9, rpg: 6.4, apg: 3.6, spg: 1.8, bpg: 0.8, fgPct: 50.5, threePct: 38.7 },
   },
   {
     id: "bam_c",
@@ -197,6 +197,6 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "C",
     jersey: "13",
     era: "2017–present",
-    stats: { ppg: 20.1, rpg: 10.0, apg: 3.2, spg: 1.4, bpg: 0.8, fgPct: 56.5, threePct: null },
+    stats: { ppg: 20.1, rpg: 10.0, apg: 3.2, spg: 1.2, bpg: 0.7, fgPct: 44.2, threePct: 31.8 },
   },
 ];
