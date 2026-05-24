@@ -38,7 +38,7 @@ const IMGS = {
 function StatCounter({ value, label }: { value: string; label: string }) {
   return (
     <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
-      <p className="font-bebas text-teal-400 tabular-nums" style={{ fontSize: "2rem", letterSpacing: "0.04em", lineHeight: 1 }}>{value}</p>
+      <p className="font-bebas text-lime-400 tabular-nums" style={{ fontSize: "2rem", letterSpacing: "0.04em", lineHeight: 1 }}>{value}</p>
       <p className="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-1">{label}</p>
     </motion.div>
   );
@@ -105,7 +105,7 @@ function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
       <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: pos }} />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 48%, rgba(0,0,0,0.08) 100%)" }} />
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px", background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)" }}>
-        <p style={{ color: "rgba(45,212,191,0.9)", fontSize: "7.5px", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>{label}</p>
+        <p style={{ color: "rgba(163,230,53,0.9)", fontSize: "7.5px", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>{label}</p>
       </div>
     </motion.div>
   );
@@ -223,7 +223,7 @@ function tagChipClass(tag: string) {
   if (tag === "Daily")       return "text-purple-300 bg-purple-500/20 border-purple-400/35";
   if (tag === "Streak")      return "text-amber-300 bg-amber-500/20 border-amber-400/35";
   if (tag.includes("min"))   return "text-red-300 bg-red-500/20 border-red-400/35";
-  return "text-teal-300 bg-teal-500/20 border-teal-400/30";
+  return "text-lime-300 bg-lime-500/20 border-lime-400/30";
 }
 
 // ─── Game data ────────────────────────────────────────────────────────────────
@@ -348,7 +348,7 @@ function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos
         {/* Bottom: title + description + meta */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pt-8 pb-4" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}>
           <h3
-            className="text-white mb-1.5 group-hover:text-teal-300 transition-colors"
+            className="text-white mb-1.5 group-hover:text-lime-300 transition-colors"
             style={{ fontFamily: "var(--font-bebas)", fontSize: "1.2rem", letterSpacing: "0.07em", lineHeight: 1.1 }}
           >
             {title}
@@ -356,7 +356,7 @@ function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos
           <p className="text-white/65 text-[11px] leading-relaxed mb-3">{description}</p>
           <div className="flex items-center justify-between border-t border-white/12 pt-2">
             <p className="text-white/35 text-[9px] font-mono">{meta}</p>
-            <span className="text-teal-400 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">Play →</span>
+            <span className="text-lime-400 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">Play →</span>
           </div>
           <p className="text-white/18 text-[8px] font-mono mt-1.5">{photoCredit}</p>
         </div>
@@ -375,7 +375,7 @@ function SectionHeader({ label, title }: { label: string; title: string }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
     >
-      <p className="text-[10px] font-mono uppercase tracking-[0.45em] text-teal-500 mb-2">{label}</p>
+      <p className="text-[10px] font-mono uppercase tracking-[0.45em] text-lime-500 mb-2">{label}</p>
       <h2 className="text-white" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(34px, 5vw, 56px)", letterSpacing: "0.06em", lineHeight: 1 }}>
         {title}
       </h2>
@@ -429,7 +429,7 @@ export default function HomePage() {
   const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
 
   return (
-    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #050e1a 0%, #071520 40%, #091c22 70%, #071018 100%)" }}>
+    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #030803 0%, #050d04 40%, #06100a 70%, #040804 100%)" }}>
 
       {/* ── Header ── */}
       <header className="relative z-50 bg-black/40 backdrop-blur-md border-b border-white/8 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56 }}>
@@ -440,7 +440,7 @@ export default function HomePage() {
           <span className="font-bebas text-white text-2xl tracking-[0.08em]" style={{ lineHeight: 1 }}>Courtside Central</span>
         </div>
         <div className="flex items-center gap-3 relative z-10 py-3">
-          <span className="text-[10px] text-teal-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
+          <span className="text-[10px] text-lime-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
           <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
@@ -453,10 +453,10 @@ export default function HomePage() {
           @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
         `}</style>
         <div className="absolute pointer-events-none" style={{ width: 780, height: 620, bottom: "-140px", left: "-160px", background: "radial-gradient(ellipse, rgba(251,146,60,0.28) 0%, rgba(234,88,12,0.12) 45%, transparent 70%)", filter: "blur(60px)", animation: "floatA 9s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
-        <div className="absolute pointer-events-none" style={{ width: 720, height: 580, top: "-120px", right: "-140px", background: "radial-gradient(ellipse, rgba(20,184,166,0.25) 0%, rgba(13,148,136,0.10) 50%, transparent 70%)", filter: "blur(65px)", animation: "floatB 11s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
-        <div className="absolute pointer-events-none" style={{ width: "100%", height: 300, bottom: 0, left: 0, background: "linear-gradient(to top, rgba(13,148,136,0.18) 0%, transparent 100%)", filter: "blur(2px)", zIndex: 1 }} />
+        <div className="absolute pointer-events-none" style={{ width: 720, height: 580, top: "-120px", right: "-140px", background: "radial-gradient(ellipse, rgba(132,204,22,0.25) 0%, rgba(101,163,13,0.10) 50%, transparent 70%)", filter: "blur(65px)", animation: "floatB 11s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
+        <div className="absolute pointer-events-none" style={{ width: "100%", height: 300, bottom: 0, left: 0, background: "linear-gradient(to top, rgba(101,163,13,0.18) 0%, transparent 100%)", filter: "blur(2px)", zIndex: 1 }} />
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(5,14,26,0.82) 100%)", zIndex: 2 }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(20,184,166,0.10) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(132,204,22,0.10) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
         <div className="absolute inset-0 pointer-events-none speed-lines-bg" style={{ zIndex: 3 }} />
 
         {PLATE_LAYOUT.map((pl, i) => (
@@ -464,8 +464,8 @@ export default function HomePage() {
         ))}
 
         <motion.div className="relative text-center pointer-events-none" style={{ zIndex: 10 }} initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, ease: "easeOut" }}>
-          <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-teal-400 mb-6">Test Your NBA IQ</p>
-          <h1 className="uppercase text-white" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(80px, 14vw, 210px)", lineHeight: 0.88, letterSpacing: "0.05em", textShadow: "0 0 120px rgba(20,184,166,0.5), 4px 4px 0px rgba(255,0,98,0.25), 0 4px 40px rgba(0,0,0,0.9)" }}>
+          <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-lime-400 mb-6">Test Your NBA IQ</p>
+          <h1 className="uppercase text-white" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(80px, 14vw, 210px)", lineHeight: 0.88, letterSpacing: "0.05em", textShadow: "0 0 120px rgba(132,204,22,0.5), 4px 4px 0px rgba(255,0,98,0.25), 0 4px 40px rgba(0,0,0,0.9)" }}>
             Courtside<br />Central
           </h1>
         </motion.div>
@@ -474,8 +474,8 @@ export default function HomePage() {
           <motion.a
             href="#games"
             className="inline-block px-14 py-4 text-black font-bold uppercase"
-            style={{ fontFamily: "var(--font-bebas)", fontSize: "1.35rem", letterSpacing: "0.2em", background: "linear-gradient(90deg, #14b8a6, #00d4ff)", clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)", boxShadow: "0 0 40px rgba(20,184,166,0.55), 0 2px 12px rgba(0,0,0,0.4)" }}
-            whileHover={{ scale: 1.06, boxShadow: "0 0 65px rgba(20,184,166,0.75), 0 4px 24px rgba(0,0,0,0.4)" }}
+            style={{ fontFamily: "var(--font-bebas)", fontSize: "1.35rem", letterSpacing: "0.2em", background: "linear-gradient(90deg, #84cc16, #ccff00)", clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)", boxShadow: "0 0 40px rgba(132,204,22,0.55), 0 2px 12px rgba(0,0,0,0.4)" }}
+            whileHover={{ scale: 1.06, boxShadow: "0 0 65px rgba(132,204,22,0.75), 0 4px 24px rgba(0,0,0,0.4)" }}
             whileTap={{ scale: 0.96 }}
           >
             Start Playing
@@ -484,9 +484,9 @@ export default function HomePage() {
 
         <motion.div className="absolute bottom-7 flex items-center gap-10" style={{ zIndex: 20 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}>
           <StatCounter value={`${TRIOS.length + CURRENT_TRIOS.length}+`} label="Start Bench Cut Rounds" />
-          <div className="h-8 w-px bg-teal-500/20" />
+          <div className="h-8 w-px bg-lime-500/20" />
           <StatCounter value={`${LINEUPS.length}+`} label="Lineup Puzzles" />
-          <div className="h-8 w-px bg-teal-500/20" />
+          <div className="h-8 w-px bg-lime-500/20" />
           <StatCounter value={`${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length}+`} label="Players" />
         </motion.div>
       </section>
@@ -564,7 +564,7 @@ export default function HomePage() {
                   <p className="text-white/40 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 clues · 5 guesses</p>
                 </div>
                 {dailyData.guessWhoWon !== null && (
-                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.guessWhoWon ? "text-teal-300 bg-teal-500/15 border border-teal-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
+                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.guessWhoWon ? "text-lime-300 bg-lime-500/15 border border-lime-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
                     {dailyData.guessWhoWon ? "✓ Done" : "✗ Done"}
                   </span>
                 )}
@@ -592,7 +592,7 @@ export default function HomePage() {
                   <p className="text-white/40 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 stats · 5 guesses</p>
                 </div>
                 {dailyData.statLineWon !== null && (
-                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.statLineWon ? "text-teal-300 bg-teal-500/15 border border-teal-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
+                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.statLineWon ? "text-lime-300 bg-lime-500/15 border border-lime-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
                     {dailyData.statLineWon ? "✓ Done" : "✗ Done"}
                   </span>
                 )}

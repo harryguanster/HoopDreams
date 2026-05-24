@@ -3,7 +3,7 @@
 :root {
   --background: #f0fdfa;
   --foreground: #0f172a;
-  --teal: #14b8a6;
+  --teal: #84cc16;
   --anime-pink: #ff0062;
   --anime-cyan: #00d4ff;
   --anime-gold: #ffd700;
@@ -37,8 +37,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
-  50%       { box-shadow: 0 0 0 6px rgba(20, 184, 166, 0.3); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(132, 204, 22, 0); }
+  50%       { box-shadow: 0 0 0 6px rgba(132, 204, 22, 0.3); }
 }
 
 @keyframes slideDown {
