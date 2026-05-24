@@ -429,10 +429,10 @@ export default function HomePage() {
   const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: "#ffffff" }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: "#f4f0e6" }}>
 
       {/* ── Header ── */}
-      <header className="relative z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56 }}>
+      <header className="relative z-50 backdrop-blur-md border-b border-stone-300/60 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56, background: "rgba(244,240,230,0.92)" }}>
         <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: "linear-gradient(to bottom, #84cc16, #84cc1650)" }} />
         <div className="flex items-center gap-3 relative z-10 py-3">
           <img src="/logo.svg" alt="Courtside Central" className="h-9 w-auto" />
@@ -549,7 +549,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Daily Guess Who */}
-            <div className="rounded-2xl p-6 border border-violet-200" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.06) 0%, #ffffff 100%)", boxShadow: "0 2px 16px rgba(139,92,246,0.08)" }}>
+            <div className="rounded-2xl p-6 border border-violet-200" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(139,92,246,0.08)" }}>
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(139,92,246,0.25)" }}>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round">
@@ -578,7 +578,7 @@ export default function HomePage() {
             </div>
 
             {/* Daily Stat Line */}
-            <div className="rounded-2xl p-6 border border-blue-200" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.06) 0%, #ffffff 100%)", boxShadow: "0 2px 16px rgba(59,130,246,0.08)" }}>
+            <div className="rounded-2xl p-6 border border-blue-200" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(59,130,246,0.08)" }}>
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(59,130,246,0.10)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(59,130,246,0.25)" }}>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
