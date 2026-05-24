@@ -22,35 +22,51 @@ import {
 
 // ─── Basketball background pattern ───────────────────────────────────────────
 const BBALL_PATTERN = (() => {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260">
-    <g transform="translate(70,65) rotate(18)">
-      <circle r="30" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="3"/>
-      <line x1="-30" y1="0" x2="30" y2="0" stroke="#c4a070" stroke-width="2.2"/>
-      <line x1="0" y1="-30" x2="0" y2="30" stroke="#c4a070" stroke-width="2.2"/>
-      <path d="M-18 -25 Q0 0 -18 25" fill="none" stroke="#c4a070" stroke-width="2.2"/>
-      <path d="M18 -25 Q0 0 18 25" fill="none" stroke="#c4a070" stroke-width="2.2"/>
+  const c = "#b8946a";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420">
+
+    <!-- Basketball (top-left) -->
+    <g transform="translate(80,85) rotate(14)" opacity="0.7">
+      <circle r="26" fill="#dfc9a0" fill-opacity="0.45" stroke="${c}" stroke-width="2.5"/>
+      <line x1="-26" y1="0" x2="26" y2="0" stroke="${c}" stroke-width="2"/>
+      <line x1="0" y1="-26" x2="0" y2="26" stroke="${c}" stroke-width="2"/>
+      <path d="M-15 -22 Q0 0 -15 22" fill="none" stroke="${c}" stroke-width="2"/>
+      <path d="M15 -22 Q0 0 15 22" fill="none" stroke="${c}" stroke-width="2"/>
     </g>
-    <g transform="translate(200,185) rotate(-22)">
-      <circle r="20" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="2.5"/>
-      <line x1="-20" y1="0" x2="20" y2="0" stroke="#c4a070" stroke-width="1.8"/>
-      <line x1="0" y1="-20" x2="0" y2="20" stroke="#c4a070" stroke-width="1.8"/>
-      <path d="M-12 -16 Q0 0 -12 16" fill="none" stroke="#c4a070" stroke-width="1.8"/>
-      <path d="M12 -16 Q0 0 12 16" fill="none" stroke="#c4a070" stroke-width="1.8"/>
+
+    <!-- Hoop + net (top-right) -->
+    <g transform="translate(330,95) rotate(-8)" opacity="0.65">
+      <rect x="-20" y="-18" width="40" height="5" rx="1" fill="none" stroke="${c}" stroke-width="2.2"/>
+      <ellipse cx="0" cy="-7" rx="14" ry="4" fill="none" stroke="${c}" stroke-width="2.2"/>
+      <line x1="-12" y1="-3" x2="-9" y2="11" stroke="${c}" stroke-width="1.3"/>
+      <line x1="-5" y1="-2" x2="-5" y2="12" stroke="${c}" stroke-width="1.3"/>
+      <line x1="1"  y1="-2" x2="0"  y2="12" stroke="${c}" stroke-width="1.3"/>
+      <line x1="7"  y1="-2" x2="5"  y2="12" stroke="${c}" stroke-width="1.3"/>
+      <line x1="11" y1="-3" x2="8"  y2="11" stroke="${c}" stroke-width="1.3"/>
+      <path d="M-12 4 Q0 8 12 4" fill="none" stroke="${c}" stroke-width="1.1"/>
+      <path d="M-10 10 Q0 14 10 10" fill="none" stroke="${c}" stroke-width="1.1"/>
     </g>
-    <g transform="translate(205,50) rotate(38)">
-      <circle r="12" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="1.8"/>
-      <line x1="-12" y1="0" x2="12" y2="0" stroke="#c4a070" stroke-width="1.3"/>
-      <line x1="0" y1="-12" x2="0" y2="12" stroke="#c4a070" stroke-width="1.3"/>
-      <path d="M-7 -10 Q0 0 -7 10" fill="none" stroke="#c4a070" stroke-width="1.3"/>
-      <path d="M7 -10 Q0 0 7 10" fill="none" stroke="#c4a070" stroke-width="1.3"/>
+
+    <!-- Playbook X's O's + arrow (bottom-left) -->
+    <g transform="translate(95,320) rotate(6)" opacity="0.65">
+      <circle cx="-18" cy="-10" r="8" fill="none" stroke="${c}" stroke-width="2"/>
+      <circle cx="-18" cy="12"  r="8" fill="none" stroke="${c}" stroke-width="2"/>
+      <line x1="8"  y1="-16" x2="22" y2="-2"  stroke="${c}" stroke-width="2"/>
+      <line x1="22" y1="-16" x2="8"  y2="-2"  stroke="${c}" stroke-width="2"/>
+      <path d="M-10 -10 Q4 -6 8 -12" fill="none" stroke="${c}" stroke-width="1.4" stroke-dasharray="3 2.5"/>
+      <polyline points="5 -15 8 -12 11 -14" fill="none" stroke="${c}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M-10 12 Q2 18 8 -4" fill="none" stroke="${c}" stroke-width="1.4" stroke-dasharray="3 2.5"/>
+      <polyline points="5 -7 8 -4 11 -6" fill="none" stroke="${c}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
-    <g transform="translate(38,205) rotate(-8)">
-      <circle r="22" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="2.5"/>
-      <line x1="-22" y1="0" x2="22" y2="0" stroke="#c4a070" stroke-width="1.8"/>
-      <line x1="0" y1="-22" x2="0" y2="22" stroke="#c4a070" stroke-width="1.8"/>
-      <path d="M-13 -18 Q0 0 -13 18" fill="none" stroke="#c4a070" stroke-width="1.8"/>
-      <path d="M13 -18 Q0 0 13 18" fill="none" stroke="#c4a070" stroke-width="1.8"/>
+
+    <!-- Stats bar chart (bottom-right) -->
+    <g transform="translate(325,320) rotate(-10)" opacity="0.65">
+      <line x1="-24" y1="16" x2="24" y2="16" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="-22" y="4"  width="9" height="12" rx="1.5" fill="none" stroke="${c}" stroke-width="1.8"/>
+      <rect x="-8"  y="-4" width="9" height="20" rx="1.5" fill="none" stroke="${c}" stroke-width="1.8"/>
+      <rect x="6"   y="-14" width="9" height="30" rx="1.5" fill="none" stroke="${c}" stroke-width="1.8"/>
     </g>
+
   </svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 })();
@@ -464,7 +480,7 @@ export default function HomePage() {
   const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: "#f4f0e6", backgroundImage: BBALL_PATTERN, backgroundSize: "260px 260px" }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: "#f4f0e6", backgroundImage: BBALL_PATTERN, backgroundSize: "420px 420px" }}>
 
       {/* ── Header ── */}
       <header className="relative z-50 backdrop-blur-md border-b border-stone-300/60 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56, background: "rgba(244,240,230,0.92)" }}>
