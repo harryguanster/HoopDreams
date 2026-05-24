@@ -375,8 +375,8 @@ function SectionHeader({ label, title }: { label: string; title: string }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
     >
-      <p className="text-[10px] font-mono uppercase tracking-[0.45em] text-lime-500 mb-2">{label}</p>
-      <h2 className="text-white" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(34px, 5vw, 56px)", letterSpacing: "0.06em", lineHeight: 1 }}>
+      <p className="text-[10px] font-mono uppercase tracking-[0.45em] text-lime-600 mb-2">{label}</p>
+      <h2 className="text-gray-900" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(34px, 5vw, 56px)", letterSpacing: "0.06em", lineHeight: 1 }}>
         {title}
       </h2>
     </motion.div>
@@ -429,25 +429,24 @@ export default function HomePage() {
   const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
 
   return (
-    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(160deg, #030803 0%, #050d04 40%, #06100a 70%, #040804 100%)" }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: "#ffffff" }}>
 
       {/* ── Header ── */}
-      <header className="relative z-50 bg-black/40 backdrop-blur-md border-b border-white/8 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56 }}>
-        <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: "linear-gradient(to bottom, #ff0062, #ff006250)" }} />
-        <div className="absolute inset-0 scan-lines pointer-events-none opacity-40" />
+      <header className="relative z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56 }}>
+        <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: "linear-gradient(to bottom, #84cc16, #84cc1650)" }} />
         <div className="flex items-center gap-3 relative z-10 py-3">
           <img src="/logo.svg" alt="Courtside Central" className="h-9 w-auto" />
-          <span className="font-bebas text-white text-2xl tracking-[0.08em]" style={{ lineHeight: 1 }}>Courtside Central</span>
+          <span className="font-bebas text-gray-900 text-2xl tracking-[0.08em]" style={{ lineHeight: 1 }}>Courtside Central</span>
         </div>
         <div className="flex items-center gap-3 relative z-10 py-3">
-          <span className="text-[10px] text-lime-400/70 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
+          <span className="text-[10px] text-lime-600 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
           <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
       </header>
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden text-white" style={{ background: "linear-gradient(160deg, #030803 0%, #050d04 40%, #06100a 70%, #040804 100%)" }}>
         <style>{`
           @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(40px,-30px) scale(1.08)} 70%{transform:translate(-20px,20px) scale(0.95)} }
           @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
@@ -506,7 +505,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
         {/* Timed Challenges */}
         <section>
@@ -520,12 +519,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
         {/* Daily */}
         <section>
           <SectionHeader label="Daily" title="Today's Challenges" />
-          <p className="text-white/40 text-sm -mt-4 mb-8 font-mono">New players every day · Complete both to extend your streak</p>
+          <p className="text-gray-500 text-sm -mt-4 mb-8 font-mono">New players every day · Complete both to extend your streak</p>
 
           {bothWon && (
             <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="mb-8">
@@ -550,21 +549,21 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Daily Guess Who */}
-            <div className="rounded-2xl p-6 border border-purple-500/20" style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(255,255,255,0.04) 100%)" }}>
+            <div className="rounded-2xl p-6 border border-violet-200" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.06) 0%, #ffffff 100%)", boxShadow: "0 2px 16px rgba(139,92,246,0.08)" }}>
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(109,40,217,0.30)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(168,85,247,0.35)" }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#c4b5fd" strokeWidth="1.5" strokeLinecap="round">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(139,92,246,0.25)" }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round">
                     <circle cx="9" cy="9" r="4"/><circle cx="9" cy="9" r="7.5"/>
                     <line x1="9" y1="1" x2="9" y2="4.5"/><line x1="9" y1="13.5" x2="9" y2="17"/>
                     <line x1="1" y1="9" x2="4.5" y2="9"/><line x1="13.5" y1="9" x2="17" y2="9"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "white", lineHeight: 1 }}>Daily Guess Who</h3>
-                  <p className="text-white/40 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 clues · 5 guesses</p>
+                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "#111827", lineHeight: 1 }}>Daily Guess Who</h3>
+                  <p className="text-gray-500 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 clues · 5 guesses</p>
                 </div>
                 {dailyData.guessWhoWon !== null && (
-                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.guessWhoWon ? "text-lime-300 bg-lime-500/15 border border-lime-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
+                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.guessWhoWon ? "text-lime-700 bg-lime-100 border border-lime-300" : "text-red-600 bg-red-50 border border-red-200"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
                     {dailyData.guessWhoWon ? "✓ Done" : "✗ Done"}
                   </span>
                 )}
@@ -573,26 +572,26 @@ export default function HomePage() {
                 <DailyGuessWhoGame player={dailyGuessWhoPlayer} onComplete={handleGuessWhoComplete} alreadyCompleted={dailyData.guessWhoWon !== null} won={dailyData.guessWhoWon} />
               ) : (
                 <div className="h-32 flex items-center justify-center">
-                  <p className="text-white/25 text-xs font-mono uppercase tracking-widest">Loading…</p>
+                  <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
                 </div>
               )}
             </div>
 
             {/* Daily Stat Line */}
-            <div className="rounded-2xl p-6 border border-blue-500/20" style={{ background: "linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(255,255,255,0.04) 100%)" }}>
+            <div className="rounded-2xl p-6 border border-blue-200" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.06) 0%, #ffffff 100%)", boxShadow: "0 2px 16px rgba(59,130,246,0.08)" }}>
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(37,99,235,0.30)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(59,130,246,0.35)" }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#93c5fd" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(59,130,246,0.10)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(59,130,246,0.25)" }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="1.5" y="12" width="4" height="6.5" rx="0.5"/><rect x="8" y="7.5" width="4" height="11" rx="0.5"/>
                     <rect x="14.5" y="3" width="4" height="15.5" rx="0.5"/><line x1="0" y1="19" x2="20" y2="19"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "white", lineHeight: 1 }}>Daily Stat Line</h3>
-                  <p className="text-white/40 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 stats · 5 guesses</p>
+                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "#111827", lineHeight: 1 }}>Daily Stat Line</h3>
+                  <p className="text-gray-500 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 stats · 5 guesses</p>
                 </div>
                 {dailyData.statLineWon !== null && (
-                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.statLineWon ? "text-lime-300 bg-lime-500/15 border border-lime-500/30" : "text-red-300 bg-red-500/15 border border-red-500/30"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
+                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.statLineWon ? "text-lime-700 bg-lime-100 border border-lime-300" : "text-red-600 bg-red-50 border border-red-200"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
                     {dailyData.statLineWon ? "✓ Done" : "✗ Done"}
                   </span>
                 )}
@@ -601,18 +600,18 @@ export default function HomePage() {
                 <DailyStatLineGame player={dailyStatLinePlayer} onComplete={handleStatLineComplete} alreadyCompleted={dailyData.statLineWon !== null} won={dailyData.statLineWon} />
               ) : (
                 <div className="h-32 flex items-center justify-center">
-                  <p className="text-white/25 text-xs font-mono uppercase tracking-widest">Loading…</p>
+                  <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
                 </div>
               )}
             </div>
           </div>
 
           {bothDone && !bothWon && (
-            <p className="text-center text-white/30 text-xs font-mono mt-10 uppercase tracking-widest">Come back tomorrow for a new challenge</p>
+            <p className="text-center text-gray-400 text-xs font-mono mt-10 uppercase tracking-widest">Come back tomorrow for a new challenge</p>
           )}
         </section>
 
-        <p className="text-white/20 text-xs text-center font-mono uppercase tracking-widest">
+        <p className="text-gray-400 text-xs text-center font-mono uppercase tracking-widest">
           Stats are career averages · Accolades are highlights, not exhaustive
         </p>
       </div>
