@@ -16,11 +16,11 @@ function isMatch(input: string, player: StatLinePlayer): boolean {
 }
 
 const STAT_ORDER: Array<{ key: keyof StatLinePlayer["stats"]; label: string; color: string }> = [
-  { key: "ppg", label: "PPG", color: "#f97316" },
-  { key: "rpg", label: "RPG", color: "#10b981" },
-  { key: "apg", label: "APG", color: "#3b82f6" },
-  { key: "spg", label: "SPG", color: "#a855f7" },
-  { key: "bpg", label: "BPG", color: "#ef4444" },
+  { key: "ppg", label: "PPG", color: "#ea580c" },
+  { key: "rpg", label: "RPG", color: "#059669" },
+  { key: "apg", label: "APG", color: "#2563eb" },
+  { key: "spg", label: "SPG", color: "#7c3aed" },
+  { key: "bpg", label: "BPG", color: "#dc2626" },
 ];
 
 const MAX_GUESSES = 5;
@@ -79,8 +79,8 @@ export default function DailyStatLineGame({
             key={key}
             className="text-center rounded-lg p-3 border"
             style={{
-              background: revealed ? `${color}10` : "rgba(255,255,255,0.03)",
-              borderColor: revealed ? `${color}30` : "rgba(255,255,255,0.06)",
+              background: revealed ? `${color}15` : "rgba(0,0,0,0.04)",
+              borderColor: revealed ? `${color}40` : "rgba(0,0,0,0.10)",
             }}
             initial={revealed && i === count - 1 ? { opacity: 0, scale: 0.8 } : {}}
             animate={{ opacity: 1, scale: 1 }}
@@ -91,12 +91,12 @@ export default function DailyStatLineGame({
                 <p style={{ color, fontFamily: "var(--font-bebas)", fontSize: "1.5rem", lineHeight: 1 }}>
                   {player.stats[key] ?? "—"}
                 </p>
-                <p className="text-white/40 text-[9px] font-mono uppercase mt-1">{label}</p>
+                <p className="text-gray-500 text-[9px] font-mono uppercase mt-1">{label}</p>
               </>
             ) : (
               <>
-                <p className="text-white/15 font-bebas text-2xl" style={{ lineHeight: 1 }}>?</p>
-                <p className="text-white/15 text-[9px] font-mono uppercase mt-1">{label}</p>
+                <p className="text-gray-300 font-bebas text-2xl" style={{ lineHeight: 1 }}>?</p>
+                <p className="text-gray-400 text-[9px] font-mono uppercase mt-1">{label}</p>
               </>
             )}
           </motion.div>
@@ -109,11 +109,11 @@ export default function DailyStatLineGame({
     return (
       <div className="space-y-3">
         {statGrid(MAX_GUESSES)}
-        <div className={`rounded-xl p-4 border ${initialWon ? "bg-teal-500/10 border-teal-500/30" : "bg-red-500/10 border-red-500/30"}`}>
-          <p className={`font-bebas text-xl tracking-widest ${initialWon ? "text-teal-300" : "text-red-300"}`}>
+        <div className={`rounded-xl p-4 border ${initialWon ? "bg-lime-50 border-lime-300" : "bg-red-50 border-red-200"}`}>
+          <p className={`font-bebas text-xl tracking-widest ${initialWon ? "text-lime-700" : "text-red-600"}`}>
             {initialWon ? `✓ ${player.name}` : `✗ The answer was: ${player.name}`}
           </p>
-          <p className="text-white/40 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
+          <p className="text-gray-500 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export default function DailyStatLineGame({
       {guesses.length > 0 && !done && (
         <div className="flex flex-wrap gap-1.5">
           {guesses.map((g, i) => (
-            <span key={i} className="text-[11px] bg-red-500/15 text-red-300 border border-red-500/30 px-2.5 py-1 font-mono"
+            <span key={i} className="text-[11px] bg-red-50 text-red-600 border border-red-200 px-2.5 py-1 font-mono"
               style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
               ✗ {g}
             </span>
@@ -139,12 +139,12 @@ export default function DailyStatLineGame({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`rounded-xl p-4 border ${won ? "bg-teal-500/10 border-teal-500/30" : "bg-red-500/10 border-red-500/30"}`}
+            className={`rounded-xl p-4 border ${won ? "bg-lime-50 border-lime-300" : "bg-red-50 border-red-200"}`}
           >
-            <p className={`font-bebas text-xl tracking-widest ${won ? "text-teal-300" : "text-red-300"}`}>
+            <p className={`font-bebas text-xl tracking-widest ${won ? "text-lime-700" : "text-red-600"}`}>
               {won ? `✓ ${player.name}` : `✗ The answer was: ${player.name}`}
             </p>
-            <p className="text-white/40 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
+            <p className="text-gray-500 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -162,7 +162,7 @@ export default function DailyStatLineGame({
             onChange={e => setInputVal(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") handleGuess(); }}
             placeholder={`Guess ${guesses.length + 1} of ${MAX_GUESSES}…`}
-            className="flex-1 bg-white/8 border border-white/15 rounded-lg px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-blue-400/60 transition-colors"
+            className="flex-1 bg-white border border-stone-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-blue-400 transition-colors"
             autoFocus
           />
           <button

@@ -67,17 +67,17 @@ export default function DailyGuessWhoGame({
       <div className="space-y-3">
         <div className="space-y-2">
           {player.clues.map((clue, i) => (
-            <div key={i} className="flex gap-3 bg-white/5 border border-white/8 rounded-lg p-3">
-              <span className="text-amber-400 font-mono text-xs font-bold w-5 shrink-0 mt-0.5">{i + 1}</span>
-              <p className="text-white/70 text-sm leading-relaxed">{clue}</p>
+            <div key={i} className="flex gap-3 bg-white/70 border border-stone-200 rounded-lg p-3">
+              <span className="text-amber-600 font-mono text-xs font-bold w-5 shrink-0 mt-0.5">{i + 1}</span>
+              <p className="text-gray-700 text-sm leading-relaxed">{clue}</p>
             </div>
           ))}
         </div>
-        <div className={`rounded-xl p-4 border ${initialWon ? "bg-teal-500/10 border-teal-500/30" : "bg-red-500/10 border-red-500/30"}`}>
-          <p className={`font-bebas text-xl tracking-widest ${initialWon ? "text-teal-300" : "text-red-300"}`}>
+        <div className={`rounded-xl p-4 border ${initialWon ? "bg-lime-50 border-lime-300" : "bg-red-50 border-red-200"}`}>
+          <p className={`font-bebas text-xl tracking-widest ${initialWon ? "text-lime-700" : "text-red-600"}`}>
             {initialWon ? `✓ ${player.name}` : `✗ The answer was: ${player.name}`}
           </p>
-          <p className="text-white/40 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
+          <p className="text-gray-500 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
         </div>
       </div>
     );
@@ -92,16 +92,16 @@ export default function DailyGuessWhoGame({
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex gap-3 bg-white/5 border border-white/10 rounded-lg p-3"
+            className="flex gap-3 bg-white/70 border border-stone-200 rounded-lg p-3"
           >
-            <span className="text-amber-400 font-mono text-xs font-bold w-5 shrink-0 mt-0.5">{i + 1}</span>
-            <p className="text-white/85 text-sm leading-relaxed">{clue}</p>
+            <span className="text-amber-600 font-mono text-xs font-bold w-5 shrink-0 mt-0.5">{i + 1}</span>
+            <p className="text-gray-800 text-sm leading-relaxed">{clue}</p>
           </motion.div>
         ))}
         {Array.from({ length: MAX_GUESSES - revealedCount }).map((_, i) => (
-          <div key={`hidden-${i}`} className="flex gap-3 bg-white/2 border border-white/5 rounded-lg p-3 opacity-40">
-            <span className="text-white/20 font-mono text-xs font-bold w-5 shrink-0 mt-0.5">{revealedCount + i + 1}</span>
-            <p className="text-white/20 text-sm">— next clue unlocks after a wrong guess —</p>
+          <div key={`hidden-${i}`} className="flex gap-3 bg-stone-100 border border-stone-200 rounded-lg p-3 opacity-50">
+            <span className="text-gray-400 font-mono text-xs font-bold w-5 shrink-0 mt-0.5">{revealedCount + i + 1}</span>
+            <p className="text-gray-400 text-sm">— next clue unlocks after a wrong guess —</p>
           </div>
         ))}
       </div>
@@ -109,7 +109,7 @@ export default function DailyGuessWhoGame({
       {guesses.length > 0 && !done && (
         <div className="flex flex-wrap gap-1.5">
           {guesses.map((g, i) => (
-            <span key={i} className="text-[11px] bg-red-500/15 text-red-300 border border-red-500/30 px-2.5 py-1 font-mono"
+            <span key={i} className="text-[11px] bg-red-50 text-red-600 border border-red-200 px-2.5 py-1 font-mono"
               style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
               ✗ {g}
             </span>
@@ -122,12 +122,12 @@ export default function DailyGuessWhoGame({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`rounded-xl p-4 border ${won ? "bg-teal-500/10 border-teal-500/30" : "bg-red-500/10 border-red-500/30"}`}
+            className={`rounded-xl p-4 border ${won ? "bg-lime-50 border-lime-300" : "bg-red-50 border-red-200"}`}
           >
-            <p className={`font-bebas text-xl tracking-widest ${won ? "text-teal-300" : "text-red-300"}`}>
+            <p className={`font-bebas text-xl tracking-widest ${won ? "text-lime-700" : "text-red-600"}`}>
               {won ? `✓ ${player.name}` : `✗ The answer was: ${player.name}`}
             </p>
-            <p className="text-white/40 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
+            <p className="text-gray-500 text-xs mt-1 font-mono">{player.team} · #{player.jersey} · {player.position}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -145,7 +145,7 @@ export default function DailyGuessWhoGame({
             onChange={e => setInputVal(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") handleGuess(); }}
             placeholder={`Guess ${guesses.length + 1} of ${MAX_GUESSES}…`}
-            className="flex-1 bg-white/8 border border-white/15 rounded-lg px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple-400/60 transition-colors"
+            className="flex-1 bg-white border border-stone-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-violet-400 transition-colors"
             autoFocus
           />
           <button
