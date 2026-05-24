@@ -493,27 +493,17 @@ export default function HomePage() {
           </motion.a>
         </motion.div>
 
-        <motion.div className="absolute bottom-44 flex items-center gap-10" style={{ zIndex: 20 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}>
+        <motion.div className="absolute bottom-7 flex items-center gap-10" style={{ zIndex: 20 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}>
           <StatCounter value={`${TRIOS.length + CURRENT_TRIOS.length}+`} label="Start Bench Cut Rounds" />
           <div className="h-8 w-px bg-lime-500/20" />
           <StatCounter value={`${LINEUPS.length}+`} label="Lineup Puzzles" />
           <div className="h-8 w-px bg-lime-500/20" />
           <StatCounter value={`${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length}+`} label="Players" />
         </motion.div>
-
-        {/* Smooth fade into beige content */}
-        <div
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{
-            height: 180,
-            background: "linear-gradient(to bottom, transparent 0%, rgba(244,240,230,0.55) 55%, #f4f0e6 100%)",
-            zIndex: 25,
-          }}
-        />
       </section>
 
       {/* ── Scrollable content ── */}
-      <div id="games" className="max-w-5xl mx-auto px-6 pt-10 pb-32 space-y-20">
+      <div id="games" className="max-w-5xl mx-auto px-6 py-20 pb-32 space-y-20">
 
         {/* Games */}
         <section>
