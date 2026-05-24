@@ -21,15 +21,6 @@ import {
 } from "@/lib/dailyUtils";
 
 // ─── Basketball background pattern ───────────────────────────────────────────
-const GRAIN_URL = `url("data:image/svg+xml,${encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240">
-    <filter id="n">
-      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
-      <feColorMatrix type="saturate" values="0"/>
-    </filter>
-    <rect width="240" height="240" filter="url(#n)" opacity="0.048"/>
-  </svg>`
-)}")`;
 
 // ─── Photo URLs (Wikipedia Commons) ──────────────────────────────────────────
 const IMGS = {
@@ -443,11 +434,12 @@ export default function HomePage() {
     <div className="min-h-screen overflow-x-hidden" style={{
         backgroundColor: "#f4f0e6",
         backgroundImage: [
-          "radial-gradient(ellipse 160% 55% at 50% 0%, rgba(255,253,242,0.85) 0%, transparent 55%)",
-          "radial-gradient(ellipse 90% 50% at 0% 100%, rgba(210,175,115,0.14) 0%, transparent 50%)",
-          "radial-gradient(ellipse 90% 50% at 100% 100%, rgba(190,155,95,0.10) 0%, transparent 50%)",
-          "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, rgba(160,125,75,0.09) 100%)",
-          GRAIN_URL,
+          "radial-gradient(ellipse 160% 55% at 50% 0%, rgba(255,253,242,0.90) 0%, transparent 52%)",
+          "radial-gradient(ellipse 75% 45% at 0% 100%, rgba(210,175,115,0.18) 0%, transparent 50%)",
+          "radial-gradient(ellipse 75% 45% at 100% 100%, rgba(195,158,98,0.13) 0%, transparent 50%)",
+          "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 48%, rgba(152,115,62,0.13) 100%)",
+          "repeating-linear-gradient(45deg, transparent 0px, transparent 9px, rgba(148,108,48,0.06) 9px, rgba(148,108,48,0.06) 10px)",
+          "repeating-linear-gradient(-45deg, transparent 0px, transparent 9px, rgba(148,108,48,0.045) 9px, rgba(148,108,48,0.045) 10px)",
         ].join(", "),
       }}>
 
