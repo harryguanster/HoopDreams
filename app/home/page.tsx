@@ -24,35 +24,35 @@ import {
 const BBALL_PATTERN = (() => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260">
     <g transform="translate(70,65) rotate(18)">
-      <circle r="30" fill="%23e8d0ac" fill-opacity="0.55" stroke="%23c4a070" stroke-width="3"/>
-      <line x1="-30" y1="0" x2="30" y2="0" stroke="%23c4a070" stroke-width="2.2"/>
-      <line x1="0" y1="-30" x2="0" y2="30" stroke="%23c4a070" stroke-width="2.2"/>
-      <path d="M-18 -25 Q0 0 -18 25" fill="none" stroke="%23c4a070" stroke-width="2.2"/>
-      <path d="M18 -25 Q0 0 18 25" fill="none" stroke="%23c4a070" stroke-width="2.2"/>
+      <circle r="30" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="3"/>
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#c4a070" stroke-width="2.2"/>
+      <line x1="0" y1="-30" x2="0" y2="30" stroke="#c4a070" stroke-width="2.2"/>
+      <path d="M-18 -25 Q0 0 -18 25" fill="none" stroke="#c4a070" stroke-width="2.2"/>
+      <path d="M18 -25 Q0 0 18 25" fill="none" stroke="#c4a070" stroke-width="2.2"/>
     </g>
     <g transform="translate(200,185) rotate(-22)">
-      <circle r="20" fill="%23e8d0ac" fill-opacity="0.55" stroke="%23c4a070" stroke-width="2.5"/>
-      <line x1="-20" y1="0" x2="20" y2="0" stroke="%23c4a070" stroke-width="1.8"/>
-      <line x1="0" y1="-20" x2="0" y2="20" stroke="%23c4a070" stroke-width="1.8"/>
-      <path d="M-12 -16 Q0 0 -12 16" fill="none" stroke="%23c4a070" stroke-width="1.8"/>
-      <path d="M12 -16 Q0 0 12 16" fill="none" stroke="%23c4a070" stroke-width="1.8"/>
+      <circle r="20" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="2.5"/>
+      <line x1="-20" y1="0" x2="20" y2="0" stroke="#c4a070" stroke-width="1.8"/>
+      <line x1="0" y1="-20" x2="0" y2="20" stroke="#c4a070" stroke-width="1.8"/>
+      <path d="M-12 -16 Q0 0 -12 16" fill="none" stroke="#c4a070" stroke-width="1.8"/>
+      <path d="M12 -16 Q0 0 12 16" fill="none" stroke="#c4a070" stroke-width="1.8"/>
     </g>
     <g transform="translate(205,50) rotate(38)">
-      <circle r="12" fill="%23e8d0ac" fill-opacity="0.55" stroke="%23c4a070" stroke-width="1.8"/>
-      <line x1="-12" y1="0" x2="12" y2="0" stroke="%23c4a070" stroke-width="1.3"/>
-      <line x1="0" y1="-12" x2="0" y2="12" stroke="%23c4a070" stroke-width="1.3"/>
-      <path d="M-7 -10 Q0 0 -7 10" fill="none" stroke="%23c4a070" stroke-width="1.3"/>
-      <path d="M7 -10 Q0 0 7 10" fill="none" stroke="%23c4a070" stroke-width="1.3"/>
+      <circle r="12" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="1.8"/>
+      <line x1="-12" y1="0" x2="12" y2="0" stroke="#c4a070" stroke-width="1.3"/>
+      <line x1="0" y1="-12" x2="0" y2="12" stroke="#c4a070" stroke-width="1.3"/>
+      <path d="M-7 -10 Q0 0 -7 10" fill="none" stroke="#c4a070" stroke-width="1.3"/>
+      <path d="M7 -10 Q0 0 7 10" fill="none" stroke="#c4a070" stroke-width="1.3"/>
     </g>
     <g transform="translate(38,205) rotate(-8)">
-      <circle r="22" fill="%23e8d0ac" fill-opacity="0.55" stroke="%23c4a070" stroke-width="2.5"/>
-      <line x1="-22" y1="0" x2="22" y2="0" stroke="%23c4a070" stroke-width="1.8"/>
-      <line x1="0" y1="-22" x2="0" y2="22" stroke="%23c4a070" stroke-width="1.8"/>
-      <path d="M-13 -18 Q0 0 -13 18" fill="none" stroke="%23c4a070" stroke-width="1.8"/>
-      <path d="M13 -18 Q0 0 13 18" fill="none" stroke="%23c4a070" stroke-width="1.8"/>
+      <circle r="22" fill="#e8d0ac" fill-opacity="0.55" stroke="#c4a070" stroke-width="2.5"/>
+      <line x1="-22" y1="0" x2="22" y2="0" stroke="#c4a070" stroke-width="1.8"/>
+      <line x1="0" y1="-22" x2="0" y2="22" stroke="#c4a070" stroke-width="1.8"/>
+      <path d="M-13 -18 Q0 0 -13 18" fill="none" stroke="#c4a070" stroke-width="1.8"/>
+      <path d="M13 -18 Q0 0 13 18" fill="none" stroke="#c4a070" stroke-width="1.8"/>
     </g>
   </svg>`;
-  return `url("data:image/svg+xml,${svg}")`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 })();
 
 // ─── Photo URLs (Wikipedia Commons) ──────────────────────────────────────────
