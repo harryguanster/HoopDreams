@@ -2,13 +2,14 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 
-function LightningBolt({ size = 14 }: { size?: number }) {
+function FlameIcon({ size = 13 }: { size?: number }) {
   return (
-    <svg width={size} height={size * 1.5} viewBox="0 0 14 21" fill="none">
+    <svg width={size} height={size * 1.2} viewBox="0 0 13 16" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path
-        d="M9.5 1L1 13h5.5L4.5 20l9.5-11.5H8.5L9.5 1Z"
+        d="M6.5 1C6.5 1 9.5 4 9.5 7C9.5 7 8.5 6 7.5 6C7.5 6 10 8.5 8.5 11.5C9.5 10.5 11.5 9 11.5 6.5C11.5 6.5 13 8 13 10.5C13 13 10.5 15 6.5 15C2.5 15 0 13 0 10.5C0 8 2 6 2 6C2 8 3.5 9 3.5 9C2.5 7 4 4 6.5 1Z"
         fill="white"
-        fillOpacity={0.95}
+        fillOpacity={0.92}
+        stroke="none"
       />
     </svg>
   );
@@ -31,9 +32,9 @@ export default function DailyBadge({ count }: { count: number }) {
             style={{
               position: "absolute",
               inset: -3,
-              background: "rgba(139,92,246,0.35)",
+              background: "rgba(132,204,22,0.30)",
               filter: "blur(8px)",
-              clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
+              borderRadius: 99,
               pointerEvents: "none",
             }}
           />
@@ -42,80 +43,39 @@ export default function DailyBadge({ count }: { count: number }) {
           <div
             style={{
               display: "flex",
-              alignItems: "stretch",
-              clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
-              background: "linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #6d28d9 100%)",
-              border: "1px solid rgba(167,139,250,0.35)",
+              alignItems: "center",
+              gap: 6,
+              background: "linear-gradient(135deg, #65a30d 0%, #84cc16 60%, #a3e635 100%)",
+              borderRadius: 99,
+              border: "1px solid rgba(163,230,53,0.5)",
               height: 32,
-              overflow: "hidden",
+              padding: "0 12px 0 10px",
             }}
           >
-            {/* Left accent strip with bolt */}
-            <div
+            <FlameIcon size={13} />
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 32,
-                background: "rgba(0,0,0,0.22)",
-                borderRight: "1px solid rgba(167,139,250,0.2)",
-                flexShrink: 0,
-              }}
-            >
-              <LightningBolt size={11} />
-            </div>
-
-            {/* Number */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "0 8px 0 7px",
                 fontFamily: "var(--font-bebas)",
-                fontSize: "1.3rem",
+                fontSize: "1.15rem",
                 letterSpacing: "0.04em",
                 color: "white",
                 lineHeight: 1,
               }}
             >
               {count}
-            </div>
-
-            {/* Label */}
-            <div
+            </span>
+            <span
               style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                paddingRight: 12,
-                gap: 1,
+                fontSize: "0.52rem",
+                fontFamily: "monospace",
+                textTransform: "uppercase",
+                letterSpacing: "0.14em",
+                color: "rgba(255,255,255,0.8)",
+                lineHeight: 1,
               }}
             >
-              <span
-                style={{
-                  fontSize: "0.52rem",
-                  fontFamily: "monospace",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.14em",
-                  color: "rgba(196,181,253,0.8)",
-                  lineHeight: 1,
-                }}
-              >
-                Day
-              </span>
-              <span
-                style={{
-                  fontSize: "0.52rem",
-                  fontFamily: "monospace",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.14em",
-                  color: "rgba(196,181,253,0.8)",
-                  lineHeight: 1,
-                }}
-              >
-                Streak
-              </span>
-            </div>
+              streak
+            </span>
           </div>
         </motion.div>
       )}
