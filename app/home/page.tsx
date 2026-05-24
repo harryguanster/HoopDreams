@@ -21,55 +21,15 @@ import {
 } from "@/lib/dailyUtils";
 
 // ─── Basketball background pattern ───────────────────────────────────────────
-const BBALL_PATTERN = (() => {
-  const c = "#b8946a";
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420">
-
-    <!-- Basketball (top-left) -->
-    <g transform="translate(80,85) rotate(14)" opacity="0.7">
-      <circle r="26" fill="#dfc9a0" fill-opacity="0.45" stroke="${c}" stroke-width="2.5"/>
-      <line x1="-26" y1="0" x2="26" y2="0" stroke="${c}" stroke-width="2"/>
-      <line x1="0" y1="-26" x2="0" y2="26" stroke="${c}" stroke-width="2"/>
-      <path d="M-15 -22 Q0 0 -15 22" fill="none" stroke="${c}" stroke-width="2"/>
-      <path d="M15 -22 Q0 0 15 22" fill="none" stroke="${c}" stroke-width="2"/>
-    </g>
-
-    <!-- Hoop + net (top-right) -->
-    <g transform="translate(330,95) rotate(-8)" opacity="0.65">
-      <rect x="-20" y="-18" width="40" height="5" rx="1" fill="none" stroke="${c}" stroke-width="2.2"/>
-      <ellipse cx="0" cy="-7" rx="14" ry="4" fill="none" stroke="${c}" stroke-width="2.2"/>
-      <line x1="-12" y1="-3" x2="-9" y2="11" stroke="${c}" stroke-width="1.3"/>
-      <line x1="-5" y1="-2" x2="-5" y2="12" stroke="${c}" stroke-width="1.3"/>
-      <line x1="1"  y1="-2" x2="0"  y2="12" stroke="${c}" stroke-width="1.3"/>
-      <line x1="7"  y1="-2" x2="5"  y2="12" stroke="${c}" stroke-width="1.3"/>
-      <line x1="11" y1="-3" x2="8"  y2="11" stroke="${c}" stroke-width="1.3"/>
-      <path d="M-12 4 Q0 8 12 4" fill="none" stroke="${c}" stroke-width="1.1"/>
-      <path d="M-10 10 Q0 14 10 10" fill="none" stroke="${c}" stroke-width="1.1"/>
-    </g>
-
-    <!-- Playbook X's O's + arrow (bottom-left) -->
-    <g transform="translate(95,320) rotate(6)" opacity="0.65">
-      <circle cx="-18" cy="-10" r="8" fill="none" stroke="${c}" stroke-width="2"/>
-      <circle cx="-18" cy="12"  r="8" fill="none" stroke="${c}" stroke-width="2"/>
-      <line x1="8"  y1="-16" x2="22" y2="-2"  stroke="${c}" stroke-width="2"/>
-      <line x1="22" y1="-16" x2="8"  y2="-2"  stroke="${c}" stroke-width="2"/>
-      <path d="M-10 -10 Q4 -6 8 -12" fill="none" stroke="${c}" stroke-width="1.4" stroke-dasharray="3 2.5"/>
-      <polyline points="5 -15 8 -12 11 -14" fill="none" stroke="${c}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M-10 12 Q2 18 8 -4" fill="none" stroke="${c}" stroke-width="1.4" stroke-dasharray="3 2.5"/>
-      <polyline points="5 -7 8 -4 11 -6" fill="none" stroke="${c}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-
-    <!-- Stats bar chart (bottom-right) -->
-    <g transform="translate(325,320) rotate(-10)" opacity="0.65">
-      <line x1="-24" y1="16" x2="24" y2="16" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>
-      <rect x="-22" y="4"  width="9" height="12" rx="1.5" fill="none" stroke="${c}" stroke-width="1.8"/>
-      <rect x="-8"  y="-4" width="9" height="20" rx="1.5" fill="none" stroke="${c}" stroke-width="1.8"/>
-      <rect x="6"   y="-14" width="9" height="30" rx="1.5" fill="none" stroke="${c}" stroke-width="1.8"/>
-    </g>
-
-  </svg>`;
-  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
-})();
+const GRAIN_URL = `url("data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240">
+    <filter id="n">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="240" height="240" filter="url(#n)" opacity="0.048"/>
+  </svg>`
+)}")`;
 
 // ─── Photo URLs (Wikipedia Commons) ──────────────────────────────────────────
 const IMGS = {
@@ -480,7 +440,16 @@ export default function HomePage() {
   const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: "#f4f0e6", backgroundImage: BBALL_PATTERN, backgroundSize: "420px 420px" }}>
+    <div className="min-h-screen overflow-x-hidden" style={{
+        backgroundColor: "#f4f0e6",
+        backgroundImage: [
+          "radial-gradient(ellipse 160% 55% at 50% 0%, rgba(255,253,242,0.85) 0%, transparent 55%)",
+          "radial-gradient(ellipse 90% 50% at 0% 100%, rgba(210,175,115,0.14) 0%, transparent 50%)",
+          "radial-gradient(ellipse 90% 50% at 100% 100%, rgba(190,155,95,0.10) 0%, transparent 50%)",
+          "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, rgba(160,125,75,0.09) 100%)",
+          GRAIN_URL,
+        ].join(", "),
+      }}>
 
       {/* ── Header ── */}
       <header className="relative z-50 backdrop-blur-md border-b border-stone-300/60 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56, background: "rgba(244,240,230,0.92)" }}>
