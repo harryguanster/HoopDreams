@@ -540,18 +540,18 @@ export default function HomePage() {
 
           {bothWon && (
             <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="mb-8">
-              <div style={{ background: "linear-gradient(135deg, rgba(91,33,182,0.45) 0%, rgba(109,40,217,0.30) 50%, rgba(91,33,182,0.45) 100%)", border: "1px solid rgba(167,139,250,0.35)", clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 100%, 16px 100%)", boxShadow: "0 0 50px rgba(139,92,246,0.35)", padding: "20px 32px", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #a78bfa, #6d28d9)" }} />
+              <div style={{ background: "linear-gradient(135deg, rgba(101,163,13,0.45) 0%, rgba(132,204,22,0.30) 50%, rgba(101,163,13,0.45) 100%)", border: "1px solid rgba(163,230,53,0.35)", clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 100%, 16px 100%)", boxShadow: "0 0 50px rgba(132,204,22,0.35)", padding: "20px 32px", position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #a3e635, #65a30d)" }} />
                 <div className="flex items-center gap-6">
                   <div>
-                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(24px, 4vw, 36px)", letterSpacing: "0.14em", color: "#ddd6fe", lineHeight: 1 }}>Daily Complete</p>
-                    <p className="font-mono text-purple-300/60 tracking-widest uppercase mt-1" style={{ fontSize: "0.6rem" }}>Streak badge updated in the header</p>
+                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(24px, 4vw, 36px)", letterSpacing: "0.14em", color: "#d9f99d", lineHeight: 1 }}>Daily Complete</p>
+                    <p className="font-mono text-lime-600/70 tracking-widest uppercase mt-1" style={{ fontSize: "0.6rem" }}>Streak badge updated in the header</p>
                   </div>
                   <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 1, height: 32, background: "rgba(167,139,250,0.25)" }} />
+                    <div style={{ width: 1, height: 32, background: "rgba(163,230,53,0.25)" }} />
                     <div>
-                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.04em", color: "white", lineHeight: 1, textAlign: "right" }}>{streakCount}</p>
-                      <p className="font-mono uppercase tracking-widest text-purple-300/60" style={{ fontSize: "0.52rem", textAlign: "right" }}>Day Streak</p>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1, textAlign: "right" }}>{streakCount}</p>
+                      <p className="font-mono uppercase tracking-widest text-lime-600/70" style={{ fontSize: "0.52rem", textAlign: "right" }}>Day Streak</p>
                     </div>
                   </div>
                 </div>
@@ -561,10 +561,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Daily Guess Who */}
-            <div className="rounded-2xl p-6 border border-violet-200" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(139,92,246,0.08)" }}>
+            <div className="rounded-2xl p-6 border border-lime-200" style={{ background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(132,204,22,0.10)" }}>
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(139,92,246,0.25)" }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(132,204,22,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(132,204,22,0.30)" }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#65a30d" strokeWidth="1.5" strokeLinecap="round">
                     <circle cx="9" cy="9" r="4"/><circle cx="9" cy="9" r="7.5"/>
                     <line x1="9" y1="1" x2="9" y2="4.5"/><line x1="9" y1="13.5" x2="9" y2="17"/>
                     <line x1="1" y1="9" x2="4.5" y2="9"/><line x1="13.5" y1="9" x2="17" y2="9"/>
@@ -590,10 +590,10 @@ export default function HomePage() {
             </div>
 
             {/* Daily Stat Line */}
-            <div className="rounded-2xl p-6 border border-blue-200" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(59,130,246,0.08)" }}>
+            <div className="rounded-2xl p-6 border border-lime-200" style={{ background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(132,204,22,0.10)" }}>
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(59,130,246,0.10)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(59,130,246,0.25)" }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(132,204,22,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(132,204,22,0.30)" }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#65a30d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="1.5" y="12" width="4" height="6.5" rx="0.5"/><rect x="8" y="7.5" width="4" height="11" rx="0.5"/>
                     <rect x="14.5" y="3" width="4" height="15.5" rx="0.5"/><line x1="0" y1="19" x2="20" y2="19"/>
                   </svg>
