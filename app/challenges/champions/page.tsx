@@ -108,23 +108,23 @@ export default function ChampionsPage() {
         {/* Stats bar */}
         <div className="flex items-center justify-between mb-4">
           <div className="text-center">
-            <div className={`text-3xl font-black tabular-nums ${timeLeft <= 30 && started && !gameOver ? "text-red-500" : "text-white"}`}>
+            <div className={`text-3xl font-black tabular-nums ${timeLeft <= 30 && started && !gameOver ? "text-red-500" : "text-[#111827]"}`}>
               {fmt(timeLeft)}
             </div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wide">Time Left</div>
+            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-teal-400 tabular-nums">{guessedCount}</div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wide">Years Filled</div>
+            <div className="text-3xl font-black text-teal-600 tabular-nums">{guessedCount}</div>
+            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Years Filled</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-white/40 tabular-nums">{remaining}</div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wide">Remaining</div>
+            <div className="text-3xl font-black text-gray-400 tabular-nums">{remaining}</div>
+            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Remaining</div>
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-2 bg-white/8 rounded-full mb-6 overflow-hidden">
+        <div className="w-full h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
           <div className="h-full bg-teal-500 rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
         </div>
 
@@ -138,8 +138,8 @@ export default function ChampionsPage() {
               onKeyDown={handleKey}
               placeholder={started ? "Type a team name (e.g. Bulls, Lakers, Spurs)…" : "Click here or press Enter to start"}
               disabled={gameOver}
-              className={`flex-1 bg-white/6 border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all
-                ${shake ? "border-red-400 animate-pulse" : "border-white/10 focus:border-teal-500"}
+              className={`flex-1 bg-white border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all text-[#111827] placeholder-gray-400
+                ${shake ? "border-red-400 animate-pulse" : "border-gray-200 focus:border-teal-500"}
                 ${gameOver ? "opacity-50" : ""}
               `}
               autoComplete="off"
@@ -156,25 +156,25 @@ export default function ChampionsPage() {
 
         {/* Flash message */}
         {flash && !gameOver && (
-          <p className="text-center text-sm text-teal-400 font-semibold mb-3 animate-pulse">
+          <p className="text-center text-sm text-teal-600 font-semibold mb-3 animate-pulse">
             ✓ {flash} — all {CHAMPIONS.filter(c => c.team === flash).length} year{CHAMPIONS.filter(c => c.team === flash).length !== 1 ? "s" : ""} filled!
           </p>
         )}
 
         {!flash && started && !gameOver && teamsGuessed.length > 0 && (
-          <p className="text-center text-xs text-white/30 mb-3 font-mono">
+          <p className="text-center text-xs text-gray-400 mb-3 font-mono">
             Teams found: {teamsGuessed.length} / {UNIQUE_CHAMPIONS.length}
           </p>
         )}
 
         {/* Game over */}
         {gameOver && (
-          <div className={`text-center py-6 mb-6 rounded-2xl ${guessedCount === TOTAL ? "bg-teal-500/12 border border-teal-400/30" : "bg-white/5 border border-white/10"}`}>
+          <div className={`text-center py-6 mb-6 rounded-2xl ${guessedCount === TOTAL ? "bg-teal-50 border border-teal-200" : "bg-white border border-gray-200 shadow-sm"}`}>
             <div className="text-4xl mb-2">{guessedCount === TOTAL ? "🏆" : "⏱️"}</div>
-            <h2 className="text-xl font-bold text-white mb-1">
+            <h2 className="text-xl font-bold text-[#111827] mb-1">
               {guessedCount === TOTAL ? "You got them all!" : `You got ${guessedCount} / ${TOTAL}`}
             </h2>
-            <p className="text-sm text-white/45 mb-4">
+            <p className="text-sm text-gray-500 mb-4">
               {guessedCount === TOTAL
                 ? `Finished with ${fmt(timeLeft)} remaining!`
                 : `${remaining} year${remaining !== 1 ? "s" : ""} left unfilled`}
@@ -198,13 +198,13 @@ export default function ChampionsPage() {
                 key={year}
                 className="rounded-xl overflow-hidden border transition-all duration-300"
                 style={{
-                  borderColor: solved ? `${color}60` : "rgba(255,255,255,0.06)",
-                  background: solved ? `${color}22` : "rgba(255,255,255,0.04)",
+                  borderColor: solved ? `${color}60` : "rgba(0,0,0,0.08)",
+                  background: solved ? `${color}22` : "rgba(0,0,0,0.03)",
                 }}
               >
                 <div
                   className="text-center text-[10px] font-black tracking-widest py-1"
-                  style={{ background: solved ? `${color}50` : "rgba(255,255,255,0.05)", color: solved ? "#fff" : "rgba(255,255,255,0.3)" }}
+                  style={{ background: solved ? `${color}50` : "rgba(0,0,0,0.05)", color: solved ? "#fff" : "rgba(0,0,0,0.35)" }}
                 >
                   {year}
                 </div>
@@ -214,7 +214,7 @@ export default function ChampionsPage() {
                 >
                   {solved || gameOver
                     ? (gameOver && !guessedTeams.has(team)
-                      ? <span style={{ color: "rgba(255,255,255,0.35)" }}>{shortName}</span>
+                      ? <span style={{ color: "rgba(0,0,0,0.4)" }}>{shortName}</span>
                       : shortName)
                     : "???"}
                 </div>
@@ -224,7 +224,7 @@ export default function ChampionsPage() {
         </div>
 
         {!started && !gameOver && (
-          <p className="text-center text-xs text-white/35 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-6">
             Type a team nickname or city — one guess fills all the years that team won
           </p>
         )}

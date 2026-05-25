@@ -202,7 +202,7 @@ export default function ConnectionsPage() {
   if (!puzzle) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-white/25 text-xs font-mono uppercase tracking-widest">Loading…</p>
+        <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
       </div>
     );
   }
@@ -229,22 +229,22 @@ export default function ConnectionsPage() {
         {/* Top row: lives + progress */}
         <div className="flex items-center justify-between mb-5">
           <div>
-            <p className="text-[9px] font-mono uppercase tracking-widest text-white/40 mb-1.5">Lives Left</p>
+            <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1.5">Lives Left</p>
             <div className="flex gap-1.5">
               {Array.from({ length: MAX_LIVES }).map((_, i) => (
                 <div
                   key={i}
                   className="w-4 h-4 rounded-full transition-all duration-300"
-                  style={{ background: i < livesLeft ? "#a855f7" : "rgba(255,255,255,0.1)" }}
+                  style={{ background: i < livesLeft ? "#a855f7" : "rgba(0,0,0,0.12)" }}
                 />
               ))}
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[9px] font-mono uppercase tracking-widest text-white/40 mb-1">
+            <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1">
               {getTodayStr()} · Puzzle #{puzzle.id + 1}
             </p>
-            <p className="text-sm font-bold text-white/60">
+            <p className="text-sm font-bold text-gray-500">
               {solvedColors.length} / {puzzle.categories.length} solved
             </p>
           </div>
@@ -322,9 +322,9 @@ export default function ConnectionsPage() {
                     onClick={() => toggleSelect(name)}
                     className="relative rounded-xl py-4 px-1 text-center text-xs sm:text-sm font-bold transition-colors duration-150 leading-tight"
                     style={{
-                      background: isSel ? "#0d9488" : "rgba(255,255,255,0.08)",
-                      border: isSel ? "2px solid #14b8a6" : "2px solid rgba(255,255,255,0.08)",
-                      color: isSel ? "#fff" : "rgba(255,255,255,0.85)",
+                      background: isSel ? "#84cc16" : "white",
+                      border: isSel ? "2px solid #65a30d" : "2px solid rgba(0,0,0,0.1)",
+                      color: isSel ? "#111827" : "#111827",
                       minHeight: 64,
                     }}
                   >
@@ -342,7 +342,7 @@ export default function ConnectionsPage() {
             <button
               onClick={() => setSelected([])}
               disabled={selected.length === 0}
-              className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-white/15 text-white/60 hover:text-white hover:border-white/30 transition-colors disabled:opacity-30"
+              className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-500 hover:text-[#111827] hover:border-gray-400 transition-colors disabled:opacity-30"
             >
               Deselect All
             </button>
@@ -367,13 +367,13 @@ export default function ConnectionsPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 280, damping: 24 }}
-            className="mt-4 text-center py-6 bg-white/5 border border-white/10 rounded-2xl"
+            className="mt-4 text-center py-6 bg-white border border-gray-200 rounded-2xl shadow-sm"
           >
             <div className="text-4xl mb-3">{won ? "🏆" : "💔"}</div>
-            <h2 className="text-xl font-bold text-white mb-1">
+            <h2 className="text-xl font-bold text-[#111827] mb-1">
               {won ? "Genius!" : "Better luck tomorrow"}
             </h2>
-            <p className="text-sm text-white/50 mb-5">
+            <p className="text-sm text-gray-500 mb-5">
               {won
                 ? `Solved in ${MAX_LIVES - livesLeft} mistake${MAX_LIVES - livesLeft === 1 ? "" : "s"}`
                 : `${solvedColors.length} / ${puzzle.categories.length} categories solved`}
@@ -389,7 +389,7 @@ export default function ConnectionsPage() {
 
         {/* Instructions */}
         {!gameOver && solvedColors.length === 0 && (
-          <p className="text-center text-xs text-white/30 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-6">
             Select 4 players that share a connection · Yellow = easiest · Purple = hardest
           </p>
         )}

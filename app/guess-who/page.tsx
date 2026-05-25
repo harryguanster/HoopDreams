@@ -22,7 +22,7 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 function EraTab({ era, setEra }: { era: Era; setEra: (e: Era) => void }) {
   return (
-    <div className="sticky top-[52px] z-30 bg-[#05101a]/90 backdrop-blur-md border-b border-white/6 overflow-hidden">
+    <div className="sticky top-[52px] z-30 backdrop-blur-md border-b overflow-hidden" style={{ background: "rgba(244,240,230,0.95)", borderColor: "rgba(0,0,0,0.09)" }}>
       <div className="max-w-6xl mx-auto px-4 flex items-center gap-1 py-2.5">
         {(["alltime", "current"] as const).map(e => (
           <button
@@ -32,13 +32,10 @@ function EraTab({ era, setEra }: { era: Era; setEra: (e: Era) => void }) {
             style={era === e ? {
               background: e === "current"
                 ? "linear-gradient(90deg, #0ea5e9, #0284c7)"
-                : "linear-gradient(90deg, #14b8a6, #0d9488)",
-              color: "#fff",
+                : "linear-gradient(90deg, #84cc16, #65a30d)",
+              color: "#111827",
               clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
-              boxShadow: e === "current"
-                ? "0 0 18px rgba(14,165,233,0.45)"
-                : "0 0 18px rgba(20,184,166,0.45)",
-            } : { color: "rgba(255,255,255,0.5)" }}
+            } : { color: "#6b7280" }}
           >
             {e === "alltime" ? "ALL-TIME LEGENDS" : "CURRENT 2025–26"}
           </button>
@@ -83,7 +80,7 @@ function formatHeight(inches: number): string {
 const CELL_BG: Record<CellColor, string> = {
   green: "bg-green-500 text-white border-green-500",
   yellow: "bg-yellow-400 text-white border-yellow-400",
-  gray: "bg-white/8 text-white/55 border-white/10",
+  gray: "bg-gray-100 text-gray-500 border-gray-200",
 };
 
 // ── Team / Division helpers ────────────────────────────────────────────────────
@@ -238,9 +235,9 @@ function PlayerFace({ player }: { player: CurrentNBAPlayer }) {
 function GuessTableHeader() {
   const cols = ["NAME", "TEAM", "CONF", "DIV", "PPG", "RPG", "APG", "SPG", "BPG", "HT", "AGE", "DRFT", "#"];
   return (
-    <div className="grid gap-1 pb-1 border-b border-white/10" style={{ gridTemplateColumns: GRID_COLS }}>
+    <div className="grid gap-1 pb-1 border-b border-gray-200" style={{ gridTemplateColumns: GRID_COLS }}>
       {cols.map((c, i) => (
-        <div key={c} className={`text-[10px] font-bold text-white/40 uppercase tracking-wider ${i === 0 ? "pl-2" : "text-center"}`}>{c}</div>
+        <div key={c} className={`text-[10px] font-bold text-gray-400 uppercase tracking-wider ${i === 0 ? "pl-2" : "text-center"}`}>{c}</div>
       ))}
     </div>
   );
@@ -248,8 +245,8 @@ function GuessTableHeader() {
 
 function EmptyRow({ num }: { num: number }) {
   return (
-    <div className="w-full h-12 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center">
-      <span className="text-white/30 font-bold text-sm">{num}</span>
+    <div className="w-full h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+      <span className="text-gray-300 font-bold text-sm">{num}</span>
     </div>
   );
 }
@@ -268,11 +265,11 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
 
   return (
     <div className="grid gap-1" style={{ gridTemplateColumns: GRID_COLS }}>
-      <div className={`flex items-center gap-2 rounded-lg px-2 h-12 ${isCorrect ? "bg-green-500 text-white" : "bg-white/6 border border-white/10 text-white"}`}>
+      <div className={`flex items-center gap-2 rounded-lg px-2 h-12 ${isCorrect ? "bg-green-500 text-white" : "bg-white border border-gray-200 text-[#111827]"}`}>
         <PlayerFace player={guess} />
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold leading-tight truncate">{guess.name}</p>
-          <p className={`text-[9px] leading-tight truncate ${isCorrect ? "text-green-100" : "text-white/40"}`}>{getTeamAbbr(guess.team)}</p>
+          <p className={`text-[9px] leading-tight truncate ${isCorrect ? "text-green-100" : "text-gray-400"}`}>{getTeamAbbr(guess.team)}</p>
         </div>
       </div>
       <StatCellH value={getTeamAbbr(guess.team)} color={compareTeam(guess.team, answer.team)} />
@@ -390,7 +387,7 @@ function WordleGame({ players, playerNames }: {
         {won && <Confetti />}
         <main className="flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full min-h-full">
           <motion.div
-            className={`w-full rounded-3xl border-2 p-7 text-center bg-white/6 backdrop-blur-xl ${won ? "border-teal-400/40" : "border-red-400/40"}`}
+            className={`w-full rounded-3xl border-2 p-7 text-center bg-white shadow-lg ${won ? "border-teal-300" : "border-red-200"}`}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -403,13 +400,13 @@ function WordleGame({ players, playerNames }: {
             >
               {guessScore}
             </motion.div>
-            <h2 className="text-2xl font-bold text-white mb-1">{won ? "Correct!" : "Not quite!"}</h2>
+            <h2 className="text-2xl font-bold text-[#111827] mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
-              ? <p className="text-teal-400 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
-              : <p className="text-white/45 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
+              ? <p className="text-teal-600 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
+              : <p className="text-gray-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
             <motion.div
-              className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 mb-6 text-left border border-white/8"
+              className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4 mb-6 text-left border border-gray-200"
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
@@ -418,9 +415,9 @@ function WordleGame({ players, playerNames }: {
                 <span className="leading-none">{answer.jersey}</span>
               </div>
               <div>
-                <p className="font-bold text-white text-base">{answer.name}</p>
-                <p className="text-white/45 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
-                <div className="flex gap-3 mt-1 text-xs font-semibold text-white/40">
+                <p className="font-bold text-[#111827] text-base">{answer.name}</p>
+                <p className="text-gray-500 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
+                <div className="flex gap-3 mt-1 text-xs font-semibold text-gray-400">
                   <span>{answer.ppg} PPG</span>
                   <span>{answer.rpg} RPG</span>
                   <span>{answer.apg} APG</span>
@@ -445,8 +442,8 @@ function WordleGame({ players, playerNames }: {
     <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
       <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
         <div className="shrink-0">
-          <h1 className="text-2xl font-bold text-white leading-none">Who Am I?</h1>
-          <p className="text-xs text-teal-400 font-semibold mt-0.5">
+          <h1 className="text-2xl font-bold text-[#111827] leading-none">Who Am I?</h1>
+          <p className="text-xs text-[#65a30d] font-semibold mt-0.5">
             {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
           </p>
         </div>
@@ -461,24 +458,24 @@ function WordleGame({ players, playerNames }: {
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-white/12 disabled:text-white/40 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+            className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-gray-100 disabled:text-gray-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
           >
             Guess
           </button>
           <button
             onClick={() => setGaveUp(true)}
-            className="py-3 px-4 bg-white/6 hover:bg-red-500/15 text-white/40 hover:text-red-500 border border-white/10 font-semibold rounded-xl transition-all text-sm shrink-0"
+            className="py-3 px-4 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-sm shrink-0"
           >
             Give Up
           </button>
         </div>
       </div>
 
-      <div className="w-full flex gap-4 text-[11px] text-white/45 font-semibold mb-3">
+      <div className="w-full flex gap-4 text-[11px] text-gray-400 font-semibold mb-3">
         <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
         <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-zinc-300 rounded inline-block" /> Off</span>
-        <span className="flex items-center gap-1 text-white/40">↑↓ = direction to answer</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-gray-300 rounded inline-block" /> Off</span>
+        <span className="flex items-center gap-1 text-gray-400">↑↓ = direction to answer</span>
       </div>
 
       <AnimatePresence>

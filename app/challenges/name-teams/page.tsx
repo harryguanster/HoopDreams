@@ -102,23 +102,23 @@ export default function NameTeamsPage() {
         {/* Stats bar */}
         <div className="flex items-center justify-between mb-4">
           <div className="text-center">
-            <div className={`text-3xl font-black tabular-nums ${timeLeft <= 30 && started && !gameOver ? "text-red-500" : "text-white"}`}>
+            <div className={`text-3xl font-black tabular-nums ${timeLeft <= 30 && started && !gameOver ? "text-red-500" : "text-[#111827]"}`}>
               {fmt(timeLeft)}
             </div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wide">Time Left</div>
+            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-teal-400 tabular-nums">{guessed.length}</div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wide">Guessed</div>
+            <div className="text-3xl font-black text-teal-600 tabular-nums">{guessed.length}</div>
+            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Guessed</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-white/40 tabular-nums">{remaining}</div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wide">Remaining</div>
+            <div className="text-3xl font-black text-gray-400 tabular-nums">{remaining}</div>
+            <div className="text-[10px] text-gray-400 uppercase tracking-wide">Remaining</div>
           </div>
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-2 bg-white/8 rounded-full mb-6 overflow-hidden">
+        <div className="w-full h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
           <div
             className="h-full bg-teal-500 rounded-full transition-all duration-300"
             style={{ width: `${pct}%` }}
@@ -135,8 +135,8 @@ export default function NameTeamsPage() {
               onKeyDown={handleKey}
               placeholder={started ? "Type a team name…" : "Click here or press Enter to start"}
               disabled={gameOver}
-              className={`flex-1 bg-white/6 border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all
-                ${shake ? "border-red-400 animate-pulse" : "border-white/10 focus:border-teal-500"}
+              className={`flex-1 bg-white border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all text-[#111827] placeholder-gray-400
+                ${shake ? "border-red-400 animate-pulse" : "border-gray-200 focus:border-teal-500"}
                 ${gameOver ? "opacity-50" : ""}
               `}
               autoComplete="off"
@@ -152,19 +152,19 @@ export default function NameTeamsPage() {
         )}
 
         {lastGuess && !gameOver && (
-          <p className="text-center text-sm text-teal-400 font-semibold mb-4 animate-pulse">
+          <p className="text-center text-sm text-teal-600 font-semibold mb-4 animate-pulse">
             ✓ {lastGuess}
           </p>
         )}
 
         {/* Game over */}
         {gameOver && (
-          <div className={`text-center py-6 mb-6 rounded-2xl ${guessed.length === TOTAL ? "bg-teal-500/12 border border-teal-400/30" : "bg-white/5 border border-white/10"}`}>
+          <div className={`text-center py-6 mb-6 rounded-2xl ${guessed.length === TOTAL ? "bg-teal-50 border border-teal-200" : "bg-white border border-gray-200 shadow-sm"}`}>
             <div className="text-4xl mb-2">{guessed.length === TOTAL ? "🏆" : "⏱️"}</div>
-            <h2 className="text-xl font-bold text-white mb-1">
+            <h2 className="text-xl font-bold text-[#111827] mb-1">
               {guessed.length === TOTAL ? "You got them all!" : `You got ${guessed.length} / ${TOTAL}`}
             </h2>
-            <p className="text-sm text-white/45 mb-4">
+            <p className="text-sm text-gray-500 mb-4">
               {guessed.length === TOTAL
                 ? `Finished with ${fmt(timeLeft)} remaining!`
                 : `${remaining} team${remaining !== 1 ? "s" : ""} remaining`}
@@ -184,17 +184,17 @@ export default function NameTeamsPage() {
             <div key={conf.name}>
               {/* Conference header */}
               <div className="flex items-center gap-2 mb-3">
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${conf.name.startsWith("Eastern") ? "text-sky-300 bg-sky-500/10 border-sky-400/25" : "text-orange-300 bg-orange-500/10 border-orange-400/25"}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${conf.name.startsWith("Eastern") ? "text-sky-700 bg-sky-50 border-sky-200" : "text-orange-700 bg-orange-50 border-orange-200"}`}>
                   {conf.name}
                 </span>
-                <div className="flex-1 h-px bg-white/8" />
+                <div className="flex-1 h-px bg-gray-200" />
               </div>
 
               {/* Divisions side-by-side */}
               <div className="grid grid-cols-3 gap-3">
                 {conf.divisions.map(div => (
                   <div key={div.name}>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/35 mb-1.5 text-center">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 text-center">
                       {div.name}
                     </p>
                     <div className="space-y-1">
@@ -207,8 +207,8 @@ export default function NameTeamsPage() {
                               ${done
                                 ? "bg-teal-500 text-white"
                                 : gameOver
-                                  ? "bg-white/8 text-white/55 border border-white/10"
-                                  : "bg-white/5 text-transparent border border-dashed border-white/8 select-none"
+                                  ? "bg-gray-100 text-gray-500 border border-gray-200"
+                                  : "bg-white text-transparent border border-dashed border-gray-300 select-none"
                               }`}
                           >
                             {done || gameOver ? teamName : "?"}
@@ -224,7 +224,7 @@ export default function NameTeamsPage() {
         </div>
 
         {!started && !gameOver && (
-          <p className="text-center text-xs text-white/40 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-6">
             Type a city name, nickname, or abbreviation (e.g. "Lakers", "GSW", "OKC")
           </p>
         )}

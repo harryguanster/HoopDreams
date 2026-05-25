@@ -163,12 +163,12 @@ export default function LineupGuesserPage() {
         {/* Header row */}
         <div className="flex items-end justify-between mb-5">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Season</p>
-            <p className="text-3xl font-black text-white leading-none">{team.season}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Season</p>
+            <p className="text-3xl font-black text-[#111827] leading-none">{team.season}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">Score</p>
-            <p className="text-3xl font-black text-teal-400 leading-none">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Score</p>
+            <p className="text-3xl font-black text-[#65a30d] leading-none">
               {score.correct}<span className="text-white/40 font-light">/</span>{score.total}
             </p>
           </div>
@@ -197,7 +197,7 @@ export default function LineupGuesserPage() {
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                className="flex-1 px-4 py-3 rounded-xl border border-white/15 bg-white/10 text-white placeholder-white/40 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-[#111827] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-sm"
               />
               <button
                 type="submit"
@@ -214,7 +214,7 @@ export default function LineupGuesserPage() {
                     <span className="mr-1">✕</span>{g}
                   </div>
                 ))}
-                <p className="text-xs text-white/65">
+                <p className="text-xs text-gray-500">
                   {MAX_GUESSES - guesses.length} guess{MAX_GUESSES - guesses.length !== 1 ? "es" : ""} remaining
                 </p>
               </div>
@@ -226,7 +226,7 @@ export default function LineupGuesserPage() {
                   setStatus("lost");
                   setScore((s) => ({ ...s, total: s.total + 1 }));
                 }}
-                className="text-xs text-white/60 underline underline-offset-2 hover:text-white/80 transition-colors"
+                className="text-xs text-gray-400 underline underline-offset-2 hover:text-gray-700 transition-colors"
               >
                 Give up
               </button>
@@ -236,9 +236,9 @@ export default function LineupGuesserPage() {
 
         {/* Won */}
         {status === "won" && (
-          <div className="text-center py-6 bg-teal-500/15 rounded-2xl border border-teal-400/30">
-            <p className="text-3xl font-black text-teal-300 mb-1">Correct!</p>
-            <p className="text-white/80 font-medium mb-4">
+          <div className="text-center py-6 bg-teal-50 rounded-2xl border border-teal-200">
+            <p className="text-3xl font-black text-teal-600 mb-1">Correct!</p>
+            <p className="text-gray-700 font-medium mb-4">
               {team.season} {team.answer}
             </p>
             <button
@@ -252,21 +252,21 @@ export default function LineupGuesserPage() {
 
         {/* Lost */}
         {status === "lost" && (
-          <div className="text-center py-6 bg-white/5 rounded-2xl border border-white/10">
-            <p className="text-base font-semibold text-white/65 mb-1">The answer was</p>
-            <p className="text-2xl font-black text-white mb-4">
+          <div className="text-center py-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <p className="text-base font-semibold text-gray-500 mb-1">The answer was</p>
+            <p className="text-2xl font-black text-[#111827] mb-4">
               {team.season} {team.answer}
             </p>
             <button
               onClick={handleNext}
-              className="px-7 py-3 bg-zinc-800 text-white font-bold rounded-xl hover:bg-teal-500 transition-colors"
+              className="px-7 py-3 bg-gray-200 text-[#111827] font-bold rounded-xl hover:bg-[#84cc16] transition-colors"
             >
               Next Team
             </button>
           </div>
         )}
 
-        <p className="text-[11px] text-white/60 text-center mt-8">
+        <p className="text-[11px] text-gray-400 text-center mt-8">
           Stats are regular season averages for that season
         </p>
       </main>

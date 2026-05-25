@@ -23,7 +23,7 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 function EraTab({ era, setEra }: { era: Era; setEra: (e: Era) => void }) {
   return (
-    <div className="sticky top-[52px] z-30 bg-[#05101a]/90 backdrop-blur-md border-b border-white/6 overflow-hidden">
+    <div className="sticky top-[52px] z-30 backdrop-blur-md border-b overflow-hidden" style={{ background: "rgba(244,240,230,0.95)", borderColor: "rgba(0,0,0,0.09)" }}>
       <div className="max-w-6xl mx-auto px-4 flex items-center gap-1 py-2.5">
         {(["alltime", "current"] as const).map(e => (
           <button
@@ -33,13 +33,10 @@ function EraTab({ era, setEra }: { era: Era; setEra: (e: Era) => void }) {
             style={era === e ? {
               background: e === "current"
                 ? "linear-gradient(90deg, #0ea5e9, #0284c7)"
-                : "linear-gradient(90deg, #14b8a6, #0d9488)",
-              color: "#fff",
+                : "linear-gradient(90deg, #84cc16, #65a30d)",
+              color: "#111827",
               clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
-              boxShadow: e === "current"
-                ? "0 0 18px rgba(14,165,233,0.45)"
-                : "0 0 18px rgba(20,184,166,0.45)",
-            } : { color: "rgba(255,255,255,0.5)" }}
+            } : { color: "#6b7280" }}
           >
             {e === "alltime" ? "ALL-TIME LEGENDS" : "CURRENT 2025–26"}
           </button>
@@ -100,23 +97,23 @@ function StartBenchCutCore({ era }: { era: Era }) {
   return (
     <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
       <div className="text-center mb-6">
-        <p className="text-xs text-teal-400 font-semibold uppercase tracking-widest mb-1">
+        <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">
           Round {roundIndex + 1} of {trios.length}
         </p>
-        <h1 className="text-2xl font-bold text-white">{trio.category}</h1>
-        <p className="text-white/45 text-sm mt-1">{trio.description}</p>
+        <h1 className="text-2xl font-bold text-[#111827]">{trio.category}</h1>
+        <p className="text-gray-500 text-sm mt-1">{trio.description}</p>
       </div>
 
       <div className="mb-5 text-center">
         {selectedPlayer ? (
-          <p className="text-teal-400 text-sm font-semibold">
+          <p className="text-[#65a30d] text-sm font-semibold">
             Assign a role for{" "}
-            <span className="text-white font-bold">
+            <span className="text-[#111827] font-bold">
               {trio.players.find(p => p.id === selectedPlayer)?.name.split(" ")[0]}
             </span>
           </p>
         ) : (
-          <p className="text-white/40 text-sm">Tap a player, then assign their role</p>
+          <p className="text-gray-400 text-sm">Tap a player, then assign their role</p>
         )}
       </div>
 
@@ -143,8 +140,8 @@ function StartBenchCutCore({ era }: { era: Era }) {
         disabled={!allAssigned}
         className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-200
           ${allAssigned
-            ? "bg-teal-500 hover:bg-teal-400 text-black active:scale-95"
-            : "bg-white/8 text-white/30 cursor-not-allowed"
+            ? "bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] active:scale-95"
+            : "bg-gray-100 text-gray-400 cursor-not-allowed"
           }`}
       >
         {allAssigned ? "Submit My Picks →" : `Assign ${3 - Object.keys(assignments).length} more`}
@@ -181,9 +178,9 @@ function RoleButton({ label, emoji, color, taken, active, onClick }: {
   taken: boolean; active: boolean; onClick: () => void;
 }) {
   const colorMap = {
-    green:  { base: "border-green-400/20 bg-green-500/8 text-green-400/50",   active: "border-green-400/60 bg-green-500/20 text-green-300 hover:bg-green-500/30 cursor-pointer",   taken: "border-green-400/60 bg-green-500/25 text-green-300" },
-    yellow: { base: "border-yellow-400/20 bg-yellow-500/8 text-yellow-400/50", active: "border-yellow-400/60 bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 cursor-pointer", taken: "border-yellow-400/60 bg-yellow-500/25 text-yellow-300" },
-    red:    { base: "border-red-400/20 bg-red-500/8 text-red-400/50",          active: "border-red-400/60 bg-red-500/20 text-red-300 hover:bg-red-500/30 cursor-pointer",           taken: "border-red-400/60 bg-red-500/25 text-red-300" },
+    green:  { base: "border-green-200 bg-green-50 text-green-300",   active: "border-green-400 bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer",   taken: "border-green-400 bg-green-100 text-green-700" },
+    yellow: { base: "border-yellow-200 bg-yellow-50 text-yellow-300", active: "border-yellow-400 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer", taken: "border-yellow-400 bg-yellow-100 text-yellow-700" },
+    red:    { base: "border-red-200 bg-red-50 text-red-300",          active: "border-red-400 bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer",           taken: "border-red-400 bg-red-100 text-red-700" },
   };
   const classes = taken ? colorMap[color].taken : active ? colorMap[color].active : colorMap[color].base;
   return (

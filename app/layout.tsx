@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full`}>
-        <body className="min-h-full flex flex-col text-white antialiased" style={{ background: "#05101a" }}>
+        <body className="min-h-full flex flex-col text-[#111827] antialiased" style={{ background: "#f4f0e6" }}>
           {children}
         </body>
       </html>

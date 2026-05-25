@@ -8,9 +8,9 @@ type Role = "start" | "bench" | "cut";
 type Assignments = { [playerId: string]: Role };
 
 const ROLE_CONFIG = {
-  start: { label: "STARTED", emoji: "⭐", bg: "bg-green-500/12",  border: "border-green-400/40", text: "text-green-300", desc: "Your franchise player. Built different." },
-  bench: { label: "BENCHED", emoji: "🪑", bg: "bg-yellow-500/12", border: "border-yellow-400/40", text: "text-yellow-300", desc: "Valuable piece, but not in the starting five." },
-  cut:   { label: "CUT",     emoji: "✂️", bg: "bg-red-500/12",    border: "border-red-400/40",   text: "text-red-300",   desc: "Cleared some cap space." },
+  start: { label: "STARTED", emoji: "⭐", bg: "bg-green-50",  border: "border-green-300", text: "text-green-700", desc: "Your franchise player. Built different." },
+  bench: { label: "BENCHED", emoji: "🪑", bg: "bg-yellow-50", border: "border-yellow-300", text: "text-yellow-700", desc: "Valuable piece, but not in the starting five." },
+  cut:   { label: "CUT",     emoji: "✂️", bg: "bg-red-50",    border: "border-red-300",   text: "text-red-700",   desc: "Cleared some cap space." },
 };
 
 function getResultComment(assignments: Assignments, trio: Trio): string {
@@ -63,9 +63,9 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <p className="text-xs text-teal-400 font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
-          <h2 className="text-2xl font-bold text-white mb-2">Your Picks</h2>
-          <p className="text-white/45 text-sm italic bg-white/5 rounded-xl px-4 py-2 border border-white/10">
+          <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
+          <h2 className="text-2xl font-bold text-[#111827] mb-2">Your Picks</h2>
+          <p className="text-gray-500 text-sm italic bg-gray-50 rounded-xl px-4 py-2 border border-gray-200">
             &ldquo;{comment}&rdquo;
           </p>
         </motion.div>
@@ -90,8 +90,8 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
                   <span className="text-[7px] font-semibold opacity-90">{player.position}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-white text-base leading-tight truncate">{player.name}</p>
-                  <p className="text-white/45 text-xs truncate">{player.team}</p>
+                  <p className="font-bold text-[#111827] text-base leading-tight truncate">{player.name}</p>
+                  <p className="text-gray-500 text-xs truncate">{player.team}</p>
                   <p className={`text-xs mt-1 font-medium ${cfg.text}`}>{cfg.desc}</p>
                 </div>
                 <div className={`text-right shrink-0 ${cfg.text}`}>

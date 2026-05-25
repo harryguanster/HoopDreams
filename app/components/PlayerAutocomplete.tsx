@@ -70,14 +70,14 @@ export default function PlayerAutocomplete({
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full px-4 py-3 rounded-xl border-2 border-white/15 bg-white/8 text-white placeholder-white/30 focus:outline-none focus:border-teal-400 transition-colors text-sm disabled:opacity-40 backdrop-blur-sm"
+        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-[#111827] placeholder-gray-400 focus:outline-none focus:border-teal-500 transition-colors text-sm disabled:opacity-40"
         autoComplete="off"
       />
       {open && filtered.length > 0 && (
         <ul
           ref={listRef}
-          className="absolute z-50 left-0 right-0 top-full mt-1 bg-[#0d1f2d] border border-white/15 rounded-xl overflow-hidden backdrop-blur-xl"
-          style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}
+          className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl overflow-hidden"
+          style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}
         >
           {filtered.map((name, i) => (
             <li
@@ -85,10 +85,10 @@ export default function PlayerAutocomplete({
               onMouseDown={() => select(name)}
               className={`px-4 py-2.5 text-sm cursor-pointer transition-colors
                 ${i === highlighted
-                  ? "bg-teal-500/20 text-teal-300 font-medium"
-                  : "text-white/70 hover:bg-white/8"
+                  ? "bg-teal-50 text-teal-700 font-medium"
+                  : "text-[#111827] hover:bg-gray-50"
                 }
-                ${i !== 0 ? "border-t border-white/8" : ""}
+                ${i !== 0 ? "border-t border-gray-100" : ""}
               `}
             >
               {highlightMatch(name, value)}
@@ -107,7 +107,7 @@ function highlightMatch(name: string, query: string) {
   return (
     <>
       {name.slice(0, idx)}
-      <span className="text-teal-400 font-bold">{name.slice(idx, idx + query.length)}</span>
+      <span className="text-teal-600 font-bold">{name.slice(idx, idx + query.length)}</span>
       {name.slice(idx + query.length)}
     </>
   );
