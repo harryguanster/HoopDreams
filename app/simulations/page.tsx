@@ -5,52 +5,87 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 
-// ─── Tier System ──────────────────────────────────────────────────────────────
-// S  = MVP-caliber elite  ($18M) — Jokic, SGA, Luka, Giannis, Wemby, Ant …
-// A  = Franchise star     ($12M) — KD, Booker, Dame, Brunson, Maxey, Trae …
-// B  = Quality starter    ($8M)  — solid starters, near All-Stars
-// C  = Role player        ($5M)  — rotation contributors
-// D  = Bench              ($3M)  — depth / specialists
+// ─── Rank-based Pricing ───────────────────────────────────────────────────────
+// Based on Ringer / HoopsHype consensus top-100 NBA rankings.
+// Top 5 → one price band. Then bands of 10: #6-15, #16-25 … #96-100.
+// Players outside the top 100 (NR) get the minimum price.
 const SALARY_CAP = 100; // $100M
 
-const TIER_CONFIG = {
-  S: { price: 18, label: "S", bg: "#fef3c7", text: "#92400e", border: "#f59e0b", desc: "MVP Tier"       },
-  A: { price: 12, label: "A", bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6", desc: "Franchise Star" },
-  B: { price:  8, label: "B", bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa", desc: "Starter"        },
-  C: { price:  5, label: "C", bg: "#dcfce7", text: "#14532d", border: "#4ade80", desc: "Role Player"    },
-  D: { price:  3, label: "D", bg: "#f1f5f9", text: "#475569", border: "#94a3b8", desc: "Bench"          },
-} as const;
-
-type TierKey = keyof typeof TIER_CONFIG;
-
-// Manual overrides: players whose current playoff/preseason form or franchise
-// status puts them above (or below) what the stat formula alone would say.
-const TIER_OVERRIDES: Record<string, TierKey> = {
-  // S bumps — borderline score but undeniably MVP-tier performers
-  ant:      "S", // 28.8 ppg, elite two-way star, rising top-3 candidate
-  dmitchell:"S", // 27.9 ppg, elite playoff scorer, franchise cornerstone
-  embiid:   "S", // MVP when healthy, generational scorer
-  tatum:    "S", // Champion, first-team All-NBA, elite postseason performer
-  curry:    "S", // GOAT shooter, still the engine of a contender
-
-  // A caps — star caliber but injury history or age keeps them from S
-  ja:       "A", // Elite when healthy; chronic injury risk caps the price
-  lebron:   "A", // Still All-Star quality at 41, but no longer S-tier impact
+const RINGER_RANKINGS: Record<string, number> = {
+  // ── #1-5  ($18M) ─────────────────────────────────────────────────────
+  jokic: 1, sga: 2, giannis: 3, luka: 4, ant: 5,
+  // ── #6-15  ($14M) ────────────────────────────────────────────────────
+  wemby: 6, curry: 7, brunson: 8, dmitchell: 9, cade: 10,
+  lebron: 11, ad: 12, durant: 13, jwilliams2: 14, mobley: 15,
+  // ── #16-25  ($11M) ───────────────────────────────────────────────────
+  tatum: 16, jbrown: 17, booker: 18, banchero: 19, siakam: 20,
+  kat: 21, kawhi: 22, harden: 23, jbutler: 24, bam: 25,
+  // ── #26-35  ($9M) ────────────────────────────────────────────────────
+  defox: 26, trae: 27, sengun: 28, jjackson: 29, cholmgren: 30,
+  sabonis: 31, tmaxey: 32, garland: 33, ja: 34, fwagner: 35,
+  // ── #36-45  ($7M) ────────────────────────────────────────────────────
+  jmurray: 36, embiid: 37, sbarnes: 38, oganunoby: 39, haliburton: 40,
+  athompson: 41, dame: 42, dbane: 43, agordon: 44, jrandle: 45,
+  // ── #46-55  ($6M) ────────────────────────────────────────────────────
+  therro: 46, lmarkkanen: 47, lamelo: 48, jallen: 49, mikalbridg: 50,
+  areaves: 51, lavine: 52, kyrie: 53, dwhite: 54, dgreen: 55,
+  // ── #56-65  ($5M) ────────────────────────────────────────────────────
+  zubac: 56, zion: 57, jjohnson: 58, gobert: 59, mturner: 60,
+  npowell: 61, ddaniels: 62, pgeorge: 63, mporter: 64, jhart: 65,
+  // ── #66-75  ($4M) ────────────────────────────────────────────────────
+  acaruso: 66, porzingis: 67, cjohnson: 68, ihartenstein: 69, cwhite: 70,
+  tmurphy: 71, jmcdaniels: 72, ldort: 73, jsuggs: 74, bingram: 75,
+  // ── #76-85  ($3M) ────────────────────────────────────────────────────
+  nreid: 76, cbraun: 77, ppritchard: 78, giddey: 79, bmiller: 80,
+  holiday: 81, anembhard: 82, cflagg: 83, rjbarrett: 84, dehunter: 85,
+  // ── #86-95  ($2M) ────────────────────────────────────────────────────
+  anesmith: 86, vucevic: 87, cjmcc: 88, tcamara: 89, dlively: 90,
+  jgreen2: 91, asimons: 92, tharris: 93, dvassell: 94, kthompson: 95,
+  // ── #96-100  ($2M) ───────────────────────────────────────────────────
+  jsmith: 96,
 };
 
-function playerTier(p: CurrentNBAPlayer): TierKey {
-  if (p.id in TIER_OVERRIDES) return TIER_OVERRIDES[p.id];
-  // Composite score weights scoring + playmaking + defense
-  const score = p.ppg + p.rpg * 0.5 + p.apg * 0.75 + p.spg * 1.5 + p.bpg * 1.2;
-  if (score >= 38) return "S"; // true MVP / elite level
-  if (score >= 29) return "A"; // All-Star / franchise star
-  if (score >= 20) return "B"; // quality starter
-  if (score >= 12) return "C"; // rotation contributor
-  return "D";
+const RANK_TIERS = [
+  { rangeLabel: "#1–5",    price: 18, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" }, // 0
+  { rangeLabel: "#6–15",   price: 14, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" }, // 1
+  { rangeLabel: "#16–25",  price: 11, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" }, // 2
+  { rangeLabel: "#26–35",  price:  9, bg: "#dcfce7", text: "#14532d", border: "#4ade80" }, // 3
+  { rangeLabel: "#36–45",  price:  7, bg: "#f0fdf4", text: "#166534", border: "#86efac" }, // 4
+  { rangeLabel: "#46–55",  price:  6, bg: "#ecfeff", text: "#164e63", border: "#67e8f9" }, // 5
+  { rangeLabel: "#56–65",  price:  5, bg: "#f0f9ff", text: "#075985", border: "#7dd3fc" }, // 6
+  { rangeLabel: "#66–75",  price:  4, bg: "#faf5ff", text: "#581c87", border: "#c084fc" }, // 7
+  { rangeLabel: "#76–85",  price:  3, bg: "#fdf4ff", text: "#701a75", border: "#e879f9" }, // 8
+  { rangeLabel: "#86–95",  price:  2, bg: "#fff1f2", text: "#9f1239", border: "#fda4af" }, // 9
+  { rangeLabel: "#96–100", price:  2, bg: "#fff7ed", text: "#9a3412", border: "#fdba74" }, // 10
+  { rangeLabel: "NR",      price:  1, bg: "#f1f5f9", text: "#475569", border: "#94a3b8" }, // 11
+] as const;
+
+function playerRank(p: CurrentNBAPlayer): number {
+  return RINGER_RANKINGS[p.id] ?? 999;
+}
+
+function rankTierIndex(rank: number): number {
+  if (rank <=   5) return 0;
+  if (rank <=  15) return 1;
+  if (rank <=  25) return 2;
+  if (rank <=  35) return 3;
+  if (rank <=  45) return 4;
+  if (rank <=  55) return 5;
+  if (rank <=  65) return 6;
+  if (rank <=  75) return 7;
+  if (rank <=  85) return 8;
+  if (rank <=  95) return 9;
+  if (rank <= 100) return 10;
+  return 11;
 }
 
 function playerSalary(p: CurrentNBAPlayer): number {
-  return TIER_CONFIG[playerTier(p)].price;
+  return RANK_TIERS[rankTierIndex(playerRank(p))].price;
+}
+
+function rankBadgeLabel(p: CurrentNBAPlayer): string {
+  const r = playerRank(p);
+  return r <= 100 ? `#${r}` : "NR";
 }
 
 // ─── Slot definitions ──────────────────────────────────────────────────────────
@@ -85,13 +120,13 @@ function runProjection(slots: Slot[]) {
     defScore += (p.spg * 4 + p.bpg * 3 + p.rpg * 0.4) * w;
   }
 
-  const oRating    = Math.min(138, Math.max(98, 95 + offScore * 1.7));
-  const dRating    = Math.min(130, Math.max(98, 122 - defScore * 1.9));
-  const netRating  = oRating - dRating;
-  const projWins   = Math.round(Math.min(73, Math.max(8, 41 + netRating * 2.4)));
+  const oRating   = Math.min(138, Math.max(98, 95 + offScore * 1.7));
+  const dRating   = Math.min(130, Math.max(98, 122 - defScore * 1.9));
+  const netRating = oRating - dRating;
+  const projWins  = Math.round(Math.min(73, Math.max(8, 41 + netRating * 2.4)));
 
   const positions = new Set(filled.map(s => s.player!.position));
-  const stars     = filled.filter(s => playerSalary(s.player!) >= 12).length;
+  const stars     = filled.filter(s => playerSalary(s.player!) >= 11).length;
   const chem      = (positions.size / 5) * 0.5 + (stars <= 3 ? 1 : Math.max(0.4, 1 - (stars - 3) * 0.15)) * 0.5;
   const chemistry = chem >= 0.88 ? "A+" : chem >= 0.78 ? "A" : chem >= 0.68 ? "B+" : chem >= 0.58 ? "B" : "C";
 
@@ -101,7 +136,7 @@ function runProjection(slots: Slot[]) {
   const finals   = Math.round(cf * 0.72);
   const champs   = Math.round(finals * 0.62);
 
-  const sorted  = [...filled].sort((a, b) => b.minutes - a.minutes);
+  const sorted       = [...filled].sort((a, b) => b.minutes - a.minutes);
   const starterLabels = ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"];
 
   return {
@@ -116,18 +151,20 @@ function runProjection(slots: Slot[]) {
 }
 
 // ─── Tier Badge ───────────────────────────────────────────────────────────────
-function TierBadge({ tier, small }: { tier: TierKey; small?: boolean }) {
-  const cfg = TIER_CONFIG[tier];
-  const size = small ? 18 : 22;
+function TierBadge({ player, small }: { player: CurrentNBAPlayer; small?: boolean }) {
+  const rank = playerRank(player);
+  const tier = RANK_TIERS[rankTierIndex(rank)];
+  const label = rank <= 100 ? `#${rank}` : "NR";
+  const height = small ? 18 : 22;
   return (
     <div style={{
-      width: size, height: size, borderRadius: 4, flexShrink: 0,
-      background: cfg.bg, border: `1.5px solid ${cfg.border}`,
+      height, minWidth: small ? 30 : 36, paddingInline: 4, borderRadius: 4, flexShrink: 0,
+      background: tier.bg, border: `1.5px solid ${tier.border}`,
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: small ? 9 : 11, fontFamily: "var(--font-bebas)",
-      letterSpacing: "0.05em", color: cfg.text, fontWeight: 700,
+      fontSize: small ? 8 : 10, fontFamily: "var(--font-bebas)",
+      letterSpacing: "0.03em", color: tier.text, fontWeight: 700,
     }}>
-      {cfg.label}
+      {label}
     </div>
   );
 }
@@ -194,7 +231,6 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, onActivate, onRemove
           <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#9ca3af", lineHeight: 1 }}>{slot.label}</p>
           <p style={{ fontSize: 9, color: "#6b7280", fontFamily: "monospace", marginTop: 1 }}>{slot.minutes} min/game</p>
         </div>
-        {/* Drag handle — only shown on filled slots */}
         {slot.player && (
           <svg width="12" height="12" viewBox="0 0 12 12" fill="#d1d5db" style={{ flexShrink: 0, marginRight: 2 }}>
             <circle cx="3.5" cy="2" r="1.2"/><circle cx="8.5" cy="2" r="1.2"/>
@@ -212,9 +248,9 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, onActivate, onRemove
               <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.9rem", letterSpacing: "0.06em", color: "#111827", lineHeight: 1.1, paddingRight: 20 }}>{slot.player.name}</p>
               <p style={{ fontSize: 9, color: "#6b7280", marginTop: 2, fontFamily: "monospace" }}>{slot.player.team.split(" ").slice(-1)[0]} · {slot.player.position}</p>
               <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
-                <TierBadge tier={playerTier(slot.player)} small />
+                <TierBadge player={slot.player} small />
                 <p style={{ fontSize: 10, color: "#65a30d", fontFamily: "monospace", fontWeight: 700 }}>${playerSalary(slot.player)}M</p>
-                <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{TIER_CONFIG[playerTier(slot.player)].desc}</p>
+                <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{RANK_TIERS[rankTierIndex(playerRank(slot.player))].rangeLabel}</p>
               </div>
             </div>
             <button
@@ -372,18 +408,18 @@ export default function SimulationsPage() {
   const [slots, setSlots] = useState<Slot[]>(
     SLOT_DEFS.map(d => ({ id: d.id, label: d.label, player: null, minutes: d.defaultMin }))
   );
-  const [activeSlotId, setActiveSlotId]   = useState<string | null>(null);
+  const [activeSlotId, setActiveSlotId]     = useState<string | null>(null);
   const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null);
   const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null);
-  const [search, setSearch]               = useState("");
-  const [teamFilter, setTeamFilter]       = useState("All Teams");
-  const [posFilter, setPosFilter]         = useState("All Positions");
-  const [showModal, setShowModal]         = useState(false);
+  const [search, setSearch]                 = useState("");
+  const [teamFilter, setTeamFilter]         = useState("All Teams");
+  const [posFilter, setPosFilter]           = useState("All Positions");
+  const [showModal, setShowModal]           = useState(false);
 
-  const usedSalary   = slots.reduce((s, sl) => s + (sl.player ? playerSalary(sl.player) : 0), 0);
-  const filledCount  = slots.filter(s => s.player !== null).length;
-  const capPct       = (usedSalary / SALARY_CAP) * 100;
-  const capColor     = capPct >= 95 ? "#ef4444" : capPct >= 80 ? "#f59e0b" : "#84cc16";
+  const usedSalary  = slots.reduce((s, sl) => s + (sl.player ? playerSalary(sl.player) : 0), 0);
+  const filledCount = slots.filter(s => s.player !== null).length;
+  const capPct      = (usedSalary / SALARY_CAP) * 100;
+  const capColor    = capPct >= 95 ? "#ef4444" : capPct >= 80 ? "#f59e0b" : "#84cc16";
 
   const teamList = useMemo(() => {
     const teams = [...new Set(CURRENT_NBA_PLAYERS.map(p => p.team))].sort();
@@ -401,7 +437,7 @@ export default function SimulationsPage() {
         if (posFilter !== "All Positions" && p.position !== posFilter) return false;
         return true;
       })
-      .sort((a, b) => playerSalary(b) - playerSalary(a));
+      .sort((a, b) => playerRank(a) - playerRank(b));
   }, [slots, search, teamFilter, posFilter]);
 
   const selectPlayer = useCallback((player: CurrentNBAPlayer) => {
@@ -503,12 +539,12 @@ export default function SimulationsPage() {
             </div>
           </div>
 
-          {/* Tier legend */}
-          <div style={{ padding: "8px 14px 10px", borderTop: "1px solid #f3f4f6", display: "flex", gap: 6, flexWrap: "wrap" as const }}>
-            {(Object.entries(TIER_CONFIG) as [TierKey, typeof TIER_CONFIG[TierKey]][]).map(([key, cfg]) => (
-              <div key={key} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <div style={{ width: 16, height: 16, borderRadius: 3, background: cfg.bg, border: `1.5px solid ${cfg.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontFamily: "var(--font-bebas)", color: cfg.text, fontWeight: 700 }}>{cfg.label}</div>
-                <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>${cfg.price}M</span>
+          {/* Rank-tier legend */}
+          <div style={{ padding: "8px 14px 10px", borderTop: "1px solid #f3f4f6", display: "flex", gap: 5, flexWrap: "wrap" as const }}>
+            {RANK_TIERS.map(tier => (
+              <div key={tier.rangeLabel} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                <div style={{ height: 14, minWidth: 28, paddingInline: 3, borderRadius: 3, background: tier.bg, border: `1.5px solid ${tier.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, fontFamily: "var(--font-bebas)", color: tier.text, fontWeight: 700 }}>{tier.rangeLabel}</div>
+                <span style={{ fontSize: 8, color: "#9ca3af", fontFamily: "monospace" }}>${tier.price}M</span>
               </div>
             ))}
             <span style={{ fontSize: 9, color: "#d1d5db", fontFamily: "monospace", marginLeft: 2 }}>cap: $100M</span>
@@ -517,7 +553,6 @@ export default function SimulationsPage() {
           {/* Player list */}
           <div style={{ flex: 1, overflowY: "auto", borderTop: "1px solid #f3f4f6" }}>
             {filteredPlayers.map(player => {
-              const tier = playerTier(player);
               const sal  = playerSalary(player);
               const over = usedSalary + sal > SALARY_CAP;
               return (
@@ -528,7 +563,7 @@ export default function SimulationsPage() {
                     <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{player.team.split(" ").slice(-1)[0]} · {player.position}</p>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
-                    <TierBadge tier={tier} small />
+                    <TierBadge player={player} small />
                     <p style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 700, color: over ? "#ef4444" : "#65a30d", minWidth: 28, textAlign: "right" as const }}>${sal}M</p>
                   </div>
                   <button
