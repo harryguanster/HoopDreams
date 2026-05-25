@@ -152,6 +152,17 @@ const SYMBOLS: Record<string, React.ReactElement> = {
       <circle cx="13" cy="12" r="2"/>
     </svg>
   ),
+  // Squad builder — Simulations
+  squad: (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="9" width="4" height="6" rx="1"/>
+      <rect x="6" y="5" width="4" height="10" rx="1"/>
+      <rect x="11" y="1" width="4" height="14" rx="1"/>
+      <circle cx="3" cy="5.5" r="1.8"/>
+      <circle cx="8" cy="1.5" r="1.8"/>
+      <circle cx="13" cy="1.5" r="0" fill="none"/>
+    </svg>
+  ),
   // 2×2 grid — Connections
   grid4: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
@@ -309,6 +320,16 @@ const TIMED_LIST: GameEntry[] = [
     description: "Type a team name and all their championship years fill in at once. 35 years to conquer.",
     meta: "1990–2024 · 35 years · 6:00 timer",
     photo: IMGS.lebron2016, photoPos: "center 30%", photoCredit: "Erik Drost · CC BY 2.0",
+  },
+];
+
+const SIMULATIONS_LIST: GameEntry[] = [
+  {
+    href: "/simulations", symbol: "squad", tag: "New",
+    title: "Lineup Simulator",
+    description: "Draft a 12-man roster under a $100M salary cap, assign minutes, and run an advanced projection — offense, defense, chemistry, and championship odds.",
+    meta: `${CURRENT_NBA_PLAYERS.length}+ players · $100M cap · Full projection`,
+    photo: IMGS.jokic, photoPos: "center 25%", photoCredit: "Keith Allison · CC BY-SA 2.0",
   },
 ];
 
@@ -524,6 +545,20 @@ export default function HomePage() {
           <SectionHeader label="Timed Challenges" title="Race the Clock" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {TIMED_LIST.map((g, i) => (
+              <motion.div key={g.href} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.4, delay: i * 0.08 }}>
+                <GameCard {...g} />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+        {/* Simulations */}
+        <section>
+          <SectionHeader label="Simulations" title="Build Your Squad" />
+          <div className="grid grid-cols-1 gap-4">
+            {SIMULATIONS_LIST.map((g, i) => (
               <motion.div key={g.href} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.4, delay: i * 0.08 }}>
                 <GameCard {...g} />
               </motion.div>
