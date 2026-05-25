@@ -145,28 +145,67 @@ function Avatar({ color, size = 40 }: { color: string; size?: number }) {
 }
 
 // ─── Slot Card ─────────────────────────────────────────────────────────────────
-function SlotCard({ slot, isActive, onActivate, onRemove, onMinutes }: {
-  slot: Slot; isActive: boolean;
+function SlotCard({ slot, isActive, isDragging, isDragOver, onActivate, onRemove, onMinutes,
+                    onDragStart, onDragEnd, onDragEnter, onDragLeave, onDrop }: {
+  slot: Slot; isActive: boolean; isDragging: boolean; isDragOver: boolean;
   onActivate: () => void; onRemove: () => void; onMinutes: (v: number) => void;
+  onDragStart: () => void; onDragEnd: () => void;
+  onDragEnter: () => void; onDragLeave: () => void; onDrop: () => void;
 }) {
-  const border = isActive && !slot.player ? "2px solid #84cc16" : "1.5px solid rgba(0,0,0,0.1)";
-  const bg     = isActive && !slot.player ? "rgba(132,204,22,0.05)" : "white";
+  let border = "1.5px solid rgba(0,0,0,0.1)";
+  let bg     = "white";
+  let shadow = "0 2px 8px rgba(0,0,0,0.06)";
+
+  if (isDragOver) {
+    border = "2px solid #84cc16";
+    bg     = "rgba(132,204,22,0.06)";
+    shadow = "0 0 0 3px rgba(132,204,22,0.2)";
+  } else if (isActive && !slot.player) {
+    border = "2px solid #84cc16";
+    bg     = "rgba(132,204,22,0.05)";
+    shadow = "0 0 0 3px rgba(132,204,22,0.15)";
+  }
 
   return (
     <motion.div
-      whileHover={{ y: -2 }}
+      whileHover={isDragging ? {} : { y: -2 }}
+      draggable={!!slot.player}
+      onDragStart={(e) => { e.stopPropagation(); onDragStart(); }}
+      onDragEnd={onDragEnd}
+      onDragOver={(e) => e.preventDefault()}
+      onDragEnter={(e) => { e.preventDefault(); onDragEnter(); }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Element)) onDragLeave();
+      }}
+      onDrop={(e) => { e.preventDefault(); onDrop(); }}
       onClick={slot.player ? undefined : onActivate}
-      style={{ borderRadius: 12, border, background: bg, boxShadow: isActive && !slot.player ? "0 0 0 3px rgba(132,204,22,0.15)" : "0 2px 8px rgba(0,0,0,0.06)", cursor: slot.player ? "default" : "pointer", overflow: "hidden", minHeight: 168 }}
+      style={{
+        borderRadius: 12, border, background: bg, boxShadow: shadow,
+        cursor: slot.player ? "grab" : isActive ? "pointer" : "default",
+        overflow: "hidden", minHeight: 168,
+        opacity: isDragging ? 0.45 : 1,
+        transition: "opacity 0.15s, box-shadow 0.15s, border-color 0.15s",
+        position: "relative" as const,
+      }}
     >
       {/* Role header */}
-      <div style={{ padding: "8px 12px 6px", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-        <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#9ca3af", lineHeight: 1 }}>{slot.label}</p>
-        <p style={{ fontSize: 9, color: "#6b7280", fontFamily: "monospace", marginTop: 1 }}>{slot.minutes} min/game</p>
+      <div style={{ padding: "8px 12px 6px", borderBottom: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#9ca3af", lineHeight: 1 }}>{slot.label}</p>
+          <p style={{ fontSize: 9, color: "#6b7280", fontFamily: "monospace", marginTop: 1 }}>{slot.minutes} min/game</p>
+        </div>
+        {/* Drag handle — only shown on filled slots */}
+        {slot.player && (
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="#d1d5db" style={{ flexShrink: 0, marginRight: 2 }}>
+            <circle cx="3.5" cy="2" r="1.2"/><circle cx="8.5" cy="2" r="1.2"/>
+            <circle cx="3.5" cy="6" r="1.2"/><circle cx="8.5" cy="6" r="1.2"/>
+            <circle cx="3.5" cy="10" r="1.2"/><circle cx="8.5" cy="10" r="1.2"/>
+          </svg>
+        )}
       </div>
 
       {slot.player ? (
         <div style={{ padding: "10px 12px 10px" }}>
-          {/* Remove */}
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <Avatar color={slot.player.teamColor} size={42} />
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -184,11 +223,12 @@ function SlotCard({ slot, isActive, onActivate, onRemove, onMinutes }: {
             >×</button>
           </div>
           {/* Slider */}
-          <div style={{ marginTop: 10, position: "relative" as const }}>
+          <div style={{ marginTop: 10 }}>
             <input
               type="range" min={0} max={48} step={1} value={slot.minutes}
               onChange={e => onMinutes(Number(e.target.value))}
               onClick={e => e.stopPropagation()}
+              onMouseDown={e => e.stopPropagation()}
               style={{ width: "100%", accentColor: "#84cc16" }}
             />
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
@@ -200,15 +240,15 @@ function SlotCard({ slot, isActive, onActivate, onRemove, onMinutes }: {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 12px", gap: 6 }}>
-          <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="22" height="22" viewBox="0 0 24 27" fill="#d1d5db">
+          <div style={{ width: 42, height: 42, borderRadius: "50%", background: isDragOver ? "rgba(132,204,22,0.12)" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.15s" }}>
+            <svg width="22" height="22" viewBox="0 0 24 27" fill={isDragOver ? "#84cc16" : "#d1d5db"}>
               <circle cx="12" cy="7" r="5"/><path d="M3 23c0-5 4-8.5 9-8.5s9 3.5 9 8.5z"/>
             </svg>
           </div>
-          <p style={{ fontSize: 11, color: isActive ? "#65a30d" : "#9ca3af", fontFamily: "monospace", textAlign: "center", fontWeight: isActive ? 600 : 400 }}>
-            {isActive ? "← Pick a player" : "Empty Slot"}
+          <p style={{ fontSize: 11, color: isDragOver ? "#65a30d" : isActive ? "#65a30d" : "#9ca3af", fontFamily: "monospace", textAlign: "center", fontWeight: isDragOver || isActive ? 600 : 400 }}>
+            {isDragOver ? "Drop here" : isActive ? "← Pick a player" : "Empty Slot"}
           </p>
-          {!isActive && <p style={{ fontSize: 9, color: "#d1d5db", fontFamily: "monospace" }}>Select a player</p>}
+          {!isActive && !isDragOver && <p style={{ fontSize: 9, color: "#d1d5db", fontFamily: "monospace" }}>Select a player</p>}
         </div>
       )}
     </motion.div>
@@ -332,11 +372,13 @@ export default function SimulationsPage() {
   const [slots, setSlots] = useState<Slot[]>(
     SLOT_DEFS.map(d => ({ id: d.id, label: d.label, player: null, minutes: d.defaultMin }))
   );
-  const [activeSlotId, setActiveSlotId] = useState<string | null>(null);
-  const [search, setSearch]             = useState("");
-  const [teamFilter, setTeamFilter]     = useState("All Teams");
-  const [posFilter, setPosFilter]       = useState("All Positions");
-  const [showModal, setShowModal]       = useState(false);
+  const [activeSlotId, setActiveSlotId]   = useState<string | null>(null);
+  const [draggingSlotId, setDraggingSlotId] = useState<string | null>(null);
+  const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null);
+  const [search, setSearch]               = useState("");
+  const [teamFilter, setTeamFilter]       = useState("All Teams");
+  const [posFilter, setPosFilter]         = useState("All Positions");
+  const [showModal, setShowModal]         = useState(false);
 
   const usedSalary   = slots.reduce((s, sl) => s + (sl.player ? playerSalary(sl.player) : 0), 0);
   const filledCount  = slots.filter(s => s.player !== null).length;
@@ -384,6 +426,19 @@ export default function SimulationsPage() {
 
   const setMinutes = useCallback((slotId: string, minutes: number) => {
     setSlots(prev => prev.map(s => s.id === slotId ? { ...s, minutes } : s));
+  }, []);
+
+  const swapSlots = useCallback((fromId: string, toId: string) => {
+    if (fromId === toId) return;
+    setSlots(prev => {
+      const from = prev.find(s => s.id === fromId)!;
+      const to   = prev.find(s => s.id === toId)!;
+      return prev.map(s => {
+        if (s.id === fromId) return { ...s, player: to.player };
+        if (s.id === toId)   return { ...s, player: from.player };
+        return s;
+      });
+    });
   }, []);
 
   const canProject = filledCount >= 5;
@@ -515,9 +570,20 @@ export default function SimulationsPage() {
                 key={slot.id}
                 slot={slot}
                 isActive={activeSlotId === slot.id}
+                isDragging={draggingSlotId === slot.id}
+                isDragOver={dragOverSlotId === slot.id && draggingSlotId !== slot.id}
                 onActivate={() => setActiveSlotId(prev => prev === slot.id ? null : slot.id)}
                 onRemove={() => removePlayer(slot.id)}
                 onMinutes={v => setMinutes(slot.id, v)}
+                onDragStart={() => setDraggingSlotId(slot.id)}
+                onDragEnd={() => { setDraggingSlotId(null); setDragOverSlotId(null); }}
+                onDragEnter={() => setDragOverSlotId(slot.id)}
+                onDragLeave={() => setDragOverSlotId(prev => prev === slot.id ? null : prev)}
+                onDrop={() => {
+                  if (draggingSlotId) swapSlots(draggingSlotId, slot.id);
+                  setDraggingSlotId(null);
+                  setDragOverSlotId(null);
+                }}
               />
             ))}
           </div>
