@@ -46,17 +46,17 @@ const RINGER_RANKINGS: Record<string, number> = {
 };
 
 const RANK_TIERS = [
-  { rangeLabel: "#1–5",    price: 18, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" }, // 0
-  { rangeLabel: "#6–15",   price: 14, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" }, // 1
-  { rangeLabel: "#16–25",  price: 11, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" }, // 2
-  { rangeLabel: "#26–35",  price:  9, bg: "#dcfce7", text: "#14532d", border: "#4ade80" }, // 3
-  { rangeLabel: "#36–45",  price:  7, bg: "#f0fdf4", text: "#166534", border: "#86efac" }, // 4
-  { rangeLabel: "#46–55",  price:  6, bg: "#ecfeff", text: "#164e63", border: "#67e8f9" }, // 5
-  { rangeLabel: "#56–65",  price:  5, bg: "#f0f9ff", text: "#075985", border: "#7dd3fc" }, // 6
-  { rangeLabel: "#66–75",  price:  4, bg: "#faf5ff", text: "#581c87", border: "#c084fc" }, // 7
-  { rangeLabel: "#76–85",  price:  3, bg: "#fdf4ff", text: "#701a75", border: "#e879f9" }, // 8
-  { rangeLabel: "#86–95",  price:  2, bg: "#fff1f2", text: "#9f1239", border: "#fda4af" }, // 9
-  { rangeLabel: "#96–100", price:  2, bg: "#fff7ed", text: "#9a3412", border: "#fdba74" }, // 10
+  { rangeLabel: "#1–6",    price: 18, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" }, // 0
+  { rangeLabel: "#7–16",   price: 14, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" }, // 1
+  { rangeLabel: "#17–26",  price: 11, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" }, // 2
+  { rangeLabel: "#27–36",  price:  9, bg: "#dcfce7", text: "#14532d", border: "#4ade80" }, // 3
+  { rangeLabel: "#37–46",  price:  7, bg: "#f0fdf4", text: "#166534", border: "#86efac" }, // 4
+  { rangeLabel: "#47–56",  price:  6, bg: "#ecfeff", text: "#164e63", border: "#67e8f9" }, // 5
+  { rangeLabel: "#57–66",  price:  5, bg: "#f0f9ff", text: "#075985", border: "#7dd3fc" }, // 6
+  { rangeLabel: "#67–76",  price:  4, bg: "#faf5ff", text: "#581c87", border: "#c084fc" }, // 7
+  { rangeLabel: "#77–86",  price:  3, bg: "#fdf4ff", text: "#701a75", border: "#e879f9" }, // 8
+  { rangeLabel: "#87–96",  price:  2, bg: "#fff1f2", text: "#9f1239", border: "#fda4af" }, // 9
+  { rangeLabel: "#97–100", price:  2, bg: "#fff7ed", text: "#9a3412", border: "#fdba74" }, // 10
   { rangeLabel: "NR",      price:  1, bg: "#f1f5f9", text: "#475569", border: "#94a3b8" }, // 11
 ] as const;
 
@@ -65,16 +65,16 @@ function playerRank(p: CurrentNBAPlayer): number {
 }
 
 function rankTierIndex(rank: number): number {
-  if (rank <=   5) return 0;
-  if (rank <=  15) return 1;
-  if (rank <=  25) return 2;
-  if (rank <=  35) return 3;
-  if (rank <=  45) return 4;
-  if (rank <=  55) return 5;
-  if (rank <=  65) return 6;
-  if (rank <=  75) return 7;
-  if (rank <=  85) return 8;
-  if (rank <=  95) return 9;
+  if (rank <=   6) return 0;
+  if (rank <=  16) return 1;
+  if (rank <=  26) return 2;
+  if (rank <=  36) return 3;
+  if (rank <=  46) return 4;
+  if (rank <=  56) return 5;
+  if (rank <=  66) return 6;
+  if (rank <=  76) return 7;
+  if (rank <=  86) return 8;
+  if (rank <=  96) return 9;
   if (rank <= 100) return 10;
   return 11;
 }
