@@ -6,36 +6,46 @@ import Link from "next/link";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 
 // ─── Tier System ──────────────────────────────────────────────────────────────
+// S  = MVP-caliber elite  ($18M) — Jokic, SGA, Luka, Giannis, Wemby, Ant …
+// A  = Franchise star     ($12M) — KD, Booker, Dame, Brunson, Maxey, Trae …
+// B  = Quality starter    ($8M)  — solid starters, near All-Stars
+// C  = Role player        ($5M)  — rotation contributors
+// D  = Bench              ($3M)  — depth / specialists
 const SALARY_CAP = 100; // $100M
 
 const TIER_CONFIG = {
-  S: { price: 15, label: "S", bg: "#fef3c7", text: "#92400e", border: "#fbbf24", desc: "Superstar" },
-  A: { price: 10, label: "A", bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa", desc: "All-Star"  },
-  B: { price:  7, label: "B", bg: "#dcfce7", text: "#14532d", border: "#4ade80", desc: "Starter"   },
-  C: { price:  4, label: "C", bg: "#f1f5f9", text: "#334155", border: "#94a3b8", desc: "Role Player"},
-  D: { price:  3, label: "D", bg: "#f9fafb", text: "#6b7280", border: "#d1d5db", desc: "Bench"     },
+  S: { price: 18, label: "S", bg: "#fef3c7", text: "#92400e", border: "#f59e0b", desc: "MVP Tier"       },
+  A: { price: 12, label: "A", bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6", desc: "Franchise Star" },
+  B: { price:  8, label: "B", bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa", desc: "Starter"        },
+  C: { price:  5, label: "C", bg: "#dcfce7", text: "#14532d", border: "#4ade80", desc: "Role Player"    },
+  D: { price:  3, label: "D", bg: "#f1f5f9", text: "#475569", border: "#94a3b8", desc: "Bench"          },
 } as const;
 
 type TierKey = keyof typeof TIER_CONFIG;
 
-// Players where current playoff/preseason form or franchise value warrants a tier bump
+// Manual overrides: players whose current playoff/preseason form or franchise
+// status puts them above (or below) what the stat formula alone would say.
 const TIER_OVERRIDES: Record<string, TierKey> = {
-  tatum:   "S", // Champion, first-team All-NBA, elite playoff performer
-  curry:   "S", // GOAT shooter, still elite despite age
-  durant:  "S", // Former MVP, 26+ ppg at 37, franchise cornerstone
-  dame:    "S", // Perennial All-NBA, 24.7 ppg star
-  booker:  "S", // Olympic gold, 26+ ppg, two-time All-Star
-  ja:      "A", // Elite when healthy — injury history keeps him at A
-  lebron:  "A", // Declining at 41 but still All-Star caliber
+  // S bumps — borderline score but undeniably MVP-tier performers
+  ant:      "S", // 28.8 ppg, elite two-way star, rising top-3 candidate
+  dmitchell:"S", // 27.9 ppg, elite playoff scorer, franchise cornerstone
+  embiid:   "S", // MVP when healthy, generational scorer
+  tatum:    "S", // Champion, first-team All-NBA, elite postseason performer
+  curry:    "S", // GOAT shooter, still the engine of a contender
+
+  // A caps — star caliber but injury history or age keeps them from S
+  ja:       "A", // Elite when healthy; chronic injury risk caps the price
+  lebron:   "A", // Still All-Star quality at 41, but no longer S-tier impact
 };
 
 function playerTier(p: CurrentNBAPlayer): TierKey {
   if (p.id in TIER_OVERRIDES) return TIER_OVERRIDES[p.id];
+  // Composite score weights scoring + playmaking + defense
   const score = p.ppg + p.rpg * 0.5 + p.apg * 0.75 + p.spg * 1.5 + p.bpg * 1.2;
-  if (score >= 36) return "S";
-  if (score >= 27) return "A";
-  if (score >= 18) return "B";
-  if (score >= 11) return "C";
+  if (score >= 38) return "S"; // true MVP / elite level
+  if (score >= 29) return "A"; // All-Star / franchise star
+  if (score >= 20) return "B"; // quality starter
+  if (score >= 12) return "C"; // rotation contributor
   return "D";
 }
 
