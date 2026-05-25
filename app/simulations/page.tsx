@@ -5,12 +5,42 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 
-// ─── Salary System ─────────────────────────────────────────────────────────────
+// ─── Tier System ──────────────────────────────────────────────────────────────
 const SALARY_CAP = 100; // $100M
 
-function playerSalary(p: CurrentNBAPlayer): number {
+const TIER_CONFIG = {
+  S: { price: 15, label: "S", bg: "#fef3c7", text: "#92400e", border: "#fbbf24", desc: "Superstar" },
+  A: { price: 10, label: "A", bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa", desc: "All-Star"  },
+  B: { price:  7, label: "B", bg: "#dcfce7", text: "#14532d", border: "#4ade80", desc: "Starter"   },
+  C: { price:  4, label: "C", bg: "#f1f5f9", text: "#334155", border: "#94a3b8", desc: "Role Player"},
+  D: { price:  3, label: "D", bg: "#f9fafb", text: "#6b7280", border: "#d1d5db", desc: "Bench"     },
+} as const;
+
+type TierKey = keyof typeof TIER_CONFIG;
+
+// Players where current playoff/preseason form or franchise value warrants a tier bump
+const TIER_OVERRIDES: Record<string, TierKey> = {
+  tatum:   "S", // Champion, first-team All-NBA, elite playoff performer
+  curry:   "S", // GOAT shooter, still elite despite age
+  durant:  "S", // Former MVP, 26+ ppg at 37, franchise cornerstone
+  dame:    "S", // Perennial All-NBA, 24.7 ppg star
+  booker:  "S", // Olympic gold, 26+ ppg, two-time All-Star
+  ja:      "A", // Elite when healthy — injury history keeps him at A
+  lebron:  "A", // Declining at 41 but still All-Star caliber
+};
+
+function playerTier(p: CurrentNBAPlayer): TierKey {
+  if (p.id in TIER_OVERRIDES) return TIER_OVERRIDES[p.id];
   const score = p.ppg + p.rpg * 0.5 + p.apg * 0.75 + p.spg * 1.5 + p.bpg * 1.2;
-  return Math.max(2, Math.min(20, Math.round(score * 0.38)));
+  if (score >= 36) return "S";
+  if (score >= 27) return "A";
+  if (score >= 18) return "B";
+  if (score >= 11) return "C";
+  return "D";
+}
+
+function playerSalary(p: CurrentNBAPlayer): number {
+  return TIER_CONFIG[playerTier(p)].price;
 }
 
 // ─── Slot definitions ──────────────────────────────────────────────────────────
@@ -75,6 +105,23 @@ function runProjection(slots: Slot[]) {
   };
 }
 
+// ─── Tier Badge ───────────────────────────────────────────────────────────────
+function TierBadge({ tier, small }: { tier: TierKey; small?: boolean }) {
+  const cfg = TIER_CONFIG[tier];
+  const size = small ? 18 : 22;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: 4, flexShrink: 0,
+      background: cfg.bg, border: `1.5px solid ${cfg.border}`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: small ? 9 : 11, fontFamily: "var(--font-bebas)",
+      letterSpacing: "0.05em", color: cfg.text, fontWeight: 700,
+    }}>
+      {cfg.label}
+    </div>
+  );
+}
+
 // ─── Player Avatar ─────────────────────────────────────────────────────────────
 function Avatar({ color, size = 40 }: { color: string; size?: number }) {
   return (
@@ -115,7 +162,11 @@ function SlotCard({ slot, isActive, onActivate, onRemove, onMinutes }: {
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.9rem", letterSpacing: "0.06em", color: "#111827", lineHeight: 1.1, paddingRight: 20 }}>{slot.player.name}</p>
               <p style={{ fontSize: 9, color: "#6b7280", marginTop: 2, fontFamily: "monospace" }}>{slot.player.team.split(" ").slice(-1)[0]} · {slot.player.position}</p>
-              <p style={{ fontSize: 10, color: "#65a30d", marginTop: 2, fontFamily: "monospace", fontWeight: 700 }}>${playerSalary(slot.player)}M</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
+                <TierBadge tier={playerTier(slot.player)} small />
+                <p style={{ fontSize: 10, color: "#65a30d", fontFamily: "monospace", fontWeight: 700 }}>${playerSalary(slot.player)}M</p>
+                <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{TIER_CONFIG[playerTier(slot.player)].desc}</p>
+              </div>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); onRemove(); }}
@@ -387,19 +438,34 @@ export default function SimulationsPage() {
             </div>
           </div>
 
+          {/* Tier legend */}
+          <div style={{ padding: "8px 14px 10px", borderTop: "1px solid #f3f4f6", display: "flex", gap: 6, flexWrap: "wrap" as const }}>
+            {(Object.entries(TIER_CONFIG) as [TierKey, typeof TIER_CONFIG[TierKey]][]).map(([key, cfg]) => (
+              <div key={key} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <div style={{ width: 16, height: 16, borderRadius: 3, background: cfg.bg, border: `1.5px solid ${cfg.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontFamily: "var(--font-bebas)", color: cfg.text, fontWeight: 700 }}>{cfg.label}</div>
+                <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>${cfg.price}M</span>
+              </div>
+            ))}
+            <span style={{ fontSize: 9, color: "#d1d5db", fontFamily: "monospace", marginLeft: 2 }}>cap: $100M</span>
+          </div>
+
           {/* Player list */}
           <div style={{ flex: 1, overflowY: "auto", borderTop: "1px solid #f3f4f6" }}>
             {filteredPlayers.map(player => {
-              const sal = playerSalary(player);
+              const tier = playerTier(player);
+              const sal  = playerSalary(player);
               const over = usedSalary + sal > SALARY_CAP;
               return (
-                <div key={player.id} style={{ display: "flex", alignItems: "center", padding: "9px 14px", borderBottom: "1px solid #f9fafb", gap: 9, opacity: over ? 0.55 : 1 }}>
+                <div key={player.id} style={{ display: "flex", alignItems: "center", padding: "9px 14px", borderBottom: "1px solid #f9fafb", gap: 9, opacity: over ? 0.5 : 1 }}>
                   <Avatar color={player.teamColor} size={34} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1.1, whiteSpace: "nowrap" as const, overflow: "hidden", textOverflow: "ellipsis" }}>{player.name}</p>
                     <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{player.team.split(" ").slice(-1)[0]} · {player.position}</p>
                   </div>
-                  <p style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 700, color: over ? "#ef4444" : "#65a30d", minWidth: 30, textAlign: "right" as const }}>${sal}M</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+                    <TierBadge tier={tier} small />
+                    <p style={{ fontSize: 10, fontFamily: "monospace", fontWeight: 700, color: over ? "#ef4444" : "#65a30d", minWidth: 28, textAlign: "right" as const }}>${sal}M</p>
+                  </div>
                   <button
                     onClick={() => !over && selectPlayer(player)}
                     disabled={over}
