@@ -184,6 +184,8 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
   onDragStart: () => void; onDragEnd: () => void;
   onDragEnter: () => void; onDragLeave: () => void; onDrop: () => void;
 }) {
+  const [handleHover, setHandleHover] = React.useState(false);
+
   let border = "1.5px solid rgba(0,0,0,0.1)";
   let bg     = "white";
   let shadow = "0 2px 8px rgba(0,0,0,0.06)";
@@ -201,9 +203,6 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
   return (
     <motion.div
       whileHover={isDragging ? {} : { y: -2 }}
-      draggable={!!slot.player}
-      onDragStart={(e) => { e.stopPropagation(); onDragStart(); }}
-      onDragEnd={onDragEnd}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); onDragEnter(); }}
       onDragLeave={(e) => {
@@ -213,7 +212,7 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
       onClick={slot.player ? undefined : onActivate}
       style={{
         borderRadius: 12, border, background: bg, boxShadow: shadow,
-        cursor: slot.player ? "grab" : isActive ? "pointer" : "default",
+        cursor: slot.player ? "default" : isActive ? "pointer" : "default",
         overflow: "hidden", minHeight: 168,
         opacity: isDragging ? 0.45 : 1,
         transition: "opacity 0.15s, box-shadow 0.15s, border-color 0.15s",
@@ -243,12 +242,28 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
             {slot.minutes} min
           </p>
         </div>
+        {/* Dedicated drag handle — only this element is draggable */}
         {slot.player && (
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="#d1d5db" style={{ flexShrink: 0, marginRight: 2 }}>
-            <circle cx="3.5" cy="2" r="1.2"/><circle cx="8.5" cy="2" r="1.2"/>
-            <circle cx="3.5" cy="6" r="1.2"/><circle cx="8.5" cy="6" r="1.2"/>
-            <circle cx="3.5" cy="10" r="1.2"/><circle cx="8.5" cy="10" r="1.2"/>
-          </svg>
+          <div
+            draggable
+            onDragStart={(e) => { e.stopPropagation(); onDragStart(); }}
+            onDragEnd={(e) => { e.stopPropagation(); onDragEnd(); }}
+            onMouseEnter={() => setHandleHover(true)}
+            onMouseLeave={() => setHandleHover(false)}
+            title="Drag to reorder"
+            style={{
+              flexShrink: 0, padding: "3px 4px", borderRadius: 4,
+              cursor: "grab", userSelect: "none",
+              background: handleHover ? "rgba(0,0,0,0.06)" : "transparent",
+              transition: "background 0.12s",
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill={handleHover ? "#6b7280" : "#d1d5db"} style={{ display: "block", transition: "fill 0.12s" }}>
+              <circle cx="3.5" cy="2" r="1.2"/><circle cx="8.5" cy="2" r="1.2"/>
+              <circle cx="3.5" cy="6" r="1.2"/><circle cx="8.5" cy="6" r="1.2"/>
+              <circle cx="3.5" cy="10" r="1.2"/><circle cx="8.5" cy="10" r="1.2"/>
+            </svg>
+          </div>
         )}
       </div>
 
