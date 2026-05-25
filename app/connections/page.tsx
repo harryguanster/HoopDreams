@@ -370,7 +370,7 @@ export default function ConnectionsPage() {
             className="mt-4 text-center py-6 bg-white border border-gray-200 rounded-2xl shadow-sm"
           >
             <div className="text-4xl mb-3">{won ? "🏆" : "💔"}</div>
-            <h2 className="text-xl font-bold text-[#111827] mb-1">
+            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">
               {won ? "Genius!" : "Better luck tomorrow"}
             </h2>
             <p className="text-sm text-gray-500 mb-5">

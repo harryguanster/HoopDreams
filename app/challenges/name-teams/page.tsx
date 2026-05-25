@@ -108,7 +108,7 @@ export default function NameTeamsPage() {
             <div className="text-[10px] text-gray-400 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-teal-600 tabular-nums">{guessed.length}</div>
+            <div className="text-3xl font-black tabular-nums" style={{ color: "#65a30d" }}>{guessed.length}</div>
             <div className="text-[10px] text-gray-400 uppercase tracking-wide">Guessed</div>
           </div>
           <div className="text-center">
@@ -120,8 +120,8 @@ export default function NameTeamsPage() {
         {/* Progress bar */}
         <div className="w-full h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
           <div
-            className="h-full bg-teal-500 rounded-full transition-all duration-300"
-            style={{ width: `${pct}%` }}
+            className="h-full rounded-full transition-all duration-300"
+            style={{ width: `${pct}%`, background: "#84cc16" }}
           />
         </div>
 
@@ -136,7 +136,7 @@ export default function NameTeamsPage() {
               placeholder={started ? "Type a team name…" : "Click here or press Enter to start"}
               disabled={gameOver}
               className={`flex-1 bg-white border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all text-[#111827] placeholder-gray-400
-                ${shake ? "border-red-400 animate-pulse" : "border-gray-200 focus:border-teal-500"}
+                ${shake ? "border-red-400 animate-pulse" : "border-gray-200 focus:border-[#84cc16]"}
                 ${gameOver ? "opacity-50" : ""}
               `}
               autoComplete="off"
@@ -144,7 +144,7 @@ export default function NameTeamsPage() {
             />
             <button
               onClick={() => { if (!started) start(); else tryGuess(); }}
-              className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-5 py-3 rounded-xl transition-colors"
+              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-5 py-3 rounded-xl transition-colors"
             >
               {started ? "Enter" : "Start"}
             </button>
@@ -152,16 +152,16 @@ export default function NameTeamsPage() {
         )}
 
         {lastGuess && !gameOver && (
-          <p className="text-center text-sm text-teal-600 font-semibold mb-4 animate-pulse">
+          <p className="text-center text-sm font-semibold mb-4 animate-pulse" style={{ color: "#65a30d" }}>
             ✓ {lastGuess}
           </p>
         )}
 
         {/* Game over */}
         {gameOver && (
-          <div className={`text-center py-6 mb-6 rounded-2xl ${guessed.length === TOTAL ? "bg-teal-50 border border-teal-200" : "bg-white border border-gray-200 shadow-sm"}`}>
+          <div className="text-center py-6 mb-6 rounded-2xl" style={guessed.length === TOTAL ? { background: "rgba(132,204,22,0.08)", border: "1.5px solid rgba(132,204,22,0.35)" } : { background: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
             <div className="text-4xl mb-2">{guessed.length === TOTAL ? "🏆" : "⏱️"}</div>
-            <h2 className="text-xl font-bold text-[#111827] mb-1">
+            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">
               {guessed.length === TOTAL ? "You got them all!" : `You got ${guessed.length} / ${TOTAL}`}
             </h2>
             <p className="text-sm text-gray-500 mb-4">
@@ -171,7 +171,7 @@ export default function NameTeamsPage() {
             </p>
             <button
               onClick={restart}
-              className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors"
+              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-6 py-2.5 rounded-xl transition-colors"
             >
               Play Again
             </button>
@@ -205,11 +205,12 @@ export default function NameTeamsPage() {
                             key={teamName}
                             className={`rounded-lg px-2 py-1.5 text-xs font-semibold text-center transition-all duration-300
                               ${done
-                                ? "bg-teal-500 text-white"
+                                ? "text-[#111827]"
                                 : gameOver
                                   ? "bg-gray-100 text-gray-500 border border-gray-200"
                                   : "bg-white text-transparent border border-dashed border-gray-300 select-none"
                               }`}
+                            style={done ? { background: "#84cc16" } : {}}
                           >
                             {done || gameOver ? teamName : "?"}
                           </div>

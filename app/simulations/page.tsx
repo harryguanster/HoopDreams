@@ -220,8 +220,8 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
       }}
     >
       {/* Role header */}
-      <div style={{ padding: "8px 12px 6px", borderBottom: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div>
+      <div style={{ padding: "6px 8px 6px 12px", borderBottom: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#9ca3af", lineHeight: 1 }}>{slot.label}</p>
           {/* Drag-to-scrub minutes number */}
           <p
@@ -242,28 +242,37 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
             {slot.minutes} min
           </p>
         </div>
-        {/* Dedicated drag handle — only this element is draggable */}
+        {/* Drag handle + close — grouped in header, no overlap */}
         {slot.player && (
-          <div
-            draggable
-            onDragStart={(e) => { e.stopPropagation(); onDragStart(); }}
-            onDragEnd={(e) => { e.stopPropagation(); onDragEnd(); }}
-            onMouseEnter={() => setHandleHover(true)}
-            onMouseLeave={() => setHandleHover(false)}
-            title="Drag to reorder"
-            style={{
-              flexShrink: 0, padding: "3px 4px", borderRadius: 4,
-              cursor: "grab", userSelect: "none",
-              background: handleHover ? "rgba(0,0,0,0.06)" : "transparent",
-              transition: "background 0.12s",
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill={handleHover ? "#6b7280" : "#d1d5db"} style={{ display: "block", transition: "fill 0.12s" }}>
-              <circle cx="3.5" cy="2" r="1.2"/><circle cx="8.5" cy="2" r="1.2"/>
-              <circle cx="3.5" cy="6" r="1.2"/><circle cx="8.5" cy="6" r="1.2"/>
-              <circle cx="3.5" cy="10" r="1.2"/><circle cx="8.5" cy="10" r="1.2"/>
-            </svg>
-          </div>
+          <>
+            <div
+              draggable
+              onDragStart={(e) => { e.stopPropagation(); onDragStart(); }}
+              onDragEnd={(e) => { e.stopPropagation(); onDragEnd(); }}
+              onMouseEnter={() => setHandleHover(true)}
+              onMouseLeave={() => setHandleHover(false)}
+              title="Drag to reorder"
+              style={{
+                flexShrink: 0, width: 30, height: 30, borderRadius: 6,
+                cursor: "grab", userSelect: "none",
+                background: handleHover ? "rgba(0,0,0,0.07)" : "rgba(0,0,0,0.03)",
+                transition: "background 0.12s",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 12 12" fill={handleHover ? "#6b7280" : "#b0b8c4"} style={{ display: "block", transition: "fill 0.12s" }}>
+                <circle cx="3.5" cy="2" r="1.3"/><circle cx="8.5" cy="2" r="1.3"/>
+                <circle cx="3.5" cy="6" r="1.3"/><circle cx="8.5" cy="6" r="1.3"/>
+                <circle cx="3.5" cy="10" r="1.3"/><circle cx="8.5" cy="10" r="1.3"/>
+              </svg>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); onRemove(); }}
+              style={{ flexShrink: 0, width: 26, height: 26, background: "rgba(0,0,0,0.04)", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 14, color: "#9ca3af", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.12s, color 0.12s" }}
+              onMouseEnter={e => { (e.target as HTMLElement).style.background = "rgba(239,68,68,0.1)"; (e.target as HTMLElement).style.color = "#ef4444"; }}
+              onMouseLeave={e => { (e.target as HTMLElement).style.background = "rgba(0,0,0,0.04)"; (e.target as HTMLElement).style.color = "#9ca3af"; }}
+            >×</button>
+          </>
         )}
       </div>
 
@@ -272,7 +281,7 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <Avatar color={slot.player.teamColor} size={42} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.9rem", letterSpacing: "0.06em", color: "#111827", lineHeight: 1.1, paddingRight: 20 }}>{slot.player.name}</p>
+              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.9rem", letterSpacing: "0.06em", color: "#111827", lineHeight: 1.1 }}>{slot.player.name}</p>
               <p style={{ fontSize: 9, color: "#6b7280", marginTop: 2, fontFamily: "monospace" }}>{slot.player.team.split(" ").slice(-1)[0]} · {slot.player.position}</p>
               <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
                 <TierBadge player={slot.player} small />
@@ -280,10 +289,6 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActiva
                 <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{RANK_TIERS[rankTierIndex(playerRank(slot.player))].rangeLabel}</p>
               </div>
             </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); onRemove(); }}
-              style={{ position: "absolute" as const, top: 8, right: 8, width: 20, height: 20, background: "rgba(0,0,0,0.06)", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "#9ca3af", display: "flex", alignItems: "center", justifyContent: "center" }}
-            >×</button>
           </div>
           {/* Slider */}
           <div style={{ marginTop: 10 }}>
@@ -537,7 +542,7 @@ export default function SimulationsPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f0e6", display: "flex", flexDirection: "column" }}>
+    <div style={{ height: "100vh", background: "#f4f0e6", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* ── Header ── */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, height: 64, background: "rgba(244,240,230,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(0,0,0,0.09)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", overflow: "hidden" }}>
         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #84cc16, #84cc1640)" }} />

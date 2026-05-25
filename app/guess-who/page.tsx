@@ -400,7 +400,7 @@ function WordleGame({ players, playerNames }: {
             >
               {guessScore}
             </motion.div>
-            <h2 className="text-2xl font-bold text-[#111827] mb-1">{won ? "Correct!" : "Not quite!"}</h2>
+            <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
               ? <p className="text-teal-600 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
               : <p className="text-gray-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
@@ -426,7 +426,8 @@ function WordleGame({ players, playerNames }: {
             </motion.div>
             <motion.button
               onClick={handleNext}
-              className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-2xl text-sm tracking-wide transition-all"
+              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold rounded-2xl text-sm tracking-wide transition-all"
+              style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.15em" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
             >
@@ -442,7 +443,7 @@ function WordleGame({ players, playerNames }: {
     <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
       <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
         <div className="shrink-0">
-          <h1 className="text-2xl font-bold text-[#111827] leading-none">Who Am I?</h1>
+          <h1 className="text-2xl font-bebas tracking-widest text-[#111827] leading-none">Who Am I?</h1>
           <p className="text-xs text-[#65a30d] font-semibold mt-0.5">
             {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
           </p>
@@ -458,7 +459,7 @@ function WordleGame({ players, playerNames }: {
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-6 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-gray-100 disabled:text-gray-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+            className="px-6 py-3 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
           >
             Guess
           </button>

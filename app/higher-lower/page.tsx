@@ -349,7 +349,7 @@ export default function HigherLowerPage() {
             className="text-center py-6 bg-white border border-gray-200 rounded-2xl shadow-sm"
           >
             <p className="text-3xl mb-2">💔</p>
-            <h2 className="text-xl font-bold text-[#111827] mb-1">Streak Broken</h2>
+            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">Streak Broken</h2>
             <p className="text-sm text-gray-500 mb-1">Final streak: {streak}</p>
             <p className="text-sm text-gray-500 mb-5">Best: {best}</p>
             <button

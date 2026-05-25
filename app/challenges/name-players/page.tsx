@@ -154,7 +154,7 @@ export default function NamePlayersPage() {
             <div className="text-[9px] text-gray-400 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-black text-teal-600 tabular-nums">{totalGuessed}/180</div>
+            <div className="text-2xl font-black tabular-nums" style={{ color: "#65a30d" }}>{totalGuessed}/180</div>
             <div className="text-[9px] text-gray-400 uppercase tracking-wide">Total Players</div>
           </div>
           <div className="text-center">
@@ -166,8 +166,8 @@ export default function NamePlayersPage() {
         {/* Progress bar */}
         <div className="w-full h-1.5 bg-gray-200 rounded-full mb-6 overflow-hidden">
           <div
-            className="h-full bg-teal-500 rounded-full transition-all duration-300"
-            style={{ width: `${(totalGuessed / 180) * 100}%` }}
+            className="h-full rounded-full transition-all duration-300"
+            style={{ background: "#84cc16", width: `${(totalGuessed / 180) * 100}%` }}
           />
         </div>
 
@@ -201,7 +201,8 @@ export default function NamePlayersPage() {
             <div
               key={i}
               className={`rounded-xl px-3 py-2.5 text-sm font-semibold flex items-center gap-2 transition-all
-                ${player ? "bg-teal-500 text-white " : "bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400"}`}
+                ${player ? "text-[#111827]" : "bg-gray-100 border-2 border-dashed border-gray-300 text-gray-400"}`}
+              style={player ? { background: "#84cc16" } : {}}
             >
               <span className="text-[10px] font-bold opacity-60 w-6 shrink-0">{POSITIONS[i]}</span>
               <span className="truncate">{player ?? "—"}</span>
@@ -232,14 +233,14 @@ export default function NamePlayersPage() {
                     : "Press Enter or click Start"
               }
               disabled={gameOver || teamDone}
-              className="flex-1 bg-white border-2 border-gray-200 focus:border-teal-500 rounded-xl px-4 py-3 text-base font-medium outline-none transition-colors disabled:opacity-50 text-[#111827] placeholder-gray-400"
+              className="flex-1 bg-white border-2 border-gray-200 focus:border-[#84cc16] rounded-xl px-4 py-3 text-base font-medium outline-none transition-colors disabled:opacity-50 text-[#111827] placeholder-gray-400"
               autoComplete="off"
               spellCheck={false}
             />
             {!started ? (
               <button
                 onClick={() => { setStarted(true); setTimeout(() => inputRef.current?.focus(), 50); }}
-                className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-5 py-3 rounded-xl transition-colors"
+                className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-5 py-3 rounded-xl transition-colors"
               >
                 Start
               </button>
@@ -247,7 +248,7 @@ export default function NamePlayersPage() {
               <button
                 onClick={tryGuess}
                 disabled={teamDone}
-                className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-5 py-3 rounded-xl transition-colors disabled:opacity-40"
+                className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-5 py-3 rounded-xl transition-colors disabled:opacity-40"
               >
                 Enter
               </button>
@@ -268,10 +269,10 @@ export default function NamePlayersPage() {
         {gameOver && (
           <div className="mt-4 text-center py-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
             <div className="text-4xl mb-2">{teamsCompleted === 30 ? "🏆" : "⏱️"}</div>
-            <h2 className="text-xl font-bold text-[#111827] mb-1">Time&apos;s up!</h2>
+            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">Time&apos;s up!</h2>
             <p className="text-sm text-gray-500 mb-1">{totalGuessed} / 180 players named</p>
             <p className="text-sm text-gray-500 mb-5">{teamsCompleted} / 30 teams completed</p>
-            <button onClick={restart} className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors">
+            <button onClick={restart} className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-6 py-2.5 rounded-xl transition-colors">
               Play Again
             </button>
             {/* Per-team breakdown */}

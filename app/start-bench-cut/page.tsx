@@ -100,7 +100,7 @@ function StartBenchCutCore({ era }: { era: Era }) {
         <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">
           Round {roundIndex + 1} of {trios.length}
         </p>
-        <h1 className="text-2xl font-bold text-[#111827]">{trio.category}</h1>
+        <h1 className="text-2xl font-bebas tracking-widest text-[#111827]">{trio.category}</h1>
         <p className="text-gray-500 text-sm mt-1">{trio.description}</p>
       </div>
 

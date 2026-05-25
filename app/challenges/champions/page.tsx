@@ -114,7 +114,7 @@ export default function ChampionsPage() {
             <div className="text-[10px] text-gray-400 uppercase tracking-wide">Time Left</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-black text-teal-600 tabular-nums">{guessedCount}</div>
+            <div className="text-3xl font-black tabular-nums" style={{ color: "#65a30d" }}>{guessedCount}</div>
             <div className="text-[10px] text-gray-400 uppercase tracking-wide">Years Filled</div>
           </div>
           <div className="text-center">
@@ -125,7 +125,7 @@ export default function ChampionsPage() {
 
         {/* Progress bar */}
         <div className="w-full h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
-          <div className="h-full bg-teal-500 rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, background: "#84cc16" }} />
         </div>
 
         {/* Input */}
@@ -139,7 +139,7 @@ export default function ChampionsPage() {
               placeholder={started ? "Type a team name (e.g. Bulls, Lakers, Spurs)…" : "Click here or press Enter to start"}
               disabled={gameOver}
               className={`flex-1 bg-white border-2 rounded-xl px-4 py-3 text-base font-medium outline-none transition-all text-[#111827] placeholder-gray-400
-                ${shake ? "border-red-400 animate-pulse" : "border-gray-200 focus:border-teal-500"}
+                ${shake ? "border-red-400 animate-pulse" : "border-gray-200 focus:border-[#84cc16]"}
                 ${gameOver ? "opacity-50" : ""}
               `}
               autoComplete="off"
@@ -147,7 +147,7 @@ export default function ChampionsPage() {
             />
             <button
               onClick={() => { if (!started) start(); else tryGuess(); }}
-              className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-5 py-3 rounded-xl transition-colors"
+              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-5 py-3 rounded-xl transition-colors"
             >
               {started ? "Enter" : "Start"}
             </button>
@@ -156,7 +156,7 @@ export default function ChampionsPage() {
 
         {/* Flash message */}
         {flash && !gameOver && (
-          <p className="text-center text-sm text-teal-600 font-semibold mb-3 animate-pulse">
+          <p className="text-center text-sm font-semibold mb-3 animate-pulse" style={{ color: "#65a30d" }}>
             ✓ {flash} — all {CHAMPIONS.filter(c => c.team === flash).length} year{CHAMPIONS.filter(c => c.team === flash).length !== 1 ? "s" : ""} filled!
           </p>
         )}
@@ -169,9 +169,9 @@ export default function ChampionsPage() {
 
         {/* Game over */}
         {gameOver && (
-          <div className={`text-center py-6 mb-6 rounded-2xl ${guessedCount === TOTAL ? "bg-teal-50 border border-teal-200" : "bg-white border border-gray-200 shadow-sm"}`}>
+          <div className="text-center py-6 mb-6 rounded-2xl" style={guessedCount === TOTAL ? { background: "rgba(132,204,22,0.08)", border: "1.5px solid rgba(132,204,22,0.35)" } : { background: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
             <div className="text-4xl mb-2">{guessedCount === TOTAL ? "🏆" : "⏱️"}</div>
-            <h2 className="text-xl font-bold text-[#111827] mb-1">
+            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">
               {guessedCount === TOTAL ? "You got them all!" : `You got ${guessedCount} / ${TOTAL}`}
             </h2>
             <p className="text-sm text-gray-500 mb-4">
@@ -181,7 +181,7 @@ export default function ChampionsPage() {
             </p>
             <button
               onClick={restart}
-              className="bg-teal-500 hover:bg-teal-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors"
+              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-6 py-2.5 rounded-xl transition-colors"
             >
               Play Again
             </button>

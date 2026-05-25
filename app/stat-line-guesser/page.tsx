@@ -157,7 +157,7 @@ function StatLineCore({ era }: { era: Era }) {
             >
               {gameState === "correct" ? "🎯" : "😬"}
             </motion.div>
-            <h2 className="text-2xl font-bold text-[#111827] mb-1">
+            <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-1">
               {gameState === "correct" ? "Correct!" : "Not quite!"}
             </h2>
             {gameState === "correct" ? (
@@ -209,7 +209,8 @@ function StatLineCore({ era }: { era: Era }) {
 
             <motion.button
               onClick={handleNext}
-              className="w-full py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-2xl tracking-wide text-sm transition-all"
+              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold rounded-2xl tracking-wide text-sm transition-all"
+              style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.15em" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
             >
@@ -227,7 +228,7 @@ function StatLineCore({ era }: { era: Era }) {
         <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">
           {stepsRevealed} of 5 clues revealed
         </p>
-        <h1 className="text-2xl font-bold text-[#111827]">Who Am I?</h1>
+        <h1 className="text-2xl font-bebas tracking-widest text-[#111827]">Who Am I?</h1>
         <p className="text-gray-400 text-sm mt-1">
           {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next clue"}
         </p>
@@ -313,7 +314,7 @@ function StatLineCore({ era }: { era: Era }) {
         <button
           onClick={checkGuess}
           disabled={!guess.trim()}
-          className="px-5 py-3 bg-teal-500 hover:bg-teal-400 disabled:bg-gray-100 disabled:text-gray-400 text-white font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+          className="px-5 py-3 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
         >
           Guess
         </button>

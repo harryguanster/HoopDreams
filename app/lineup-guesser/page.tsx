@@ -163,13 +163,13 @@ export default function LineupGuesserPage() {
         {/* Header row */}
         <div className="flex items-end justify-between mb-5">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Season</p>
-            <p className="text-3xl font-black text-[#111827] leading-none">{team.season}</p>
+            <p className="text-[10px] font-bebas tracking-widest text-gray-400 mb-1">Season</p>
+            <p className="text-3xl font-bebas tracking-wide text-[#111827] leading-none">{team.season}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Score</p>
-            <p className="text-3xl font-black text-[#65a30d] leading-none">
-              {score.correct}<span className="text-white/40 font-light">/</span>{score.total}
+            <p className="text-[10px] font-bebas tracking-widest text-gray-400 mb-1">Score</p>
+            <p className="text-3xl font-bebas tracking-wide text-[#65a30d] leading-none">
+              {score.correct}<span className="text-gray-400 font-light">/</span>{score.total}
             </p>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function LineupGuesserPage() {
               />
               <button
                 type="submit"
-                className="px-5 py-3 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition-colors text-sm"
+                className="px-5 py-3 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors text-sm"
               >
                 Guess
               </button>
@@ -236,14 +236,14 @@ export default function LineupGuesserPage() {
 
         {/* Won */}
         {status === "won" && (
-          <div className="text-center py-6 bg-teal-50 rounded-2xl border border-teal-200">
-            <p className="text-3xl font-black text-teal-600 mb-1">Correct!</p>
+          <div className="text-center py-6 rounded-2xl" style={{ background: "rgba(132,204,22,0.08)", border: "1.5px solid rgba(132,204,22,0.35)" }}>
+            <p className="text-3xl font-bebas tracking-widest mb-1" style={{ color: "#65a30d" }}>Correct!</p>
             <p className="text-gray-700 font-medium mb-4">
               {team.season} {team.answer}
             </p>
             <button
               onClick={handleNext}
-              className="px-7 py-3 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition-colors"
+              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors"
             >
               Next Team
             </button>
@@ -259,7 +259,7 @@ export default function LineupGuesserPage() {
             </p>
             <button
               onClick={handleNext}
-              className="px-7 py-3 bg-gray-200 text-[#111827] font-bold rounded-xl hover:bg-[#84cc16] transition-colors"
+              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors"
             >
               Next Team
             </button>

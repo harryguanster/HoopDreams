@@ -64,7 +64,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
-          <h2 className="text-2xl font-bold text-[#111827] mb-2">Your Picks</h2>
+          <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-2">Your Picks</h2>
           <p className="text-gray-500 text-sm italic bg-gray-50 rounded-xl px-4 py-2 border border-gray-200">
             &ldquo;{comment}&rdquo;
           </p>
@@ -111,7 +111,8 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
         >
           <motion.button
             onClick={onPlayAgain}
-            className="flex-1 py-3.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-sm rounded-2xl tracking-wide"
+            className="flex-1 py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold text-sm rounded-2xl tracking-wide font-bebas"
+            style={{ fontSize: "1rem", letterSpacing: "0.15em" }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
             transition={{ duration: 0.15 }}
