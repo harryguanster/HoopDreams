@@ -1,63 +1,59 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 
 // ─── Rank-based Pricing ───────────────────────────────────────────────────────
-// Based on Ringer / HoopsHype consensus top-100 NBA rankings.
-// Top 5 → one price band. Then bands of 10: #6-15, #16-25 … #96-100.
-// Players outside the top 100 (NR) get the minimum price.
-const SALARY_CAP = 100; // $100M
+const SALARY_CAP   = 100; // $100M
+const TOTAL_MINS   = 240; // 5 players × 48 min
 
 const RINGER_RANKINGS: Record<string, number> = {
-  // ── #1-5  ($18M) ─────────────────────────────────────────────────────
-  jokic: 1, sga: 2, giannis: 3, luka: 4, ant: 5,
-  // ── #6-15  ($14M) ────────────────────────────────────────────────────
-  wemby: 6, curry: 7, brunson: 8, dmitchell: 9, cade: 10,
-  lebron: 11, ad: 12, durant: 13, jwilliams2: 14, mobley: 15,
-  // ── #16-25  ($11M) ───────────────────────────────────────────────────
-  tatum: 16, jbrown: 17, booker: 18, banchero: 19, siakam: 20,
-  kat: 21, kawhi: 22, harden: 23, jbutler: 24, bam: 25,
-  // ── #26-35  ($9M) ────────────────────────────────────────────────────
-  defox: 26, trae: 27, sengun: 28, jjackson: 29, cholmgren: 30,
-  sabonis: 31, tmaxey: 32, garland: 33, ja: 34, fwagner: 35,
-  // ── #36-45  ($7M) ────────────────────────────────────────────────────
-  jmurray: 36, embiid: 37, sbarnes: 38, oganunoby: 39, haliburton: 40,
-  athompson: 41, dame: 42, dbane: 43, agordon: 44, jrandle: 45,
-  // ── #46-55  ($6M) ────────────────────────────────────────────────────
-  therro: 46, lmarkkanen: 47, lamelo: 48, jallen: 49, mikalbridg: 50,
-  areaves: 51, lavine: 52, kyrie: 53, dwhite: 54, dgreen: 55,
-  // ── #56-65  ($5M) ────────────────────────────────────────────────────
-  zubac: 56, zion: 57, jjohnson: 58, gobert: 59, mturner: 60,
-  npowell: 61, ddaniels: 62, pgeorge: 63, mporter: 64, jhart: 65,
-  // ── #66-75  ($4M) ────────────────────────────────────────────────────
-  acaruso: 66, porzingis: 67, cjohnson: 68, ihartenstein: 69, cwhite: 70,
-  tmurphy: 71, jmcdaniels: 72, ldort: 73, jsuggs: 74, bingram: 75,
-  // ── #76-85  ($3M) ────────────────────────────────────────────────────
-  nreid: 76, cbraun: 77, ppritchard: 78, giddey: 79, bmiller: 80,
-  holiday: 81, anembhard: 82, cflagg: 83, rjbarrett: 84, dehunter: 85,
-  // ── #86-95  ($2M) ────────────────────────────────────────────────────
-  anesmith: 86, vucevic: 87, cjmcc: 88, tcamara: 89, dlively: 90,
-  jgreen2: 91, asimons: 92, tharris: 93, dvassell: 94, kthompson: 95,
-  // ── #96-100  ($2M) ───────────────────────────────────────────────────
-  jsmith: 96,
+  // ── #1-6  ($18M) ─────────────────────────────────────────────────────
+  jokic: 1, sga: 2, giannis: 3, luka: 4, ant: 5, wemby: 6,
+  // ── #7-16  ($14M) ────────────────────────────────────────────────────
+  curry: 7, brunson: 8, dmitchell: 9, cade: 10,
+  lebron: 11, ad: 12, durant: 13, jwilliams2: 14, mobley: 15, tatum: 16,
+  // ── #17-26  ($11M) ───────────────────────────────────────────────────
+  jbrown: 17, booker: 18, banchero: 19, siakam: 20,
+  kat: 21, kawhi: 22, harden: 23, jbutler: 24, bam: 25, defox: 26,
+  // ── #27-36  ($9M) ────────────────────────────────────────────────────
+  trae: 27, sengun: 28, jjackson: 29, cholmgren: 30,
+  sabonis: 31, tmaxey: 32, garland: 33, ja: 34, fwagner: 35, jmurray: 36,
+  // ── #37-46  ($7M) ────────────────────────────────────────────────────
+  embiid: 37, sbarnes: 38, oganunoby: 39, haliburton: 40,
+  athompson: 41, dame: 42, dbane: 43, agordon: 44, jrandle: 45, therro: 46,
+  // ── #47-56  ($6M) ────────────────────────────────────────────────────
+  lmarkkanen: 47, lamelo: 48, jallen: 49, mikalbridg: 50,
+  areaves: 51, lavine: 52, kyrie: 53, dwhite: 54, dgreen: 55, zubac: 56,
+  // ── #57-66  ($5M) ────────────────────────────────────────────────────
+  zion: 57, jjohnson: 58, gobert: 59, mturner: 60,
+  npowell: 61, ddaniels: 62, pgeorge: 63, mporter: 64, jhart: 65, acaruso: 66,
+  // ── #67-76  ($4M) ────────────────────────────────────────────────────
+  porzingis: 67, cjohnson: 68, ihartenstein: 69, cwhite: 70,
+  tmurphy: 71, jmcdaniels: 72, ldort: 73, jsuggs: 74, bingram: 75, nreid: 76,
+  // ── #77-86  ($3M) ────────────────────────────────────────────────────
+  cbraun: 77, ppritchard: 78, giddey: 79, bmiller: 80,
+  holiday: 81, anembhard: 82, cflagg: 83, rjbarrett: 84, dehunter: 85, anesmith: 86,
+  // ── #87-96  ($2M) ────────────────────────────────────────────────────
+  vucevic: 87, cjmcc: 88, tcamara: 89, dlively: 90,
+  jgreen2: 91, asimons: 92, tharris: 93, dvassell: 94, kthompson: 95, jsmith: 96,
 };
 
 const RANK_TIERS = [
-  { rangeLabel: "#1–6",    price: 18, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" }, // 0
-  { rangeLabel: "#7–16",   price: 14, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" }, // 1
-  { rangeLabel: "#17–26",  price: 11, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" }, // 2
-  { rangeLabel: "#27–36",  price:  9, bg: "#dcfce7", text: "#14532d", border: "#4ade80" }, // 3
-  { rangeLabel: "#37–46",  price:  7, bg: "#f0fdf4", text: "#166534", border: "#86efac" }, // 4
-  { rangeLabel: "#47–56",  price:  6, bg: "#ecfeff", text: "#164e63", border: "#67e8f9" }, // 5
-  { rangeLabel: "#57–66",  price:  5, bg: "#f0f9ff", text: "#075985", border: "#7dd3fc" }, // 6
-  { rangeLabel: "#67–76",  price:  4, bg: "#faf5ff", text: "#581c87", border: "#c084fc" }, // 7
-  { rangeLabel: "#77–86",  price:  3, bg: "#fdf4ff", text: "#701a75", border: "#e879f9" }, // 8
-  { rangeLabel: "#87–96",  price:  2, bg: "#fff1f2", text: "#9f1239", border: "#fda4af" }, // 9
-  { rangeLabel: "#97–100", price:  2, bg: "#fff7ed", text: "#9a3412", border: "#fdba74" }, // 10
-  { rangeLabel: "NR",      price:  1, bg: "#f1f5f9", text: "#475569", border: "#94a3b8" }, // 11
+  { rangeLabel: "#1–6",    price: 18, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" },
+  { rangeLabel: "#7–16",   price: 14, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" },
+  { rangeLabel: "#17–26",  price: 11, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" },
+  { rangeLabel: "#27–36",  price:  9, bg: "#dcfce7", text: "#14532d", border: "#4ade80" },
+  { rangeLabel: "#37–46",  price:  7, bg: "#f0fdf4", text: "#166534", border: "#86efac" },
+  { rangeLabel: "#47–56",  price:  6, bg: "#ecfeff", text: "#164e63", border: "#67e8f9" },
+  { rangeLabel: "#57–66",  price:  5, bg: "#f0f9ff", text: "#075985", border: "#7dd3fc" },
+  { rangeLabel: "#67–76",  price:  4, bg: "#faf5ff", text: "#581c87", border: "#c084fc" },
+  { rangeLabel: "#77–86",  price:  3, bg: "#fdf4ff", text: "#701a75", border: "#e879f9" },
+  { rangeLabel: "#87–96",  price:  2, bg: "#fff1f2", text: "#9f1239", border: "#fda4af" },
+  { rangeLabel: "#97–100", price:  2, bg: "#fff7ed", text: "#9a3412", border: "#fdba74" },
+  { rangeLabel: "NR",      price:  1, bg: "#f1f5f9", text: "#475569", border: "#94a3b8" },
 ] as const;
 
 function playerRank(p: CurrentNBAPlayer): number {
@@ -83,25 +79,20 @@ function playerSalary(p: CurrentNBAPlayer): number {
   return RANK_TIERS[rankTierIndex(playerRank(p))].price;
 }
 
-function rankBadgeLabel(p: CurrentNBAPlayer): string {
-  const r = playerRank(p);
-  return r <= 100 ? `#${r}` : "NR";
-}
-
-// ─── Slot definitions ──────────────────────────────────────────────────────────
+// ─── Slot definitions — defaults sum exactly to 240 ───────────────────────────
 const SLOT_DEFS = [
   { id: "pg",    label: "POINT GUARD",    defaultMin: 36 },
   { id: "sg",    label: "SHOOTING GUARD", defaultMin: 30 },
   { id: "sf",    label: "SMALL FORWARD",  defaultMin: 28 },
   { id: "pf",    label: "POWER FORWARD",  defaultMin: 28 },
-  { id: "c",     label: "CENTER",         defaultMin: 30 },
+  { id: "c",     label: "CENTER",         defaultMin: 28 },
   { id: "6th",   label: "6TH MAN",        defaultMin: 24 },
   { id: "rot1",  label: "ROTATION",       defaultMin: 20 },
   { id: "rot2",  label: "ROTATION",       defaultMin: 16 },
   { id: "rot3",  label: "ROTATION",       defaultMin: 12 },
   { id: "rot4",  label: "ROTATION",       defaultMin: 10 },
-  { id: "lpt",   label: "LIMITED PT",     defaultMin: 8  },
-  { id: "bench", label: "DEEP BENCH",     defaultMin: 4  },
+  { id: "lpt",   label: "LIMITED PT",     defaultMin:  6 },
+  { id: "bench", label: "DEEP BENCH",     defaultMin:  2 },
 ] as const;
 
 interface Slot { id: string; label: string; player: CurrentNBAPlayer | null; minutes: number; }
@@ -109,7 +100,7 @@ interface Slot { id: string; label: string; player: CurrentNBAPlayer | null; min
 // ─── Projection engine ─────────────────────────────────────────────────────────
 function runProjection(slots: Slot[]) {
   const filled = slots.filter(s => s.player !== null);
-  if (filled.length < 5) return null;
+  if (filled.length < 12) return null;
 
   let offScore = 0;
   let defScore = 0;
@@ -182,10 +173,14 @@ function Avatar({ color, size = 40 }: { color: string; size?: number }) {
 }
 
 // ─── Slot Card ─────────────────────────────────────────────────────────────────
-function SlotCard({ slot, isActive, isDragging, isDragOver, onActivate, onRemove, onMinutes,
+function SlotCard({ slot, isActive, isDragging, isDragOver, maxMinutes, onActivate, onRemove,
+                    onMinutes, onMinutesScrubStart,
                     onDragStart, onDragEnd, onDragEnter, onDragLeave, onDrop }: {
   slot: Slot; isActive: boolean; isDragging: boolean; isDragOver: boolean;
-  onActivate: () => void; onRemove: () => void; onMinutes: (v: number) => void;
+  maxMinutes: number;
+  onActivate: () => void; onRemove: () => void;
+  onMinutes: (v: number) => void;
+  onMinutesScrubStart: (e: React.MouseEvent) => void;
   onDragStart: () => void; onDragEnd: () => void;
   onDragEnter: () => void; onDragLeave: () => void; onDrop: () => void;
 }) {
@@ -229,7 +224,24 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, onActivate, onRemove
       <div style={{ padding: "8px 12px 6px", borderBottom: "1px solid rgba(0,0,0,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#9ca3af", lineHeight: 1 }}>{slot.label}</p>
-          <p style={{ fontSize: 9, color: "#6b7280", fontFamily: "monospace", marginTop: 1 }}>{slot.minutes} min/game</p>
+          {/* Drag-to-scrub minutes number */}
+          <p
+            style={{
+              fontSize: 9, color: slot.player ? "#374151" : "#6b7280",
+              fontFamily: "monospace", marginTop: 1,
+              cursor: slot.player ? "ew-resize" : "default",
+              userSelect: "none",
+              display: "inline-flex", alignItems: "center", gap: 3,
+            }}
+            onMouseDown={slot.player ? (e) => { e.stopPropagation(); onMinutesScrubStart(e); } : undefined}
+          >
+            {slot.player && (
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="#9ca3af">
+                <path d="M2 1h1v6H2zm3 0h1v6H5z"/>
+              </svg>
+            )}
+            {slot.minutes} min
+          </p>
         </div>
         {slot.player && (
           <svg width="12" height="12" viewBox="0 0 12 12" fill="#d1d5db" style={{ flexShrink: 0, marginRight: 2 }}>
@@ -261,7 +273,7 @@ function SlotCard({ slot, isActive, isDragging, isDragOver, onActivate, onRemove
           {/* Slider */}
           <div style={{ marginTop: 10 }}>
             <input
-              type="range" min={0} max={48} step={1} value={slot.minutes}
+              type="range" min={0} max={maxMinutes} step={1} value={slot.minutes}
               onChange={e => onMinutes(Number(e.target.value))}
               onClick={e => e.stopPropagation()}
               onMouseDown={e => e.stopPropagation()}
@@ -318,15 +330,12 @@ function ProjectionModal({ slots, onClose }: { slots: Slot[]; onClose: () => voi
         onClick={e => e.stopPropagation()}
         style={{ background: "#faf9f4", borderRadius: 16, width: "100%", maxWidth: 720, maxHeight: "92vh", overflowY: "auto", boxShadow: "0 32px 90px rgba(0,0,0,0.4)" }}
       >
-        {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px 14px", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
           <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.6rem", letterSpacing: "0.14em", color: "#111827", lineHeight: 1 }}>TEAM PROJECTION</h2>
           <button onClick={onClose} style={{ width: 30, height: 30, background: "rgba(0,0,0,0.07)", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 16, color: "#6b7280", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
         </div>
 
-        {/* Starters + Bench panels */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", margin: "16px 24px 0", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(0,0,0,0.1)" }}>
-          {/* Starters */}
           <div style={{ background: "#141c2b", padding: "14px 18px" }}>
             <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.22em", color: "rgba(255,255,255,0.45)", marginBottom: 14 }}>STARTERS & 6TH MAN</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -350,7 +359,6 @@ function ProjectionModal({ slots, onClose }: { slots: Slot[]; onClose: () => voi
               )}
             </div>
           </div>
-          {/* Bench */}
           <div style={{ background: "#1a2535", padding: "14px 18px", borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
             <p style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.22em", color: "rgba(255,255,255,0.45)", marginBottom: 14 }}>BENCH PLAYERS</p>
             {proj.bench.length > 0 ? (
@@ -371,25 +379,21 @@ function ProjectionModal({ slots, onClose }: { slots: Slot[]; onClose: () => voi
           </div>
         </div>
 
-        {/* Team stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 1, background: "rgba(0,0,0,0.07)", margin: "14px 24px 0", borderRadius: 8, overflow: "hidden" }}>
-          <StatCell label="O RATING"    value={proj.oRating}    accent />
-          <StatCell label="D RATING"    value={proj.dRating}    accent />
-          <StatCell label="PROJ. WINS"  value={proj.projWins}            />
-          <StatCell label="NET RATING"  value={proj.netRating}           />
-          <StatCell label="CHEMISTRY"   value={proj.chemistry}           />
+          <StatCell label="O RATING"   value={proj.oRating}   accent />
+          <StatCell label="D RATING"   value={proj.dRating}   accent />
+          <StatCell label="PROJ. WINS" value={proj.projWins}          />
+          <StatCell label="NET RATING" value={proj.netRating}         />
+          <StatCell label="CHEMISTRY"  value={proj.chemistry}         />
         </div>
-
-        {/* Playoff odds */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 1, background: "rgba(0,0,0,0.07)", margin: "1px 24px 0", borderRadius: 8, overflow: "hidden" }}>
-          <StatCell label="PLAYOFFS %"      value={`${proj.playoffs}.0%`} />
-          <StatCell label="2ND ROUND %"     value={`${proj.r2}.0%`}       />
-          <StatCell label="CONF. FINALS %"  value={`${proj.cf}.0%`}       />
-          <StatCell label="FINALS %"        value={`${proj.finals}.0%`}   />
-          <StatCell label="CHAMPS %:"       value={`${proj.champs}.0%`}   />
+          <StatCell label="PLAYOFFS %"     value={`${proj.playoffs}.0%`} />
+          <StatCell label="2ND ROUND %"    value={`${proj.r2}.0%`}       />
+          <StatCell label="CONF. FINALS %" value={`${proj.cf}.0%`}       />
+          <StatCell label="FINALS %"       value={`${proj.finals}.0%`}   />
+          <StatCell label="CHAMPS %:"      value={`${proj.champs}.0%`}   />
         </div>
 
-        {/* CTA */}
         <div style={{ padding: "18px 24px" }}>
           <button
             onClick={onClose}
@@ -416,10 +420,37 @@ export default function SimulationsPage() {
   const [posFilter, setPosFilter]           = useState("All Positions");
   const [showModal, setShowModal]           = useState(false);
 
-  const usedSalary  = slots.reduce((s, sl) => s + (sl.player ? playerSalary(sl.player) : 0), 0);
-  const filledCount = slots.filter(s => s.player !== null).length;
-  const capPct      = (usedSalary / SALARY_CAP) * 100;
-  const capColor    = capPct >= 95 ? "#ef4444" : capPct >= 80 ? "#f59e0b" : "#84cc16";
+  // ── Minutes scrub (global mouse tracking) ──────────────────────────────────
+  const scrubRef = useRef<{ slotId: string; startX: number; startMin: number; maxMin: number } | null>(null);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const s = scrubRef.current;
+      if (!s) return;
+      const delta  = Math.round((e.clientX - s.startX) / 2.5);
+      const newMin = Math.max(0, Math.min(s.maxMin, s.startMin + delta));
+      setSlots(prev => prev.map(sl => sl.id === s.slotId ? { ...sl, minutes: newMin } : sl));
+    };
+    const onUp = () => { scrubRef.current = null; };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup",   onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup",   onUp);
+    };
+  }, []);
+
+  // ── Derived values ─────────────────────────────────────────────────────────
+  const usedSalary   = slots.reduce((s, sl) => s + (sl.player ? playerSalary(sl.player) : 0), 0);
+  const filledCount  = slots.filter(s => s.player !== null).length;
+  const totalMinutes = slots.reduce((s, sl) => s + (sl.player ? sl.minutes : 0), 0);
+
+  const capPct   = (usedSalary  / SALARY_CAP) * 100;
+  const minPct   = (totalMinutes / TOTAL_MINS) * 100;
+  const capColor = capPct >= 95 ? "#ef4444" : capPct >= 80 ? "#f59e0b" : "#84cc16";
+  const minColor = totalMinutes > TOTAL_MINS ? "#ef4444" : totalMinutes === TOTAL_MINS ? "#84cc16" : "#f59e0b";
+
+  const canProject = filledCount === 12 && totalMinutes === TOTAL_MINS;
 
   const teamList = useMemo(() => {
     const teams = [...new Set(CURRENT_NBA_PLAYERS.map(p => p.team))].sort();
@@ -444,10 +475,8 @@ export default function SimulationsPage() {
     setSlots(prev => {
       const currentUsed = prev.reduce((s, sl) => s + (sl.player ? playerSalary(sl.player) : 0), 0);
       if (currentUsed + playerSalary(player) > SALARY_CAP) return prev;
-
       const targetId = activeSlotId ?? prev.find(s => !s.player)?.id;
       if (!targetId) return prev;
-
       const updated = prev.map(s => s.id === targetId ? { ...s, player } : s);
       const nextEmpty = updated.find(s => !s.player)?.id ?? null;
       setActiveSlotId(nextEmpty);
@@ -461,7 +490,11 @@ export default function SimulationsPage() {
   }, []);
 
   const setMinutes = useCallback((slotId: string, minutes: number) => {
-    setSlots(prev => prev.map(s => s.id === slotId ? { ...s, minutes } : s));
+    setSlots(prev => {
+      const otherFilled = prev.reduce((sum, s) => s.id === slotId ? sum : (s.player ? sum + s.minutes : sum), 0);
+      const capped = Math.max(0, Math.min(48, Math.min(minutes, TOTAL_MINS - otherFilled)));
+      return prev.map(s => s.id === slotId ? { ...s, minutes: capped } : s);
+    });
   }, []);
 
   const swapSlots = useCallback((fromId: string, toId: string) => {
@@ -477,26 +510,43 @@ export default function SimulationsPage() {
     });
   }, []);
 
-  const canProject = filledCount >= 5;
+  // ── Hint message below the roster grid ────────────────────────────────────
+  let hintMsg = "";
+  if (filledCount < 12) {
+    hintMsg = `Fill all 12 slots (${filledCount}/12) and set total minutes to 240 to unlock projection`;
+  } else if (totalMinutes !== TOTAL_MINS) {
+    const diff = TOTAL_MINS - totalMinutes;
+    hintMsg = diff > 0
+      ? `Distribute ${diff} more minute${diff > 1 ? "s" : ""} across your roster`
+      : `Over by ${-diff} minute${-diff > 1 ? "s" : ""} — reduce some players' time`;
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#f4f0e6", display: "flex", flexDirection: "column" }}>
       {/* ── Header ── */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, height: 56, background: "rgba(244,240,230,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(0,0,0,0.09)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", overflow: "hidden" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 50, height: 64, background: "rgba(244,240,230,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(0,0,0,0.09)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", overflow: "hidden" }}>
         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #84cc16, #84cc1640)" }} />
         <Link href="/home" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
           <img src="/logo.svg" alt="" style={{ height: 34 }} />
           <span style={{ fontFamily: "var(--font-bebas)", color: "#111827", fontSize: "1.35rem", letterSpacing: "0.08em" }}>Courtside Central</span>
         </Link>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {/* Cap meter */}
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          {/* Salary cap meter */}
           <div style={{ textAlign: "right" }}>
             <p style={{ fontSize: 8, fontFamily: "monospace", color: "#9ca3af", textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Salary Cap</p>
-            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", color: capColor, letterSpacing: "0.06em", lineHeight: 1 }}>${usedSalary}M <span style={{ color: "#9ca3af" }}>/ ${SALARY_CAP}M</span></p>
+            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", color: capColor, letterSpacing: "0.06em", lineHeight: 1 }}>${usedSalary}M <span style={{ color: "#9ca3af" }}>/ $100M</span></p>
+            <div style={{ width: 80, height: 4, background: "#e5e7eb", borderRadius: 2, overflow: "hidden", marginTop: 2 }}>
+              <div style={{ height: "100%", width: `${Math.min(100, capPct)}%`, background: capColor, transition: "width 0.3s, background 0.3s", borderRadius: 2 }} />
+            </div>
           </div>
-          <div style={{ width: 90, height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${Math.min(100, capPct)}%`, background: capColor, transition: "width 0.3s, background 0.3s", borderRadius: 3 }} />
+          {/* Minutes meter */}
+          <div style={{ textAlign: "right" }}>
+            <p style={{ fontSize: 8, fontFamily: "monospace", color: "#9ca3af", textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>Minutes</p>
+            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", color: minColor, letterSpacing: "0.06em", lineHeight: 1 }}>{totalMinutes} <span style={{ color: "#9ca3af" }}>/ 240</span></p>
+            <div style={{ width: 80, height: 4, background: "#e5e7eb", borderRadius: 2, overflow: "hidden", marginTop: 2 }}>
+              <div style={{ height: "100%", width: `${Math.min(100, minPct)}%`, background: minColor, transition: "width 0.3s, background 0.3s", borderRadius: 2 }} />
+            </div>
           </div>
           <button
             onClick={() => canProject && setShowModal(true)}
@@ -516,7 +566,6 @@ export default function SimulationsPage() {
         <aside style={{ width: 284, flexShrink: 0, background: "white", borderRight: "1px solid rgba(0,0,0,0.09)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ padding: "14px 14px 10px" }}>
             <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.22em", color: "#6b7280", marginBottom: 10 }}>PLAYER BROWSER</p>
-            {/* Search */}
             <div style={{ position: "relative" as const, marginBottom: 8 }}>
               <input
                 type="text" placeholder="Search players…" value={search}
@@ -527,7 +576,6 @@ export default function SimulationsPage() {
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
             </div>
-            {/* Filters */}
             <div style={{ display: "flex", gap: 6 }}>
               <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)} style={{ flex: 1, padding: "5px 6px", borderRadius: 6, border: "1.5px solid #e5e7eb", fontSize: 10, color: "#374151", background: "white", outline: "none" }}>
                 {teamList.map(t => <option key={t}>{t}</option>)}
@@ -582,17 +630,15 @@ export default function SimulationsPage() {
 
         {/* ── Main Roster Area ── */}
         <main style={{ flex: 1, overflowY: "auto", padding: "22px 24px 40px" }}>
-          {/* Title + progress */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
               <div>
                 <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.5rem", letterSpacing: "0.12em", color: "#111827", lineHeight: 1 }}>Build your championship squad</h1>
-                <p style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace", marginTop: 3 }}>Click a slot to activate it, then select a player from the left panel</p>
+                <p style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace", marginTop: 3 }}>Fill all 12 slots · set 240 total minutes · drag the number or slider to adjust</p>
               </div>
               <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", letterSpacing: "0.08em", color: "#6b7280", whiteSpace: "nowrap" as const }}>{filledCount}/12 players</p>
             </div>
 
-            {/* Roster progress bar */}
             <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden", marginBottom: 6 }}>
               <div style={{ height: "100%", width: `${(filledCount / 12) * 100}%`, background: "linear-gradient(90deg, #84cc16, #a3e635)", borderRadius: 3, transition: "width 0.3s" }} />
             </div>
@@ -600,37 +646,40 @@ export default function SimulationsPage() {
 
           {/* 4-column slot grid */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, position: "relative" as const }}>
-            {slots.map(slot => (
-              <SlotCard
-                key={slot.id}
-                slot={slot}
-                isActive={activeSlotId === slot.id}
-                isDragging={draggingSlotId === slot.id}
-                isDragOver={dragOverSlotId === slot.id && draggingSlotId !== slot.id}
-                onActivate={() => setActiveSlotId(prev => prev === slot.id ? null : slot.id)}
-                onRemove={() => removePlayer(slot.id)}
-                onMinutes={v => setMinutes(slot.id, v)}
-                onDragStart={() => setDraggingSlotId(slot.id)}
-                onDragEnd={() => { setDraggingSlotId(null); setDragOverSlotId(null); }}
-                onDragEnter={() => setDragOverSlotId(slot.id)}
-                onDragLeave={() => setDragOverSlotId(prev => prev === slot.id ? null : prev)}
-                onDrop={() => {
-                  if (draggingSlotId) swapSlots(draggingSlotId, slot.id);
-                  setDraggingSlotId(null);
-                  setDragOverSlotId(null);
-                }}
-              />
-            ))}
+            {slots.map(slot => {
+              const otherFilled = slots.reduce((sum, s) => s.id === slot.id ? sum : (s.player ? sum + s.minutes : sum), 0);
+              const maxMin = slot.player ? Math.min(48, TOTAL_MINS - otherFilled) : 48;
+              return (
+                <SlotCard
+                  key={slot.id}
+                  slot={slot}
+                  isActive={activeSlotId === slot.id}
+                  isDragging={draggingSlotId === slot.id}
+                  isDragOver={dragOverSlotId === slot.id && draggingSlotId !== slot.id}
+                  maxMinutes={maxMin}
+                  onActivate={() => setActiveSlotId(prev => prev === slot.id ? null : slot.id)}
+                  onRemove={() => removePlayer(slot.id)}
+                  onMinutes={v => setMinutes(slot.id, v)}
+                  onMinutesScrubStart={(e) => {
+                    scrubRef.current = { slotId: slot.id, startX: e.clientX, startMin: slot.minutes, maxMin };
+                  }}
+                  onDragStart={() => setDraggingSlotId(slot.id)}
+                  onDragEnd={() => { setDraggingSlotId(null); setDragOverSlotId(null); }}
+                  onDragEnter={() => setDragOverSlotId(slot.id)}
+                  onDragLeave={() => setDragOverSlotId(prev => prev === slot.id ? null : prev)}
+                  onDrop={() => {
+                    if (draggingSlotId) swapSlots(draggingSlotId, slot.id);
+                    setDraggingSlotId(null);
+                    setDragOverSlotId(null);
+                  }}
+                />
+              );
+            })}
           </div>
 
-          {!canProject && filledCount > 0 && (
-            <p style={{ textAlign: "center" as const, color: "#9ca3af", fontFamily: "monospace", fontSize: 10, marginTop: 20, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
-              Add {5 - filledCount} more player{5 - filledCount > 1 ? "s" : ""} to unlock projection
-            </p>
-          )}
-          {filledCount === 0 && (
-            <p style={{ textAlign: "center" as const, color: "#d1d5db", fontFamily: "monospace", fontSize: 10, marginTop: 20, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
-              Select players from the browser to build your squad
+          {hintMsg && (
+            <p style={{ textAlign: "center" as const, color: totalMinutes > TOTAL_MINS ? "#ef4444" : "#9ca3af", fontFamily: "monospace", fontSize: 10, marginTop: 20, textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
+              {hintMsg}
             </p>
           )}
         </main>
