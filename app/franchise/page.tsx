@@ -45,6 +45,25 @@ const RANK_TIERS = [
   { max: Infinity, price:  1 },
 ] as const;
 
+// Known ages for young/notable NBA players (everyone else defaults to 27)
+const PLAYER_AGES: Partial<Record<string, number>> = {
+  wemby: 21, cflagg: 20, tcamara: 22, bmiller: 22, tmurphy: 22,
+  cade: 22, banchero: 22, jjohnson: 22, jsuggs: 23, cbraun: 22,
+  cholmgren: 23, sengun: 22, anesmith: 23, fwagner: 23,
+  ant: 23, sga: 26, luka: 25, jokic: 29, giannis: 30,
+  curry: 37, lebron: 40, ad: 32, durant: 36, kyrie: 32,
+  harden: 35, kawhi: 33, kthompson: 34,
+};
+
+function playerAge(p: CurrentNBAPlayer): number { return PLAYER_AGES[p.id] ?? 27; }
+
+function derivePotential(ovr: number): "Star" | "Starter" | "Rotation" | "Bust" {
+  if (ovr >= 88) return "Star";
+  if (ovr >= 75) return "Starter";
+  if (ovr >= 63) return "Rotation";
+  return "Bust";
+}
+
 function playerRank(p: CurrentNBAPlayer): number { return RINGER_RANKINGS[p.id] ?? 999; }
 function playerSalary(p: CurrentNBAPlayer): number {
   return RANK_TIERS.find(t => playerRank(p) <= t.max)!.price;
@@ -81,10 +100,13 @@ type ContractSlot = {
   yearsLeft: number;
   ovr: number;
   trend: Trend;
+  prevTrend: Trend;
   basePPG: number;
   baseRPG: number;
   baseAPG: number;
   seasonStats: { ppg: number; rpg: number; apg: number } | null;
+  age: number;
+  potential: "Star" | "Starter" | "Rotation" | "Bust";
 };
 
 // ─── SVG Icon Components (no emojis) ──────────────────────────────────────────
@@ -172,11 +194,11 @@ function TrendArrow({ trend, size = 14 }: { trend: Trend; size?: number }) {
 }
 
 function StatDelta({ delta }: { delta: number }) {
-  if (Math.abs(delta) < 0.15) return <span style={{ fontSize: 9, color: "#9ca3af" }}>—</span>;
+  if (Math.abs(delta) < 0.15) return <span style={{ fontSize: 12, color: "#9ca3af" }}>—</span>;
   const up = delta > 0;
   return (
-    <span style={{ fontSize: 9, fontWeight: 700, color: up ? "#22c55e" : "#ef4444", display: "inline-flex", alignItems: "center", gap: 1 }}>
-      <svg width={7} height={7} viewBox="0 0 7 7">
+    <span style={{ fontSize: 12, fontWeight: 700, color: up ? "#22c55e" : "#ef4444", display: "inline-flex", alignItems: "center", gap: 2 }}>
+      <svg width={9} height={9} viewBox="0 0 7 7">
         {up
           ? <polygon points="3.5,0.5 6.5,5.5 0.5,5.5" fill="#22c55e"/>
           : <polygon points="3.5,6.5 0.5,1.5 6.5,1.5" fill="#ef4444"/>
@@ -197,9 +219,9 @@ function OVRBadge({ ovr, small }: { ovr: number; small?: boolean }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", justifyContent: "center",
-      height: small ? 16 : 20, minWidth: small ? 36 : 46, paddingInline: 4, borderRadius: 4, flexShrink: 0,
-      background: s.bg, border: `1px solid ${s.border}`, color: s.text,
-      fontSize: small ? 7 : 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.04em", fontWeight: 700,
+      height: small ? 22 : 30, minWidth: small ? 56 : 72, paddingInline: 6, borderRadius: 5, flexShrink: 0,
+      background: s.bg, border: `1.5px solid ${s.border}`, color: s.text,
+      fontSize: small ? 12 : 16, fontFamily: "var(--font-bebas)", letterSpacing: "0.05em", fontWeight: 700,
     }}>OVR {ovr}</span>
   );
 }
@@ -228,7 +250,7 @@ function ContractBadge({ years }: { years: number }) {
   const color = years <= 0 ? "#ef4444" : years === 1 ? "#f59e0b" : "#22c55e";
   const bg    = years <= 0 ? "#fee2e2" : years === 1 ? "#fef3c7" : "#dcfce7";
   return (
-    <span style={{ fontSize: 8, fontWeight: 700, padding: "2px 5px", borderRadius: 4, background: bg, color, border: `1px solid ${color}60`, flexShrink: 0 }}>
+    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: bg, color, border: `1px solid ${color}60`, flexShrink: 0 }}>
       {years <= 0 ? "UFA" : `${years}yr`}
     </span>
   );
@@ -407,12 +429,12 @@ function RosterSlotCard({ slot, isActive, onClick, onRemove, onMins }: {
       {filled ? (
         <div style={{ padding: "8px 10px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Avatar color={color} size={32} />
+            <Avatar color={color} size={34} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
+              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
                 <OVRBadge ovr={slot.ovr} small />
-                <span style={{ fontSize: 9, color: "#65a30d", fontFamily: "monospace", fontWeight: 700 }}>${slot.salary}M</span>
+                <span style={{ fontSize: 11, color: "#65a30d", fontFamily: "monospace", fontWeight: 700 }}>${slot.salary}M</span>
               </div>
             </div>
           </div>
@@ -447,8 +469,9 @@ export default function FranchisePage() {
       slotId: d.id, label: d.label,
       isNBA: true, nbaPlayer: null, rosterPlayer: null,
       salary: 0, minutes: d.defaultMin, yearsLeft: 2,
-      ovr: 60, trend: "neutral" as Trend,
+      ovr: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: 0, baseRPG: 0, baseAPG: 0, seasonStats: null,
+      age: 27, potential: "Rotation" as const,
     }))
   );
   const [activeSlot, setActiveSlot] = useState<string | null>(SLOT_DEFS[0].id);
@@ -520,12 +543,14 @@ export default function FranchisePage() {
     const targetId = activeSlot ?? slots.find(s => !s.nbaPlayer && !s.rosterPlayer)?.slotId;
     if (!targetId) return;
     const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+    const age = playerAge(p);
+    const potential = derivePotential(ovr);
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
       ...sl, nbaPlayer: p, rosterPlayer: null, isNBA: true,
       salary: sal, yearsLeft: 2,
-      ovr, trend: "neutral" as Trend,
+      ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg,
-      seasonStats: null,
+      seasonStats: null, age, potential,
     }));
     advanceActiveSlot(targetId);
     setSearch("");
@@ -536,8 +561,9 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId !== slotId ? sl : {
       ...sl, nbaPlayer: null, rosterPlayer: null, isNBA: true,
       salary: 0, minutes: def.defaultMin, yearsLeft: 2,
-      ovr: 60, trend: "neutral" as Trend,
+      ovr: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: 0, baseRPG: 0, baseAPG: 0, seasonStats: null,
+      age: 27, potential: "Rotation" as const,
     }));
     setActiveSlot(slotId);
   }
@@ -551,12 +577,14 @@ export default function FranchisePage() {
     const targetId = activeSlot ?? slots.find(s => !s.nbaPlayer && !s.rosterPlayer)?.slotId;
     if (!targetId) return;
     const ovr = computeOVR(fa.ppg, fa.rpg, fa.apg);
+    const potential = derivePotential(ovr);
     const rp: RosterPlayer = { name: fa.name, ppg: fa.ppg, rpg: fa.rpg, apg: fa.apg, salary: fa.salary, minutes: 20 };
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
       ...sl, nbaPlayer: null, rosterPlayer: rp, isNBA: false,
       salary: fa.salary, yearsLeft: 2,
-      ovr, trend: "neutral" as Trend,
+      ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: fa.ppg, baseRPG: fa.rpg, baseAPG: fa.apg, seasonStats: null,
+      age: fa.age, potential,
     }));
     setFreeAgents(prev => prev.filter(f => f.name !== fa.name));
     advanceActiveSlot(targetId);
@@ -571,8 +599,9 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
       ...sl, nbaPlayer: null, rosterPlayer: rp, isNBA: false,
       salary: p.salary, yearsLeft: 2,
-      ovr, trend: "neutral" as Trend,
+      ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg, seasonStats: null,
+      age: p.age, potential: p.potential,
     }));
     setDraftClass(prev => prev.filter(d => d.name !== p.name));
     advanceActiveSlot(targetId);
@@ -618,12 +647,19 @@ export default function FranchisePage() {
   }
 
   function goOffseason() {
-    // Apply progression based on trend
+    // Apply progression: pass age, potential, momentum; cap OVR gain at +5/season; age players +1
     setSlots(prev => prev.map(sl => {
       if (!sl.nbaPlayer && !sl.rosterPlayer) return sl;
-      const newStats = applyProgression(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.trend);
-      const newOVR = computeOVR(newStats.ppg, newStats.rpg, newStats.apg);
-      return { ...sl, basePPG: newStats.ppg, baseRPG: newStats.rpg, baseAPG: newStats.apg, ovr: newOVR, seasonStats: null };
+      const newStats = applyProgression(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.trend, sl.age, sl.potential, sl.prevTrend);
+      const rawNewOVR = computeOVR(newStats.ppg, newStats.rpg, newStats.apg);
+      const newOVR = Math.min(99, Math.min(rawNewOVR, sl.ovr + 5));
+      return {
+        ...sl,
+        basePPG: newStats.ppg, baseRPG: newStats.rpg, baseAPG: newStats.apg,
+        ovr: newOVR, seasonStats: null,
+        prevTrend: sl.trend,
+        age: sl.age + 1,
+      };
     }));
 
     setDraftClass(generateDraftClass(2025 + season));
@@ -768,13 +804,13 @@ export default function FranchisePage() {
                     onMouseEnter={e => { if (canAfford) e.currentTarget.style.background = "rgba(132,204,22,0.07)"; }}
                     onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                   >
-                    <Avatar color={p.teamColor} size={34} />
+                    <Avatar color={p.teamColor} size={38} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.88rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{p.name}</p>
-                      <p style={{ fontSize: 9, color: "#6b7280", fontFamily: "monospace", marginTop: 1 }}>{p.position} · {p.team.split(" ").at(-1)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.05rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{p.name}</p>
+                      <p style={{ fontSize: 11, color: "#6b7280", fontFamily: "monospace", marginTop: 2 }}>{p.position} · Age {playerAge(p)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
                     </div>
                     <OVRBadge ovr={ovr} />
-                    <span style={{ fontSize: 11, fontWeight: 800, color: canAfford ? "#65a30d" : "#ef4444", width: 40, textAlign: "right", flexShrink: 0 }}>${sal}M</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: canAfford ? "#65a30d" : "#ef4444", width: 46, textAlign: "right", flexShrink: 0 }}>${sal}M</span>
                   </button>
                 );
               })}
@@ -836,33 +872,33 @@ export default function FranchisePage() {
                     boxShadow: sl.trend === "up" ? "0 2px 12px rgba(34,197,94,0.08)" : sl.trend === "down" ? "0 2px 8px rgba(239,68,68,0.06)" : "none",
                   }}
                 >
-                  <Avatar color={color} size={38} />
+                  <Avatar color={color} size={44} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.9rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
                       <OVRBadge ovr={sl.ovr} small />
                       <ContractBadge years={sl.yearsLeft} />
-                      <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M</span>
+                      <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M · Age {sl.age}</span>
                     </div>
                   </div>
                   {/* Season stats with deltas */}
-                  <div style={{ display: "flex", gap: 14 }}>
+                  <div style={{ display: "flex", gap: 18 }}>
                     {[
                       { label: "PPG", val: ss?.ppg ?? sl.basePPG, delta: dPPG },
                       { label: "RPG", val: ss?.rpg ?? sl.baseRPG, delta: dRPG },
                       { label: "APG", val: ss?.apg ?? sl.baseAPG, delta: dAPG },
                     ].map(({ label, val, delta }) => (
-                      <div key={label} style={{ textAlign: "center", minWidth: 36 }}>
-                        <p style={{ fontSize: 12, fontWeight: 800, color: "#111827", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{val.toFixed(1)}</p>
-                        <p style={{ fontSize: 8, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", margin: "1px 0 2px" }}>{label}</p>
+                      <div key={label} style={{ textAlign: "center", minWidth: 42 }}>
+                        <p style={{ fontSize: 17, fontWeight: 800, color: "#111827", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{val.toFixed(1)}</p>
+                        <p style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", margin: "2px 0 3px" }}>{label}</p>
                         <StatDelta delta={delta} />
                       </div>
                     ))}
                   </div>
                   {/* Trend arrow */}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, minWidth: 40 }}>
-                    <TrendArrow trend={sl.trend} size={18} />
-                    <span style={{ fontSize: 8, fontWeight: 700, color: sl.trend === "up" ? "#22c55e" : sl.trend === "down" ? "#ef4444" : "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 48 }}>
+                    <TrendArrow trend={sl.trend} size={24} />
+                    <span style={{ fontSize: 10, fontWeight: 700, color: sl.trend === "up" ? "#22c55e" : sl.trend === "down" ? "#ef4444" : "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       {sl.trend === "up" ? "Rising" : sl.trend === "down" ? "Falling" : "Steady"}
                     </span>
                   </div>

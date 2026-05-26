@@ -86,31 +86,77 @@ export function determineTrend(
 }
 
 // ─── Progression (applied in offseason) ───────────────────────────────────────
+// age: younger = higher improvement chance + larger gains
+// potential: Star/Starter/Rotation/Bust shifts probability
+// prevTrend: momentum — if was "up" last season too, extra boost
 export function applyProgression(
   basePPG: number, baseRPG: number, baseAPG: number,
   trend: "up" | "down" | "neutral",
+  age: number = 26,
+  potential: "Star" | "Starter" | "Rotation" | "Bust" = "Rotation",
+  prevTrend: "up" | "down" | "neutral" = "neutral",
 ): { ppg: number; rpg: number; apg: number } {
   const r = () => Math.random();
-  if (trend === "up" && r() < 0.75) {
-    // 75% chance of real improvement
+
+  // Age: younger players improve more readily; older decline faster
+  const ageMod = age <= 21 ? 0.20
+               : age <= 24 ? 0.13
+               : age <= 27 ? 0.02
+               : age <= 30 ? -0.11
+               : -0.24;
+
+  // Potential: high-ceiling players are more likely to actually improve
+  const potMod = potential === "Star"    ?  0.13
+               : potential === "Starter" ?  0.05
+               : potential === "Bust"    ? -0.13
+               : 0;
+
+  // Momentum: two "up" seasons in a row = extra boost
+  const momentumMod = prevTrend === "up" ? 0.10 : 0;
+
+  if (trend === "up") {
+    const improveChance = Math.min(0.95, Math.max(0.15, 0.75 + ageMod + potMod + momentumMod));
+    if (r() < improveChance) {
+      // Young players can have breakout seasons; veterans improve less
+      const mag = age <= 24 ? (1.0 + r() * 2.2) : (0.4 + r() * 1.5);
+      return {
+        ppg: +(basePPG + mag * 0.65 + r() * 0.4).toFixed(1),
+        rpg: +(baseRPG + mag * 0.14 + r() * 0.25).toFixed(1),
+        apg: +(baseAPG + mag * 0.14 + r() * 0.18).toFixed(1),
+      };
+    }
+    // Didn't fully improve — plateau
     return {
-      ppg: +(basePPG + 0.8 + r() * 1.8).toFixed(1),
-      rpg: +(baseRPG + r() * 0.8).toFixed(1),
-      apg: +(baseAPG + r() * 0.5).toFixed(1),
+      ppg: +(basePPG + (r() - 0.4) * 0.7).toFixed(1),
+      rpg: +(baseRPG + (r() - 0.4) * 0.35).toFixed(1),
+      apg: +(baseAPG + (r() - 0.4) * 0.28).toFixed(1),
     };
   }
+
   if (trend === "down") {
+    // Young high-potential players bounce back; old declining ones don't
+    const actualDeclineChance = Math.max(0.15, 0.75 - ageMod - potMod);
+    if (r() < actualDeclineChance) {
+      return {
+        ppg: +(Math.max(3,   basePPG - 0.4 - r() * 1.2)).toFixed(1),
+        rpg: +(Math.max(1,   baseRPG - r() * 0.5)).toFixed(1),
+        apg: +(Math.max(0.5, baseAPG - r() * 0.3)).toFixed(1),
+      };
+    }
+    // Bounce back
     return {
-      ppg: +(Math.max(3, basePPG - 0.4 - r() * 1.2)).toFixed(1),
-      rpg: +(Math.max(1, baseRPG - r() * 0.5)).toFixed(1),
-      apg: +(Math.max(0.5, baseAPG - r() * 0.3)).toFixed(1),
+      ppg: +(basePPG + r() * 0.6).toFixed(1),
+      rpg: +(baseRPG + r() * 0.3).toFixed(1),
+      apg: +(baseAPG + r() * 0.25).toFixed(1),
     };
   }
-  // neutral — tiny drift
+
+  // neutral — old players drift down, young players drift slightly up
+  const drift = ageMod < 0 ? -0.15 : 0.08;
   return {
-    ppg: +(basePPG + (r() - 0.5) * 0.6).toFixed(1),
-    rpg: +(baseRPG + (r() - 0.5) * 0.4).toFixed(1),
-    apg: +(baseAPG + (r() - 0.5) * 0.3).toFixed(1),
+    ppg: +(basePPG + drift + (r() - 0.5) * 0.7).toFixed(1),
+    rpg: +(baseRPG + drift * 0.4 + (r() - 0.5) * 0.38).toFixed(1),
+    apg: +(baseAPG + drift * 0.4 + (r() - 0.5) * 0.28).toFixed(1),
   };
 }
 
