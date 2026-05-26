@@ -48,10 +48,75 @@ export const LEAGUE_TEAMS: LeagueTeam[] = [
   { name: "Portland Trail Blazers", abbr: "POR", conf: "West", rating: 66, color: "#E03A3E", logoUrl: ESPN("por")  },
 ];
 
+// ─── OVR computation ───────────────────────────────────────────────────────────
+// Calibrated so Jokic → 99, SGA → 95, Tatum → 90, avg rotation → ~65
+export function computeOVR(
+  ppg: number, rpg: number, apg: number,
+  spg = 0.8, bpg = 0.3,
+): number {
+  const score = ppg * 1.8 + rpg * 0.9 + apg * 1.2 + spg * 2.5 + bpg * 2.0;
+  return Math.max(55, Math.min(99, Math.round(50 + score * 0.62)));
+}
+
+// ─── Season stat generation (random variance around base) ─────────────────────
+export function generateSeasonStats(
+  basePPG: number, baseRPG: number, baseAPG: number,
+): { ppg: number; rpg: number; apg: number } {
+  const g = () => {
+    const u = Math.random(), v = Math.random();
+    return Math.sqrt(-2 * Math.log(u + 1e-9)) * Math.cos(2 * Math.PI * v);
+  };
+  return {
+    ppg: Math.max(0, +(basePPG + g() * 2.8).toFixed(1)),
+    rpg: Math.max(0, +(baseRPG + g() * 1.5).toFixed(1)),
+    apg: Math.max(0, +(baseAPG + g() * 1.2).toFixed(1)),
+  };
+}
+
+// ─── Trend determination ───────────────────────────────────────────────────────
+export function determineTrend(
+  seasonPPG: number, basePPG: number,
+  seasonRPG: number, baseRPG: number,
+  seasonAPG: number, baseAPG: number,
+): "up" | "down" | "neutral" {
+  const diff = (seasonPPG - basePPG) + (seasonRPG - baseRPG) * 0.5 + (seasonAPG - baseAPG) * 0.5;
+  if (diff > 1.2) return "up";
+  if (diff < -1.2) return "down";
+  return "neutral";
+}
+
+// ─── Progression (applied in offseason) ───────────────────────────────────────
+export function applyProgression(
+  basePPG: number, baseRPG: number, baseAPG: number,
+  trend: "up" | "down" | "neutral",
+): { ppg: number; rpg: number; apg: number } {
+  const r = () => Math.random();
+  if (trend === "up" && r() < 0.75) {
+    // 75% chance of real improvement
+    return {
+      ppg: +(basePPG + 0.8 + r() * 1.8).toFixed(1),
+      rpg: +(baseRPG + r() * 0.8).toFixed(1),
+      apg: +(baseAPG + r() * 0.5).toFixed(1),
+    };
+  }
+  if (trend === "down") {
+    return {
+      ppg: +(Math.max(3, basePPG - 0.4 - r() * 1.2)).toFixed(1),
+      rpg: +(Math.max(1, baseRPG - r() * 0.5)).toFixed(1),
+      apg: +(Math.max(0.5, baseAPG - r() * 0.3)).toFixed(1),
+    };
+  }
+  // neutral — tiny drift
+  return {
+    ppg: +(basePPG + (r() - 0.5) * 0.6).toFixed(1),
+    rpg: +(baseRPG + (r() - 0.5) * 0.4).toFixed(1),
+    apg: +(baseAPG + (r() - 0.5) * 0.3).toFixed(1),
+  };
+}
+
 // ─── Simulation helpers ────────────────────────────────────────────────────────
 
 function gauss(): number {
-  // Box-Muller
   const u = Math.random(), v = Math.random();
   return Math.sqrt(-2 * Math.log(u + 1e-9)) * Math.cos(2 * Math.PI * v);
 }
