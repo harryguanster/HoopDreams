@@ -7,41 +7,45 @@ export type LeagueTeam = {
   conf: Conference;
   rating: number; // 60–95
   color: string;
+  logoUrl: string;
 };
+
+// ESPN CDN logo URLs — abbr mapping differs from ours for some teams
+const ESPN = (id: string) => `https://a.espncdn.com/i/teamlogos/nba/500/${id}.png`;
 
 export const LEAGUE_TEAMS: LeagueTeam[] = [
   // ── East ──────────────────────────────────────────
-  { name: "Boston Celtics",        abbr: "BOS", conf: "East", rating: 88, color: "#007A33" },
-  { name: "New York Knicks",       abbr: "NYK", conf: "East", rating: 83, color: "#F58426" },
-  { name: "Cleveland Cavaliers",   abbr: "CLE", conf: "East", rating: 87, color: "#860038" },
-  { name: "Milwaukee Bucks",       abbr: "MIL", conf: "East", rating: 82, color: "#00471B" },
-  { name: "Indiana Pacers",        abbr: "IND", conf: "East", rating: 80, color: "#002D62" },
-  { name: "Miami Heat",            abbr: "MIA", conf: "East", rating: 76, color: "#98002E" },
-  { name: "Chicago Bulls",         abbr: "CHI", conf: "East", rating: 72, color: "#CE1141" },
-  { name: "Atlanta Hawks",         abbr: "ATL", conf: "East", rating: 74, color: "#E03A3E" },
-  { name: "Philadelphia 76ers",    abbr: "PHI", conf: "East", rating: 73, color: "#006BB6" },
-  { name: "Toronto Raptors",       abbr: "TOR", conf: "East", rating: 71, color: "#CE1141" },
-  { name: "Brooklyn Nets",         abbr: "BKN", conf: "East", rating: 68, color: "#000000" },
-  { name: "Charlotte Hornets",     abbr: "CHA", conf: "East", rating: 67, color: "#1D1160" },
-  { name: "Washington Wizards",    abbr: "WAS", conf: "East", rating: 62, color: "#002B5C" },
-  { name: "Detroit Pistons",       abbr: "DET", conf: "East", rating: 70, color: "#C8102E" },
-  { name: "Orlando Magic",         abbr: "ORL", conf: "East", rating: 77, color: "#0077C0" },
+  { name: "Boston Celtics",         abbr: "BOS", conf: "East", rating: 88, color: "#007A33", logoUrl: ESPN("bos") },
+  { name: "New York Knicks",        abbr: "NYK", conf: "East", rating: 83, color: "#F58426", logoUrl: ESPN("ny")  },
+  { name: "Cleveland Cavaliers",    abbr: "CLE", conf: "East", rating: 87, color: "#860038", logoUrl: ESPN("cle") },
+  { name: "Milwaukee Bucks",        abbr: "MIL", conf: "East", rating: 82, color: "#00471B", logoUrl: ESPN("mil") },
+  { name: "Indiana Pacers",         abbr: "IND", conf: "East", rating: 80, color: "#002D62", logoUrl: ESPN("ind") },
+  { name: "Miami Heat",             abbr: "MIA", conf: "East", rating: 76, color: "#98002E", logoUrl: ESPN("mia") },
+  { name: "Chicago Bulls",          abbr: "CHI", conf: "East", rating: 72, color: "#CE1141", logoUrl: ESPN("chi") },
+  { name: "Atlanta Hawks",          abbr: "ATL", conf: "East", rating: 74, color: "#E03A3E", logoUrl: ESPN("atl") },
+  { name: "Philadelphia 76ers",     abbr: "PHI", conf: "East", rating: 73, color: "#006BB6", logoUrl: ESPN("phi") },
+  { name: "Toronto Raptors",        abbr: "TOR", conf: "East", rating: 71, color: "#CE1141", logoUrl: ESPN("tor") },
+  { name: "Brooklyn Nets",          abbr: "BKN", conf: "East", rating: 68, color: "#000000", logoUrl: ESPN("bkn") },
+  { name: "Charlotte Hornets",      abbr: "CHA", conf: "East", rating: 67, color: "#1D1160", logoUrl: ESPN("cha") },
+  { name: "Washington Wizards",     abbr: "WAS", conf: "East", rating: 62, color: "#002B5C", logoUrl: ESPN("wsh") },
+  { name: "Detroit Pistons",        abbr: "DET", conf: "East", rating: 70, color: "#C8102E", logoUrl: ESPN("det") },
+  { name: "Orlando Magic",          abbr: "ORL", conf: "East", rating: 77, color: "#0077C0", logoUrl: ESPN("orl") },
   // ── West ──────────────────────────────────────────
-  { name: "Oklahoma City Thunder", abbr: "OKC", conf: "West", rating: 91, color: "#007AC1" },
-  { name: "Denver Nuggets",        abbr: "DEN", conf: "West", rating: 85, color: "#0E2240" },
-  { name: "Golden State Warriors", abbr: "GSW", conf: "West", rating: 78, color: "#1D428A" },
-  { name: "Minnesota Timberwolves",abbr: "MIN", conf: "West", rating: 82, color: "#0C2340" },
-  { name: "Los Angeles Lakers",    abbr: "LAL", conf: "West", rating: 76, color: "#552583" },
-  { name: "Los Angeles Clippers",  abbr: "LAC", conf: "West", rating: 74, color: "#C8102E" },
-  { name: "Phoenix Suns",          abbr: "PHX", conf: "West", rating: 73, color: "#1D1160" },
-  { name: "Dallas Mavericks",      abbr: "DAL", conf: "West", rating: 80, color: "#00538C" },
-  { name: "Houston Rockets",       abbr: "HOU", conf: "West", rating: 79, color: "#CE1141" },
-  { name: "Sacramento Kings",      abbr: "SAC", conf: "West", rating: 75, color: "#5A2D81" },
-  { name: "Memphis Grizzlies",     abbr: "MEM", conf: "West", rating: 72, color: "#5D76A9" },
-  { name: "New Orleans Pelicans",  abbr: "NOP", conf: "West", rating: 70, color: "#0C2340" },
-  { name: "Utah Jazz",             abbr: "UTA", conf: "West", rating: 65, color: "#002B5C" },
-  { name: "San Antonio Spurs",     abbr: "SAS", conf: "West", rating: 77, color: "#C4CED4" },
-  { name: "Portland Trail Blazers",abbr: "POR", conf: "West", rating: 66, color: "#E03A3E" },
+  { name: "Oklahoma City Thunder",  abbr: "OKC", conf: "West", rating: 91, color: "#007AC1", logoUrl: ESPN("okc")  },
+  { name: "Denver Nuggets",         abbr: "DEN", conf: "West", rating: 85, color: "#0E2240", logoUrl: ESPN("den")  },
+  { name: "Golden State Warriors",  abbr: "GSW", conf: "West", rating: 78, color: "#1D428A", logoUrl: ESPN("gs")   },
+  { name: "Minnesota Timberwolves", abbr: "MIN", conf: "West", rating: 82, color: "#0C2340", logoUrl: ESPN("min")  },
+  { name: "Los Angeles Lakers",     abbr: "LAL", conf: "West", rating: 76, color: "#552583", logoUrl: ESPN("lal")  },
+  { name: "Los Angeles Clippers",   abbr: "LAC", conf: "West", rating: 74, color: "#C8102E", logoUrl: ESPN("lac")  },
+  { name: "Phoenix Suns",           abbr: "PHX", conf: "West", rating: 73, color: "#1D1160", logoUrl: ESPN("phx")  },
+  { name: "Dallas Mavericks",       abbr: "DAL", conf: "West", rating: 80, color: "#00538C", logoUrl: ESPN("dal")  },
+  { name: "Houston Rockets",        abbr: "HOU", conf: "West", rating: 79, color: "#CE1141", logoUrl: ESPN("hou")  },
+  { name: "Sacramento Kings",       abbr: "SAC", conf: "West", rating: 75, color: "#5A2D81", logoUrl: ESPN("sac")  },
+  { name: "Memphis Grizzlies",      abbr: "MEM", conf: "West", rating: 72, color: "#5D76A9", logoUrl: ESPN("mem")  },
+  { name: "New Orleans Pelicans",   abbr: "NOP", conf: "West", rating: 70, color: "#0C2340", logoUrl: ESPN("no")   },
+  { name: "Utah Jazz",              abbr: "UTA", conf: "West", rating: 65, color: "#002B5C", logoUrl: ESPN("utah") },
+  { name: "San Antonio Spurs",      abbr: "SAS", conf: "West", rating: 77, color: "#C4CED4", logoUrl: ESPN("sa")   },
+  { name: "Portland Trail Blazers", abbr: "POR", conf: "West", rating: 66, color: "#E03A3E", logoUrl: ESPN("por")  },
 ];
 
 // ─── Simulation helpers ────────────────────────────────────────────────────────
@@ -64,6 +68,7 @@ export type StandingEntry = {
   abbr: string;
   conf: Conference;
   color: string;
+  logoUrl: string;
   rating: number;
   wins: number;
   losses: number;
@@ -77,17 +82,18 @@ export function simulateSeason(
   userAbbr: string,
   userConf: Conference,
   userColor: string,
+  userLogoUrl: string,
 ): { east: StandingEntry[]; west: StandingEntry[] } {
   const entries: StandingEntry[] = LEAGUE_TEAMS.map(t => ({
-    name: t.name, abbr: t.abbr, conf: t.conf, color: t.color,
-    rating: t.rating + gauss() * 3, // add some variance each season
+    name: t.name, abbr: t.abbr, conf: t.conf, color: t.color, logoUrl: t.logoUrl,
+    rating: t.rating + gauss() * 3,
     wins: 0, losses: 0, isUser: false,
   }));
 
   // Replace the user's chosen team
   const userIdx = entries.findIndex(e => e.abbr === userAbbr);
   const userEntry: StandingEntry = {
-    name: userTeamName, abbr: userAbbr, conf: userConf, color: userColor,
+    name: userTeamName, abbr: userAbbr, conf: userConf, color: userColor, logoUrl: userLogoUrl,
     rating: userRating, wins: 0, losses: 0, isUser: true,
   };
   if (userIdx >= 0) entries[userIdx] = userEntry;

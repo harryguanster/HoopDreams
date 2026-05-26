@@ -87,6 +87,22 @@ type ContractSlot = {
 // ─── Small helpers ─────────────────────────────────────────────────────────────
 function fmt1(n: number) { return n.toFixed(1); }
 
+// ─── Team Logo ─────────────────────────────────────────────────────────────────
+function TeamLogo({ url, color, size = 24 }: { url: string; color: string; size?: number }) {
+  const [err, setErr] = React.useState(false);
+  if (err) {
+    return <span style={{ width: size, height: size, borderRadius: "50%", background: color, display: "inline-block", flexShrink: 0 }} />;
+  }
+  return (
+    <img
+      src={url} alt=""
+      width={size} height={size}
+      style={{ objectFit: "contain", flexShrink: 0, display: "block" }}
+      onError={() => setErr(true)}
+    />
+  );
+}
+
 function Avatar({ color, size = 40 }: { color: string; size?: number }) {
   return (
     <div style={{ width: size, height: size, borderRadius: "50%", flexShrink: 0, background: color + "22", border: `2px solid ${color}55`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -209,8 +225,8 @@ function RosterSlotCard({
 function StandingsTable({ entries, userAbbr }: { entries: StandingEntry[]; userAbbr: string }) {
   return (
     <div style={{ borderRadius: 10, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "22px 1fr 44px 44px 60px", padding: "5px 10px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
-        {["#","Team","W","L","GB"].map(h => <span key={h} style={{ fontSize: 8, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.1em" }}>{h}</span>)}
+      <div style={{ display: "grid", gridTemplateColumns: "22px 26px 1fr 40px 40px 52px", padding: "5px 10px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
+        {["#","","Team","W","L","GB"].map(h => <span key={h} style={{ fontSize: 8, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.1em" }}>{h}</span>)}
       </div>
       {entries.map((e, i) => {
         const isUser = e.abbr === userAbbr;
@@ -220,18 +236,18 @@ function StandingsTable({ entries, userAbbr }: { entries: StandingEntry[]; userA
           <div
             key={e.abbr}
             style={{
-              display: "grid", gridTemplateColumns: "22px 1fr 44px 44px 60px",
-              padding: "6px 10px", alignItems: "center",
+              display: "grid", gridTemplateColumns: "22px 26px 1fr 40px 40px 52px",
+              padding: "5px 10px", alignItems: "center",
               background: isUser ? "rgba(132,204,22,0.08)" : i % 2 === 0 ? "white" : "#fafaf7",
               borderBottom: "1px solid rgba(0,0,0,0.04)",
               borderLeft: isUser ? "3px solid #84cc16" : "3px solid transparent",
             }}
           >
             <span style={{ fontSize: 9, fontWeight: 700, color: inPlayoffs ? "#374151" : "#9ca3af" }}>{i + 1}</span>
-            <span style={{ fontSize: 11, fontWeight: isUser ? 800 : 600, color: isUser ? "#1a3a00" : "#374151", display: "flex", alignItems: "center", gap: 5 }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: e.color, flexShrink: 0, display: "inline-block" }} />
+            <TeamLogo url={e.logoUrl} color={e.color} size={18} />
+            <span style={{ fontSize: 11, fontWeight: isUser ? 800 : 600, color: isUser ? "#1a3a00" : "#374151", display: "flex", alignItems: "center", gap: 4 }}>
               {e.abbr}
-              {!inPlayoffs && <span style={{ fontSize: 8, color: "#c4b5a0", fontWeight: 400, marginLeft: 2 }}>lotto</span>}
+              {!inPlayoffs && <span style={{ fontSize: 8, color: "#c4b5a0", fontWeight: 400 }}>lotto</span>}
             </span>
             <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", fontVariantNumeric: "tabular-nums" }}>{e.wins}</span>
             <span style={{ fontSize: 11, color: "#9ca3af", fontVariantNumeric: "tabular-nums" }}>{e.losses}</span>
@@ -259,14 +275,16 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
         boxShadow: userInvolved ? (userWon ? "0 2px 12px rgba(132,204,22,0.15)" : "0 2px 12px rgba(239,68,68,0.1)") : "none",
       }}>
         {/* Winner */}
-        <div style={{ padding: "6px 10px", background: userWon && userInvolved ? "rgba(132,204,22,0.1)" : "#f8f7f4", display: "flex", alignItems: "center", gap: 6, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-          <span style={{ width: 8, height: 8, borderRadius: "50%", background: series.winner.color, flexShrink: 0, display: "inline-block" }} />
+        <div style={{ padding: "6px 10px", background: userWon && userInvolved ? "rgba(132,204,22,0.1)" : "#f8f7f4", display: "flex", alignItems: "center", gap: 7, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+          <TeamLogo url={series.winner.logoUrl} color={series.winner.color} size={20} />
           <span style={{ flex: 1, fontSize: 11, fontWeight: 800, color: series.winner.abbr === userAbbr ? "#1a3a00" : "#111827" }}>{series.winner.abbr}</span>
           <span style={{ fontSize: 12, fontWeight: 900, color: "#111827", fontVariantNumeric: "tabular-nums" }}>{series.winsW}</span>
         </div>
         {/* Loser */}
-        <div style={{ padding: "6px 10px", background: "white", display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 8, height: 8, borderRadius: "50%", background: series.loser.color, flexShrink: 0, display: "inline-block", opacity: 0.5 }} />
+        <div style={{ padding: "6px 10px", background: "white", display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ opacity: 0.45 }}>
+            <TeamLogo url={series.loser.logoUrl} color={series.loser.color} size={20} />
+          </div>
           <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: "#6b7280" }}>{series.loser.abbr}</span>
           <span style={{ fontSize: 12, fontWeight: 700, color: "#9ca3af", fontVariantNumeric: "tabular-nums" }}>{series.winsL}</span>
         </div>
@@ -332,9 +350,12 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
           }}
         >
           <div style={{ fontSize: 48, marginBottom: 8 }}>{champion.abbr === userAbbr ? "🏆" : "💔"}</div>
-          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.6rem", letterSpacing: "0.1em", color: "#111827", lineHeight: 1 }}>
-            {champion.abbr === userAbbr ? "NBA Champions!" : `${champion.name} win the title`}
-          </p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 4 }}>
+            <TeamLogo url={champion.logoUrl} color={champion.color} size={40} />
+            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.6rem", letterSpacing: "0.1em", color: "#111827", lineHeight: 1 }}>
+              {champion.abbr === userAbbr ? "NBA Champions!" : `${champion.name} win the title`}
+            </p>
+          </div>
           {champion.abbr !== userAbbr && (
             <p style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>
               Better luck next season
@@ -503,7 +524,7 @@ export default function FranchisePage() {
     if (!chosenTeam || filledCount < 12) return;
     setPhase("simulating");
     setTimeout(() => {
-      const result = simulateSeason(userRating, chosenTeam.name, chosenTeam.abbr, chosenTeam.conf, chosenTeam.color);
+      const result = simulateSeason(userRating, chosenTeam.name, chosenTeam.abbr, chosenTeam.conf, chosenTeam.color, chosenTeam.logoUrl);
       const allEntries = [...result.east, ...result.west];
       const userEntry = allEntries.find(e => e.isUser);
       if (userEntry) setTotalWins(w => w + userEntry.wins);
@@ -559,7 +580,7 @@ export default function FranchisePage() {
       {/* Season bar */}
       {phase !== "setup" && chosenTeam && (
         <div style={{ background: "rgba(244,240,230,0.95)", borderBottom: "1px solid rgba(0,0,0,0.08)", padding: "8px 24px", display: "flex", alignItems: "center", gap: 14, position: "sticky", top: 0, zIndex: 40, backdropFilter: "blur(8px)" }}>
-          <div style={{ width: 10, height: 10, borderRadius: "50%", background: chosenTeam.color, flexShrink: 0 }} />
+          <TeamLogo url={chosenTeam.logoUrl} color={chosenTeam.color} size={28} />
           <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.1em", color: "#111827" }}>{chosenTeam.name}</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: 20 }}>
             {[
@@ -615,7 +636,7 @@ export default function FranchisePage() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = "#84cc16")}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = "#e5e7eb")}
               >
-                <div style={{ width: 13, height: 13, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+                <TeamLogo url={t.logoUrl} color={t.color} size={28} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontWeight: 700, fontSize: 13, color: "#111827", lineHeight: 1.2 }}>{t.name}</p>
                   <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 2 }}>OVR {t.rating}</p>
