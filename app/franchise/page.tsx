@@ -75,7 +75,6 @@ type Phase = "setup" | "build" | "simulating" | "standings" | "playoffs" | "offs
 type ContractSlot = {
   slotId: string;
   label: string;
-  player: CurrentNBAPlayer | null;
   isNBA: boolean;
   nbaPlayer: CurrentNBAPlayer | null;
   rosterPlayer: RosterPlayer | null;
@@ -147,7 +146,7 @@ function RosterSlotCard({
   onRemove: () => void;
   onMins: (v: number) => void;
 }) {
-  const filled = slot.player !== null || slot.rosterPlayer !== null;
+  const filled = slot.nbaPlayer !== null || slot.rosterPlayer !== null;
   const name   = slot.nbaPlayer?.name ?? slot.rosterPlayer?.name ?? null;
   const ppg    = slot.nbaPlayer?.ppg  ?? slot.rosterPlayer?.ppg  ?? 0;
   const pos    = slot.nbaPlayer?.position ?? "";
@@ -378,7 +377,7 @@ export default function FranchisePage() {
   const [slots, setSlots] = useState<ContractSlot[]>(
     SLOT_DEFS.map(d => ({
       slotId: d.id, label: d.label,
-      player: null, isNBA: true, nbaPlayer: null, rosterPlayer: null,
+      isNBA: true, nbaPlayer: null, rosterPlayer: null,
       salary: 0, minutes: d.defaultMin, yearsLeft: 2,
     }))
   );
