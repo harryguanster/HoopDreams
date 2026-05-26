@@ -163,6 +163,18 @@ const SYMBOLS: Record<string, React.ReactElement> = {
       <circle cx="13" cy="1.5" r="0" fill="none"/>
     </svg>
   ),
+  // Franchise / building icon
+  franchise: (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 1L14 5v10H2V5z"/>
+      <rect x="6" y="9" width="4" height="6" rx="0.5"/>
+      <line x1="4" y1="7" x2="4" y2="7.5"/>
+      <line x1="7" y1="7" x2="7" y2="7.5"/>
+      <line x1="9" y1="7" x2="9" y2="7.5"/>
+      <line x1="12" y1="7" x2="12" y2="7.5"/>
+      <polyline points="4 5 8 2 12 5"/>
+    </svg>
+  ),
   // 2×2 grid — Connections
   grid4: (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
@@ -330,6 +342,13 @@ const SIMULATIONS_LIST: GameEntry[] = [
     description: "Draft a 12-man roster under a $100M salary cap, assign minutes, and run an advanced projection — offense, defense, chemistry, and championship odds.",
     meta: `${CURRENT_NBA_PLAYERS.length}+ players · $100M cap · Full projection`,
     photo: IMGS.jokic, photoPos: "center 25%", photoCredit: "Keith Allison · CC BY-SA 2.0",
+  },
+  {
+    href: "/franchise", symbol: "franchise", tag: "New",
+    title: "Franchise Mode",
+    description: "Build your roster, simulate full 82-game seasons with real standings, run the playoffs, and manage your franchise through the draft and free agency year after year.",
+    meta: "30 teams · Full playoffs · Multi-season",
+    photo: IMGS.dreamTeam, photoPos: "center 20%", photoCredit: "Ken Hackman, USAF · Public Domain",
   },
 ];
 
