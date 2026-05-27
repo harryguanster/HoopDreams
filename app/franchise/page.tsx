@@ -406,27 +406,52 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
 }
 
 // ─── Roster Slot Card ──────────────────────────────────────────────────────────
-function RosterSlotCard({ slot, isActive, onClick, onRemove, onMins }: {
+function minuteRole(m: number): { label: string; color: string } {
+  return m >= 28 ? { label: "Starter", color: "#15803d" }
+       : m >= 16 ? { label: "Rotation", color: "#b45309" }
+       :           { label: "Bench", color: "#6b7280" };
+}
+
+function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRemove, onMins }: {
   slot: ContractSlot; isActive: boolean;
+  isDragging: boolean; isDragOver: boolean;
   onClick: () => void; onRemove: () => void; onMins: (v: number) => void;
 }) {
   const filled = slot.nbaPlayer !== null || slot.rosterPlayer !== null;
   const name   = slot.nbaPlayer?.name ?? slot.rosterPlayer?.name ?? null;
   const color  = slot.nbaPlayer?.teamColor ?? "#84cc16";
+  const role   = minuteRole(slot.minutes);
 
   return (
     <div
       onClick={filled ? undefined : onClick}
       style={{
         borderRadius: 10,
-        border: isActive && !filled ? "2px solid #84cc16" : "1.5px solid rgba(0,0,0,0.09)",
-        background: isActive && !filled ? "rgba(132,204,22,0.04)" : "white",
-        boxShadow: isActive && !filled ? "0 0 0 3px rgba(132,204,22,0.15)" : "0 1px 4px rgba(0,0,0,0.05)",
-        cursor: filled ? "default" : "pointer",
+        border: isDragOver
+          ? "2px solid #84cc16"
+          : isActive && !filled ? "2px solid #84cc16" : "1.5px solid rgba(0,0,0,0.09)",
+        background: isDragOver
+          ? "rgba(132,204,22,0.06)"
+          : isActive && !filled ? "rgba(132,204,22,0.04)" : "white",
+        boxShadow: isDragOver
+          ? "0 0 0 4px rgba(132,204,22,0.2)"
+          : isActive && !filled ? "0 0 0 3px rgba(132,204,22,0.15)" : "0 1px 4px rgba(0,0,0,0.05)",
+        cursor: filled ? "grab" : "pointer",
         overflow: "hidden", marginBottom: 6,
+        opacity: isDragging ? 0.35 : 1,
+        transition: "opacity 0.15s, border-color 0.12s, box-shadow 0.12s",
+        userSelect: "none",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 10px", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 8px", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+        {/* Drag handle */}
+        {filled && (
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="#c4b5a0" style={{ flexShrink: 0 }}>
+            <circle cx="2" cy="2" r="1.3"/><circle cx="6" cy="2" r="1.3"/>
+            <circle cx="2" cy="6" r="1.3"/><circle cx="6" cy="6" r="1.3"/>
+            <circle cx="2" cy="10" r="1.3"/><circle cx="6" cy="10" r="1.3"/>
+          </svg>
+        )}
         <span style={{ flex: 1, fontSize: 8, fontFamily: "var(--font-bebas)", letterSpacing: "0.18em", color: "#9ca3af" }}>{slot.label}</span>
         {filled && (
           <>
@@ -453,17 +478,26 @@ function RosterSlotCard({ slot, isActive, onClick, onRemove, onMins }: {
             </div>
           </div>
           <div style={{ marginTop: 7, display: "flex", alignItems: "center", gap: 6 }}>
-            <input type="range" min={0} max={48} step={1} value={slot.minutes} onChange={e => onMins(Number(e.target.value))} onClick={e => e.stopPropagation()} style={{ flex: 1, accentColor: "#84cc16", height: 3 }} />
+            <input type="range" min={0} max={48} step={1} value={slot.minutes}
+              onChange={e => onMins(Number(e.target.value))}
+              onClick={e => e.stopPropagation()}
+              style={{ flex: 1, accentColor: "#84cc16", height: 3 }} />
             <span style={{ fontSize: 9, fontFamily: "monospace", color: "#374151", width: 28, textAlign: "right", flexShrink: 0 }}>{slot.minutes}m</span>
+          </div>
+          <div style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+            <div style={{ flex: 1, height: 3, borderRadius: 2, background: "#f3f4f6", overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: 2, background: role.color, width: `${(slot.minutes / 48) * 100}%`, transition: "width 0.2s" }} />
+            </div>
+            <span style={{ fontSize: 8, fontWeight: 700, color: role.color, flexShrink: 0 }}>{role.label}</span>
           </div>
         </div>
       ) : (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "14px 10px" }}>
-          <div style={{ width: 28, height: 28, borderRadius: "50%", background: isActive ? "rgba(132,204,22,0.12)" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="14" height="14" viewBox="0 0 24 27" fill={isActive ? "#84cc16" : "#d1d5db"}><circle cx="12" cy="7" r="5"/><path d="M3 23c0-5 4-8.5 9-8.5s9 3.5 9 8.5z"/></svg>
+          <div style={{ width: 28, height: 28, borderRadius: "50%", background: isActive ? "rgba(132,204,22,0.12)" : isDragOver ? "rgba(132,204,22,0.18)" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="14" height="14" viewBox="0 0 24 27" fill={isActive || isDragOver ? "#84cc16" : "#d1d5db"}><circle cx="12" cy="7" r="5"/><path d="M3 23c0-5 4-8.5 9-8.5s9 3.5 9 8.5z"/></svg>
           </div>
-          <p style={{ fontSize: 10, color: isActive ? "#65a30d" : "#9ca3af", fontFamily: "monospace", fontWeight: isActive ? 600 : 400 }}>
-            {isActive ? "← Pick a player" : "Empty Slot"}
+          <p style={{ fontSize: 10, color: isDragOver ? "#65a30d" : isActive ? "#65a30d" : "#9ca3af", fontFamily: "monospace", fontWeight: isActive || isDragOver ? 600 : 400 }}>
+            {isDragOver ? "Drop here" : isActive ? "← Pick a player" : "Empty Slot"}
           </p>
         </div>
       )}
@@ -498,9 +532,11 @@ export default function FranchisePage() {
   const [champion, setChampion]     = useState<StandingEntry | null>(null);
   const [draftClass, setDraftClass] = useState<Prospect[]>([]);
   const [freeAgents, setFreeAgents] = useState<FreeAgent[]>([]);
-  const [totalWins, setTotalWins]   = useState(0);
-  const [titles, setTitles]         = useState(0);
-  const [simDots, setSimDots]       = useState(0);
+  const [totalWins, setTotalWins]     = useState(0);
+  const [titles, setTitles]           = useState(0);
+  const [simDots, setSimDots]         = useState(0);
+  const [dragSlotId, setDragSlotId]   = useState<string | null>(null);
+  const [dragOverId, setDragOverId]   = useState<string | null>(null);
 
   useEffect(() => {
     if (phase !== "simulating") return;
@@ -587,6 +623,28 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId === slotId ? { ...sl, minutes: mins } : sl));
   }
 
+  // Swap player data between two slots; slot identity (slotId, label, minutes) stays fixed
+  function swapSlots(fromId: string, toId: string) {
+    setSlots(prev => {
+      const from = prev.find(s => s.slotId === fromId);
+      const to   = prev.find(s => s.slotId === toId);
+      if (!from || !to) return prev;
+      const pick = (src: ContractSlot) => ({
+        nbaPlayer: src.nbaPlayer, rosterPlayer: src.rosterPlayer, isNBA: src.isNBA,
+        salary: src.salary, yearsLeft: src.yearsLeft,
+        ovr: src.ovr, prevOVR: src.prevOVR,
+        trend: src.trend, prevTrend: src.prevTrend,
+        basePPG: src.basePPG, baseRPG: src.baseRPG, baseAPG: src.baseAPG,
+        seasonStats: src.seasonStats, age: src.age, potential: src.potential,
+      });
+      return prev.map(sl => {
+        if (sl.slotId === fromId) return { ...sl, ...pick(to) };
+        if (sl.slotId === toId)   return { ...sl, ...pick(from) };
+        return sl;
+      });
+    });
+  }
+
   function signFA(fa: FreeAgent) {
     if (capLeft < fa.salary || filledCount >= 12) return;
     const targetId = activeSlot ?? slots.find(s => !s.nbaPlayer && !s.rosterPlayer)?.slotId;
@@ -660,7 +718,7 @@ export default function FranchisePage() {
       // Generate season stats, determine trends, tick contracts
       setSlots(prev => prev.map(sl => {
         if (!sl.nbaPlayer && !sl.rosterPlayer) return sl;
-        const season = generateSeasonStats(sl.basePPG, sl.baseRPG, sl.baseAPG);
+        const season = generateSeasonStats(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.minutes);
         const trend = determineTrend(season.ppg, sl.basePPG, season.rpg, sl.baseRPG, season.apg, sl.baseAPG);
         return { ...sl, seasonStats: season, trend, yearsLeft: Math.max(0, sl.yearsLeft - 1) };
       }));
@@ -683,7 +741,7 @@ export default function FranchisePage() {
     // Apply progression: pass age, potential, momentum; cap OVR gain at +5/season; age players +1
     setSlots(prev => prev.map(sl => {
       if (!sl.nbaPlayer && !sl.rosterPlayer) return sl;
-      const newStats = applyProgression(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.trend, sl.age, sl.potential, sl.prevTrend);
+      const newStats = applyProgression(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.trend, sl.age, sl.potential, sl.prevTrend, sl.minutes);
       const rawNewOVR = computeOVR(newStats.ppg, newStats.rpg, newStats.apg);
       const newOVR = Math.min(99, Math.min(rawNewOVR, sl.ovr + 5));
       return {
@@ -793,13 +851,44 @@ export default function FranchisePage() {
               </div>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
-              {slots.map(sl => (
-                <RosterSlotCard key={sl.slotId} slot={sl} isActive={activeSlot === sl.slotId}
-                  onClick={() => setActiveSlot(sl.slotId)}
-                  onRemove={() => removePlayer(sl.slotId)}
-                  onMins={v => setMins(sl.slotId, v)}
-                />
-              ))}
+              <p style={{ fontSize: 8, color: "#c4b5a0", fontFamily: "monospace", textAlign: "center", marginBottom: 6 }}>
+                Drag ⠿ to reorder · more minutes = faster development
+              </p>
+              {slots.map(sl => {
+                const isFilled = !!(sl.nbaPlayer || sl.rosterPlayer);
+                return (
+                  <div
+                    key={sl.slotId}
+                    draggable={isFilled}
+                    onDragStart={e => {
+                      if (!isFilled) return;
+                      e.dataTransfer.setData("franchise-slot", sl.slotId);
+                      e.dataTransfer.effectAllowed = "move";
+                      // Slight delay so the ghost renders before opacity drops
+                      setTimeout(() => setDragSlotId(sl.slotId), 0);
+                    }}
+                    onDragEnd={() => { setDragSlotId(null); setDragOverId(null); }}
+                    onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverId(sl.slotId); }}
+                    onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverId(null); }}
+                    onDrop={e => {
+                      e.preventDefault();
+                      const fromId = e.dataTransfer.getData("franchise-slot");
+                      if (fromId && fromId !== sl.slotId) swapSlots(fromId, sl.slotId);
+                      setDragSlotId(null); setDragOverId(null);
+                    }}
+                  >
+                    <RosterSlotCard
+                      slot={sl}
+                      isActive={activeSlot === sl.slotId}
+                      isDragging={dragSlotId === sl.slotId}
+                      isDragOver={dragOverId === sl.slotId && dragSlotId !== sl.slotId}
+                      onClick={() => setActiveSlot(sl.slotId)}
+                      onRemove={() => removePlayer(sl.slotId)}
+                      onMins={v => setMins(sl.slotId, v)}
+                    />
+                  </div>
+                );
+              })}
             </div>
             <div style={{ padding: "12px 14px", borderTop: "1px solid rgba(0,0,0,0.07)", background: "white" }}>
               <button onClick={runSeason} disabled={filledCount < 12}

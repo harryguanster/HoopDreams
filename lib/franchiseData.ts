@@ -59,17 +59,23 @@ export function computeOVR(
 }
 
 // ─── Season stat generation (random variance around base) ─────────────────────
+// More minutes = tighter variance (consistent starter) + slight positive skew
 export function generateSeasonStats(
   basePPG: number, baseRPG: number, baseAPG: number,
+  minutes: number = 24,
 ): { ppg: number; rpg: number; apg: number } {
   const g = () => {
     const u = Math.random(), v = Math.random();
     return Math.sqrt(-2 * Math.log(u + 1e-9)) * Math.cos(2 * Math.PI * v);
   };
+  // Starters have lower variance but slight usage boost; bench has high variance
+  const varScale = minutes >= 30 ? 0.7 : minutes >= 22 ? 1.0 : 1.4;
+  // Starter bonus: more minutes slightly inflates raw numbers
+  const usageBoost = minutes >= 30 ? 1.5 : minutes >= 24 ? 0 : -(28 - minutes) * 0.1;
   return {
-    ppg: Math.max(0, +(basePPG + g() * 2.8).toFixed(1)),
-    rpg: Math.max(0, +(baseRPG + g() * 1.5).toFixed(1)),
-    apg: Math.max(0, +(baseAPG + g() * 1.2).toFixed(1)),
+    ppg: Math.max(0, +(basePPG + usageBoost + g() * 2.8 * varScale).toFixed(1)),
+    rpg: Math.max(0, +(baseRPG + g() * 1.5 * varScale).toFixed(1)),
+    apg: Math.max(0, +(baseAPG + g() * 1.2 * varScale).toFixed(1)),
   };
 }
 
@@ -94,6 +100,7 @@ export function applyProgression(
   age: number = 26,
   potential: "Star" | "Starter" | "Rotation" | "Bust" = "Rotation",
   prevTrend: "up" | "down" | "neutral" = "neutral",
+  minutes: number = 24,
 ): { ppg: number; rpg: number; apg: number } {
   const r = () => Math.random();
 
@@ -115,34 +122,43 @@ export function applyProgression(
   // Momentum: consecutive up trends = keeps rolling
   const momentumMod = prevTrend === "up" ? 0.06 : prevTrend === "down" ? -0.04 : 0;
 
-  // How much the season went
-  const trendBoost  = trend === "up"   ?  0.08 : 0;
+  // Season trend bonus/penalty
+  const trendBoost   = trend === "up"   ?  0.08 : 0;
   const trendPenalty = trend === "down" ? -0.12 : 0;
 
-  const improveChance = Math.min(0.97, Math.max(0.10,
-    baseImproveChance + potMod + momentumMod + trendBoost + trendPenalty,
+  // Minutes: more court time = faster development (significant effect)
+  const minutesMod = minutes >= 32 ? 0.14
+                   : minutes >= 26 ? 0.07
+                   : minutes >= 20 ? 0.0
+                   : minutes >= 14 ? -0.08
+                   : -0.17;
+
+  const improveChance = Math.min(0.97, Math.max(0.05,
+    baseImproveChance + potMod + momentumMod + trendBoost + trendPenalty + minutesMod,
   ));
 
   if (r() < improveChance) {
-    // Magnitude: young players can explode (breakout season)
-    const mag = age <= 21 ? (1.5 + r() * 2.5)
-              : age <= 24 ? (1.0 + r() * 2.0)
-              : age <= 27 ? (0.5 + r() * 1.5)
-              : (0.2 + r() * 0.8);
-    // Momentum doubles the boost ceiling
-    const scale = prevTrend === "up" ? 1.25 : 1.0;
+    // Magnitude: young players can explode; veterans improve less
+    const ageMag = age <= 21 ? (1.5 + r() * 2.5)
+                 : age <= 24 ? (1.0 + r() * 2.0)
+                 : age <= 27 ? (0.5 + r() * 1.5)
+                 : (0.2 + r() * 0.8);
+    // Momentum multiplier; minutes scale how much of the gain translates
+    const momScale  = prevTrend === "up" ? 1.25 : 1.0;
+    const minScale  = minutes >= 28 ? 1.3 : minutes >= 20 ? 1.0 : 0.6;
+    const mag = ageMag * momScale * minScale;
     return {
-      ppg: +(basePPG + mag * 0.65 * scale + r() * 0.3).toFixed(1),
-      rpg: +(baseRPG + mag * 0.14 * scale + r() * 0.2).toFixed(1),
-      apg: +(baseAPG + mag * 0.14 * scale + r() * 0.15).toFixed(1),
+      ppg: +(basePPG + mag * 0.65 + r() * 0.3).toFixed(1),
+      rpg: +(baseRPG + mag * 0.14 + r() * 0.2).toFixed(1),
+      apg: +(baseAPG + mag * 0.14 + r() * 0.15).toFixed(1),
     };
   }
 
-  // Didn't improve — slight plateau or decline based on age
-  const declineMag = age <= 22 ? 0.1   // young: barely regress
-                   : age <= 26 ? 0.3
-                   : age <= 29 ? 0.6
-                   : 1.1;
+  // Didn't improve — plateau or decline scaled by age
+  const declineMag = age <= 22 ? 0.08   // young players barely regress
+                   : age <= 26 ? 0.28
+                   : age <= 29 ? 0.55
+                   : 1.0;
 
   return {
     ppg: +(Math.max(3,   basePPG - r() * declineMag)).toFixed(1),
