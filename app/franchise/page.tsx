@@ -525,7 +525,6 @@ export default function FranchisePage() {
   const [activeSlot, setActiveSlot] = useState<string | null>(SLOT_DEFS[0].id);
   const [search, setSearch]         = useState("");
   const [teamFilter, setTeamFilter] = useState("All Teams");
-  const [posFilter, setPosFilter]   = useState("All");
 
   const [standingsData, setStandingsData] = useState<{ east: StandingEntry[]; west: StandingEntry[] } | null>(null);
   const [playoffResults, setPlayoffResults] = useState<PlayoffResult | null>(null);
@@ -573,10 +572,9 @@ export default function FranchisePage() {
       if (usedIds.has(p.id)) return false;
       if (q && !p.name.toLowerCase().includes(q)) return false;
       if (teamFilter !== "All Teams" && p.team !== teamFilter) return false;
-      if (posFilter !== "All" && p.position !== posFilter) return false;
       return true;
     }).sort((a, b) => playerRank(a) - playerRank(b));
-  }, [slots, search, teamFilter, posFilter]);
+  }, [slots, search, teamFilter]);
 
   // ─── Player management ───────────────────────────────────────────────────────
   function advanceActiveSlot(filledId: string) {
@@ -897,51 +895,65 @@ export default function FranchisePage() {
             </div>
           </div>
 
-          {/* Right: player pool */}
+          {/* Right: 5-column player pool by position */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ padding: "10px 14px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "white", display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search players…"
-                style={{ flex: 1, minWidth: 120, padding: "7px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 12, outline: "none", background: "#fafaf7", color: "#111827" }}
+            {/* Search + team filter */}
+            <div style={{ padding: "8px 12px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "white", display: "flex", gap: 8, alignItems: "center" }}>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search all positions…"
+                style={{ flex: 1, padding: "6px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 12, outline: "none", background: "#fafaf7", color: "#111827" }}
                 onFocus={e => (e.currentTarget.style.borderColor = "#84cc16")}
                 onBlur={e => (e.currentTarget.style.borderColor = "#e5e7eb")}
               />
-              <select value={posFilter} onChange={e => setPosFilter(e.target.value)} style={{ padding: "7px 10px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 12, background: "#fafaf7", color: "#374151", outline: "none" }}>
-                {["All","PG","SG","SF","PF","C"].map(p => <option key={p}>{p}</option>)}
-              </select>
-              <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)} style={{ padding: "7px 10px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 12, background: "#fafaf7", color: "#374151", outline: "none", maxWidth: 140 }}>
+              <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)} style={{ padding: "6px 8px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 11, background: "#fafaf7", color: "#374151", outline: "none", maxWidth: 120 }}>
                 {teamList.map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
 
-            {/* OVR legend */}
-            <div style={{ padding: "6px 14px", borderBottom: "1px solid rgba(0,0,0,0.05)", background: "#fafaf7", display: "flex", gap: 8, overflowX: "auto" }}>
-              {[{label:"90+ Elite",bg:"#fef3c7",text:"#92400e",border:"#f59e0b"},{label:"80–89 Star",bg:"#ede9fe",text:"#4c1d95",border:"#8b5cf6"},{label:"70–79 Starter",bg:"#dbeafe",text:"#1e3a8a",border:"#60a5fa"},{label:"60–69 Role",bg:"#dcfce7",text:"#14532d",border:"#4ade80"},{label:"<60 Fringe",bg:"#f1f5f9",text:"#475569",border:"#94a3b8"}].map(t => (
-                <span key={t.label} style={{ fontSize: 8, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: t.bg, color: t.text, border: `1px solid ${t.border}`, flexShrink: 0 }}>{t.label}</span>
-              ))}
-            </div>
-
-            <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
-              {filteredPlayers.map(p => {
-                const sal = playerSalary(p);
-                const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
-                const canAfford = capLeft >= sal;
+            {/* 5 position columns */}
+            <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+              {(["PG","SG","SF","PF","C"] as const).map((pos, idx) => {
+                const label = pos === "PG" ? "POINT GUARD" : pos === "SG" ? "SHOOT GUARD" : pos === "SF" ? "SMALL FWD" : pos === "PF" ? "POWER FWD" : "CENTER";
+                const players = filteredPlayers.filter(p => p.position === pos);
                 return (
-                  <button key={p.id} onClick={() => canAfford && selectPlayer(p)} disabled={!canAfford}
-                    style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "9px 16px", border: "none", background: "transparent", cursor: canAfford ? "pointer" : "not-allowed", borderBottom: "1px solid rgba(0,0,0,0.04)", opacity: canAfford ? 1 : 0.4, textAlign: "left" }}
-                    onMouseEnter={e => { if (canAfford) e.currentTarget.style.background = "rgba(132,204,22,0.07)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
-                  >
-                    <Avatar color={p.teamColor} size={38} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.05rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{p.name}</p>
-                      <p style={{ fontSize: 11, color: "#6b7280", fontFamily: "monospace", marginTop: 2 }}>{p.position} · Age {playerAge(p)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
+                  <div key={pos} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", borderRight: idx < 4 ? "1px solid rgba(0,0,0,0.07)" : "none" }}>
+                    {/* Column header */}
+                    <div style={{ padding: "6px 8px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+                      <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.72rem", letterSpacing: "0.12em", color: "#374151" }}>{label}</span>
+                      <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{players.length}</span>
                     </div>
-                    <OVRBadge ovr={ovr} />
-                    <span style={{ fontSize: 14, fontWeight: 800, color: canAfford ? "#65a30d" : "#ef4444", width: 46, textAlign: "right", flexShrink: 0 }}>${sal}M</span>
-                  </button>
+                    {/* Player cards */}
+                    <div style={{ flex: 1, overflowY: "auto" }}>
+                      {players.map(p => {
+                        const sal = playerSalary(p);
+                        const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+                        const canAfford = capLeft >= sal;
+                        return (
+                          <button key={p.id} onClick={() => canAfford && selectPlayer(p)} disabled={!canAfford}
+                            style={{ display: "flex", flexDirection: "column", width: "100%", padding: "7px 8px", border: "none", background: "transparent", cursor: canAfford ? "pointer" : "not-allowed", borderBottom: "1px solid rgba(0,0,0,0.05)", opacity: canAfford ? 1 : 0.38, textAlign: "left" }}
+                            onMouseEnter={e => { if (canAfford) e.currentTarget.style.background = "rgba(132,204,22,0.08)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
+                              <Avatar color={p.teamColor} size={26} />
+                              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
+                            </div>
+                            <div style={{ paddingLeft: 31, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                              <OVRBadge ovr={ovr} small />
+                              <span style={{ fontSize: 12, fontWeight: 800, color: canAfford ? "#65a30d" : "#ef4444" }}>${sal}M</span>
+                            </div>
+                            <p style={{ paddingLeft: 31, fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 3 }}>
+                              {playerAge(p)}yo · {p.ppg}p {p.rpg}r {p.apg}a
+                            </p>
+                          </button>
+                        );
+                      })}
+                      {players.length === 0 && (
+                        <p style={{ textAlign: "center", padding: "24px 6px", color: "#d1d5db", fontSize: 10, fontFamily: "monospace" }}>—</p>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
-              {filteredPlayers.length === 0 && <p style={{ textAlign: "center", padding: "40px 20px", color: "#9ca3af", fontSize: 12 }}>No players match your filters</p>}
             </div>
           </div>
         </div>
