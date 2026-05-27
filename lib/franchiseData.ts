@@ -86,9 +86,8 @@ export function determineTrend(
 }
 
 // ─── Progression (applied in offseason) ───────────────────────────────────────
-// age: younger = higher improvement chance + larger gains
-// potential: Star/Starter/Rotation/Bust shifts probability
-// prevTrend: momentum — if was "up" last season too, extra boost
+// 2K-style: young players almost always improve; veterans decline.
+// age, potential, prevTrend (momentum) all shift probabilities.
 export function applyProgression(
   basePPG: number, baseRPG: number, baseAPG: number,
   trend: "up" | "down" | "neutral",
@@ -98,65 +97,57 @@ export function applyProgression(
 ): { ppg: number; rpg: number; apg: number } {
   const r = () => Math.random();
 
-  // Age: younger players improve more readily; older decline faster
-  const ageMod = age <= 21 ? 0.20
-               : age <= 24 ? 0.13
-               : age <= 27 ? 0.02
-               : age <= 30 ? -0.11
-               : -0.24;
+  // Base improve chance by age — 2K-style steep curve
+  const baseImproveChance = age <= 20 ? 0.96
+                           : age <= 22 ? 0.90
+                           : age <= 24 ? 0.82
+                           : age <= 26 ? 0.70
+                           : age <= 28 ? 0.55
+                           : age <= 30 ? 0.40
+                           : 0.25;
 
-  // Potential: high-ceiling players are more likely to actually improve
-  const potMod = potential === "Star"    ?  0.13
-               : potential === "Starter" ?  0.05
-               : potential === "Bust"    ? -0.13
+  // Potential shifts probability
+  const potMod = potential === "Star"    ?  0.06
+               : potential === "Starter" ?  0.03
+               : potential === "Bust"    ? -0.10
                : 0;
 
-  // Momentum: two "up" seasons in a row = extra boost
-  const momentumMod = prevTrend === "up" ? 0.10 : 0;
+  // Momentum: consecutive up trends = keeps rolling
+  const momentumMod = prevTrend === "up" ? 0.06 : prevTrend === "down" ? -0.04 : 0;
 
-  if (trend === "up") {
-    const improveChance = Math.min(0.95, Math.max(0.15, 0.75 + ageMod + potMod + momentumMod));
-    if (r() < improveChance) {
-      // Young players can have breakout seasons; veterans improve less
-      const mag = age <= 24 ? (1.0 + r() * 2.2) : (0.4 + r() * 1.5);
-      return {
-        ppg: +(basePPG + mag * 0.65 + r() * 0.4).toFixed(1),
-        rpg: +(baseRPG + mag * 0.14 + r() * 0.25).toFixed(1),
-        apg: +(baseAPG + mag * 0.14 + r() * 0.18).toFixed(1),
-      };
-    }
-    // Didn't fully improve — plateau
+  // How much the season went
+  const trendBoost  = trend === "up"   ?  0.08 : 0;
+  const trendPenalty = trend === "down" ? -0.12 : 0;
+
+  const improveChance = Math.min(0.97, Math.max(0.10,
+    baseImproveChance + potMod + momentumMod + trendBoost + trendPenalty,
+  ));
+
+  if (r() < improveChance) {
+    // Magnitude: young players can explode (breakout season)
+    const mag = age <= 21 ? (1.5 + r() * 2.5)
+              : age <= 24 ? (1.0 + r() * 2.0)
+              : age <= 27 ? (0.5 + r() * 1.5)
+              : (0.2 + r() * 0.8);
+    // Momentum doubles the boost ceiling
+    const scale = prevTrend === "up" ? 1.25 : 1.0;
     return {
-      ppg: +(basePPG + (r() - 0.4) * 0.7).toFixed(1),
-      rpg: +(baseRPG + (r() - 0.4) * 0.35).toFixed(1),
-      apg: +(baseAPG + (r() - 0.4) * 0.28).toFixed(1),
+      ppg: +(basePPG + mag * 0.65 * scale + r() * 0.3).toFixed(1),
+      rpg: +(baseRPG + mag * 0.14 * scale + r() * 0.2).toFixed(1),
+      apg: +(baseAPG + mag * 0.14 * scale + r() * 0.15).toFixed(1),
     };
   }
 
-  if (trend === "down") {
-    // Young high-potential players bounce back; old declining ones don't
-    const actualDeclineChance = Math.max(0.15, 0.75 - ageMod - potMod);
-    if (r() < actualDeclineChance) {
-      return {
-        ppg: +(Math.max(3,   basePPG - 0.4 - r() * 1.2)).toFixed(1),
-        rpg: +(Math.max(1,   baseRPG - r() * 0.5)).toFixed(1),
-        apg: +(Math.max(0.5, baseAPG - r() * 0.3)).toFixed(1),
-      };
-    }
-    // Bounce back
-    return {
-      ppg: +(basePPG + r() * 0.6).toFixed(1),
-      rpg: +(baseRPG + r() * 0.3).toFixed(1),
-      apg: +(baseAPG + r() * 0.25).toFixed(1),
-    };
-  }
+  // Didn't improve — slight plateau or decline based on age
+  const declineMag = age <= 22 ? 0.1   // young: barely regress
+                   : age <= 26 ? 0.3
+                   : age <= 29 ? 0.6
+                   : 1.1;
 
-  // neutral — old players drift down, young players drift slightly up
-  const drift = ageMod < 0 ? -0.15 : 0.08;
   return {
-    ppg: +(basePPG + drift + (r() - 0.5) * 0.7).toFixed(1),
-    rpg: +(baseRPG + drift * 0.4 + (r() - 0.5) * 0.38).toFixed(1),
-    apg: +(baseAPG + drift * 0.4 + (r() - 0.5) * 0.28).toFixed(1),
+    ppg: +(Math.max(3,   basePPG - r() * declineMag)).toFixed(1),
+    rpg: +(Math.max(1,   baseRPG - r() * declineMag * 0.45)).toFixed(1),
+    apg: +(Math.max(0.5, baseAPG - r() * declineMag * 0.35)).toFixed(1),
   };
 }
 

@@ -12,7 +12,8 @@ import {
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 
 // ─── Salary / rank data ────────────────────────────────────────────────────────
-const SALARY_CAP = 100;
+const SALARY_CAP      = 100; // hard cap for initial roster build
+const OFFSEASON_CAP   = 140; // +$40M veteran fund unlocks in offseason
 
 const RINGER_RANKINGS: Record<string, number> = {
   jokic: 1, sga: 2, giannis: 3, luka: 4, ant: 5, wemby: 6,
@@ -34,6 +35,10 @@ const RINGER_RANKINGS: Record<string, number> = {
   holiday: 81, anembhard: 82, cflagg: 83, rjbarrett: 84, dehunter: 85, anesmith: 86,
   vucevic: 87, cjmcc: 88, tcamara: 89, dlively: 90,
   jgreen2: 91, asimons: 92, tharris: 93, dvassell: 94, kthompson: 95, jsmith: 96,
+  // 2025 rookies
+  dharper: 42, abailey: 52, jfears: 56, vjedgecombe: 68, kknueppel: 72,
+  kjakucionis: 74, lmcneeley: 78, nessengue: 85, edemin: 88, dwolf: 90,
+  kmaluach: 91, cmurrayb: 93,
 };
 
 const RANK_TIERS = [
@@ -47,9 +52,17 @@ const RANK_TIERS = [
 
 // Known ages for young/notable NBA players (everyone else defaults to 27)
 const PLAYER_AGES: Partial<Record<string, number>> = {
-  wemby: 21, cflagg: 20, tcamara: 22, bmiller: 22, tmurphy: 22,
-  cade: 22, banchero: 22, jjohnson: 22, jsuggs: 23, cbraun: 22,
-  cholmgren: 23, sengun: 22, anesmith: 23, fwagner: 23,
+  // 2025 rookies (youngest)
+  abailey: 19, jfears: 19, kmaluach: 19,
+  cflagg: 20, dharper: 20, vjedgecombe: 20, lmcneeley: 20, nessengue: 20, edemin: 20,
+  kknueppel: 21, cmurrayb: 21,
+  dwolf: 22, kjakucionis: 22, wemby: 22,
+  // 2024 rookies
+  asarr: 20, zrisacher: 20,
+  tcamara: 22, bmiller: 22, tmurphy: 22, cbraun: 22, jsuggs: 23,
+  cade: 22, banchero: 22, jjohnson: 23,
+  cholmgren: 23, sengun: 23, anesmith: 23, fwagner: 23,
+  // primes / known ages
   ant: 23, sga: 26, luka: 25, jokic: 29, giannis: 30,
   curry: 37, lebron: 40, ad: 32, durant: 36, kyrie: 32,
   harden: 35, kawhi: 33, kthompson: 34,
@@ -99,6 +112,7 @@ type ContractSlot = {
   minutes: number;
   yearsLeft: number;
   ovr: number;
+  prevOVR: number;
   trend: Trend;
   prevTrend: Trend;
   basePPG: number;
@@ -469,7 +483,7 @@ export default function FranchisePage() {
       slotId: d.id, label: d.label,
       isNBA: true, nbaPlayer: null, rosterPlayer: null,
       salary: 0, minutes: d.defaultMin, yearsLeft: 2,
-      ovr: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      ovr: 60, prevOVR: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: 0, baseRPG: 0, baseAPG: 0, seasonStats: null,
       age: 27, potential: "Rotation" as const,
     }))
@@ -495,9 +509,10 @@ export default function FranchisePage() {
   }, [phase]);
 
   // ─── Derived ────────────────────────────────────────────────────────────────
-  const usedSalary  = slots.reduce((s, sl) => s + sl.salary, 0);
-  const capLeft     = SALARY_CAP - usedSalary;
-  const filledCount = slots.filter(s => s.nbaPlayer || s.rosterPlayer).length;
+  const usedSalary   = slots.reduce((s, sl) => s + sl.salary, 0);
+  const effectiveCap = phase === "offseason" ? OFFSEASON_CAP : SALARY_CAP;
+  const capLeft      = effectiveCap - usedSalary;
+  const filledCount  = slots.filter(s => s.nbaPlayer || s.rosterPlayer).length;
 
   const userRating = useMemo(() => {
     const rp = slots.filter(s => s.nbaPlayer || s.rosterPlayer).map(sl => ({
@@ -548,7 +563,7 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
       ...sl, nbaPlayer: p, rosterPlayer: null, isNBA: true,
       salary: sal, yearsLeft: 2,
-      ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg,
       seasonStats: null, age, potential,
     }));
@@ -561,7 +576,7 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId !== slotId ? sl : {
       ...sl, nbaPlayer: null, rosterPlayer: null, isNBA: true,
       salary: 0, minutes: def.defaultMin, yearsLeft: 2,
-      ovr: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      ovr: 60, prevOVR: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: 0, baseRPG: 0, baseAPG: 0, seasonStats: null,
       age: 27, potential: "Rotation" as const,
     }));
@@ -582,11 +597,29 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
       ...sl, nbaPlayer: null, rosterPlayer: rp, isNBA: false,
       salary: fa.salary, yearsLeft: 2,
-      ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: fa.ppg, baseRPG: fa.rpg, baseAPG: fa.apg, seasonStats: null,
       age: fa.age, potential,
     }));
     setFreeAgents(prev => prev.filter(f => f.name !== fa.name));
+    advanceActiveSlot(targetId);
+  }
+
+  function signNBAPlayer(p: CurrentNBAPlayer) {
+    const sal = playerSalary(p);
+    if (capLeft < sal || filledCount >= 12) return;
+    const targetId = activeSlot ?? slots.find(s => !s.nbaPlayer && !s.rosterPlayer)?.slotId;
+    if (!targetId) return;
+    const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+    const age = playerAge(p);
+    const potential = derivePotential(ovr);
+    setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
+      ...sl, nbaPlayer: p, rosterPlayer: null, isNBA: true,
+      salary: sal, yearsLeft: 2,
+      ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg,
+      seasonStats: null, age, potential,
+    }));
     advanceActiveSlot(targetId);
   }
 
@@ -599,7 +632,7 @@ export default function FranchisePage() {
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
       ...sl, nbaPlayer: null, rosterPlayer: rp, isNBA: false,
       salary: p.salary, yearsLeft: 2,
-      ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg, seasonStats: null,
       age: p.age, potential: p.potential,
     }));
@@ -656,7 +689,8 @@ export default function FranchisePage() {
       return {
         ...sl,
         basePPG: newStats.ppg, baseRPG: newStats.rpg, baseAPG: newStats.apg,
-        ovr: newOVR, seasonStats: null,
+        ovr: newOVR, prevOVR: sl.ovr, // save old OVR for delta display
+        seasonStats: null,
         prevTrend: sl.trend,
         age: sl.age + 1,
       };
@@ -725,7 +759,7 @@ export default function FranchisePage() {
                 <TeamLogo url={t.logoUrl} color={t.color} size={28} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontWeight: 700, fontSize: 13, color: "#111827", lineHeight: 1.2 }}>{t.name}</p>
-                  <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 2 }}>OVR {t.rating}</p>
+                  <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 2 }}>{t.conf} · {t.abbr}</p>
                 </div>
                 <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: t.rating >= 87 ? "#fef3c7" : t.rating >= 78 ? "#dcfce7" : "#f1f5f9", color: t.rating >= 87 ? "#92400e" : t.rating >= 78 ? "#14532d" : "#6b7280", border: "1px solid rgba(0,0,0,0.1)" }}>
                   {t.rating >= 87 ? "Title" : t.rating >= 78 ? "Playoff" : "Rebuild"}
@@ -752,6 +786,10 @@ export default function FranchisePage() {
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>
                 <span style={{ fontSize: 9, color: "#9ca3af" }}>{filledCount}/12 players</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color: "#65a30d" }}>Rating {userRating.toFixed(0)}</span>
+              </div>
+              <div style={{ marginTop: 5, padding: "3px 7px", borderRadius: 5, background: "#f0fdf4", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", gap: 4 }}>
+                <svg width={10} height={10} viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" fill="#22c55e" opacity="0.2"/><path d="M5 3v2l1 1" stroke="#15803d" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <span style={{ fontSize: 9, color: "#15803d", fontWeight: 600 }}>+$40M Veteran Fund unlocks in offseason</span>
               </div>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
@@ -964,7 +1002,11 @@ export default function FranchisePage() {
           <div style={{ width: 310, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(0,0,0,0.08)", background: "rgba(244,240,230,0.5)" }}>
             <div style={{ padding: "12px 14px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "white" }}>
               <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", color: "#111827" }}>Your Roster · Season {season}</p>
-              <p style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>${usedSalary}M · ${capLeft}M space · {filledCount} players</p>
+              <p style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>${usedSalary}M used · ${capLeft}M space · {filledCount} players</p>
+              <div style={{ marginTop: 4, height: 4, background: "#f3f4f6", borderRadius: 2, overflow: "hidden" }}>
+                <div style={{ height: "100%", background: capLeft < 8 ? "#ef4444" : "#84cc16", width: `${Math.min(100,(usedSalary/OFFSEASON_CAP)*100)}%`, transition: "width 0.25s" }} />
+              </div>
+              <p style={{ fontSize: 8, color: "#65a30d", marginTop: 3, fontWeight: 600 }}>$140M Offseason Cap (+$40M Veteran Fund active)</p>
             </div>
             {expiring.length > 0 && (
               <div style={{ padding: "8px 14px", background: "#fef3c7", borderBottom: "1px solid #f59e0b40", display: "flex", alignItems: "center", gap: 6 }}>
@@ -991,8 +1033,13 @@ export default function FranchisePage() {
                           <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.78rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
                           <TrendArrow trend={sl.trend} size={11} />
                         </div>
-                        <div style={{ display: "flex", gap: 4, marginTop: 2, alignItems: "center" }}>
+                        <div style={{ display: "flex", gap: 4, marginTop: 2, alignItems: "center", flexWrap: "wrap" }}>
                           <OVRBadge ovr={sl.ovr} small />
+                          {sl.ovr !== sl.prevOVR && (
+                            <span style={{ fontSize: 10, fontWeight: 800, color: sl.ovr > sl.prevOVR ? "#16a34a" : "#dc2626" }}>
+                              {sl.ovr > sl.prevOVR ? `+${sl.ovr - sl.prevOVR}` : `${sl.ovr - sl.prevOVR}`}
+                            </span>
+                          )}
                           <span style={{ fontSize: 8, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M</span>
                           <ContractBadge years={sl.yearsLeft} />
                         </div>
@@ -1013,15 +1060,34 @@ export default function FranchisePage() {
               })}
             </div>
             <div style={{ padding: "12px 14px", borderTop: "1px solid rgba(0,0,0,0.07)", background: "white" }}>
-              <button onClick={() => setPhase("build")} style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: "#84cc16", color: "#111827", fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", cursor: "pointer" }}>
-                Finalize Roster · Season {season}
+              {expiring.length > 0 && (
+                <p style={{ fontSize: 10, color: "#92400e", fontWeight: 700, textAlign: "center", marginBottom: 6 }}>
+                  Extend or release {expiring.length} player{expiring.length > 1 ? "s" : ""} first
+                </p>
+              )}
+              <button
+                onClick={() => setPhase("build")}
+                disabled={expiring.length > 0}
+                style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: expiring.length > 0 ? "#e5e7eb" : "#84cc16", color: expiring.length > 0 ? "#9ca3af" : "#111827", fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", cursor: expiring.length > 0 ? "not-allowed" : "pointer" }}
+              >
+                {expiring.length > 0 ? `${expiring.length} Contract${expiring.length > 1 ? "s" : ""} Pending` : `Finalize Roster · Season ${season}`}
               </button>
             </div>
           </div>
 
           {/* Right: Draft / FA tabs */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <OffseasonTabs draftClass={draftClass} freeAgents={freeAgents} capLeft={capLeft} filledCount={filledCount} season={season} onDraft={draftProspect} onSign={signFA} />
+            <OffseasonTabs
+              draftClass={draftClass}
+              freeAgents={freeAgents}
+              nbaPool={CURRENT_NBA_PLAYERS.filter(p => !slots.some(s => s.nbaPlayer?.id === p.id)).sort((a,b) => playerRank(a) - playerRank(b))}
+              capLeft={capLeft}
+              filledCount={filledCount}
+              season={season}
+              onDraft={draftProspect}
+              onSign={signFA}
+              onSignNBA={signNBAPlayer}
+            />
           </div>
         </div>
       )}
@@ -1030,17 +1096,17 @@ export default function FranchisePage() {
 }
 
 // ─── Offseason Tabs ────────────────────────────────────────────────────────────
-function OffseasonTabs({ draftClass, freeAgents, capLeft, filledCount, season, onDraft, onSign }: {
-  draftClass: Prospect[]; freeAgents: FreeAgent[];
+function OffseasonTabs({ draftClass, freeAgents, nbaPool, capLeft, filledCount, season, onDraft, onSign, onSignNBA }: {
+  draftClass: Prospect[]; freeAgents: FreeAgent[]; nbaPool: CurrentNBAPlayer[];
   capLeft: number; filledCount: number; season: number;
-  onDraft: (p: Prospect) => void; onSign: (fa: FreeAgent) => void;
+  onDraft: (p: Prospect) => void; onSign: (fa: FreeAgent) => void; onSignNBA: (p: CurrentNBAPlayer) => void;
 }) {
-  const [tab, setTab] = useState<"draft" | "fa">("draft");
+  const [tab, setTab] = useState<"draft" | "fa" | "nba">("draft");
   return (
     <>
       <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(0,0,0,0.08)", background: "white" }}>
-        {([["draft", "Draft Class"], ["fa", "Free Agents"]] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} style={{ padding: "11px 20px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 12, background: tab === t ? "#f4f0e6" : "white", color: tab === t ? "#111827" : "#6b7280", borderBottom: tab === t ? "2px solid #84cc16" : "2px solid transparent" }}>
+        {([["draft", "Draft Class"], ["fa", "Free Agents"], ["nba", "NBA Stars"]] as const).map(([t, label]) => (
+          <button key={t} onClick={() => setTab(t)} style={{ padding: "11px 16px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 12, background: tab === t ? "#f4f0e6" : "white", color: tab === t ? "#111827" : "#6b7280", borderBottom: tab === t ? "2px solid #84cc16" : "2px solid transparent" }}>
             {label}
           </button>
         ))}
@@ -1086,6 +1152,34 @@ function OffseasonTabs({ draftClass, freeAgents, capLeft, filledCount, season, o
                 </div>
               );
             })}
+          </div>
+        )}
+        {tab === "nba" && (
+          <div>
+            <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12, fontFamily: "monospace" }}>Sign current NBA players · ${capLeft}M cap space · 2-year deal</p>
+            {nbaPool.length === 0
+              ? <p style={{ color: "#9ca3af", fontSize: 12, textAlign: "center", padding: "40px 0" }}>All available players already on your roster</p>
+              : nbaPool.map(p => {
+                const sal = playerSalary(p);
+                const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+                const canSign = capLeft >= sal && filledCount < 12;
+                return (
+                  <button key={p.id} onClick={() => canSign && onSignNBA(p)} disabled={!canSign}
+                    style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 12px", borderRadius: 10, background: "white", border: "1px solid rgba(0,0,0,0.07)", marginBottom: 7, opacity: canSign ? 1 : 0.4, cursor: canSign ? "pointer" : "not-allowed", textAlign: "left" }}
+                    onMouseEnter={e => { if (canSign) e.currentTarget.style.borderColor = "#84cc16"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)"; }}
+                  >
+                    <Avatar color={p.teamColor} size={36} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{p.name}</p>
+                      <p style={{ fontSize: 10, color: "#6b7280", fontFamily: "monospace", marginTop: 2 }}>{p.position} · Age {playerAge(p)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
+                    </div>
+                    <OVRBadge ovr={ovr} />
+                    <span style={{ fontSize: 13, fontWeight: 800, color: canSign ? "#65a30d" : "#ef4444", width: 46, textAlign: "right", flexShrink: 0 }}>${sal}M</span>
+                  </button>
+                );
+              })
+            }
           </div>
         )}
       </div>
