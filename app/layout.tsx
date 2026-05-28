@@ -48,6 +48,9 @@ export const metadata: Metadata = {
     description: "Free NBA trivia and games. Test your NBA knowledge.",
   },
   metadataBase: new URL("https://courtsidecentral.com"),
+  verification: {
+    google: "aiQs_7AQIqTFm18vHTzvagvbGZ6ICKT684r4S2spqa0",
+  },
 };
 
 export default function RootLayout({
