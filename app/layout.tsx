@@ -29,8 +29,25 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "Courtside Central",
-  description: "NBA trivia and games — Start, Bench, Cut, Guess Who, and more",
+  title: {
+    default: "Courtside Central — NBA Games & Trivia",
+    template: "%s | Courtside Central",
+  },
+  description: "Free NBA trivia games: Franchise Mode simulator, Higher or Lower, Connections, Guess Who, Start Bench Cut, Stat Line Guesser, and more. Test your NBA knowledge.",
+  keywords: ["NBA trivia", "NBA games", "NBA quiz", "basketball trivia", "NBA higher lower", "NBA connections", "NBA franchise mode", "start bench cut NBA", "NBA guess who"],
+  openGraph: {
+    type: "website",
+    siteName: "Courtside Central",
+    title: "Courtside Central — NBA Games & Trivia",
+    description: "Free NBA trivia and games. Franchise Mode, Higher or Lower, Connections, Guess Who, and more.",
+    url: "https://courtsidecentral.com",
+  },
+  twitter: {
+    card: "summary",
+    title: "Courtside Central — NBA Games & Trivia",
+    description: "Free NBA trivia and games. Test your NBA knowledge.",
+  },
+  metadataBase: new URL("https://courtsidecentral.com"),
 };
 
 export default function RootLayout({
