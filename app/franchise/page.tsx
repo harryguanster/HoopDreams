@@ -77,6 +77,13 @@ function derivePotential(ovr: number): "Star" | "Starter" | "Rotation" | "Bust" 
   return "Bust";
 }
 
+function computeMorale(ovr: number, wins: number, minutes: number): "happy" | "content" | "frustrated" {
+  if (ovr >= 82 && wins < 28) return "frustrated";
+  if (ovr >= 76 && minutes < 16) return "frustrated";
+  if (wins >= 48) return "happy";
+  return "content";
+}
+
 function playerRank(p: CurrentNBAPlayer): number { return RINGER_RANKINGS[p.id] ?? 999; }
 function playerSalary(p: CurrentNBAPlayer): number {
   return RANK_TIERS.find(t => playerRank(p) <= t.max)!.price;
@@ -121,6 +128,24 @@ type ContractSlot = {
   seasonStats: { ppg: number; rpg: number; apg: number } | null;
   age: number;
   potential: "Star" | "Starter" | "Rotation" | "Bust";
+  injuredGames: number;
+  morale: "happy" | "content" | "frustrated";
+};
+
+type TradeOfferedPlayer = {
+  id: string; name: string; ovr: number; salary: number;
+  age: number; position: string; color: string;
+  ppg: number; rpg: number; apg: number;
+};
+
+type TradeOffer = {
+  id: string;
+  aiTeam: { name: string; abbr: string; color: string; logoUrl: string };
+  theyOffer: TradeOfferedPlayer;
+  theyWant: string;
+  wantedName: string;
+  wantedOVR: number;
+  wantedSalary: number;
 };
 
 // ─── SVG Icon Components (no emojis) ──────────────────────────────────────────
@@ -160,6 +185,15 @@ function WarningIcon({ size = 20, color = "#f59e0b" }: { size?: number; color?: 
       <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
       <line x1="12" y1="9" x2="12" y2="13"/>
       <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  );
+}
+
+function InjuryIcon({ size = 16, color = "#dc2626" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 12h6m-3-3v6"/>
+      <circle cx="12" cy="12" r="10"/>
     </svg>
   );
 }
@@ -520,6 +554,7 @@ export default function FranchisePage() {
       ovr: 60, prevOVR: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: 0, baseRPG: 0, baseAPG: 0, seasonStats: null,
       age: 27, potential: "Rotation" as const,
+      injuredGames: 0, morale: "content" as const,
     }))
   );
   const [activeSlot, setActiveSlot] = useState<string | null>(SLOT_DEFS[0].id);
@@ -536,6 +571,8 @@ export default function FranchisePage() {
   const [simDots, setSimDots]         = useState(0);
   const [dragSlotId, setDragSlotId]   = useState<string | null>(null);
   const [dragOverId, setDragOverId]   = useState<string | null>(null);
+  const [seasonWins, setSeasonWins]   = useState(0);
+  const [tradeOffers, setTradeOffers] = useState<TradeOffer[]>([]);
 
   useEffect(() => {
     if (phase !== "simulating") return;
@@ -600,6 +637,7 @@ export default function FranchisePage() {
       ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg,
       seasonStats: null, age, potential,
+      injuredGames: 0, morale: "content" as const,
     }));
     advanceActiveSlot(targetId);
     setSearch("");
@@ -613,6 +651,7 @@ export default function FranchisePage() {
       ovr: 60, prevOVR: 60, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: 0, baseRPG: 0, baseAPG: 0, seasonStats: null,
       age: 27, potential: "Rotation" as const,
+      injuredGames: 0, morale: "content" as const,
     }));
     setActiveSlot(slotId);
   }
@@ -634,6 +673,7 @@ export default function FranchisePage() {
         trend: src.trend, prevTrend: src.prevTrend,
         basePPG: src.basePPG, baseRPG: src.baseRPG, baseAPG: src.baseAPG,
         seasonStats: src.seasonStats, age: src.age, potential: src.potential,
+        injuredGames: src.injuredGames, morale: src.morale,
       });
       return prev.map(sl => {
         if (sl.slotId === fromId) return { ...sl, ...pick(to) };
@@ -641,6 +681,59 @@ export default function FranchisePage() {
         return sl;
       });
     });
+  }
+
+  function generateTradeOffers(updatedSlots: ContractSlot[]): TradeOffer[] {
+    const yourFilled = updatedSlots.filter(sl => sl.nbaPlayer || sl.rosterPlayer);
+    const usedIds = new Set(updatedSlots.filter(s => s.nbaPlayer).map(s => s.nbaPlayer!.id));
+    const offers: TradeOffer[] = [];
+    const shuffled = [...yourFilled].sort(() => Math.random() - 0.5);
+    for (const yourSlot of shuffled) {
+      if (offers.length >= 3) break;
+      const isFrustrated = yourSlot.morale === "frustrated";
+      if (!isFrustrated && Math.random() > 0.5) continue;
+      const yourOVR = yourSlot.ovr;
+      const matching = CURRENT_NBA_PLAYERS.filter(p => {
+        if (usedIds.has(p.id)) return false;
+        const pOVR = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+        const pSal = playerSalary(p);
+        return Math.abs(pOVR - yourOVR) <= 9 && Math.abs(pSal - yourSlot.salary) <= 5;
+      });
+      if (matching.length === 0) continue;
+      const aiPlayer = matching[Math.floor(Math.random() * Math.min(matching.length, 6))];
+      const aiTeam = LEAGUE_TEAMS.find(t => t.name === aiPlayer.team);
+      if (!aiTeam || aiTeam.abbr === chosenTeam?.abbr) continue;
+      const pOVR = computeOVR(aiPlayer.ppg, aiPlayer.rpg, aiPlayer.apg, aiPlayer.spg, aiPlayer.bpg);
+      offers.push({
+        id: `${yourSlot.slotId}-${aiPlayer.id}-${Math.random().toString(36).slice(2, 6)}`,
+        aiTeam: { name: aiTeam.name, abbr: aiTeam.abbr, color: aiTeam.color, logoUrl: aiTeam.logoUrl },
+        theyOffer: { id: aiPlayer.id, name: aiPlayer.name, ovr: pOVR, salary: playerSalary(aiPlayer), age: playerAge(aiPlayer), position: aiPlayer.position, color: aiPlayer.teamColor, ppg: aiPlayer.ppg, rpg: aiPlayer.rpg, apg: aiPlayer.apg },
+        theyWant: yourSlot.slotId,
+        wantedName: yourSlot.nbaPlayer?.name ?? yourSlot.rosterPlayer?.name ?? "",
+        wantedOVR: yourOVR,
+        wantedSalary: yourSlot.salary,
+      });
+    }
+    return offers;
+  }
+
+  function acceptTrade(offer: TradeOffer) {
+    const aiPlayer = CURRENT_NBA_PLAYERS.find(p => p.id === offer.theyOffer.id);
+    if (!aiPlayer) return;
+    const ovr = offer.theyOffer.ovr;
+    setSlots(prev => prev.map(sl => sl.slotId !== offer.theyWant ? sl : {
+      ...sl, nbaPlayer: aiPlayer, rosterPlayer: null, isNBA: true,
+      salary: offer.theyOffer.salary, yearsLeft: 2,
+      ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
+      basePPG: aiPlayer.ppg, baseRPG: aiPlayer.rpg, baseAPG: aiPlayer.apg,
+      seasonStats: null, age: offer.theyOffer.age, potential: derivePotential(ovr),
+      injuredGames: 0, morale: "content" as const,
+    }));
+    setTradeOffers(prev => prev.filter(o => o.id !== offer.id));
+  }
+
+  function declineTrade(offerId: string) {
+    setTradeOffers(prev => prev.filter(o => o.id !== offerId));
   }
 
   function signFA(fa: FreeAgent) {
@@ -656,6 +749,7 @@ export default function FranchisePage() {
       ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: fa.ppg, baseRPG: fa.rpg, baseAPG: fa.apg, seasonStats: null,
       age: fa.age, potential,
+      injuredGames: 0, morale: "content" as const,
     }));
     setFreeAgents(prev => prev.filter(f => f.name !== fa.name));
     advanceActiveSlot(targetId);
@@ -675,6 +769,7 @@ export default function FranchisePage() {
       ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg,
       seasonStats: null, age, potential,
+      injuredGames: 0, morale: "content" as const,
     }));
     advanceActiveSlot(targetId);
   }
@@ -691,6 +786,7 @@ export default function FranchisePage() {
       ovr, prevOVR: ovr, trend: "neutral" as Trend, prevTrend: "neutral" as Trend,
       basePPG: p.ppg, baseRPG: p.rpg, baseAPG: p.apg, seasonStats: null,
       age: p.age, potential: p.potential,
+      injuredGames: 0, morale: "content" as const,
     }));
     setDraftClass(prev => prev.filter(d => d.name !== p.name));
     advanceActiveSlot(targetId);
@@ -711,18 +807,36 @@ export default function FranchisePage() {
       const result = simulateSeason(userRating, chosenTeam.name, chosenTeam.abbr, chosenTeam.conf, chosenTeam.color, chosenTeam.logoUrl);
       const allEntries = [...result.east, ...result.west];
       const userEntry = allEntries.find(e => e.isUser);
-      if (userEntry) setTotalWins(w => w + userEntry.wins);
+      const wins = userEntry?.wins ?? 0;
+      if (userEntry) setTotalWins(w => w + wins);
+      setSeasonWins(wins);
 
-      // Generate season stats, determine trends, tick contracts
+      // Simulate injuries (~20% chance per player)
+      const injuryMap = new Map<string, number>();
+      slots.forEach(sl => {
+        if (!sl.nbaPlayer && !sl.rosterPlayer) return;
+        const r = Math.random();
+        if (r < 0.20) {
+          injuryMap.set(sl.slotId,
+            r < 0.025 ? 50 + Math.floor(Math.random() * 33)  // serious: 50–82
+          : r < 0.08  ? 20 + Math.floor(Math.random() * 21)  // moderate: 20–40
+          :               5 + Math.floor(Math.random() * 11)  // minor: 5–15
+          );
+        }
+      });
+
+      // Generate season stats, determine trends, tick contracts, apply injuries
       setSlots(prev => prev.map(sl => {
         if (!sl.nbaPlayer && !sl.rosterPlayer) return sl;
-        const season = generateSeasonStats(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.minutes);
+        const injGames = injuryMap.get(sl.slotId) ?? 0;
+        const injScale = injGames > 0 ? Math.max(0.25, 1 - (injGames / 82) * 0.75) : 1;
+        const season = generateSeasonStats(sl.basePPG * injScale, sl.baseRPG * injScale, sl.baseAPG * injScale, sl.minutes);
         const trend = determineTrend(season.ppg, sl.basePPG, season.rpg, sl.baseRPG, season.apg, sl.baseAPG);
-        return { ...sl, seasonStats: season, trend, yearsLeft: Math.max(0, sl.yearsLeft - 1) };
+        return { ...sl, seasonStats: season, trend, yearsLeft: Math.max(0, sl.yearsLeft - 1), injuredGames: injGames };
       }));
 
       setStandingsData(result);
-      setPhase("review"); // show player report before standings
+      setPhase("review");
     }, 2200);
   }
 
@@ -736,8 +850,8 @@ export default function FranchisePage() {
   }
 
   function goOffseason() {
-    // Apply progression: pass age, potential, momentum; cap OVR gain at +5/season; age players +1
-    setSlots(prev => prev.map(sl => {
+    // Build new slots synchronously so we can derive morale + pass to generateTradeOffers
+    const newSlots = slots.map(sl => {
       if (!sl.nbaPlayer && !sl.rosterPlayer) return sl;
       const newStats = applyProgression(sl.basePPG, sl.baseRPG, sl.baseAPG, sl.trend, sl.age, sl.potential, sl.prevTrend, sl.minutes);
       const rawNewOVR = computeOVR(newStats.ppg, newStats.rpg, newStats.apg);
@@ -745,13 +859,17 @@ export default function FranchisePage() {
       return {
         ...sl,
         basePPG: newStats.ppg, baseRPG: newStats.rpg, baseAPG: newStats.apg,
-        ovr: newOVR, prevOVR: sl.ovr, // save old OVR for delta display
+        ovr: newOVR, prevOVR: sl.ovr,
         seasonStats: null,
         prevTrend: sl.trend,
         age: sl.age + 1,
+        morale: computeMorale(sl.ovr, seasonWins, sl.minutes),
+        injuredGames: 0,
       };
-    }));
+    });
 
+    setSlots(newSlots);
+    setTradeOffers(generateTradeOffers(newSlots));
     setDraftClass(generateDraftClass(2025 + season));
     setFreeAgents(generateFreeAgents(season));
     setSeason(s => s + 1);
@@ -1014,10 +1132,19 @@ export default function FranchisePage() {
                   <Avatar color={color} size={44} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
                       <OVRBadge ovr={sl.ovr} small />
                       <ContractBadge years={sl.yearsLeft} />
                       <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M · Age {sl.age}</span>
+                      {sl.injuredGames > 0 && (
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, display: "inline-flex", alignItems: "center", gap: 3,
+                          background: sl.injuredGames >= 50 ? "#fee2e2" : sl.injuredGames >= 20 ? "#fef3c7" : "#fff7ed",
+                          color: sl.injuredGames >= 50 ? "#dc2626" : sl.injuredGames >= 20 ? "#92400e" : "#c2410c",
+                          border: `1px solid ${sl.injuredGames >= 50 ? "#fca5a5" : sl.injuredGames >= 20 ? "#fde68a" : "#fdba74"}` }}>
+                          <InjuryIcon size={10} color={sl.injuredGames >= 50 ? "#dc2626" : sl.injuredGames >= 20 ? "#92400e" : "#c2410c"} />
+                          Missed {sl.injuredGames}G
+                        </span>
+                      )}
                     </div>
                   </div>
                   {/* Season stats with deltas */}
@@ -1143,6 +1270,8 @@ export default function FranchisePage() {
                           )}
                           <span style={{ fontSize: 8, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M</span>
                           <ContractBadge years={sl.yearsLeft} />
+                          {sl.morale === "frustrated" && <span style={{ fontSize: 8, fontWeight: 700, color: "#dc2626", background: "#fee2e2", padding: "1px 5px", borderRadius: 3 }}>Unhappy</span>}
+                          {sl.morale === "happy" && <span style={{ fontSize: 8, fontWeight: 700, color: "#15803d", background: "#dcfce7", padding: "1px 5px", borderRadius: 3 }}>Happy</span>}
                         </div>
                       </div>
                     </div>
@@ -1182,12 +1311,15 @@ export default function FranchisePage() {
               draftClass={draftClass}
               freeAgents={freeAgents}
               nbaPool={CURRENT_NBA_PLAYERS.filter(p => !slots.some(s => s.nbaPlayer?.id === p.id)).sort((a,b) => playerRank(a) - playerRank(b))}
+              tradeOffers={tradeOffers}
               capLeft={capLeft}
               filledCount={filledCount}
               season={season}
               onDraft={draftProspect}
               onSign={signFA}
               onSignNBA={signNBAPlayer}
+              onAcceptTrade={acceptTrade}
+              onDeclineTrade={declineTrade}
             />
           </div>
         </div>
@@ -1197,17 +1329,19 @@ export default function FranchisePage() {
 }
 
 // ─── Offseason Tabs ────────────────────────────────────────────────────────────
-function OffseasonTabs({ draftClass, freeAgents, nbaPool, capLeft, filledCount, season, onDraft, onSign, onSignNBA }: {
+function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, filledCount, season, onDraft, onSign, onSignNBA, onAcceptTrade, onDeclineTrade }: {
   draftClass: Prospect[]; freeAgents: FreeAgent[]; nbaPool: CurrentNBAPlayer[];
+  tradeOffers: TradeOffer[];
   capLeft: number; filledCount: number; season: number;
   onDraft: (p: Prospect) => void; onSign: (fa: FreeAgent) => void; onSignNBA: (p: CurrentNBAPlayer) => void;
+  onAcceptTrade: (offer: TradeOffer) => void; onDeclineTrade: (id: string) => void;
 }) {
-  const [tab, setTab] = useState<"draft" | "fa" | "nba">("draft");
+  const [tab, setTab] = useState<"draft" | "fa" | "nba" | "trades">("draft");
   return (
     <>
       <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(0,0,0,0.08)", background: "white" }}>
-        {([["draft", "Draft Class"], ["fa", "Free Agents"], ["nba", "NBA Stars"]] as const).map(([t, label]) => (
-          <button key={t} onClick={() => setTab(t)} style={{ padding: "11px 16px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 12, background: tab === t ? "#f4f0e6" : "white", color: tab === t ? "#111827" : "#6b7280", borderBottom: tab === t ? "2px solid #84cc16" : "2px solid transparent" }}>
+        {([ ["draft", "Draft Class"], ["fa", "Free Agents"], ["nba", "NBA Stars"], ["trades", tradeOffers.length > 0 ? `Trades (${tradeOffers.length})` : "Trades"] ] as const).map(([t, label]) => (
+          <button key={t} onClick={() => setTab(t as "draft" | "fa" | "nba" | "trades")} style={{ padding: "11px 16px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 12, background: tab === t ? "#f4f0e6" : "white", color: tab === t ? "#111827" : t === "trades" && tradeOffers.length > 0 ? "#f59e0b" : "#6b7280", borderBottom: tab === t ? "2px solid #84cc16" : "2px solid transparent" }}>
             {label}
           </button>
         ))}
@@ -1281,6 +1415,79 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, capLeft, filledCount, 
                 );
               })
             }
+          </div>
+        )}
+        {tab === "trades" && (
+          <div>
+            <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12, fontFamily: "monospace" }}>
+              {tradeOffers.length === 0 ? "No trade offers this offseason" : `${tradeOffers.length} AI trade offer${tradeOffers.length !== 1 ? "s" : ""} — review and decide`}
+            </p>
+            {tradeOffers.length === 0 && (
+              <p style={{ color: "#d1d5db", fontSize: 12, textAlign: "center", padding: "48px 0" }}>No offers — keep building</p>
+            )}
+            {tradeOffers.map(offer => {
+              const salDelta = offer.theyOffer.salary - offer.wantedSalary;
+              const canAfford = capLeft - salDelta >= 0;
+              return (
+                <div key={offer.id} style={{ borderRadius: 12, border: "1.5px solid rgba(0,0,0,0.09)", background: "white", marginBottom: 10, overflow: "hidden" }}>
+                  <div style={{ padding: "8px 12px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.07)", display: "flex", alignItems: "center", gap: 7 }}>
+                    <TeamLogo url={offer.aiTeam.logoUrl} color={offer.aiTeam.color} size={18} />
+                    <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.08em", color: "#374151" }}>{offer.aiTeam.abbr}</span>
+                    <span style={{ fontSize: 10, color: "#9ca3af", marginLeft: 4 }}>wants {offer.wantedName}</span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 10, padding: "12px 14px" }}>
+                    <div style={{ padding: "8px 10px", borderRadius: 8, background: "rgba(132,204,22,0.06)", border: "1px solid rgba(132,204,22,0.2)" }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: "#65a30d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>You Receive</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <Avatar color={offer.theyOffer.color} size={28} />
+                        <div>
+                          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1 }}>{offer.theyOffer.name}</p>
+                          <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{offer.theyOffer.position} · {offer.theyOffer.age}yo</p>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 5, marginTop: 5, alignItems: "center" }}>
+                        <OVRBadge ovr={offer.theyOffer.ovr} small />
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#65a30d" }}>${offer.theyOffer.salary}M</span>
+                      </div>
+                      <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 3 }}>{offer.theyOffer.ppg.toFixed(1)}p {offer.theyOffer.rpg.toFixed(1)}r {offer.theyOffer.apg.toFixed(1)}a</p>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                      <svg width="20" height="12" viewBox="0 0 20 12">
+                        <path d="M1 6h18M13 1l6 5-6 5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                      </svg>
+                      {salDelta !== 0 && (
+                        <p style={{ fontSize: 9, fontWeight: 700, color: salDelta > 0 ? "#dc2626" : "#16a34a", marginTop: 3 }}>
+                          {salDelta > 0 ? `+$${salDelta}M` : `-$${Math.abs(salDelta)}M`}
+                        </p>
+                      )}
+                    </div>
+                    <div style={{ padding: "8px 10px", borderRadius: 8, background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.15)" }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>You Send</p>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1 }}>{offer.wantedName}</p>
+                      <div style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                        <OVRBadge ovr={offer.wantedOVR} small />
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#6b7280" }}>${offer.wantedSalary}M</span>
+                      </div>
+                    </div>
+                  </div>
+                  {!canAfford && (
+                    <p style={{ padding: "0 14px 8px", fontSize: 10, color: "#dc2626", fontWeight: 600 }}>
+                      Need ${salDelta}M more cap space to accept
+                    </p>
+                  )}
+                  <div style={{ display: "flex", gap: 8, padding: "0 14px 12px" }}>
+                    <button onClick={() => canAfford && onAcceptTrade(offer)} disabled={!canAfford}
+                      style={{ flex: 1, padding: "7px", borderRadius: 7, border: "none", background: canAfford ? "#84cc16" : "#e5e7eb", color: canAfford ? "#111827" : "#9ca3af", cursor: canAfford ? "pointer" : "not-allowed", fontWeight: 700, fontSize: 12 }}>
+                      Accept Trade
+                    </button>
+                    <button onClick={() => onDeclineTrade(offer.id)}
+                      style={{ flex: 1, padding: "7px", borderRadius: 7, border: "1px solid #e5e7eb", background: "white", color: "#6b7280", cursor: "pointer", fontWeight: 700, fontSize: 12 }}>
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
