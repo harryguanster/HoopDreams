@@ -293,7 +293,7 @@ function PlayerHeadshot({ playerId, color, size = 36 }: { playerId: string | nul
       overflow: "hidden", flexShrink: 0, background: color + "22",
     }}>
       <img
-        src={`https://cdn.nba.com/headshots/nba/latest/260x190/${nbaId}.png`}
+        src={`/api/nba-headshot/${nbaId}`}
         alt=""
         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }}
         onError={() => setFailed(true)}
