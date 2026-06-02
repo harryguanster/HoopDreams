@@ -138,7 +138,6 @@ export const NBA_HEADSHOT_IDS: Record<string, number> = {
   anesmith:   1631114,
   tcamara:    1631132,
   jwilliams2: 1631268,
-  istewart:   1630191,
   jsmith:     1631105,
 
   // ── 2022–23 class ─────────────────────────────────────────────────────────────
