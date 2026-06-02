@@ -290,7 +290,7 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
 
 const MAX_GUESSES = 10;
 
-const CONFETTI_COLORS = ["#14b8a6","#f59e0b","#ef4444","#3b82f6","#8b5cf6","#10b981"];
+const CONFETTI_COLORS = ["#84cc16","#f59e0b","#ef4444","#3b82f6","#8b5cf6","#a3e635"];
 
 function Confetti() {
   const pieces = Array.from({ length: 28 }, (_, i) => ({
@@ -387,7 +387,8 @@ function WordleGame({ players, playerNames }: {
         {won && <Confetti />}
         <main className="flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full min-h-full">
           <motion.div
-            className={`w-full rounded-3xl border-2 p-7 text-center bg-white shadow-lg ${won ? "border-teal-300" : "border-red-200"}`}
+            className="w-full rounded-2xl p-7 text-center bg-white shadow-sm"
+            style={{ border: won ? "1.5px solid rgba(132,204,22,0.4)" : "1.5px solid rgba(239,68,68,0.25)" }}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -402,7 +403,7 @@ function WordleGame({ players, playerNames }: {
             </motion.div>
             <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-1">{won ? "Correct!" : "Not quite!"}</h2>
             {won
-              ? <p className="text-teal-600 font-semibold text-sm mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
+              ? <p className="font-semibold text-sm mb-5" style={{ color: "#65a30d" }}>Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
               : <p className="text-gray-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
             <motion.div

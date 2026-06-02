@@ -43,13 +43,13 @@ export default function GameHeader({ title, era }: { title: string; era?: string
           <span
             className="text-[10px] font-bold px-2.5 py-1 uppercase tracking-widest"
             style={{
-              background: "rgba(20,184,166,0.1)",
-              color: "#0f766e",
-              border: "1px solid rgba(20,184,166,0.3)",
+              background: "rgba(132,204,22,0.1)",
+              color: "#65a30d",
+              border: "1px solid rgba(132,204,22,0.3)",
               clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 100%, 6px 100%)",
             }}
           >
-            🏆 All-Time
+            All-Time
           </span>
         )}
         <span className="font-bebas text-[#111827] text-xl tracking-[0.08em]">{title}</span>

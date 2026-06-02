@@ -11,15 +11,16 @@ function ChallengeCard({
   return (
     <Link
       href={href}
-      className="group bg-white rounded-3xl p-7 flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 active:scale-[0.98] min-h-[200px]"
+      className="group bg-white rounded-2xl p-6 flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] min-h-[200px]"
+      style={{ border: "1.5px solid rgba(0,0,0,0.08)" }}
     >
       <div className="flex items-start justify-between mb-4">
         <span className="text-3xl">{emoji}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
+        <span className="text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ color: "#65a30d", background: "rgba(132,204,22,0.1)", border: "1px solid rgba(132,204,22,0.25)" }}>
           {tag}
         </span>
       </div>
-      <h2 className="text-xl font-bold text-zinc-900 mb-2 group-hover:text-teal-600 transition-colors">
+      <h2 className="text-xl font-bold text-zinc-900 mb-2 group-hover:text-[#65a30d] transition-colors">
         {title}
       </h2>
       <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-5">{description}</p>
@@ -35,7 +36,7 @@ export default function ChallengesPage() {
       <GameHeader title="Challenges" />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 pb-20">
         <div className="text-center mb-12 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#65a30d" }}>
             Listing Challenges
           </p>
           <h1 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3">

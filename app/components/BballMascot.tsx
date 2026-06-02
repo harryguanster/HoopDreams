@@ -19,7 +19,7 @@ export default function BballMascot({ size = 120, glow = false, idle = true, fly
     >
       <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" style={{
         filter: glow
-          ? "drop-shadow(0 0 22px rgba(251,146,60,0.9)) drop-shadow(0 0 55px rgba(20,184,166,0.5)) drop-shadow(0 10px 28px rgba(0,0,0,0.7))"
+          ? "drop-shadow(0 0 22px rgba(251,146,60,0.9)) drop-shadow(0 0 55px rgba(132,204,22,0.5)) drop-shadow(0 10px 28px rgba(0,0,0,0.7))"
           : "drop-shadow(0 10px 28px rgba(0,0,0,0.6)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
         overflow: "visible",
       }}>
@@ -29,17 +29,17 @@ export default function BballMascot({ size = 120, glow = false, idle = true, fly
             <stop offset="100%" stopColor="#c2410c" />
           </radialGradient>
           <radialGradient id="bm-shoe" cx="40%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#2dd4bf" />
-            <stop offset="100%" stopColor="#0f766e" />
+            <stop offset="0%" stopColor="#a3e635" />
+            <stop offset="100%" stopColor="#65a30d" />
           </radialGradient>
           <linearGradient id="bm-cape" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#0d9488" />
-            <stop offset="60%" stopColor="#14b8a6" />
-            <stop offset="100%" stopColor="#5eead4" />
+            <stop offset="0%" stopColor="#84cc16" />
+            <stop offset="60%" stopColor="#a3e635" />
+            <stop offset="100%" stopColor="#d9f99d" />
           </linearGradient>
           <linearGradient id="bm-cape-inner" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#0f766e" />
-            <stop offset="100%" stopColor="#0d9488" />
+            <stop offset="0%" stopColor="#65a30d" />
+            <stop offset="100%" stopColor="#84cc16" />
           </linearGradient>
         </defs>
 
@@ -142,9 +142,9 @@ export default function BballMascot({ size = 120, glow = false, idle = true, fly
         <path d="M23 57 Q60 77 97 57" stroke="#7c2d12" strokeWidth="2.5" fill="none" opacity="0.65" />
         <line x1="60" y1="20" x2="60" y2="94" stroke="#7c2d12" strokeWidth="2.5" opacity="0.65" />
 
-        {/* Teal headband */}
-        <path d="M25 38 Q60 23 95 38" stroke="#14b8a6" strokeWidth="6" fill="none" strokeLinecap="round" />
-        <path d="M25 38 Q60 23 95 38" stroke="#2dd4bf" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
+        {/* Lime headband */}
+        <path d="M25 38 Q60 23 95 38" stroke="#84cc16" strokeWidth="6" fill="none" strokeLinecap="round" />
+        <path d="M25 38 Q60 23 95 38" stroke="#a3e635" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
 
         {/* Eyes white */}
         <circle cx="47" cy="51" r="10.5" fill="white" />

@@ -59,7 +59,7 @@ function PlayerCard({ player }: { player: LineupPlayer }) {
           {/* Jersey body: V-neck collar, angled shoulders, straight body */}
           <path
             d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z"
-            fill="#0f766e"
+            fill="#111827"
           />
           {/* White trim outline */}
           <path
@@ -85,7 +85,7 @@ function PlayerCard({ player }: { player: LineupPlayer }) {
       </div>
       {/* Stats pill below jersey */}
       <div className="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-center shadow-md -mt-1">
-        <div className="text-[7px] font-bold text-teal-700 uppercase tracking-wide leading-none mb-0.5">
+        <div className="text-[7px] font-bold uppercase tracking-wide leading-none mb-0.5" style={{ color: "#65a30d" }}>
           {player.position}
         </div>
         <div className="text-[7px] font-semibold text-gray-800 leading-tight whitespace-nowrap">

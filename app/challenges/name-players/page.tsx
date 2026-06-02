@@ -181,7 +181,7 @@ export default function NamePlayersPage() {
             ← Prev
           </button>
           <div className="text-center">
-            <div className={`text-xl font-black tracking-tight ${teamDone ? "text-teal-600" : "text-[#111827]"}`}>
+            <div className={`text-xl font-black tracking-tight`} style={{ color: teamDone ? "#65a30d" : "#111827" }}>
               {teamName} {teamDone && "✓"}
             </div>
             <div className="text-[10px] text-gray-400">Team {teamIdx + 1} of 30</div>
@@ -212,7 +212,7 @@ export default function NamePlayersPage() {
 
         {/* Feedback */}
         {feedback && (
-          <p className={`text-center text-sm font-semibold mb-3 ${feedback.ok ? "text-teal-600" : "text-red-500"}`}>
+          <p className="text-center text-sm font-semibold mb-3" style={{ color: feedback.ok ? "#65a30d" : "#ef4444" }}>
             {feedback.msg}
           </p>
         )}
@@ -278,7 +278,7 @@ export default function NamePlayersPage() {
             {/* Per-team breakdown */}
             <div className="mt-6 grid grid-cols-2 gap-1.5 text-left max-h-64 overflow-y-auto">
               {TEAM_NAMES.map(t => (
-                <div key={t} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-xs ${guessedPerTeam[t].length >= SLOTS ? "bg-teal-50 text-teal-700 border border-teal-200" : "bg-gray-50 text-gray-400"}`}>
+                <div key={t} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-xs ${guessedPerTeam[t].length >= SLOTS ? "bg-gray-50" : "bg-gray-50 text-gray-400"}`} style={guessedPerTeam[t].length >= SLOTS ? { color: "#65a30d", border: "1px solid rgba(132,204,22,0.25)", background: "rgba(132,204,22,0.07)" } : {}}>
                   <span className="font-medium truncate pr-2">{t.replace(/^(Los Angeles|New York|New Orleans|San Antonio|Oklahoma City|Golden State|Portland Trail|Sacramento|Golden State) /, m => m.slice(0, 2) + ".")}</span>
                   <span className="font-bold tabular-nums shrink-0">{Math.min(guessedPerTeam[t].length, SLOTS)}/6</span>
                 </div>

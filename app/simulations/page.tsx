@@ -42,11 +42,11 @@ const RINGER_RANKINGS: Record<string, number> = {
 };
 
 const RANK_TIERS = [
-  { rangeLabel: "#1–6",    price: 18, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" },
-  { rangeLabel: "#7–16",   price: 14, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" },
-  { rangeLabel: "#17–26",  price: 11, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" },
-  { rangeLabel: "#27–36",  price:  9, bg: "#dcfce7", text: "#14532d", border: "#4ade80" },
-  { rangeLabel: "#37–46",  price:  7, bg: "#f0fdf4", text: "#166534", border: "#86efac" },
+  { rangeLabel: "#1–6",    price: 28, bg: "#fef3c7", text: "#92400e", border: "#f59e0b" },
+  { rangeLabel: "#7–16",   price: 20, bg: "#ede9fe", text: "#4c1d95", border: "#8b5cf6" },
+  { rangeLabel: "#17–26",  price: 15, bg: "#dbeafe", text: "#1e3a8a", border: "#60a5fa" },
+  { rangeLabel: "#27–36",  price: 11, bg: "#dcfce7", text: "#14532d", border: "#4ade80" },
+  { rangeLabel: "#37–46",  price:  8, bg: "#f0fdf4", text: "#166534", border: "#86efac" },
   { rangeLabel: "#47–56",  price:  6, bg: "#ecfeff", text: "#164e63", border: "#67e8f9" },
   { rangeLabel: "#57–66",  price:  5, bg: "#f0f9ff", text: "#075985", border: "#7dd3fc" },
   { rangeLabel: "#67–76",  price:  4, bg: "#faf5ff", text: "#581c87", border: "#c084fc" },

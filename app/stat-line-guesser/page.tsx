@@ -30,7 +30,7 @@ const REVEAL_STEPS = [
   { label: "Team", key: "team" },
 ];
 
-const SL_CONFETTI_COLORS = ["#14b8a6","#f59e0b","#ef4444","#3b82f6","#8b5cf6","#10b981"];
+const SL_CONFETTI_COLORS = ["#84cc16","#f59e0b","#ef4444","#3b82f6","#8b5cf6","#a3e635"];
 
 function SLConfetti() {
   const pieces = Array.from({ length: 24 }, (_, i) => ({
@@ -144,7 +144,8 @@ function StatLineCore({ era }: { era: Era }) {
         {gameState === "correct" && <SLConfetti />}
         <main className="flex flex-col items-center justify-center px-4 py-10 max-w-md mx-auto w-full min-h-full">
           <motion.div
-            className={`w-full rounded-3xl border-2 p-7 text-center bg-white shadow-lg ${gameState === "correct" ? "border-teal-300" : "border-red-200"}`}
+            className="w-full rounded-2xl p-7 text-center bg-white shadow-sm"
+            style={{ border: gameState === "correct" ? "1.5px solid rgba(132,204,22,0.4)" : "1.5px solid rgba(239,68,68,0.25)" }}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -162,7 +163,7 @@ function StatLineCore({ era }: { era: Era }) {
             </h2>
             {gameState === "correct" ? (
               <>
-                <p className="text-teal-600 font-semibold text-sm mb-2">Got it after {stepsRevealed} clue{stepsRevealed !== 1 ? "s" : ""}!</p>
+                <p className="font-semibold text-sm mb-2" style={{ color: "#65a30d" }}>Got it after {stepsRevealed} clue{stepsRevealed !== 1 ? "s" : ""}!</p>
                 <div className="flex justify-center gap-1 text-2xl mb-5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <motion.span
@@ -235,7 +236,8 @@ function StatLineCore({ era }: { era: Era }) {
       </div>
 
       <motion.div
-        className="w-20 h-20 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-3xl mb-6 shadow-lg"
+        className="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-6 shadow-sm"
+        style={{ background: "linear-gradient(135deg, #84cc16, #65a30d)" }}
         animate={{ rotate: [0, -4, 4, -2, 2, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >

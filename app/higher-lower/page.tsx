@@ -175,13 +175,13 @@ export default function HigherLowerPage() {
           <div
             className="rounded-2xl p-5 flex flex-col justify-between"
             style={{
-              background: "linear-gradient(135deg, rgba(20,184,166,0.08) 0%, white 100%)",
-              border: "1.5px solid rgba(20,184,166,0.3)",
+              background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, white 100%)",
+              border: "1.5px solid rgba(132,204,22,0.3)",
               minHeight: 160,
             }}
           >
             <div>
-              <p className="text-[9px] font-mono uppercase tracking-widest text-teal-600 mb-1">Current</p>
+              <p className="text-[9px] font-mono uppercase tracking-widest mb-1" style={{ color: "#65a30d" }}>Current</p>
               <p
                 className="font-bold text-[#111827] leading-tight mb-3"
                 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.05em" }}
@@ -191,7 +191,7 @@ export default function HigherLowerPage() {
               <p className="text-xs text-gray-500">{current.hint}</p>
             </div>
             <div>
-              <p className="text-3xl font-black text-teal-600 tabular-nums">
+              <p className="text-3xl font-black tabular-nums" style={{ color: "#65a30d" }}>
                 {formatValue(current.value, category.format)}
               </p>
               <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wide mt-0.5">
@@ -305,8 +305,8 @@ export default function HigherLowerPage() {
               onClick={() => guess("lower")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="py-4 rounded-2xl text-white font-bold text-lg flex flex-col items-center gap-1"
-              style={{ background: "linear-gradient(135deg, #1d4ed8, #2563eb)", border: "2px solid rgba(59,130,246,0.4)" }}
+              className="py-4 rounded-2xl font-bold text-lg flex flex-col items-center gap-1"
+              style={{ background: "#111827", color: "white", border: "1.5px solid rgba(0,0,0,0.2)" }}
             >
               <span className="text-2xl">↓</span>
               <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1.4rem", letterSpacing: "0.1em" }}>Lower</span>
@@ -315,8 +315,8 @@ export default function HigherLowerPage() {
               onClick={() => guess("higher")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="py-4 rounded-2xl text-white font-bold text-lg flex flex-col items-center gap-1"
-              style={{ background: "linear-gradient(135deg, #b45309, #d97706)", border: "2px solid rgba(245,158,11,0.4)" }}
+              className="py-4 rounded-2xl font-bold text-lg flex flex-col items-center gap-1"
+              style={{ background: "#84cc16", color: "#111827", border: "1.5px solid #65a30d" }}
             >
               <span className="text-2xl">↑</span>
               <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1.4rem", letterSpacing: "0.1em" }}>Higher</span>

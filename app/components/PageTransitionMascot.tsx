@@ -16,7 +16,7 @@ function randPos() {
 // Comet tail: slower blobs that "lag behind" the mascot as it zips to new positions
 const TRAIL = [
   { mult: 1.55, opacity: 0.65, size: 44, color: "rgba(251,146,60,0.80)", blur: 10 },
-  { mult: 2.1,  opacity: 0.38, size: 30, color: "rgba(20,184,166,0.65)",  blur: 13 },
+  { mult: 2.1,  opacity: 0.38, size: 30, color: "rgba(132,204,22,0.65)", blur: 13 },
   { mult: 2.9,  opacity: 0.20, size: 20, color: "rgba(251,146,60,0.55)",  blur: 16 },
 ];
 

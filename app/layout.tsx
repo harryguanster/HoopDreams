@@ -35,17 +35,24 @@ export const metadata: Metadata = {
   },
   description: "Free NBA trivia games: Franchise Mode simulator, Higher or Lower, Connections, Guess Who, Start Bench Cut, Stat Line Guesser, and more. Test your NBA knowledge.",
   keywords: ["NBA trivia", "NBA games", "NBA quiz", "basketball trivia", "NBA higher lower", "NBA connections", "NBA franchise mode", "start bench cut NBA", "NBA guess who"],
+  icons: {
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     type: "website",
     siteName: "Courtside Central",
     title: "Courtside Central — NBA Games & Trivia",
     description: "Free NBA trivia and games. Franchise Mode, Higher or Lower, Connections, Guess Who, and more.",
     url: "https://courtsidecentral.com",
+    images: [{ url: "/logo.png" }],
   },
   twitter: {
     card: "summary",
     title: "Courtside Central — NBA Games & Trivia",
     description: "Free NBA trivia and games. Test your NBA knowledge.",
+    images: ["/logo.png"],
   },
   metadataBase: new URL("https://courtsidecentral.com"),
   verification: {
@@ -62,6 +69,17 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full`}>
         <body className="min-h-full flex flex-col text-[#111827] antialiased" style={{ background: "#f4f0e6" }}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "Courtside Central",
+                url: "https://courtsidecentral.com",
+              }),
+            }}
+          />
           {children}
           <Analytics />
         </body>

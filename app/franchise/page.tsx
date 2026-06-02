@@ -10,6 +10,7 @@ import {
   type Prospect, type FreeAgent, type PlayoffResult, type Conference,
 } from "@/lib/franchiseData";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
+import { NBA_HEADSHOT_IDS } from "@/lib/nbaHeadshotIds";
 
 // ─── Salary / rank data ────────────────────────────────────────────────────────
 const SALARY_CAP      = 100; // hard cap for initial roster build
@@ -281,6 +282,26 @@ function TeamLogo({ url, color, size = 24 }: { url: string; color: string; size?
   return <img src={url} alt="" width={size} height={size} style={{ objectFit: "contain", flexShrink: 0, display: "block" }} onError={() => setErr(true)} />;
 }
 
+// ─── Player Headshot (with Avatar fallback) ────────────────────────────────────
+function PlayerHeadshot({ playerId, color, size = 36 }: { playerId: string | null; color: string; size?: number }) {
+  const [failed, setFailed] = React.useState(false);
+  const nbaId = playerId ? NBA_HEADSHOT_IDS[playerId] : null;
+  if (!nbaId || failed) return <Avatar color={color} size={size} />;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: Math.round(size * 0.2),
+      overflow: "hidden", flexShrink: 0, background: color + "22",
+    }}>
+      <img
+        src={`https://cdn.nba.com/headshots/nba/latest/260x190/${nbaId}.png`}
+        alt=""
+        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }}
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
+
 // ─── Avatar ────────────────────────────────────────────────────────────────────
 function Avatar({ color, size = 36 }: { color: string; size?: number }) {
   return (
@@ -502,7 +523,7 @@ function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRem
       {filled ? (
         <div style={{ padding: "8px 10px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Avatar color={color} size={34} />
+            <PlayerHeadshot playerId={slot.nbaPlayer?.id ?? null} color={color} size={34} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
               <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
@@ -1052,7 +1073,7 @@ export default function FranchisePage() {
                             onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                           >
                             <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
-                              <Avatar color={p.teamColor} size={26} />
+                              <PlayerHeadshot playerId={p.id} color={p.teamColor} size={26} />
                               <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
                             </div>
                             <div style={{ paddingLeft: 31, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1129,7 +1150,7 @@ export default function FranchisePage() {
                     boxShadow: sl.trend === "up" ? "0 2px 12px rgba(34,197,94,0.08)" : sl.trend === "down" ? "0 2px 8px rgba(239,68,68,0.06)" : "none",
                   }}
                 >
-                  <Avatar color={color} size={44} />
+                  <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={color} size={44} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
@@ -1255,7 +1276,7 @@ export default function FranchisePage() {
                 return (
                   <div key={sl.slotId} style={{ marginBottom: 6, borderRadius: 10, padding: "9px 10px", background: isExpiring ? "#fef9ec" : "white", border: isExpiring ? "1.5px solid #f59e0b60" : "1px solid rgba(0,0,0,0.08)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: isExpiring ? 8 : 0 }}>
-                      <Avatar color={color} size={28} />
+                      <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={color} size={28} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                           <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.78rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
@@ -1404,7 +1425,7 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                     onMouseEnter={e => { if (canSign) e.currentTarget.style.borderColor = "#84cc16"; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.07)"; }}
                   >
-                    <Avatar color={p.teamColor} size={36} />
+                    <PlayerHeadshot playerId={p.id} color={p.teamColor} size={36} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{p.name}</p>
                       <p style={{ fontSize: 10, color: "#6b7280", fontFamily: "monospace", marginTop: 2 }}>{p.position} · Age {playerAge(p)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
@@ -1439,7 +1460,7 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: "rgba(132,204,22,0.06)", border: "1px solid rgba(132,204,22,0.2)" }}>
                       <p style={{ fontSize: 9, fontWeight: 700, color: "#65a30d", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>You Receive</p>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <Avatar color={offer.theyOffer.color} size={28} />
+                        <PlayerHeadshot playerId={offer.theyOffer.id} color={offer.theyOffer.color} size={28} />
                         <div>
                           <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1 }}>{offer.theyOffer.name}</p>
                           <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{offer.theyOffer.position} · {offer.theyOffer.age}yo</p>

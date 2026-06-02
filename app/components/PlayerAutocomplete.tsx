@@ -70,7 +70,7 @@ export default function PlayerAutocomplete({
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-[#111827] placeholder-gray-400 focus:outline-none focus:border-teal-500 transition-colors text-sm disabled:opacity-40"
+        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-[#111827] placeholder-gray-400 focus:outline-none focus:border-[#84cc16] transition-colors text-sm disabled:opacity-40"
         autoComplete="off"
       />
       {open && filtered.length > 0 && (
@@ -83,13 +83,8 @@ export default function PlayerAutocomplete({
             <li
               key={name}
               onMouseDown={() => select(name)}
-              className={`px-4 py-2.5 text-sm cursor-pointer transition-colors
-                ${i === highlighted
-                  ? "bg-teal-50 text-teal-700 font-medium"
-                  : "text-[#111827] hover:bg-gray-50"
-                }
-                ${i !== 0 ? "border-t border-gray-100" : ""}
-              `}
+              className={`px-4 py-2.5 text-sm cursor-pointer transition-colors text-[#111827] ${i !== 0 ? "border-t border-gray-100" : ""}`}
+              style={i === highlighted ? { background: "rgba(132,204,22,0.1)", color: "#374151", fontWeight: 500 } : {}}
             >
               {highlightMatch(name, value)}
             </li>
@@ -107,7 +102,7 @@ function highlightMatch(name: string, query: string) {
   return (
     <>
       {name.slice(0, idx)}
-      <span className="text-teal-600 font-bold">{name.slice(idx, idx + query.length)}</span>
+      <span className="font-bold" style={{ color: "#65a30d" }}>{name.slice(idx, idx + query.length)}</span>
       {name.slice(idx + query.length)}
     </>
   );

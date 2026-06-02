@@ -178,7 +178,7 @@ export default function DraftClassPage() {
             ← Prev
           </button>
           <div className="text-center">
-            <div className={`text-4xl font-black tabular-nums tracking-tight ${classDone ? "text-teal-600" : "text-[#111827]"}`}>
+            <div className="text-4xl font-black tabular-nums tracking-tight" style={{ color: classDone ? "#65a30d" : "#111827" }}>
               {draftClass.year} {classDone && "✓"}
             </div>
             <div className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">NBA Draft Class</div>
@@ -216,7 +216,7 @@ export default function DraftClassPage() {
 
         {/* Feedback */}
         {feedback && (
-          <p className={`text-center text-sm font-semibold mb-3 ${feedback.ok ? "text-teal-600" : "text-red-500"}`}>
+          <p className="text-center text-sm font-semibold mb-3" style={{ color: feedback.ok ? "#65a30d" : "#ef4444" }}>
             {feedback.msg}
           </p>
         )}
@@ -283,7 +283,7 @@ export default function DraftClassPage() {
             </button>
             <div className="mt-6 grid grid-cols-2 gap-1.5 text-left max-h-64 overflow-y-auto px-2">
               {DRAFT_CLASSES.map(dc => (
-                <div key={dc.year} className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-xs ${guessedPerYear[dc.year].length >= SLOTS ? "bg-teal-50 text-teal-700 border border-teal-200" : "bg-gray-50 text-gray-400"}`}>
+                <div key={dc.year} className="flex items-center justify-between rounded-lg px-3 py-1.5 text-xs" style={guessedPerYear[dc.year].length >= SLOTS ? { color: "#65a30d", border: "1px solid rgba(132,204,22,0.25)", background: "rgba(132,204,22,0.07)" } : { background: "#f9fafb", color: "#9ca3af" }}>
                   <span className="font-medium">{dc.year} Draft</span>
                   <span className="font-bold tabular-nums shrink-0">{Math.min(guessedPerYear[dc.year].length, SLOTS)}/{SLOTS}</span>
                 </div>
