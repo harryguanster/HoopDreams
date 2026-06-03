@@ -11,45 +11,11 @@ import {
 } from "@/lib/franchiseData";
 import { CURRENT_NBA_PLAYERS, type CurrentNBAPlayer } from "@/lib/currentNBAPlayers";
 import { NBA_HEADSHOT_IDS } from "@/lib/nbaHeadshotIds";
+import { get2KOvr, ovrToSalary } from "@/lib/nba2k26Ratings";
 
-// ─── Salary / rank data ────────────────────────────────────────────────────────
+// ─── Salary / cap data ────────────────────────────────────────────────────────
 const SALARY_CAP      = 100; // hard cap for initial roster build
 const OFFSEASON_CAP   = 140; // +$40M veteran fund unlocks in offseason
-
-const RINGER_RANKINGS: Record<string, number> = {
-  jokic: 1, sga: 2, giannis: 3, luka: 4, ant: 5, wemby: 6,
-  curry: 7, brunson: 8, dmitchell: 9, cade: 10,
-  lebron: 11, ad: 12, durant: 13, jwilliams2: 14, mobley: 15, tatum: 16,
-  jbrown: 17, booker: 18, banchero: 19, siakam: 20,
-  kat: 21, kawhi: 22, harden: 23, jbutler: 24, bam: 25, defox: 26,
-  trae: 27, sengun: 28, jjackson: 29, cholmgren: 30,
-  sabonis: 31, tmaxey: 32, garland: 33, ja: 34, fwagner: 35, jmurray: 36,
-  embiid: 37, sbarnes: 38, oganunoby: 39, haliburton: 40,
-  athompson: 41, dame: 42, dbane: 43, agordon: 44, jrandle: 45, therro: 46,
-  lmarkkanen: 47, lamelo: 48, jallen: 49, mikalbridg: 50,
-  areaves: 51, lavine: 52, kyrie: 53, dwhite: 54, dgreen: 55, zubac: 56,
-  zion: 57, jjohnson: 58, gobert: 59, mturner: 60,
-  npowell: 61, ddaniels: 62, pgeorge: 63, mporter: 64, jhart: 65, acaruso: 66,
-  porzingis: 67, cjohnson: 68, ihartenstein: 69, cwhite: 70,
-  tmurphy: 71, jmcdaniels: 72, ldort: 73, jsuggs: 74, bingram: 75, nreid: 76,
-  cbraun: 77, ppritchard: 78, giddey: 79, bmiller: 80,
-  holiday: 81, anembhard: 82, cflagg: 83, rjbarrett: 84, dehunter: 85, anesmith: 86,
-  vucevic: 87, cjmcc: 88, tcamara: 89, dlively: 90,
-  jgreen2: 91, asimons: 92, tharris: 93, dvassell: 94, kthompson: 95, jsmith: 96,
-  // 2025 rookies
-  dharper: 42, abailey: 52, jfears: 56, vjedgecombe: 68, kknueppel: 72,
-  kjakucionis: 74, lmcneeley: 78, nessengue: 85, edemin: 88, dwolf: 90,
-  kmaluach: 91, cmurrayb: 93,
-};
-
-const RANK_TIERS = [
-  { max: 6,        price: 28 }, { max: 16,       price: 20 },
-  { max: 26,       price: 15 }, { max: 36,       price: 11 },
-  { max: 46,       price:  8 }, { max: 56,       price:  6 },
-  { max: 66,       price:  5 }, { max: 76,       price:  4 },
-  { max: 86,       price:  3 }, { max: 96,       price:  2 },
-  { max: Infinity, price:  1 },
-] as const;
 
 // Known ages for young/notable NBA players (everyone else defaults to 27)
 const PLAYER_AGES: Partial<Record<string, number>> = {
@@ -85,10 +51,10 @@ function computeMorale(ovr: number, wins: number, minutes: number): "happy" | "c
   return "content";
 }
 
-function playerRank(p: CurrentNBAPlayer): number { return RINGER_RANKINGS[p.id] ?? 999; }
-function playerSalary(p: CurrentNBAPlayer): number {
-  return RANK_TIERS.find(t => playerRank(p) <= t.max)!.price;
+function playerOVR(p: CurrentNBAPlayer): number {
+  return get2KOvr(p.id, computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg));
 }
+function playerSalary(p: CurrentNBAPlayer): number { return ovrToSalary(playerOVR(p)); }
 
 // ─── Slot definitions ──────────────────────────────────────────────────────────
 const SLOT_DEFS = [
@@ -631,7 +597,7 @@ export default function FranchisePage() {
       if (q && !p.name.toLowerCase().includes(q)) return false;
       if (teamFilter !== "All Teams" && p.team !== teamFilter) return false;
       return true;
-    }).sort((a, b) => playerRank(a) - playerRank(b));
+    }).sort((a, b) => playerOVR(b) - playerOVR(a));
   }, [slots, search, teamFilter]);
 
   // ─── Player management ───────────────────────────────────────────────────────
@@ -649,7 +615,7 @@ export default function FranchisePage() {
     if (capLeft < sal) return;
     const targetId = activeSlot ?? slots.find(s => !s.nbaPlayer && !s.rosterPlayer)?.slotId;
     if (!targetId) return;
-    const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+    const ovr = playerOVR(p);
     const age = playerAge(p);
     const potential = derivePotential(ovr);
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
@@ -716,7 +682,7 @@ export default function FranchisePage() {
       const yourOVR = yourSlot.ovr;
       const matching = CURRENT_NBA_PLAYERS.filter(p => {
         if (usedIds.has(p.id)) return false;
-        const pOVR = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+        const pOVR = playerOVR(p);
         const pSal = playerSalary(p);
         return Math.abs(pOVR - yourOVR) <= 9 && Math.abs(pSal - yourSlot.salary) <= 5;
       });
@@ -724,7 +690,7 @@ export default function FranchisePage() {
       const aiPlayer = matching[Math.floor(Math.random() * Math.min(matching.length, 6))];
       const aiTeam = LEAGUE_TEAMS.find(t => t.name === aiPlayer.team);
       if (!aiTeam || aiTeam.abbr === chosenTeam?.abbr) continue;
-      const pOVR = computeOVR(aiPlayer.ppg, aiPlayer.rpg, aiPlayer.apg, aiPlayer.spg, aiPlayer.bpg);
+      const pOVR = playerOVR(aiPlayer);
       offers.push({
         id: `${yourSlot.slotId}-${aiPlayer.id}-${Math.random().toString(36).slice(2, 6)}`,
         aiTeam: { name: aiTeam.name, abbr: aiTeam.abbr, color: aiTeam.color, logoUrl: aiTeam.logoUrl },
@@ -781,7 +747,7 @@ export default function FranchisePage() {
     if (capLeft < sal || filledCount >= 12) return;
     const targetId = activeSlot ?? slots.find(s => !s.nbaPlayer && !s.rosterPlayer)?.slotId;
     if (!targetId) return;
-    const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+    const ovr = playerOVR(p);
     const age = playerAge(p);
     const potential = derivePotential(ovr);
     setSlots(prev => prev.map(sl => sl.slotId !== targetId ? sl : {
@@ -1064,7 +1030,7 @@ export default function FranchisePage() {
                     <div style={{ flex: 1, overflowY: "auto" }}>
                       {players.map(p => {
                         const sal = playerSalary(p);
-                        const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+                        const ovr = playerOVR(p);
                         const canAfford = capLeft >= sal;
                         return (
                           <button key={p.id} onClick={() => canAfford && selectPlayer(p)} disabled={!canAfford}
@@ -1331,7 +1297,7 @@ export default function FranchisePage() {
             <OffseasonTabs
               draftClass={draftClass}
               freeAgents={freeAgents}
-              nbaPool={CURRENT_NBA_PLAYERS.filter(p => !slots.some(s => s.nbaPlayer?.id === p.id)).sort((a,b) => playerRank(a) - playerRank(b))}
+              nbaPool={CURRENT_NBA_PLAYERS.filter(p => !slots.some(s => s.nbaPlayer?.id === p.id)).sort((a,b) => playerOVR(b) - playerOVR(a))}
               tradeOffers={tradeOffers}
               capLeft={capLeft}
               filledCount={filledCount}
@@ -1417,7 +1383,7 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
               ? <p style={{ color: "#9ca3af", fontSize: 12, textAlign: "center", padding: "40px 0" }}>All available players already on your roster</p>
               : nbaPool.map(p => {
                 const sal = playerSalary(p);
-                const ovr = computeOVR(p.ppg, p.rpg, p.apg, p.spg, p.bpg);
+                const ovr = playerOVR(p);
                 const canSign = capLeft >= sal && filledCount < 12;
                 return (
                   <button key={p.id} onClick={() => canSign && onSignNBA(p)} disabled={!canSign}
