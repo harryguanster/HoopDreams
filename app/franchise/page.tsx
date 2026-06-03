@@ -18,21 +18,135 @@ const SALARY_CAP      = 100; // hard cap for initial roster build
 const OFFSEASON_CAP   = 140; // +$40M veteran fund unlocks in offseason
 
 // Known ages for young/notable NBA players (everyone else defaults to 27)
+// Ages as of October 2025 (start of 2025-26 season)
 const PLAYER_AGES: Partial<Record<string, number>> = {
-  // 2025 rookies (youngest)
-  abailey: 19, jfears: 19, kmaluach: 19,
-  cflagg: 20, dharper: 20, vjedgecombe: 20, lmcneeley: 20, nessengue: 20, edemin: 20,
-  kknueppel: 21, cmurrayb: 21,
-  dwolf: 22, kjakucionis: 22, wemby: 22,
-  // 2024 rookies
-  asarr: 20, zrisacher: 20,
-  tcamara: 22, bmiller: 22, tmurphy: 22, cbraun: 22, jsuggs: 23,
-  cade: 22, banchero: 22, jjohnson: 23,
-  cholmgren: 23, sengun: 23, anesmith: 23, fwagner: 23,
-  // primes / known ages
-  ant: 23, sga: 26, luka: 25, jokic: 29, giannis: 30,
-  curry: 37, lebron: 40, ad: 32, durant: 36, kyrie: 32,
-  harden: 35, kawhi: 33, kthompson: 34,
+  // ── 2025 Draft Class (age 19–22) ─────────────────────────────────────────────
+  cflagg:      19,  // Cooper Flagg       b. Feb 2006
+  dharper:     19,  // Dylan Harper       b. Mar 2006
+  abailey:     19,  // Ace Bailey         b. Feb 2006
+  nessengue:   19,  // Noa Essengue       b. Feb 2006
+  jfears:      20,  // Jeremiah Fears     b. Aug 2005
+  vjedgecombe: 20,  // VJ Edgecombe      b. Feb 2005
+  lmcneeley:   20,  // Liam McNeeley      b. May 2005
+  edemin:      20,  // Egor Demin         b. Jan 2005
+  kmaluach:    20,  // Khaman Maluach     b. Jun 2005
+  kknueppel:   21,  // Kon Knueppel       b. Jan 2004
+  cmurrayb:    21,  // Collin Murray-B    b. Apr 2004
+  kjakucionis: 21,  // K. Jakucionis      b. Jul 2004
+  dwolf:       22,  // Danny Wolf         b. Jun 2003
+
+  // ── 2024 Draft Class (age 20–22) ─────────────────────────────────────────────
+  asarr:       20,  // Alex Sarr          b. Jan 2005
+  zrisacher:   20,  // Z. Risacher        b. Dec 2005
+  rholland:    20,  // Ronald Holland II  b. Sep 2005
+  bcoulibaly:  20,  // Bilal Coulibaly    b. Dec 2004
+  scastle:     20,  // Stephon Castle     b. Dec 2004
+  ggjackson:   20,  // GG Jackson II      b. Nov 2004
+  thendricks:  21,  // Taylor Hendricks   b. Sep 2004
+  icollier:    21,  // Isaiah Collier     b. Apr 2004
+  anthonyblack:21,  // Anthony Black      b. Aug 2004
+  dlively:     21,  // Dereck Lively II   b. Feb 2004
+  bronny:      21,  // Bronny James       b. Oct 2004
+  shenderson:  22,  // Scoot Henderson    b. Feb 2003
+  rdillingham: 22,  // Rob Dillingham     b. Nov 2003
+  gdick:       22,  // Gradey Dick        b. Sep 2003
+  rrupert:     22,  // Rayan Rupert       b. Oct 2003
+  athompson:   22,  // Amen Thompson      b. Oct 2003
+  bpodziemski: 22,  // B. Podziemski      b. Jan 2003
+
+  // ── 2023 Draft Class (age 21–22) ─────────────────────────────────────────────
+  wemby:       21,  // Victor Wembanyama  b. Jan 2004
+  mchristie:   22,  // Max Christie       b. Dec 2002
+
+  // ── 2022 Draft Class (age 22–24) ─────────────────────────────────────────────
+  banchero:    23,  // Paolo Banchero     b. Nov 2002
+  sengun:      23,  // Alperen Sengun     b. Jul 2002
+  bmiller:     23,  // Brandon Miller     b. Jul 2002
+  tcamara:     23,  // Toumani Camara     b. Dec 2001
+  cbraun:      23,  // Christian Braun    b. Nov 2001
+  cholmgren:   23,  // Chet Holmgren      b. Dec 2001
+  jjohnson:    23,  // Jalen Johnson      b. Nov 2001
+  fwagner:     24,  // Franz Wagner       b. Aug 2001
+  mobley:      24,  // Evan Mobley        b. Aug 2001
+  cade:        24,  // Cade Cunningham    b. Sep 2001
+  jsuggs:      24,  // Jalen Suggs        b. Jun 2001
+  lamelo:      24,  // LaMelo Ball        b. Aug 2001
+  ant:         24,  // Anthony Edwards    b. Aug 2001
+  sbarnes:     24,  // Scottie Barnes     b. Aug 2001
+  jwilliams2:  24,  // Jalen Williams     b. Jan 2001
+  mwilliams:   23,  // Mark Williams      b. Dec 2001
+
+  // ── 2021 Draft Class (age 24–25) ─────────────────────────────────────────────
+  tmaxey:      24,  // Tyrese Maxey       b. Nov 2000
+  haliburton:  25,  // T. Haliburton      b. Feb 2000
+  rjbarrett:   25,  // RJ Barrett         b. Jun 2000
+  dosunmu:     25,  // Ayo Dosunmu        b. Jan 2000
+  dknecht:     25,  // Dalton Knecht      b. Mar 2000
+  tmurphy:     25,  // Trey Murphy III    b. Jun 2000
+  garland:     25,  // Darius Garland     b. Nov 1999
+
+  // ── 2019–20 Draft Class (age 25–26) ──────────────────────────────────────────
+  luka:        26,  // Luka Doncic        b. Feb 1999
+  jjackson:    26,  // Jaren Jackson Jr.  b. Sep 1999
+  ja:          26,  // Ja Morant          b. Aug 1999
+  nclaxton:    26,  // Nic Claxton        b. Apr 1999
+  iquickley:   26,  // I. Quickley        b. Jun 1999
+  jvanderbilt: 26,  // J. Vanderbilt      b. Mar 1999
+  sga:         26,  // Shai G-A           b. Dec 1998
+
+  // ── Veterans 27–29 ───────────────────────────────────────────────────────────
+  trae:        27,  // Trae Young         b. Sep 1998
+  dbane:       27,  // Desmond Bane       b. Jun 1998
+  mporter:     27,  // Michael Porter Jr. b. Jun 1998
+  defox:       27,  // De'Aaron Fox       b. Dec 1997
+  bam:         28,  // Bam Adebayo        b. Jul 1997
+  oganunoby:   28,  // OG Anunoby         b. Jul 1997
+  mbridges:    28,  // Miles Bridges      b. Mar 1997
+  sfontecchio: 26,  // S. Fontecchio      b. Sep 1999
+  jhart:       30,  // Josh Hart          b. Mar 1995
+  brunson:     29,  // Jalen Brunson      b. Aug 1996
+  booker:      29,  // Devin Booker       b. Oct 1996
+  jbrown:      29,  // Jaylen Brown       b. Oct 1996
+  mikalbridg:  29,  // Mikal Bridges      b. Aug 1996
+  cjohnson:    29,  // Cameron Johnson    b. Mar 1996
+  mturner:     29,  // Myles Turner       b. Mar 1996
+  bportis:     30,  // Bobby Portis       b. Jan 1995
+  lavine:      30,  // Zach LaVine        b. Mar 1995
+  kuzma:       30,  // Kyle Kuzma         b. Jul 1995
+  jrandle:     31,  // Julius Randle      b. Nov 1994
+  porzingis:   30,  // K. Porzingis       b. Aug 1995
+  siakam:      31,  // Pascal Siakam      b. Apr 1994
+  agordon:     30,  // Aaron Gordon       b. Sep 1995
+  awiggins:    30,  // Andrew Wiggins     b. Feb 1995
+
+  // ── Veterans 30–35 ───────────────────────────────────────────────────────────
+  jokic:       30,  // Nikola Jokic       b. Feb 1995
+  giannis:     30,  // Giannis            b. Dec 1994
+  embiid:      31,  // Joel Embiid        b. Mar 1994
+  ad:          32,  // Anthony Davis      b. Mar 1993
+  bbeal:       32,  // Bradley Beal       b. Jun 1993
+  kyrie:       33,  // Kyrie Irving       b. Mar 1992
+  kmiddleton:  34,  // Khris Middleton    b. Aug 1991
+  kawhi:       34,  // Kawhi Leonard      b. Jun 1991
+  jbutler:     36,  // Jimmy Butler       b. Sep 1989
+  durant:      37,  // Kevin Durant       b. Sep 1988
+  pgeorge:     35,  // Paul George        b. May 1990
+  dwhite:      31,  // Derrick White      b. May 1994
+  holiday:     35,  // Jrue Holiday       b. Jun 1990
+  dgreen:      35,  // Draymond Green     b. Mar 1990
+  gobert:      33,  // Rudy Gobert        b. Jun 1992
+  dame:        35,  // Damian Lillard     b. Jul 1990
+  harden:      36,  // James Harden       b. Aug 1989
+  kthompson:   35,  // Klay Thompson      b. Feb 1990
+
+  // ── Elder statesmen ───────────────────────────────────────────────────────────
+  lebron:      40,  // LeBron James       b. Dec 1984
+  curry:       37,  // Stephen Curry      b. Mar 1988
+  nurkic:      31,  // Jusuf Nurkic       b. Aug 1994
+  vucevic:     35,  // Nikola Vucevic     b. Oct 1990
+  mconley:     38,  // Mike Conley        b. Oct 1987
+  horford:     39,  // Al Horford         b. Jun 1986
+  anesmith:    26,  // Aaron Nesmith      b. Oct 1999
 };
 
 function playerAge(p: CurrentNBAPlayer): number { return PLAYER_AGES[p.id] ?? 27; }

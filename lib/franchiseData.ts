@@ -126,12 +126,12 @@ export function applyProgression(
   const trendBoost   = trend === "up"   ?  0.08 : 0;
   const trendPenalty = trend === "down" ? -0.12 : 0;
 
-  // Minutes: more court time = faster development (significant effect)
-  const minutesMod = minutes >= 32 ? 0.14
-                   : minutes >= 26 ? 0.07
-                   : minutes >= 20 ? 0.0
-                   : minutes >= 14 ? -0.08
-                   : -0.17;
+  // Minutes: heavy weight — high minutes should almost always mean improvement
+  const minutesMod = minutes >= 32 ? 0.25
+                   : minutes >= 26 ? 0.16
+                   : minutes >= 20 ? 0.07
+                   : minutes >= 14 ? -0.04
+                   : -0.14;
 
   const improveChance = Math.min(0.97, Math.max(0.05,
     baseImproveChance + potMod + momentumMod + trendBoost + trendPenalty + minutesMod,
