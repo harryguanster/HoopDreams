@@ -1222,85 +1222,235 @@ export default function FranchisePage() {
         </div>
       )}
 
-      {/* ════ SEASON REVIEW ════ */}
-      {phase === "review" && (
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-20">
-          <div style={{ marginBottom: 20 }}>
-            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(22px,5vw,40px)", letterSpacing: "0.06em", color: "#111827", lineHeight: 1 }}>Season {season} Player Report</p>
-            <p style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>Green arrow = trending up (75% chance to improve next season) · Red = declining · Extend before they get better</p>
-          </div>
+      {/* ════ SEASON REVIEW — 2K Roster Viewer ════ */}
+      {phase === "review" && (() => {
+        const filled = slots.filter(sl => sl.nbaPlayer || sl.rosterPlayer);
+        const star   = [...filled].sort((a, b) => b.ovr - a.ovr)[0];
+        const starName  = star?.nbaPlayer?.name ?? star?.rosterPlayer?.name ?? "";
+        const starColor = star?.nbaPlayer?.teamColor ?? "#84cc16";
+        const starSS    = star?.seasonStats;
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
-            {slots.filter(sl => sl.nbaPlayer || sl.rosterPlayer).map(sl => {
-              const name = sl.nbaPlayer?.name ?? sl.rosterPlayer?.name ?? "";
-              const color = sl.nbaPlayer?.teamColor ?? "#84cc16";
-              const ss = sl.seasonStats;
-              const dPPG = ss ? +(ss.ppg - sl.basePPG).toFixed(1) : 0;
-              const dRPG = ss ? +(ss.rpg - sl.baseRPG).toFixed(1) : 0;
-              const dAPG = ss ? +(ss.apg - sl.baseAPG).toFixed(1) : 0;
+        // ── grade helpers ──────────────────────────────────────────────────────
+        const G = (v: number, cuts: number[]): string => {
+          const lbl = ["A+","A","A-","B+","B","B-","C+","C","C-","D+","D","F"];
+          for (let i = 0; i < cuts.length; i++) if (v >= cuts[i]) return lbl[i];
+          return "F";
+        };
+        const scrGrade = (ppg: number) => G(ppg, [28,23,19,16,13,10,8,6,4,2,1]);
+        const rebGrade = (rpg: number) => G(rpg, [13,11,9,7,6,5,4,3,2.5,2,1]);
+        const plkGrade = (apg: number) => G(apg, [9,7,6,5,4,3,2.5,2,1.5,1,0.5]);
+        const defGrade = (sl: ContractSlot) => {
+          const spg = sl.nbaPlayer?.spg ?? 0.7;
+          const bpg = sl.nbaPlayer?.bpg ?? 0.3;
+          const defVal = spg * 2.5 + bpg * 2 + (sl.ovr >= 90 ? 3 : sl.ovr >= 82 ? 1.5 : 0);
+          return G(defVal, [9,7,5.5,4,3,2.2,1.6,1.1,0.8,0.5,0.2]);
+        };
+        const potGrade = (p: string) =>
+          p === "Star" ? "A+" : p === "Starter" ? "B+" : p === "Rotation" ? "C" : "D-";
 
-              return (
-                <motion.div
-                  key={sl.slotId}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 }}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
-                    borderRadius: 12, background: "white",
-                    border: sl.trend === "up" ? "1.5px solid rgba(34,197,94,0.3)" : sl.trend === "down" ? "1.5px solid rgba(239,68,68,0.2)" : "1.5px solid rgba(0,0,0,0.08)",
-                    boxShadow: sl.trend === "up" ? "0 2px 12px rgba(34,197,94,0.08)" : sl.trend === "down" ? "0 2px 8px rgba(239,68,68,0.06)" : "none",
-                  }}
-                >
-                  <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={color} size={44} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
-                      <OVRBadge ovr={sl.ovr} small />
-                      <ContractBadge years={sl.yearsLeft} />
-                      <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M · Age {sl.age}</span>
-                      {sl.injuredGames > 0 && (
-                        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, display: "inline-flex", alignItems: "center", gap: 3,
-                          background: sl.injuredGames >= 50 ? "#fee2e2" : sl.injuredGames >= 20 ? "#fef3c7" : "#fff7ed",
-                          color: sl.injuredGames >= 50 ? "#dc2626" : sl.injuredGames >= 20 ? "#92400e" : "#c2410c",
-                          border: `1px solid ${sl.injuredGames >= 50 ? "#fca5a5" : sl.injuredGames >= 20 ? "#fde68a" : "#fdba74"}` }}>
-                          <InjuryIcon size={10} color={sl.injuredGames >= 50 ? "#dc2626" : sl.injuredGames >= 20 ? "#92400e" : "#c2410c"} />
-                          Missed {sl.injuredGames}G
-                        </span>
-                      )}
-                    </div>
+        const gradeColor = (g: string) =>
+          g.startsWith("A") ? "#4ade80"
+          : g.startsWith("B") ? "#84cc16"
+          : g.startsWith("C") ? "#f59e0b"
+          : "#ef4444";
+
+        // ── archetype from position + potential + stats ─────────────────────────
+        const archetype = (sl: ContractSlot): string => {
+          const pos = sl.nbaPlayer?.position ?? "?";
+          const ppg = sl.seasonStats?.ppg ?? sl.basePPG;
+          const apg = sl.seasonStats?.apg ?? sl.baseAPG;
+          const rpg = sl.seasonStats?.rpg ?? sl.baseRPG;
+          if (sl.potential !== "Star" && sl.potential !== "Starter") return `${pos} · ${sl.potential}`;
+          if (pos === "PG") return apg >= 7 ? "FLOOR GENERAL" : ppg >= 20 ? "SCORING POINT GUARD" : "TWO-WAY GUARD";
+          if (pos === "SG") return ppg >= 22 ? "ELITE SCORER" : "3-AND-D GUARD";
+          if (pos === "SF") return ppg >= 20 && rpg >= 6 ? "TWO-WAY WING" : ppg >= 20 ? "SCORING WING" : "3-AND-D WING";
+          if (pos === "PF") return rpg >= 8 ? "POWER FORWARD" : ppg >= 18 ? "STRETCH FOUR" : "VERSATILE BIG";
+          return rpg >= 10 ? "DOMINANT CENTER" : "STRETCH CENTER";
+        };
+
+        const COLS = "minmax(130px,2fr) 36px 34px 52px 38px 38px 38px 38px 44px 52px";
+        const headers = ["NAME","POS","AGE","OVR","SCR","REB","PLK","DEF","POT","TREND"];
+
+        return (
+          <div style={{ background: "#08080f", minHeight: "calc(100vh - 52px)", display: "flex", flexDirection: "column" }}>
+
+            {/* ── Featured player ──────────────────────────────────────────── */}
+            {star && (
+              <div style={{
+                background: `linear-gradient(135deg, ${starColor}28 0%, #12121f 60%)`,
+                borderBottom: `2px solid ${starColor}55`,
+                padding: "14px 20px", display: "flex", alignItems: "center", gap: 16, flexShrink: 0,
+              }}>
+                {/* Headshot */}
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <PlayerHeadshot playerId={star.nbaPlayer?.id ?? null} color={starColor} size={72} />
+                  {star.nbaPlayer?.jersey && (
+                    <span style={{ position: "absolute", top: -6, right: -10, fontFamily: "var(--font-bebas)", fontSize: "1.6rem", color: "white", lineHeight: 1, textShadow: `0 2px 8px ${starColor}` }}>
+                      {star.nbaPlayer.jersey}
+                    </span>
+                  )}
+                </div>
+
+                {/* Name + info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 2 }}>
+                    <span style={{ fontFamily: "monospace", fontSize: 9, color: starColor, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase" }}>
+                      {star.nbaPlayer?.position}
+                    </span>
                   </div>
-                  {/* Season stats with deltas */}
-                  <div style={{ display: "flex", gap: 18 }}>
+                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.3rem,3vw,2rem)", letterSpacing: "0.05em", color: "white", lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {starName}
+                  </p>
+                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.75rem", letterSpacing: "0.2em", color: starColor, marginTop: 4, textTransform: "uppercase" }}>
+                    {archetype(star)}
+                  </p>
+                  <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
                     {[
-                      { label: "PPG", val: ss?.ppg ?? sl.basePPG, delta: dPPG },
-                      { label: "RPG", val: ss?.rpg ?? sl.baseRPG, delta: dRPG },
-                      { label: "APG", val: ss?.apg ?? sl.baseAPG, delta: dAPG },
-                    ].map(({ label, val, delta }) => (
-                      <div key={label} style={{ textAlign: "center", minWidth: 42 }}>
-                        <p style={{ fontSize: 17, fontWeight: 800, color: "#111827", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{val.toFixed(1)}</p>
-                        <p style={{ fontSize: 10, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", margin: "2px 0 3px" }}>{label}</p>
-                        <StatDelta delta={delta} />
+                      { l: "AGE", v: String(star.age) },
+                      { l: "PPG", v: (starSS?.ppg ?? star.basePPG).toFixed(1) },
+                      { l: "RPG", v: (starSS?.rpg ?? star.baseRPG).toFixed(1) },
+                      { l: "APG", v: (starSS?.apg ?? star.baseAPG).toFixed(1) },
+                      { l: "SAL", v: `$${star.salary}M` },
+                    ].map(({ l, v }) => (
+                      <div key={l} style={{ textAlign: "center" }}>
+                        <p style={{ fontSize: 13, fontWeight: 800, color: "white", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</p>
+                        <p style={{ fontSize: 8, color: "#6b7280", letterSpacing: "0.12em", marginTop: 1 }}>{l}</p>
                       </div>
                     ))}
                   </div>
-                  {/* Trend arrow */}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 48 }}>
-                    <TrendArrow trend={sl.trend} size={24} />
-                    <span style={{ fontSize: 10, fontWeight: 700, color: sl.trend === "up" ? "#22c55e" : sl.trend === "down" ? "#ef4444" : "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                      {sl.trend === "up" ? "Rising" : sl.trend === "down" ? "Falling" : "Steady"}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                </div>
 
-          <button onClick={() => setPhase("standings")} style={{ width: "100%", padding: "14px", borderRadius: 12, background: "#84cc16", color: "#111827", fontWeight: 800, fontSize: 15, border: "none", cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.12em" }}>
-            See Standings
-          </button>
-        </div>
-      )}
+                {/* OVR circle */}
+                <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                  <div style={{
+                    width: 68, height: 68, borderRadius: "50%",
+                    border: `3px solid ${starColor}`, background: `${starColor}18`,
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <span style={{ fontSize: 8, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: starColor }}>OVR</span>
+                    <span style={{ fontSize: 26, fontFamily: "var(--font-bebas)", color: starColor, lineHeight: 1 }}>{star.ovr}</span>
+                  </div>
+                  {star.injuredGames > 0 && (
+                    <span style={{ fontSize: 9, fontWeight: 700, color: "#ef4444", background: "#fee2e222", padding: "2px 6px", borderRadius: 4, border: "1px solid #ef444444" }}>
+                      INJ {star.injuredGames}G
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── Table header ──────────────────────────────────────────────── */}
+            <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "7px 16px", background: "#12121f", borderBottom: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
+              {headers.map(h => (
+                <span key={h} style={{ fontSize: 8, fontFamily: "var(--font-bebas)", letterSpacing: "0.18em", color: "#4b5563" }}>{h}</span>
+              ))}
+            </div>
+
+            {/* ── Roster rows ───────────────────────────────────────────────── */}
+            <div style={{ flex: 1, overflowY: "auto" }}>
+              {filled.sort((a, b) => b.ovr - a.ovr).map((sl, i) => {
+                const name     = sl.nbaPlayer?.name ?? sl.rosterPlayer?.name ?? "";
+                const pos      = sl.nbaPlayer?.position ?? "—";
+                const ss       = sl.seasonStats;
+                const ppg      = ss?.ppg ?? sl.basePPG;
+                const rpg      = ss?.rpg ?? sl.baseRPG;
+                const apg      = ss?.apg ?? sl.baseAPG;
+                const isStar   = sl.slotId === star?.slotId;
+                const ovrDelta = sl.ovr - sl.prevOVR;
+                const trendClr = sl.trend === "up" ? "#4ade80" : sl.trend === "down" ? "#f87171" : "#6b7280";
+                const rowBg    = isStar
+                  ? "rgba(251,191,36,0.09)"
+                  : i % 2 === 0 ? "#0d0d1a" : "#0a0a14";
+
+                const cell = (content: React.ReactNode, extra?: React.CSSProperties) => (
+                  <span style={{ display: "flex", alignItems: "center", fontSize: 11, color: "#e5e7eb", fontVariantNumeric: "tabular-nums", ...extra }}>
+                    {content}
+                  </span>
+                );
+
+                const gradeCell = (g: string) => (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: gradeColor(g), fontFamily: "monospace" }}>{g}</span>
+                );
+
+                return (
+                  <motion.div
+                    key={sl.slotId}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.03 }}
+                    style={{
+                      display: "grid", gridTemplateColumns: COLS,
+                      padding: "9px 16px", background: rowBg,
+                      borderBottom: "1px solid rgba(255,255,255,0.04)",
+                      borderLeft: isStar ? "3px solid #fbbf24" : "3px solid transparent",
+                    }}
+                  >
+                    {/* NAME */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+                      <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={sl.nbaPlayer?.teamColor ?? "#84cc16"} size={28} />
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.04em", color: isStar ? "#fbbf24" : "white", lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {name.split(" ").length > 1 ? `${name.split(" ").slice(-1)[0].toUpperCase()}, ${name.split(" ")[0][0]}.` : name}
+                        </p>
+                        {sl.injuredGames > 0 && (
+                          <span style={{ fontSize: 8, color: "#ef4444", fontWeight: 700 }}>INJ {sl.injuredGames}G</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* POS */}
+                    {cell(pos, { fontSize: 10, color: "#9ca3af", fontFamily: "monospace" })}
+
+                    {/* AGE */}
+                    {cell(sl.age, { color: sl.age <= 22 ? "#4ade80" : sl.age >= 34 ? "#f87171" : "#e5e7eb" })}
+
+                    {/* OVR */}
+                    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: "#fbbf24", fontVariantNumeric: "tabular-nums" }}>{sl.ovr}</span>
+                      {ovrDelta !== 0 && (
+                        <span style={{ fontSize: 9, fontWeight: 700, color: ovrDelta > 0 ? "#4ade80" : "#f87171" }}>
+                          {ovrDelta > 0 ? `+${ovrDelta}` : ovrDelta}
+                        </span>
+                      )}
+                    </span>
+
+                    {/* SCR REB PLK DEF POT */}
+                    {gradeCell(scrGrade(ppg))}
+                    {gradeCell(rebGrade(rpg))}
+                    {gradeCell(plkGrade(apg))}
+                    {gradeCell(defGrade(sl))}
+                    {gradeCell(potGrade(sl.potential))}
+
+                    {/* TREND */}
+                    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <TrendArrow trend={sl.trend} size={11} />
+                      <span style={{ fontSize: 9, fontFamily: "monospace", color: trendClr, fontWeight: 700 }}>
+                        {sl.trend === "up" ? "▲ UP" : sl.trend === "down" ? "▼ DN" : "— SS"}
+                      </span>
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* ── Footer ───────────────────────────────────────────────────── */}
+            <div style={{ padding: "12px 20px", background: "#12121f", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 10, flexShrink: 0 }}>
+              <div style={{ flex: 1, fontSize: 9, color: "#4b5563", fontFamily: "monospace", display: "flex", gap: 16, alignItems: "center" }}>
+                <span><span style={{ color: "#4ade80" }}>A</span> = Elite</span>
+                <span><span style={{ color: "#84cc16" }}>B</span> = Good</span>
+                <span><span style={{ color: "#f59e0b" }}>C</span> = Average</span>
+                <span><span style={{ color: "#ef4444" }}>D/F</span> = Poor</span>
+                <span style={{ color: "#4ade80" }}>Green age = ≤22</span>
+              </div>
+              <button onClick={() => setPhase("standings")} style={{ padding: "10px 28px", borderRadius: 8, background: "#84cc16", color: "#111827", fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", border: "none", cursor: "pointer", flexShrink: 0 }}>
+                See Standings →
+              </button>
+            </div>
+
+          </div>
+        );
+      })()}
+
 
       {/* ════ STANDINGS ════ */}
       {phase === "standings" && standingsData && chosenTeam && (
