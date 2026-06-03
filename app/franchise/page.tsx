@@ -433,10 +433,12 @@ function minuteRole(m: number): { label: string; color: string } {
        :           { label: "Bench", color: "#6b7280" };
 }
 
-function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRemove, onMins }: {
+function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRemove, onMins, onHandleDragStart, onHandleDragEnd }: {
   slot: ContractSlot; isActive: boolean;
   isDragging: boolean; isDragOver: boolean;
   onClick: () => void; onRemove: () => void; onMins: (v: number) => void;
+  onHandleDragStart: (e: React.DragEvent) => void;
+  onHandleDragEnd: () => void;
 }) {
   const filled = slot.nbaPlayer !== null || slot.rosterPlayer !== null;
   const name   = slot.nbaPlayer?.name ?? slot.rosterPlayer?.name ?? null;
@@ -457,7 +459,7 @@ function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRem
         boxShadow: isDragOver
           ? "0 0 0 4px rgba(132,204,22,0.2)"
           : isActive && !filled ? "0 0 0 3px rgba(132,204,22,0.15)" : "0 1px 4px rgba(0,0,0,0.05)",
-        cursor: filled ? "grab" : "pointer",
+        cursor: filled ? "default" : "pointer",
         overflow: "hidden", marginBottom: 6,
         opacity: isDragging ? 0.35 : 1,
         transition: "opacity 0.15s, border-color 0.12s, box-shadow 0.12s",
@@ -465,13 +467,21 @@ function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRem
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 8px", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-        {/* Drag handle */}
+        {/* Drag handle — only this triggers reorder drag */}
         {filled && (
-          <svg width="8" height="12" viewBox="0 0 8 12" fill="#c4b5a0" style={{ flexShrink: 0 }}>
-            <circle cx="2" cy="2" r="1.3"/><circle cx="6" cy="2" r="1.3"/>
-            <circle cx="2" cy="6" r="1.3"/><circle cx="6" cy="6" r="1.3"/>
-            <circle cx="2" cy="10" r="1.3"/><circle cx="6" cy="10" r="1.3"/>
-          </svg>
+          <div
+            draggable
+            onDragStart={onHandleDragStart}
+            onDragEnd={onHandleDragEnd}
+            onClick={e => e.stopPropagation()}
+            style={{ cursor: "grab", display: "flex", alignItems: "center", flexShrink: 0, padding: "2px 3px 2px 0" }}
+          >
+            <svg width="8" height="12" viewBox="0 0 8 12" fill="#c4b5a0">
+              <circle cx="2" cy="2" r="1.3"/><circle cx="6" cy="2" r="1.3"/>
+              <circle cx="2" cy="6" r="1.3"/><circle cx="6" cy="6" r="1.3"/>
+              <circle cx="2" cy="10" r="1.3"/><circle cx="6" cy="10" r="1.3"/>
+            </svg>
+          </div>
         )}
         <span style={{ flex: 1, fontSize: 8, fontFamily: "var(--font-bebas)", letterSpacing: "0.18em", color: "#9ca3af" }}>{slot.label}</span>
         {filled && (
@@ -572,6 +582,7 @@ export default function FranchisePage() {
   const effectiveCap = phase === "offseason" ? OFFSEASON_CAP : SALARY_CAP;
   const capLeft      = effectiveCap - usedSalary;
   const filledCount  = slots.filter(s => s.nbaPlayer || s.rosterPlayer).length;
+  const totalMins    = slots.reduce((s, sl) => (sl.nbaPlayer || sl.rosterPlayer) ? s + sl.minutes : s, 0);
 
   const userRating = useMemo(() => {
     const rp = slots.filter(s => s.nbaPlayer || s.rosterPlayer).map(sl => ({
@@ -644,7 +655,14 @@ export default function FranchisePage() {
   }
 
   function setMins(slotId: string, mins: number) {
-    setSlots(prev => prev.map(sl => sl.slotId === slotId ? { ...sl, minutes: mins } : sl));
+    setSlots(prev => {
+      const otherMins = prev.reduce((s, sl) => {
+        if (sl.slotId === slotId || (!sl.nbaPlayer && !sl.rosterPlayer)) return s;
+        return s + sl.minutes;
+      }, 0);
+      const capped = Math.max(0, Math.min(mins, 240 - otherMins));
+      return prev.map(sl => sl.slotId === slotId ? { ...sl, minutes: capped } : sl);
+    });
   }
 
   // Swap player data between two slots; slot identity (slotId, label, minutes) stays fixed
@@ -948,6 +966,12 @@ export default function FranchisePage() {
                 <span style={{ fontSize: 9, color: "#9ca3af" }}>{filledCount}/12 players</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color: "#65a30d" }}>Rating {userRating.toFixed(0)}</span>
               </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                <span style={{ fontSize: 9, color: totalMins > 240 ? "#ef4444" : "#9ca3af" }}>{totalMins}/240 mins</span>
+                {totalMins < 240 && filledCount > 0 && (
+                  <span style={{ fontSize: 9, color: "#f59e0b", fontWeight: 600 }}>{240 - totalMins} left to assign</span>
+                )}
+              </div>
               <div style={{ marginTop: 5, padding: "3px 7px", borderRadius: 5, background: "#f0fdf4", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", gap: 4 }}>
                 <svg width={10} height={10} viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" fill="#22c55e" opacity="0.2"/><path d="M5 3v2l1 1" stroke="#15803d" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 <span style={{ fontSize: 9, color: "#15803d", fontWeight: 600 }}>+$40M Veteran Fund unlocks in offseason</span>
@@ -962,15 +986,6 @@ export default function FranchisePage() {
                 return (
                   <div
                     key={sl.slotId}
-                    draggable={isFilled}
-                    onDragStart={e => {
-                      if (!isFilled) return;
-                      e.dataTransfer.setData("franchise-slot", sl.slotId);
-                      e.dataTransfer.effectAllowed = "move";
-                      // Slight delay so the ghost renders before opacity drops
-                      setTimeout(() => setDragSlotId(sl.slotId), 0);
-                    }}
-                    onDragEnd={() => { setDragSlotId(null); setDragOverId(null); }}
                     onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setDragOverId(sl.slotId); }}
                     onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverId(null); }}
                     onDrop={e => {
@@ -988,6 +1003,13 @@ export default function FranchisePage() {
                       onClick={() => setActiveSlot(sl.slotId)}
                       onRemove={() => removePlayer(sl.slotId)}
                       onMins={v => setMins(sl.slotId, v)}
+                      onHandleDragStart={e => {
+                        if (!isFilled) return;
+                        e.dataTransfer.setData("franchise-slot", sl.slotId);
+                        e.dataTransfer.effectAllowed = "move";
+                        setTimeout(() => setDragSlotId(sl.slotId), 0);
+                      }}
+                      onHandleDragEnd={() => { setDragSlotId(null); setDragOverId(null); }}
                     />
                   </div>
                 );
@@ -996,7 +1018,7 @@ export default function FranchisePage() {
             <div style={{ padding: "12px 14px", borderTop: "1px solid rgba(0,0,0,0.07)", background: "white" }}>
               <button onClick={runSeason} disabled={filledCount < 12}
                 style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: filledCount >= 12 ? "#84cc16" : "#e5e7eb", color: filledCount >= 12 ? "#111827" : "#9ca3af", fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", cursor: filledCount >= 12 ? "pointer" : "not-allowed" }}
-              >{filledCount < 12 ? `Need ${12 - filledCount} more` : "Simulate Season"}</button>
+              >{filledCount < 12 ? `Need ${12 - filledCount} more` : totalMins < 240 ? `Assign ${240 - totalMins} More Mins` : "Simulate Season"}</button>
             </div>
           </div>
 
