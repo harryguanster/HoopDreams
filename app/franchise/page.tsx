@@ -1276,7 +1276,7 @@ export default function FranchisePage() {
           return rpg >= 10 ? "DOMINANT CENTER" : "STRETCH CENTER";
         };
 
-        const COLS = "minmax(200px,2fr) 52px 52px 90px 80px 80px 80px 80px 80px 90px";
+        const COLS = "minmax(200px,2fr) 54px 54px 96px 88px 88px 88px 88px 88px 96px";
         const headers = ["NAME","POS","AGE","OVR","SCR","REB","PLK","DEF","POT","TREND"];
 
         return (
@@ -1375,7 +1375,7 @@ export default function FranchisePage() {
                 );
 
                 const gradeCell = (g: string) => (
-                  <span style={{ fontSize: 22, fontWeight: 700, color: gradeColor(g), fontFamily: "monospace", lineHeight: 1 }}>{g}</span>
+                  <span style={{ fontSize: 26, fontWeight: 800, color: gradeColor(g), fontFamily: "monospace", lineHeight: 1 }}>{g}</span>
                 );
 
                 return (
@@ -1386,7 +1386,7 @@ export default function FranchisePage() {
                     transition={{ delay: i * 0.03 }}
                     style={{
                       display: "grid", gridTemplateColumns: COLS,
-                      padding: "18px 24px", background: rowBg,
+                      padding: "20px 24px", background: rowBg,
                       borderBottom: "1px solid rgba(0,0,0,0.06)",
                       borderLeft: isStar ? "4px solid #84cc16" : "4px solid transparent",
                       alignItems: "center",
@@ -1413,7 +1413,7 @@ export default function FranchisePage() {
 
                     {/* OVR */}
                     <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <span style={{ fontSize: 26, fontWeight: 800, color: "#65a30d", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{sl.ovr}</span>
+                      <span style={{ fontSize: 30, fontWeight: 900, color: "#65a30d", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{sl.ovr}</span>
                       {ovrDelta !== 0 && (
                         <span style={{ fontSize: 11, fontWeight: 700, color: ovrDelta > 0 ? "#16a34a" : "#dc2626" }}>
                           {ovrDelta > 0 ? `+${ovrDelta}` : ovrDelta}
