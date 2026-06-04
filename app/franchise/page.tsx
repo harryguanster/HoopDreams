@@ -1276,7 +1276,7 @@ export default function FranchisePage() {
           return rpg >= 10 ? "DOMINANT CENTER" : "STRETCH CENTER";
         };
 
-        const COLS = "minmax(160px,2.5fr) 44px 42px 68px 50px 50px 50px 50px 52px 64px";
+        const COLS = "minmax(200px,2fr) 52px 52px 90px 80px 80px 80px 80px 80px 90px";
         const headers = ["NAME","POS","AGE","OVR","SCR","REB","PLK","DEF","POT","TREND"];
 
         return (
@@ -1304,13 +1304,13 @@ export default function FranchisePage() {
                   <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.7rem", letterSpacing: "0.25em", color: starColor, textTransform: "uppercase" }}>
                     {star.nbaPlayer?.position}
                   </span>
-                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.8rem,4vw,2.6rem)", letterSpacing: "0.04em", color: "#111827", lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "2px 0 4px" }}>
+                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.8rem,4vw,2.6rem)", letterSpacing: "0.04em", color: "#111827", lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "2px 0 6px" }}>
                     {starName}
                   </p>
-                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.75rem", letterSpacing: "0.22em", color: starColor, textTransform: "uppercase", marginBottom: 10 }}>
+                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.75rem", letterSpacing: "0.22em", color: starColor, textTransform: "uppercase", marginBottom: 14 }}>
                     {archetype(star)}
                   </p>
-                  <div style={{ display: "flex", gap: 22 }}>
+                  <div style={{ display: "flex", gap: 32, alignItems: "flex-end" }}>
                     {[
                       { l: "AGE", v: String(star.age) },
                       { l: "PPG", v: (starSS?.ppg ?? star.basePPG).toFixed(1) },
@@ -1319,22 +1319,22 @@ export default function FranchisePage() {
                       { l: "SAL", v: `$${star.salary}M` },
                     ].map(({ l, v }) => (
                       <div key={l}>
-                        <p style={{ fontSize: 18, fontWeight: 800, color: "#111827", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</p>
-                        <p style={{ fontSize: 9, color: "#9ca3af", letterSpacing: "0.14em", marginTop: 2, textTransform: "uppercase" }}>{l}</p>
+                        <p style={{ fontSize: 26, fontWeight: 800, color: "#111827", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</p>
+                        <p style={{ fontSize: 10, color: "#9ca3af", letterSpacing: "0.12em", marginTop: 4, textTransform: "uppercase" }}>{l}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* OVR circle */}
+                {/* OVR circle — always lime green */}
                 <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                   <div style={{
-                    width: 86, height: 86, borderRadius: "50%",
-                    border: `3px solid ${starColor}`, background: `${starColor}12`,
+                    width: 90, height: 90, borderRadius: "50%",
+                    border: "3px solid #84cc16", background: "rgba(132,204,22,0.10)",
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                   }}>
-                    <span style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: starColor }}>OVR</span>
-                    <span style={{ fontSize: 34, fontFamily: "var(--font-bebas)", color: starColor, lineHeight: 1 }}>{star.ovr}</span>
+                    <span style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#65a30d" }}>OVR</span>
+                    <span style={{ fontSize: 36, fontFamily: "var(--font-bebas)", color: "#65a30d", lineHeight: 1 }}>{star.ovr}</span>
                   </div>
                   {star.injuredGames > 0 && (
                     <span style={{ fontSize: 10, fontWeight: 700, color: "#dc2626", background: "#fee2e2", padding: "2px 8px", borderRadius: 4, border: "1px solid #fca5a5" }}>
@@ -1346,9 +1346,9 @@ export default function FranchisePage() {
             )}
 
             {/* ── Table header ──────────────────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "9px 24px", background: "#e8e4d8", borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 24px", background: "#e8e4d8", borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0 }}>
               {headers.map(h => (
-                <span key={h} style={{ fontSize: 9, fontFamily: "var(--font-bebas)", letterSpacing: "0.18em", color: "#6b7280" }}>{h}</span>
+                <span key={h} style={{ fontSize: 10, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#6b7280" }}>{h}</span>
               ))}
             </div>
 
@@ -1369,13 +1369,13 @@ export default function FranchisePage() {
                   : i % 2 === 0 ? "white" : "#f4f0e6";
 
                 const cell = (content: React.ReactNode, extra?: React.CSSProperties) => (
-                  <span style={{ display: "flex", alignItems: "center", fontSize: 13, color: "#374151", fontVariantNumeric: "tabular-nums", ...extra }}>
+                  <span style={{ display: "flex", alignItems: "center", fontSize: 16, color: "#374151", fontVariantNumeric: "tabular-nums", ...extra }}>
                     {content}
                   </span>
                 );
 
                 const gradeCell = (g: string) => (
-                  <span style={{ fontSize: 13, fontWeight: 700, color: gradeColor(g), fontFamily: "monospace" }}>{g}</span>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: gradeColor(g), fontFamily: "monospace", lineHeight: 1 }}>{g}</span>
                 );
 
                 return (
@@ -1386,35 +1386,36 @@ export default function FranchisePage() {
                     transition={{ delay: i * 0.03 }}
                     style={{
                       display: "grid", gridTemplateColumns: COLS,
-                      padding: "13px 24px", background: rowBg,
+                      padding: "18px 24px", background: rowBg,
                       borderBottom: "1px solid rgba(0,0,0,0.06)",
                       borderLeft: isStar ? "4px solid #84cc16" : "4px solid transparent",
+                      alignItems: "center",
                     }}
                   >
                     {/* NAME */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                      <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={sl.nbaPlayer?.teamColor ?? "#84cc16"} size={36} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                      <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={sl.nbaPlayer?.teamColor ?? "#84cc16"} size={40} />
                       <div style={{ minWidth: 0 }}>
-                        <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.04em", color: isStar ? "#65a30d" : "#111827", lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.15rem", letterSpacing: "0.04em", color: isStar ? "#65a30d" : "#111827", lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {name.split(" ").length > 1 ? `${name.split(" ").slice(-1)[0].toUpperCase()}, ${name.split(" ")[0][0]}.` : name}
                         </p>
                         {sl.injuredGames > 0 && (
-                          <span style={{ fontSize: 9, color: "#dc2626", fontWeight: 700 }}>INJ {sl.injuredGames}G</span>
+                          <span style={{ fontSize: 10, color: "#dc2626", fontWeight: 700 }}>INJ {sl.injuredGames}G</span>
                         )}
                       </div>
                     </div>
 
                     {/* POS */}
-                    {cell(pos, { fontSize: 11, color: "#9ca3af", fontFamily: "monospace" })}
+                    {cell(pos, { fontSize: 13, color: "#9ca3af", fontFamily: "monospace" })}
 
                     {/* AGE */}
-                    {cell(sl.age, { color: sl.age <= 22 ? "#16a34a" : sl.age >= 34 ? "#dc2626" : "#374151", fontWeight: sl.age <= 22 ? 700 : 400 })}
+                    {cell(sl.age, { fontSize: 16, color: sl.age <= 22 ? "#16a34a" : sl.age >= 34 ? "#dc2626" : "#374151", fontWeight: sl.age <= 22 ? 700 : 400 })}
 
                     {/* OVR */}
                     <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: "#65a30d", fontVariantNumeric: "tabular-nums" }}>{sl.ovr}</span>
+                      <span style={{ fontSize: 26, fontWeight: 800, color: "#65a30d", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{sl.ovr}</span>
                       {ovrDelta !== 0 && (
-                        <span style={{ fontSize: 10, fontWeight: 700, color: ovrDelta > 0 ? "#16a34a" : "#dc2626" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: ovrDelta > 0 ? "#16a34a" : "#dc2626" }}>
                           {ovrDelta > 0 ? `+${ovrDelta}` : ovrDelta}
                         </span>
                       )}
@@ -1428,9 +1429,9 @@ export default function FranchisePage() {
                     {gradeCell(potGrade(sl.potential))}
 
                     {/* TREND */}
-                    <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <TrendArrow trend={sl.trend} size={13} />
-                      <span style={{ fontSize: 10, fontFamily: "monospace", color: trendClr, fontWeight: 700 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <TrendArrow trend={sl.trend} size={15} />
+                      <span style={{ fontSize: 12, fontFamily: "monospace", color: trendClr, fontWeight: 700, letterSpacing: "0.05em" }}>
                         {sl.trend === "up" ? "UP" : sl.trend === "down" ? "DN" : "SS"}
                       </span>
                     </span>
