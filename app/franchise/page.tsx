@@ -684,6 +684,7 @@ export default function FranchisePage() {
   const [dragOverId, setDragOverId]   = useState<string | null>(null);
   const [seasonWins, setSeasonWins]   = useState(0);
   const [tradeOffers, setTradeOffers] = useState<TradeOffer[]>([]);
+  const [reviewFocus, setReviewFocus] = useState<string | null>(null);
 
   useEffect(() => {
     if (phase !== "simulating") return;
@@ -955,6 +956,7 @@ export default function FranchisePage() {
       }));
 
       setStandingsData(result);
+      setReviewFocus(null);
       setPhase("review");
     }, 2200);
   }
@@ -1233,7 +1235,8 @@ export default function FranchisePage() {
       {/* ════ SEASON REVIEW — 2K Roster Viewer ════ */}
       {phase === "review" && (() => {
         const filled = slots.filter(sl => sl.nbaPlayer || sl.rosterPlayer);
-        const star   = [...filled].sort((a, b) => b.ovr - a.ovr)[0];
+        const sorted = [...filled].sort((a, b) => b.ovr - a.ovr);
+        const star   = (reviewFocus ? filled.find(sl => sl.slotId === reviewFocus) : null) ?? sorted[0];
         const starName  = star?.nbaPlayer?.name ?? star?.rosterPlayer?.name ?? "";
         const starColor = star?.nbaPlayer?.teamColor ?? "#84cc16";
         const starSS    = star?.seasonStats;
@@ -1348,7 +1351,7 @@ export default function FranchisePage() {
             {/* ── Table header ──────────────────────────────────────────────── */}
             <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 24px", background: "#e8e4d8", borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0 }}>
               {headers.map(h => (
-                <span key={h} style={{ fontSize: 10, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#6b7280" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#6b7280" }}>{h}</span>
               ))}
             </div>
 
@@ -1361,15 +1364,15 @@ export default function FranchisePage() {
                 const ppg      = ss?.ppg ?? sl.basePPG;
                 const rpg      = ss?.rpg ?? sl.baseRPG;
                 const apg      = ss?.apg ?? sl.baseAPG;
-                const isStar   = sl.slotId === star?.slotId;
+                const isSelected = sl.slotId === star?.slotId;
                 const ovrDelta = sl.ovr - sl.prevOVR;
                 const trendClr = sl.trend === "up" ? "#16a34a" : sl.trend === "down" ? "#dc2626" : "#9ca3af";
-                const rowBg    = isStar
+                const rowBg    = isSelected
                   ? "rgba(132,204,22,0.1)"
                   : i % 2 === 0 ? "white" : "#f4f0e6";
 
                 const cell = (content: React.ReactNode, extra?: React.CSSProperties) => (
-                  <span style={{ display: "flex", alignItems: "center", fontSize: 16, color: "#374151", fontVariantNumeric: "tabular-nums", ...extra }}>
+                  <span style={{ display: "flex", alignItems: "center", fontSize: 20, fontFamily: "var(--font-bebas)", letterSpacing: "0.05em", color: "#374151", fontVariantNumeric: "tabular-nums", ...extra }}>
                     {content}
                   </span>
                 );
@@ -1384,19 +1387,21 @@ export default function FranchisePage() {
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
+                    onClick={() => setReviewFocus(sl.slotId)}
                     style={{
                       display: "grid", gridTemplateColumns: COLS,
                       padding: "20px 24px", background: rowBg,
                       borderBottom: "1px solid rgba(0,0,0,0.06)",
-                      borderLeft: isStar ? "4px solid #84cc16" : "4px solid transparent",
+                      borderLeft: isSelected ? "4px solid #84cc16" : "4px solid transparent",
                       alignItems: "center",
+                      cursor: "pointer",
                     }}
                   >
                     {/* NAME */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
                       <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={sl.nbaPlayer?.teamColor ?? "#84cc16"} size={40} />
                       <div style={{ minWidth: 0 }}>
-                        <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.15rem", letterSpacing: "0.04em", color: isStar ? "#65a30d" : "#111827", lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.15rem", letterSpacing: "0.04em", color: isSelected ? "#65a30d" : "#111827", lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {name.split(" ").length > 1 ? `${name.split(" ").slice(-1)[0].toUpperCase()}, ${name.split(" ")[0][0]}.` : name}
                         </p>
                         {sl.injuredGames > 0 && (
@@ -1406,10 +1411,10 @@ export default function FranchisePage() {
                     </div>
 
                     {/* POS */}
-                    {cell(pos, { fontSize: 13, color: "#9ca3af", fontFamily: "monospace" })}
+                    {cell(pos, { color: "#9ca3af" })}
 
                     {/* AGE */}
-                    {cell(sl.age, { fontSize: 16, color: sl.age <= 22 ? "#16a34a" : sl.age >= 34 ? "#dc2626" : "#374151", fontWeight: sl.age <= 22 ? 700 : 400 })}
+                    {cell(sl.age, { color: sl.age <= 22 ? "#16a34a" : sl.age >= 34 ? "#dc2626" : "#374151", fontWeight: sl.age <= 22 ? 700 : 400 })}
 
                     {/* OVR */}
                     <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
