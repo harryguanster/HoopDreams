@@ -47,51 +47,46 @@ function HalfCourtSVG() {
 }
 
 function PlayerCard({ player }: { player: LineupPlayer }) {
+  const [imgFailed, setImgFailed] = useState(false);
   const pos = POSITION_COORDS[player.position];
+  const showHeadshot = !!player.nbaId && !imgFailed;
+
   return (
     <div
       className="absolute z-10 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
     >
-      {/* Jersey SVG */}
-      <div className="w-14 drop-">
-        <svg viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
-          {/* Jersey body: V-neck collar, angled shoulders, straight body */}
-          <path
-            d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z"
-            fill="#111827"
+      {showHeadshot ? (
+        <div
+          className="rounded-full overflow-hidden border-2 border-white shadow-lg"
+          style={{ width: 72, height: 72, background: "#1a1a2e" }}
+        >
+          <img
+            src={`https://cdn.nba.com/headshots/nba/latest/260x190/${player.nbaId}.png`}
+            alt={player.name}
+            className="w-full h-full object-cover object-top"
+            onError={() => setImgFailed(true)}
           />
-          {/* White trim outline */}
-          <path
-            d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z"
-            fill="none"
-            stroke="white"
-            strokeWidth="2.5"
-          />
-          {/* Jersey number */}
-          <text
-            x="40"
-            y="70"
-            textAnchor="middle"
-            fontSize="32"
-            fontWeight="900"
-            fill="white"
-            fontFamily="Arial Black, Arial, sans-serif"
-            letterSpacing="-1"
-          >
-            {player.number}
-          </text>
-        </svg>
-      </div>
-      {/* Stats pill below jersey */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-center shadow-md -mt-1">
-        <div className="text-[7px] font-bold uppercase tracking-wide leading-none mb-0.5" style={{ color: "#65a30d" }}>
+        </div>
+      ) : (
+        <div style={{ width: 64 }}>
+          <svg viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z" fill="#111827" />
+            <path d="M 27 3 Q 40 20 53 3 L 78 20 L 66 32 L 66 93 L 14 93 L 14 32 L 2 20 Z" fill="none" stroke="white" strokeWidth="2.5" />
+            <text x="40" y="70" textAnchor="middle" fontSize="32" fontWeight="900" fill="white" fontFamily="Arial Black, Arial, sans-serif" letterSpacing="-1">
+              {player.number}
+            </text>
+          </svg>
+        </div>
+      )}
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 text-center shadow-md mt-1">
+        <div className="text-[8px] font-bold uppercase tracking-wide leading-none mb-0.5" style={{ color: "#65a30d" }}>
           {player.position}
         </div>
-        <div className="text-[7px] font-semibold text-gray-800 leading-tight whitespace-nowrap">
+        <div className="text-[8px] font-semibold text-gray-800 leading-tight whitespace-nowrap">
           {player.ppg} · {player.apg} · {player.rpg}
         </div>
-        <div className="text-[5.5px] text-gray-500 leading-none">PPG · APG · RPG</div>
+        <div className="text-[6px] text-gray-500 leading-none">PPG · APG · RPG</div>
       </div>
     </div>
   );
@@ -159,16 +154,16 @@ export default function LineupGuesserPage() {
     <div className="min-h-screen">
       <GameHeader title="Lineup Guesser" />
 
-      <main className="max-w-2xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-8">
         {/* Header row */}
-        <div className="flex items-end justify-between mb-5">
+        <div className="flex items-end justify-between mb-6">
           <div>
-            <p className="text-[10px] font-bebas tracking-widest text-gray-400 mb-1">Season</p>
-            <p className="text-3xl font-bebas tracking-wide text-[#111827] leading-none">{team.season}</p>
+            <p className="text-xs font-bebas tracking-widest text-gray-400 mb-1">Season</p>
+            <p className="text-5xl font-bebas tracking-wide text-[#111827] leading-none">{team.season}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-bebas tracking-widest text-gray-400 mb-1">Score</p>
-            <p className="text-3xl font-bebas tracking-wide text-[#65a30d] leading-none">
+            <p className="text-xs font-bebas tracking-widest text-gray-400 mb-1">Score</p>
+            <p className="text-5xl font-bebas tracking-wide text-[#65a30d] leading-none">
               {score.correct}<span className="text-gray-400 font-light">/</span>{score.total}
             </p>
           </div>
@@ -176,7 +171,7 @@ export default function LineupGuesserPage() {
 
         {/* Court */}
         <div
-          className="relative w-full rounded-2xl overflow-hidden shadow-2xl mb-6"
+          className="relative w-full rounded-2xl overflow-hidden shadow-2xl mb-8"
           style={{ aspectRatio: "500 / 420" }}
         >
           <HalfCourtSVG />
@@ -188,7 +183,7 @@ export default function LineupGuesserPage() {
         {/* Guess form */}
         {status === "playing" && (
           <div>
-            <form onSubmit={handleSubmit} className="flex gap-2 mb-3">
+            <form onSubmit={handleSubmit} className="flex gap-3 mb-4">
               <input
                 type="text"
                 value={input}
@@ -197,11 +192,11 @@ export default function LineupGuesserPage() {
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-[#111827] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-sm"
+                className="flex-1 px-5 py-4 rounded-xl border border-gray-200 bg-white text-[#111827] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-base"
               />
               <button
                 type="submit"
-                className="px-5 py-3 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors text-sm"
+                className="px-8 py-4 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors text-base"
               >
                 Guess
               </button>
