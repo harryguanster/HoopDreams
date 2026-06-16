@@ -360,7 +360,7 @@ function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos
         whileHover={{ y: -4 }}
         transition={{ type: "spring", stiffness: 380, damping: 28 }}
         className="relative overflow-hidden rounded-2xl"
-        style={{ height: 300, boxShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
+        style={{ height: 380, boxShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
       >
         {/* Photo background with subtle zoom on hover */}
         <div

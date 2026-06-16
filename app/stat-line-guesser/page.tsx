@@ -227,19 +227,19 @@ function StatLineCore({ era }: { era: Era }) {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-md mx-auto w-full">
-      <div className="text-center mb-6">
-        <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">
+    <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-2xl mx-auto w-full">
+      <div className="text-center mb-8">
+        <p className="text-sm text-[#65a30d] font-semibold uppercase tracking-widest mb-2">
           {stepsRevealed} of 5 clues revealed
         </p>
-        <h1 className="text-2xl font-bebas tracking-widest text-[#111827]">Who Am I?</h1>
-        <p className="text-gray-400 text-sm mt-1">
+        <h1 className="text-5xl font-bebas tracking-widest text-[#111827]">Who Am I?</h1>
+        <p className="text-gray-400 text-base mt-2">
           {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next clue"}
         </p>
       </div>
 
       <motion.div
-        className="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-6 shadow-sm"
+        className="w-28 h-28 rounded-full flex items-center justify-center text-5xl mb-8 shadow-sm"
         style={{ background: "linear-gradient(135deg, #84cc16, #65a30d)" }}
         animate={{ rotate: [0, -4, 4, -2, 2, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -247,12 +247,12 @@ function StatLineCore({ era }: { era: Era }) {
         ❓
       </motion.div>
 
-      <div className="w-full bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-5">
-        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Career Averages</p>
+      <div className="w-full bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+        <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+          <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Career Averages</p>
           <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i} className={`text-xs transition-all duration-300 ${i < stepsRevealed ? "opacity-100" : "opacity-20"}`}>
+              <span key={i} className={`text-sm transition-all duration-300 ${i < stepsRevealed ? "opacity-100" : "opacity-20"}`}>
                 {i < stepsRevealed ? "🟩" : "⬜"}
               </span>
             ))}
@@ -263,14 +263,14 @@ function StatLineCore({ era }: { era: Era }) {
             {REVEAL_STEPS.slice(0, stepsRevealed).map(step => (
               <motion.div
                 key={step.key}
-                className="flex items-center justify-between px-4 py-3"
+                className="flex items-center justify-between px-5 py-4"
                 initial={{ opacity: 0, x: -14, backgroundColor: "rgba(132,204,22,0.12)" }}
                 animate={{ opacity: 1, x: 0, backgroundColor: "rgba(132,204,22,0)" }}
                 transition={{ duration: 0.45, ease: "easeOut" }}
               >
-                <span className="text-sm text-gray-400 font-medium">{step.label}</span>
+                <span className="text-base text-gray-400 font-medium">{step.label}</span>
                 <motion.span
-                  className="text-sm font-bold text-[#65a30d]"
+                  className="text-base font-bold text-[#65a30d]"
                   initial={{ scale: 1.15 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.3 }}
@@ -285,9 +285,9 @@ function StatLineCore({ era }: { era: Era }) {
             ))}
           </AnimatePresence>
           {REVEAL_STEPS.slice(stepsRevealed).map(step => (
-            <div key={step.key} className="flex items-center justify-between px-4 py-3 opacity-40">
-              <span className="text-sm text-gray-400 font-medium">{step.label}</span>
-              <span className="text-sm font-bold text-gray-300">• • •</span>
+            <div key={step.key} className="flex items-center justify-between px-5 py-4 opacity-40">
+              <span className="text-base text-gray-400 font-medium">{step.label}</span>
+              <span className="text-base font-bold text-gray-300">• • •</span>
             </div>
           ))}
         </div>
@@ -308,7 +308,7 @@ function StatLineCore({ era }: { era: Era }) {
         )}
       </AnimatePresence>
 
-      <div className="w-full flex gap-2 mb-3">
+      <div className="w-full flex gap-3 mb-4">
         <PlayerAutocomplete
           players={playerNames}
           value={guess}
@@ -319,24 +319,24 @@ function StatLineCore({ era }: { era: Era }) {
         <button
           onClick={checkGuess}
           disabled={!guess.trim()}
-          className="px-5 py-3 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+          className="px-7 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-base shrink-0"
         >
           Guess
         </button>
       </div>
 
-      <div className="flex gap-2 w-full">
+      <div className="flex gap-3 w-full">
         {!allRevealed && (
           <button
             onClick={() => setRevealStep(s => Math.min(s + 1, 4))}
-            className="flex-1 py-3 bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 font-semibold rounded-xl transition-all active:scale-95 text-sm"
+            className="flex-1 py-4 bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 font-semibold rounded-xl transition-all active:scale-95 text-base"
           >
             Reveal Clue 👀
           </button>
         )}
         <button
           onClick={() => setGameState("wrong")}
-          className="py-3 px-4 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-sm"
+          className="py-4 px-6 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-base"
         >
           Give Up
         </button>

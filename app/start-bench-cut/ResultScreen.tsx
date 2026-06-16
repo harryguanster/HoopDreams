@@ -57,21 +57,21 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
   const [copied, setCopied] = useState(false);
 
   return (
-    <main className="flex-1 flex flex-col items-center px-4 py-10 max-w-md mx-auto w-full">
+    <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-3xl mx-auto w-full">
         <motion.div
-          className="text-center mb-7"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">{trio.category}</p>
-          <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-2">Your Picks</h2>
-          <p className="text-gray-500 text-sm italic bg-gray-50 rounded-xl px-4 py-2 border border-gray-200">
+          <p className="text-sm text-[#65a30d] font-semibold uppercase tracking-widest mb-2">{trio.category}</p>
+          <h2 className="text-4xl font-bebas tracking-widest text-[#111827] mb-3">Your Picks</h2>
+          <p className="text-gray-500 text-base italic bg-gray-50 rounded-xl px-5 py-3 border border-gray-200">
             &ldquo;{comment}&rdquo;
           </p>
         </motion.div>
 
-        <div className="flex flex-col gap-3 w-full mb-8">
+        <div className="flex flex-col gap-4 w-full mb-8">
           {roleOrder.map((role, i) => {
             const player = trio.players.find((p) => assignments[p.id] === role);
             if (!player) return null;
@@ -83,23 +83,23 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
                 variants={cardVariants}
                 initial="hidden"
                 animate="show"
-                className={`flex items-center gap-4 rounded-2xl border-2 p-4 backdrop-blur-sm ${cfg.bg} ${cfg.border}`}
+                className={`flex items-center gap-5 rounded-2xl border-2 p-5 backdrop-blur-sm ${cfg.bg} ${cfg.border}`}
                 whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
               >
                 <PlayerHeadshot
                   playerId={player.id}
                   teamColor={player.teamColor}
                   jersey={player.jersey}
-                  size={60}
+                  size={80}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#111827] text-base leading-tight truncate">{player.name}</p>
-                  <p className="text-gray-500 text-xs truncate">{player.team}</p>
-                  <p className={`text-xs mt-1 font-medium ${cfg.text}`}>{cfg.desc}</p>
+                  <p className="font-bold text-[#111827] text-xl leading-tight truncate">{player.name}</p>
+                  <p className="text-gray-500 text-sm truncate">{player.team}</p>
+                  <p className={`text-sm mt-1 font-medium ${cfg.text}`}>{cfg.desc}</p>
                 </div>
                 <div className={`text-right shrink-0 ${cfg.text}`}>
-                  <div className="text-2xl">{cfg.emoji}</div>
-                  <div className="text-[9px] font-bold tracking-widest mt-1 uppercase">{cfg.label}</div>
+                  <div className="text-3xl">{cfg.emoji}</div>
+                  <div className="text-xs font-bold tracking-widest mt-1 uppercase">{cfg.label}</div>
                 </div>
               </motion.div>
             );

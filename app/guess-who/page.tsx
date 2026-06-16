@@ -171,8 +171,8 @@ function getArrow(guess: number, answer: number): "up" | "down" | null {
 
 function StatCellH({ value, color, arrow }: { value: string; color: CellColor; arrow?: "up" | "down" | null }) {
   return (
-    <div className={`flex flex-col items-center justify-center rounded h-12 text-center ${CELL_BG[color]}`}>
-      <span className="text-[11px] font-black leading-none">{value}</span>
+    <div className={`flex flex-col items-center justify-center rounded h-16 text-center ${CELL_BG[color]}`}>
+      <span className="text-xs font-black leading-none">{value}</span>
       {arrow && <span className="text-[11px] leading-none mt-0.5 font-bold">{arrow === "up" ? "↑" : "↓"}</span>}
     </div>
   );
@@ -246,7 +246,7 @@ function GuessTableHeader() {
 
 function EmptyRow({ num }: { num: number }) {
   return (
-    <div className="w-full h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+    <div className="w-full h-16 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
       <span className="text-gray-300 font-bold text-sm">{num}</span>
     </div>
   );
@@ -266,7 +266,7 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
 
   return (
     <div className="grid gap-1" style={{ gridTemplateColumns: GRID_COLS }}>
-      <div className={`flex items-center gap-2 rounded-lg px-2 h-12 ${isCorrect ? "bg-green-500 text-white" : "bg-white border border-gray-200 text-[#111827]"}`}>
+      <div className={`flex items-center gap-2 rounded-lg px-3 h-16 ${isCorrect ? "bg-green-500 text-white" : "bg-white border border-gray-200 text-[#111827]"}`}>
         <PlayerFace player={guess} />
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold leading-tight truncate">{guess.name}</p>
@@ -445,15 +445,15 @@ function WordleGame({ players, playerNames }: {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center px-4 py-6 w-full max-w-6xl mx-auto">
-      <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+    <main className="flex-1 flex flex-col items-center px-6 py-8 w-full max-w-7xl mx-auto">
+      <div className="w-full flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <div className="shrink-0">
-          <h1 className="text-2xl font-bebas tracking-widest text-[#111827] leading-none">Who Am I?</h1>
-          <p className="text-xs text-[#65a30d] font-semibold mt-0.5">
+          <h1 className="text-4xl font-bebas tracking-widest text-[#111827] leading-none">Who Am I?</h1>
+          <p className="text-sm text-[#65a30d] font-semibold mt-1">
             {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
           </p>
         </div>
-        <div className="flex gap-2 flex-1">
+        <div className="flex gap-3 flex-1">
           <PlayerAutocomplete
             players={playerNames}
             value={guess}
@@ -464,20 +464,20 @@ function WordleGame({ players, playerNames }: {
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-6 py-3 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-sm shrink-0"
+            className="px-8 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-base shrink-0"
           >
             Guess
           </button>
           <button
             onClick={() => setGaveUp(true)}
-            className="py-3 px-4 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-sm shrink-0"
+            className="py-4 px-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-base shrink-0"
           >
             Give Up
           </button>
         </div>
       </div>
 
-      <div className="w-full flex gap-4 text-[11px] text-gray-400 font-semibold mb-3">
+      <div className="w-full flex gap-4 text-xs text-gray-400 font-semibold mb-4">
         <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
         <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
         <span className="flex items-center gap-1"><span className="w-3 h-3 bg-gray-300 rounded inline-block" /> Off</span>
@@ -499,7 +499,7 @@ function WordleGame({ players, playerNames }: {
       </AnimatePresence>
 
       <div className="w-full overflow-x-auto">
-        <div className="flex flex-col gap-1" style={{ minWidth: "700px" }}>
+        <div className="flex flex-col gap-1.5" style={{ minWidth: "860px" }}>
           <GuessTableHeader />
           <AnimatePresence initial={false}>
             {guesses.map((g, i) => (

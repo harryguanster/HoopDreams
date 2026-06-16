@@ -95,29 +95,29 @@ function StartBenchCutCore({ era }: { era: Era }) {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center px-4 py-8 max-w-4xl mx-auto w-full">
-      <div className="text-center mb-6">
-        <p className="text-xs text-[#65a30d] font-semibold uppercase tracking-widest mb-1">
+    <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-7xl mx-auto w-full">
+      <div className="text-center mb-8">
+        <p className="text-sm text-[#65a30d] font-semibold uppercase tracking-widest mb-2">
           Round {roundIndex + 1} of {trios.length}
         </p>
-        <h1 className="text-2xl font-bebas tracking-widest text-[#111827]">{trio.category}</h1>
-        <p className="text-gray-500 text-sm mt-1">{trio.description}</p>
+        <h1 className="text-5xl font-bebas tracking-widest text-[#111827]">{trio.category}</h1>
+        <p className="text-gray-500 text-base mt-2">{trio.description}</p>
       </div>
 
-      <div className="mb-5 text-center">
+      <div className="mb-6 text-center">
         {selectedPlayer ? (
-          <p className="text-[#65a30d] text-sm font-semibold">
+          <p className="text-[#65a30d] text-base font-semibold">
             Assign a role for{" "}
             <span className="text-[#111827] font-bold">
               {trio.players.find(p => p.id === selectedPlayer)?.name.split(" ")[0]}
             </span>
           </p>
         ) : (
-          <p className="text-gray-400 text-sm">Tap a player, then assign their role</p>
+          <p className="text-gray-400 text-base">Tap a player, then assign their role</p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full mb-8">
         {trio.players.map(player => (
           <PlayerCard
             key={player.id}
@@ -129,7 +129,7 @@ function StartBenchCutCore({ era }: { era: Era }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-3 w-full max-w-md mb-6">
+      <div className="grid grid-cols-3 gap-4 w-full max-w-2xl mb-8">
         <RoleButton role="start" label="START" emoji="⭐" color="green" taken={takenRoles.has("start")} active={!!selectedPlayer} onClick={() => handleRoleClick("start")} />
         <RoleButton role="bench" label="BENCH" emoji="🪑" color="yellow" taken={takenRoles.has("bench")} active={!!selectedPlayer} onClick={() => handleRoleClick("bench")} />
         <RoleButton role="cut" label="CUT" emoji="✂️" color="red" taken={takenRoles.has("cut")} active={!!selectedPlayer} onClick={() => handleRoleClick("cut")} />
@@ -138,7 +138,7 @@ function StartBenchCutCore({ era }: { era: Era }) {
       <button
         onClick={handleSubmit}
         disabled={!allAssigned}
-        className={`px-10 py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-200
+        className={`px-14 py-4 rounded-2xl font-bold text-base tracking-wide transition-all duration-200
           ${allAssigned
             ? "bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] active:scale-95"
             : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -187,9 +187,9 @@ function RoleButton({ label, emoji, color, taken, active, onClick }: {
     <button
       onClick={active ? onClick : undefined}
       disabled={!active}
-      className={`flex flex-col items-center justify-center gap-1 py-4 rounded-xl border-2 font-bold text-xs tracking-widest transition-all duration-150 select-none ${classes} ${active && !taken ? "active:scale-95" : ""}`}
+      className={`flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 font-bold text-sm tracking-widest transition-all duration-150 select-none ${classes} ${active && !taken ? "active:scale-95" : ""}`}
     >
-      <span className="text-2xl">{emoji}</span>
+      <span className="text-4xl">{emoji}</span>
       <span>{label}</span>
     </button>
   );

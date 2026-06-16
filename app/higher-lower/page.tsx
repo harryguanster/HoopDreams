@@ -134,7 +134,7 @@ export default function HigherLowerPage() {
     <div className="min-h-screen">
       <GameHeader title="Higher or Lower" />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-20">
+      <main className="max-w-5xl mx-auto px-6 sm:px-10 py-10 pb-20">
 
         {/* Category tabs */}
         <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
@@ -155,46 +155,46 @@ export default function HigherLowerPage() {
         </div>
 
         {/* Streak display */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <div className="text-3xl font-black text-[#65a30d] tabular-nums">{streak}</div>
-            <div className="text-[9px] text-gray-400 font-mono uppercase tracking-wide">Current Streak</div>
+            <div className="text-5xl font-black text-[#65a30d] tabular-nums">{streak}</div>
+            <div className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">Current Streak</div>
           </div>
           <div className="text-center">
-            <div className="text-sm text-gray-500 font-mono uppercase tracking-widest">{category.description}</div>
+            <div className="text-base text-gray-500 font-mono uppercase tracking-widest">{category.description}</div>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-black text-gray-400 tabular-nums">{best}</div>
-            <div className="text-[9px] text-gray-400 font-mono uppercase tracking-wide">Best Streak</div>
+            <div className="text-5xl font-black text-gray-400 tabular-nums">{best}</div>
+            <div className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">Best Streak</div>
           </div>
         </div>
 
         {/* Player cards */}
-        <div className="grid grid-cols-2 gap-4 mb-5">
+        <div className="grid grid-cols-2 gap-6 mb-6">
           {/* Current player */}
           <div
-            className="rounded-2xl p-6 flex flex-col justify-between"
+            className="rounded-3xl p-8 flex flex-col justify-between"
             style={{
               background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, white 100%)",
               border: "1.5px solid rgba(132,204,22,0.3)",
-              minHeight: 200,
+              minHeight: 280,
             }}
           >
             <div>
-              <p className="text-[9px] font-mono uppercase tracking-widest mb-1" style={{ color: "#65a30d" }}>Current</p>
+              <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "#65a30d" }}>Current</p>
               <p
-                className="font-bold text-[#111827] leading-tight mb-3"
-                style={{ fontFamily: "var(--font-bebas)", fontSize: "1.5rem", letterSpacing: "0.05em" }}
+                className="font-bold text-[#111827] leading-tight mb-4"
+                style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.05em" }}
               >
                 {current.name}
               </p>
-              <p className="text-xs text-gray-500">{current.hint}</p>
+              <p className="text-sm text-gray-500">{current.hint}</p>
             </div>
             <div>
-              <p className="text-3xl font-black tabular-nums" style={{ color: "#65a30d" }}>
+              <p className="text-6xl font-black tabular-nums" style={{ color: "#65a30d" }}>
                 {formatValue(current.value, category.format)}
               </p>
-              <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wide mt-0.5">
+              <p className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">
                 {category.unit}
               </p>
             </div>
@@ -202,7 +202,7 @@ export default function HigherLowerPage() {
 
           {/* Challenger */}
           <div
-            className="rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden"
+            className="rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden"
             style={{
               background:
                 phase === "revealed"
@@ -216,17 +216,17 @@ export default function HigherLowerPage() {
                     ? "1.5px solid rgba(34,197,94,0.4)"
                     : "1.5px solid rgba(239,68,68,0.4)"
                   : "1.5px solid rgba(168,85,247,0.3)",
-              minHeight: 200,
+              minHeight: 280,
             }}
           >
             <div>
-              <p className="text-[9px] font-mono uppercase tracking-widest mb-1"
+              <p className="text-xs font-mono uppercase tracking-widest mb-2"
                 style={{ color: phase === "revealed" ? (isCorrect ? "#16a34a" : "#dc2626") : "#7c3aed" }}>
                 Challenger
               </p>
               <p
-                className="font-bold text-[#111827] leading-tight mb-3"
-                style={{ fontFamily: "var(--font-bebas)", fontSize: "1.5rem", letterSpacing: "0.05em" }}
+                className="font-bold text-[#111827] leading-tight mb-4"
+                style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.05em" }}
               >
                 {challenger.name}
               </p>
@@ -241,8 +241,8 @@ export default function HigherLowerPage() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <p className="text-3xl font-black tabular-nums text-purple-500">???</p>
-                  <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wide mt-0.5">
+                  <p className="text-6xl font-black tabular-nums text-purple-500">???</p>
+                  <p className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">
                     {category.unit}
                   </p>
                 </motion.div>
@@ -254,12 +254,12 @@ export default function HigherLowerPage() {
                   transition={{ type: "spring", stiffness: 350, damping: 22 }}
                 >
                   <p
-                    className="text-3xl font-black tabular-nums"
+                    className="text-6xl font-black tabular-nums"
                     style={{ color: isCorrect ? "#16a34a" : "#dc2626" }}
                   >
                     {formatValue(challenger.value, category.format)}
                   </p>
-                  <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wide mt-0.5">
+                  <p className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">
                     {category.unit}
                   </p>
                 </motion.div>
@@ -270,7 +270,7 @@ export default function HigherLowerPage() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute top-3 right-3 text-lg font-black"
+                className="absolute top-4 right-4 text-3xl font-black"
                 style={{ color: isTie ? "#d97706" : isCorrect ? "#16a34a" : "#dc2626" }}
               >
                 {isTie ? "=" : isCorrect ? "✓" : "✗"}
