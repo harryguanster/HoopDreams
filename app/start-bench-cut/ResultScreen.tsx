@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import type { Trio } from "@/lib/playerData";
+import PlayerHeadshot from "@/app/components/PlayerHeadshot";
 
 type Role = "start" | "bench" | "cut";
 type Assignments = { [playerId: string]: Role };
@@ -85,10 +86,12 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
                 className={`flex items-center gap-4 rounded-2xl border-2 p-4 backdrop-blur-sm ${cfg.bg} ${cfg.border}`}
                 whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
               >
-                <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold text-white text-lg shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
-                  <span className="leading-none">{player.jersey}</span>
-                  <span className="text-[7px] font-semibold opacity-90">{player.position}</span>
-                </div>
+                <PlayerHeadshot
+                  playerId={player.id}
+                  teamColor={player.teamColor}
+                  jersey={player.jersey}
+                  size={60}
+                />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-[#111827] text-base leading-tight truncate">{player.name}</p>
                   <p className="text-gray-500 text-xs truncate">{player.team}</p>

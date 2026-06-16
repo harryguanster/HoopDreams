@@ -173,18 +173,18 @@ export default function HigherLowerPage() {
         <div className="grid grid-cols-2 gap-4 mb-5">
           {/* Current player */}
           <div
-            className="rounded-2xl p-5 flex flex-col justify-between"
+            className="rounded-2xl p-6 flex flex-col justify-between"
             style={{
               background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, white 100%)",
               border: "1.5px solid rgba(132,204,22,0.3)",
-              minHeight: 160,
+              minHeight: 200,
             }}
           >
             <div>
               <p className="text-[9px] font-mono uppercase tracking-widest mb-1" style={{ color: "#65a30d" }}>Current</p>
               <p
                 className="font-bold text-[#111827] leading-tight mb-3"
-                style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.05em" }}
+                style={{ fontFamily: "var(--font-bebas)", fontSize: "1.5rem", letterSpacing: "0.05em" }}
               >
                 {current.name}
               </p>
@@ -202,7 +202,7 @@ export default function HigherLowerPage() {
 
           {/* Challenger */}
           <div
-            className="rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden"
+            className="rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden"
             style={{
               background:
                 phase === "revealed"
@@ -216,7 +216,7 @@ export default function HigherLowerPage() {
                     ? "1.5px solid rgba(34,197,94,0.4)"
                     : "1.5px solid rgba(239,68,68,0.4)"
                   : "1.5px solid rgba(168,85,247,0.3)",
-              minHeight: 160,
+              minHeight: 200,
             }}
           >
             <div>
@@ -226,7 +226,7 @@ export default function HigherLowerPage() {
               </p>
               <p
                 className="font-bold text-[#111827] leading-tight mb-3"
-                style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.05em" }}
+                style={{ fontFamily: "var(--font-bebas)", fontSize: "1.5rem", letterSpacing: "0.05em" }}
               >
                 {challenger.name}
               </p>

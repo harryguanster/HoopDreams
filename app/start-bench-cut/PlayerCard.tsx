@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import type { Player } from "@/lib/playerData";
+import PlayerHeadshot from "@/app/components/PlayerHeadshot";
 
 type Role = "start" | "bench" | "cut" | null;
 
@@ -26,7 +27,7 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
   return (
     <motion.div
       onClick={onClick}
-      className={`relative rounded-2xl border-2 p-5 flex flex-col gap-3 cursor-pointer select-none shadow-sm
+      className={`relative rounded-2xl border-2 p-6 flex flex-col gap-3 cursor-pointer select-none shadow-sm
         ${bgClass} ${borderClass}`}
       animate={{ scale: isSelected ? 1.02 : 1 }}
       whileTap={{ scale: 0.97 }}
@@ -48,13 +49,12 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
       </AnimatePresence>
 
       <div className="flex justify-center pt-2">
-        <div
-          className="w-20 h-20 rounded-full flex flex-col items-center justify-center font-black text-white text-2xl shadow-md"
-          style={{ backgroundColor: player.teamColor }}
-        >
-          <span className="leading-none">{player.jersey}</span>
-          <span className="text-[9px] font-bold mt-0.5 opacity-80 tracking-widest">{player.position}</span>
-        </div>
+        <PlayerHeadshot
+          playerId={player.id}
+          teamColor={player.teamColor}
+          jersey={player.jersey}
+          size={100}
+        />
       </div>
 
       <div className="text-center">

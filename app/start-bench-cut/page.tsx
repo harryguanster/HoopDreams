@@ -117,7 +117,7 @@ function StartBenchCutCore({ era }: { era: Era }) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full mb-6">
         {trio.players.map(player => (
           <PlayerCard
             key={player.id}

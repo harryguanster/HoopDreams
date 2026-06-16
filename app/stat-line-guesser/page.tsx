@@ -8,6 +8,7 @@ import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import { ALL_PLAYER_NAMES, CURRENT_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
 import GameHeader from "@/app/components/GameHeader";
+import PlayerHeadshot from "@/app/components/PlayerHeadshot";
 
 type Era = "alltime" | "current";
 
@@ -188,10 +189,12 @@ function StatLineCore({ era }: { era: Era }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
             >
-              <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold text-white text-lg shadow-md shrink-0" style={{ backgroundColor: player.teamColor }}>
-                <span className="leading-none">{player.jersey}</span>
-                <span className="text-[8px] font-semibold opacity-90">{player.position}</span>
-              </div>
+              <PlayerHeadshot
+                playerId={player.id}
+                teamColor={player.teamColor}
+                jersey={player.jersey}
+                size={64}
+              />
               <div>
                 <p className="font-bold text-[#111827] text-base">{player.name}</p>
                 <p className="text-gray-500 text-sm">{player.team} · {player.era}</p>

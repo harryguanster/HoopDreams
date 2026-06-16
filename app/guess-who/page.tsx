@@ -8,6 +8,7 @@ import { ALL_TIME_GW_PLAYERS } from "@/lib/allTimePlayersGW";
 import { CURRENT_PLAYER_NAMES, ALL_TIME_GW_PLAYER_NAMES } from "@/lib/allPlayers";
 import PlayerAutocomplete from "@/app/components/PlayerAutocomplete";
 import GameHeader from "@/app/components/GameHeader";
+import PlayerHeadshot from "@/app/components/PlayerHeadshot";
 
 type Era = "alltime" | "current";
 
@@ -412,9 +413,12 @@ function WordleGame({ players, playerNames }: {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
             >
-              <div className="w-14 h-14 rounded-full flex flex-col items-center justify-center font-bold text-white text-lg shadow-md shrink-0" style={{ backgroundColor: answer.teamColor }}>
-                <span className="leading-none">{answer.jersey}</span>
-              </div>
+              <PlayerHeadshot
+                playerId={answer.id}
+                teamColor={answer.teamColor}
+                jersey={answer.jersey}
+                size={64}
+              />
               <div>
                 <p className="font-bold text-[#111827] text-base">{answer.name}</p>
                 <p className="text-gray-500 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
