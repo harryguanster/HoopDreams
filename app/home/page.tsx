@@ -360,7 +360,7 @@ function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos
         whileHover={{ y: -4 }}
         transition={{ type: "spring", stiffness: 380, damping: 28 }}
         className="relative overflow-hidden rounded-2xl"
-        style={{ height: 380, boxShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
+        style={{ height: 230, boxShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
       >
         {/* Photo background with subtle zoom on hover */}
         <div
@@ -388,14 +388,14 @@ function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos
         </div>
 
         {/* Bottom: title + description + meta */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 pt-10 pb-5" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}>
+        <div className="absolute bottom-0 left-0 right-0 px-4 pt-8 pb-4" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}>
           <h3
-            className="text-white mb-2 group-hover:text-lime-300 transition-colors"
-            style={{ fontFamily: "var(--font-bebas)", fontSize: "1.5rem", letterSpacing: "0.07em", lineHeight: 1.1 }}
+            className="text-white mb-1.5 group-hover:text-lime-300 transition-colors"
+            style={{ fontFamily: "var(--font-bebas)", fontSize: "1.2rem", letterSpacing: "0.07em", lineHeight: 1.1 }}
           >
             {title}
           </h3>
-          <p className="text-white/70 text-xs leading-relaxed mb-3">{description}</p>
+          <p className="text-white/65 text-[11px] leading-relaxed mb-3">{description}</p>
           <div className="flex items-center justify-between border-t border-white/12 pt-2">
             <p className="text-white/35 text-[9px] font-mono">{meta}</p>
             <span className="text-lime-400 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">Play →</span>
