@@ -46,10 +46,10 @@ function HalfCourtSVG() {
   );
 }
 
-function PlayerCard({ player }: { player: LineupPlayer }) {
+function PlayerCard({ player, revealed }: { player: LineupPlayer; revealed: boolean }) {
   const [imgFailed, setImgFailed] = useState(false);
   const pos = POSITION_COORDS[player.position];
-  const showHeadshot = !!player.nbaId && !imgFailed;
+  const showHeadshot = revealed && !!player.nbaId && !imgFailed;
 
   return (
     <div
@@ -63,7 +63,7 @@ function PlayerCard({ player }: { player: LineupPlayer }) {
         >
           <img
             src={`https://cdn.nba.com/headshots/nba/latest/260x190/${player.nbaId}.png`}
-            alt={player.name}
+            alt=""
             className="w-full h-full object-cover object-top"
             onError={() => setImgFailed(true)}
           />
@@ -101,6 +101,8 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+const MAX_HINTS = 3;
+
 export default function LineupGuesserPage() {
   const [order, setOrder] = useState<number[]>([]);
   const [idx, setIdx] = useState(0);
@@ -108,6 +110,7 @@ export default function LineupGuesserPage() {
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<"playing" | "won" | "lost">("playing");
   const [score, setScore] = useState({ correct: 0, total: 0 });
+  const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     setOrder(shuffle(LINEUPS.map((_, i) => i)));
@@ -134,6 +137,16 @@ export default function LineupGuesserPage() {
     }
   }
 
+  function handleHint() {
+    if (!team || revealedIndices.size >= MAX_HINTS) return;
+    const unrevealed = team.players
+      .map((_, i) => i)
+      .filter((i) => !revealedIndices.has(i));
+    if (unrevealed.length === 0) return;
+    const pick = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+    setRevealedIndices((prev) => new Set([...prev, pick]));
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || status !== "playing") return;
@@ -146,9 +159,12 @@ export default function LineupGuesserPage() {
     setGuesses([]);
     setInput("");
     setStatus("playing");
+    setRevealedIndices(new Set());
   }
 
   if (!team || order.length === 0) return null;
+
+  const hintsLeft = MAX_HINTS - revealedIndices.size;
 
   return (
     <div className="min-h-screen">
@@ -171,14 +187,32 @@ export default function LineupGuesserPage() {
 
         {/* Court */}
         <div
-          className="relative w-full rounded-2xl overflow-hidden shadow-2xl mb-8"
+          className="relative w-full rounded-2xl overflow-hidden shadow-2xl mb-4"
           style={{ aspectRatio: "500 / 420" }}
         >
           <HalfCourtSVG />
-          {team.players.map((p) => (
-            <PlayerCard key={p.name + p.position} player={p} />
+          {team.players.map((p, i) => (
+            <PlayerCard key={p.name + p.position} player={p} revealed={revealedIndices.has(i)} />
           ))}
         </div>
+
+        {/* Hint button */}
+        {status === "playing" && (
+          <div className="flex justify-end mb-5">
+            <button
+              onClick={handleHint}
+              disabled={hintsLeft === 0}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 font-semibold text-sm transition-all"
+              style={hintsLeft > 0
+                ? { borderColor: "#84cc16", color: "#65a30d", background: "rgba(132,204,22,0.08)" }
+                : { borderColor: "#e5e7eb", color: "#9ca3af", background: "white", cursor: "not-allowed" }}
+            >
+              <span>👁️ Hint</span>
+              <span className="text-xs font-mono opacity-60">({hintsLeft} left)</span>
+            </button>
+          </div>
+        )}
+
 
         {/* Guess form */}
         {status === "playing" && (
