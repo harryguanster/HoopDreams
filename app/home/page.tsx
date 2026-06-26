@@ -1,28 +1,17 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
-import DailyGuessWhoGame from "@/app/components/DailyGuessWhoGame";
-import DailyStatLineGame from "@/app/components/DailyStatLineGame";
 import DailyBadge from "@/app/components/DailyBadge";
 import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
-import { CURRENT_NBA_PLAYERS } from "@/lib/currentNBAPlayers";
 import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
 import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
-import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
-import {
-  getTodayStr, getDailyIndex, loadDailyData, saveDailyData, updateStreak, loadStreak,
-  type DailyData,
-} from "@/lib/dailyUtils";
+import { useEffect, useState } from "react";
+import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
-// ─── Basketball background pattern ───────────────────────────────────────────
-
-// ─── Photo URLs (Wikipedia Commons) ──────────────────────────────────────────
 const IMGS = {
   lebron2016:  "https://upload.wikimedia.org/wikipedia/commons/6/60/Lebron_dunking_finals_2016.jpg",
   lebronSteph: "https://upload.wikimedia.org/wikipedia/commons/5/5e/LeBron_James_vs._Steph_Curry_%2827676810241%29.jpg",
@@ -31,22 +20,9 @@ const IMGS = {
   dreamTeam:   "https://upload.wikimedia.org/wikipedia/commons/a/a0/Dream_Team_at_the_1992_Summer_Olympics.JPEG",
   rayAllen:    "https://upload.wikimedia.org/wikipedia/commons/f/f7/Ray_Allen_Heat.jpg",
   curry:       "https://upload.wikimedia.org/wikipedia/commons/b/b6/Stephen_Curry_shooting.jpg",
-  jokic:       "https://upload.wikimedia.org/wikipedia/commons/6/6b/Nikola_Jokic_%2840980299891%29.jpg",
-  luka:        "https://upload.wikimedia.org/wikipedia/commons/7/73/Luka_Doncic_%28cropped%29.jpg",
   wemby:       "https://upload.wikimedia.org/wikipedia/commons/2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg",
 };
 
-// ─── Hero stat counter ────────────────────────────────────────────────────────
-function StatCounter({ value, label }: { value: string; label: string }) {
-  return (
-    <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
-      <p className="font-playfair font-black text-[#84cc16] tabular-nums" style={{ fontSize: "2.2rem", lineHeight: 1 }}>{value}</p>
-      <p className="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-1">{label}</p>
-    </motion.div>
-  );
-}
-
-// ─── Hero 3D photo plates ─────────────────────────────────────────────────────
 const HERO_PHOTOS = [
   { src: IMGS.lebron2016,  label: "The Block · 2016 Finals",  pos: "center 30%" },
   { src: IMGS.jordan97,    label: "Michael Jordan · 1997",    pos: "center 35%" },
@@ -57,6 +33,7 @@ const HERO_PHOTOS = [
   { src: IMGS.lebronSteph, label: "LeBron vs Steph · 2016",   pos: "center 30%" },
   { src: IMGS.rayAllen,    label: "Ray Allen · Heat",          pos: "center 15%" },
 ];
+
 const PLATE_LAYOUT = [
   { x: -43, y: -24, rx:  14, ry: -28, rz: -13, w: 275, zLayer: 0 },
   { x:  37, y: -27, rx: -11, ry:  24, rz:  11, w: 250, zLayer: 0 },
@@ -82,7 +59,7 @@ function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
         rotateX: rx, rotateY: ry, rotateZ: rz, transformPerspective: 950,
         borderRadius: 16, overflow: "hidden",
         zIndex: zLayer === 0 ? 5 : 15,
-        boxShadow: "0 50px 130px rgba(0,0,0,0.88), 0 24px 65px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1)",
+        boxShadow: "0 50px 130px rgba(0,0,0,0.88), 0 24px 65px rgba(0,0,0,0.6)",
         willChange: "transform", pointerEvents: "none",
       }}
       initial={{ opacity: 0, scale: 0.5 }}
@@ -113,341 +90,19 @@ function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
   );
 }
 
-// ─── Creative SVG symbols ─────────────────────────────────────────────────────
-const SYMBOLS: Record<string, React.ReactElement> = {
-  // Ranking bars — Start Bench Cut
-  sbc: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-      <line x1="2" y1="3" x2="14" y2="3"/>
-      <line x1="2" y1="8" x2="10" y2="8"/>
-      <line x1="2" y1="13" x2="6" y2="13"/>
-    </svg>
-  ),
-  // Crosshair — Guess Who
-  crosshair: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-      <circle cx="8" cy="8" r="3.5"/>
-      <line x1="8" y1="1" x2="8" y2="4.5"/>
-      <line x1="8" y1="11.5" x2="8" y2="15"/>
-      <line x1="1" y1="8" x2="4.5" y2="8"/>
-      <line x1="11.5" y1="8" x2="15" y2="8"/>
-    </svg>
-  ),
-  // Bar chart — Stat Line
-  bars: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="2" y1="14" x2="2" y2="9"/>
-      <line x1="7" y1="14" x2="7" y2="5"/>
-      <line x1="12" y1="14" x2="12" y2="1"/>
-      <line x1="0" y1="14" x2="16" y2="14"/>
-    </svg>
-  ),
-  // 5 dots in basketball formation — Lineup Guesser
-  dots5: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-      <circle cx="3"  cy="4"  r="2"/>
-      <circle cx="13" cy="4"  r="2"/>
-      <circle cx="8"  cy="8"  r="2"/>
-      <circle cx="3"  cy="12" r="2"/>
-      <circle cx="13" cy="12" r="2"/>
-    </svg>
-  ),
-  // Squad builder — Simulations
-  squad: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="9" width="4" height="6" rx="1"/>
-      <rect x="6" y="5" width="4" height="10" rx="1"/>
-      <rect x="11" y="1" width="4" height="14" rx="1"/>
-      <circle cx="3" cy="5.5" r="1.8"/>
-      <circle cx="8" cy="1.5" r="1.8"/>
-      <circle cx="13" cy="1.5" r="0" fill="none"/>
-    </svg>
-  ),
-  // Franchise / building icon
-  franchise: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 1L14 5v10H2V5z"/>
-      <rect x="6" y="9" width="4" height="6" rx="0.5"/>
-      <line x1="4" y1="7" x2="4" y2="7.5"/>
-      <line x1="7" y1="7" x2="7" y2="7.5"/>
-      <line x1="9" y1="7" x2="9" y2="7.5"/>
-      <line x1="12" y1="7" x2="12" y2="7.5"/>
-      <polyline points="4 5 8 2 12 5"/>
-    </svg>
-  ),
-  // 2×2 grid — Connections
-  grid4: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-      <rect x="1" y="1" width="6" height="6" rx="1"/>
-      <rect x="9" y="1" width="6" height="6" rx="1"/>
-      <rect x="1" y="9" width="6" height="6" rx="1"/>
-      <rect x="9" y="9" width="6" height="6" rx="1"/>
-    </svg>
-  ),
-  // Up/down arrows — Higher or Lower
-  updown: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="4 10 8 14 12 10"/>
-      <polyline points="4 6  8  2 12 6"/>
-      <line x1="8" y1="2" x2="8" y2="14"/>
-    </svg>
-  ),
-  // Clock — timed games
-  clock: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-      <circle cx="8" cy="8" r="6.5"/>
-      <polyline points="8 4.5 8 8 10.5 10"/>
-    </svg>
-  ),
-  // Jersey outline — Name Starters
-  jersey: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 3 L5 1 L6.5 3.5 L9.5 3.5 L11 1 L14 3 L15 7 L12 7 L12 15 L4 15 L4 7 L1 7 Z"/>
-    </svg>
-  ),
-  // Graduation cap — Draft Class
-  mortar: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="8 2 15 5.5 8 9 1 5.5"/>
-      <path d="M4.5 7v4c1 .9 2.2 1.4 3.5 1.4s2.5-.5 3.5-1.4V7"/>
-      <line x1="15" y1="5.5" x2="15" y2="10"/>
-    </svg>
-  ),
-  // Trophy — Champions
-  trophy: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 1h6v6.5a3 3 0 0 1-6 0V1z"/>
-      <path d="M2.5 2.5H1v3A2.5 2.5 0 0 0 5 7"/>
-      <path d="M13.5 2.5H15v3A2.5 2.5 0 0 1 11 7"/>
-      <line x1="8" y1="10.5" x2="8" y2="12.5"/>
-      <line x1="5.5" y1="15" x2="10.5" y2="15"/>
-      <line x1="8" y1="12.5" x2="5.5" y2="12.5"/>
-      <line x1="8" y1="12.5" x2="10.5" y2="12.5"/>
-    </svg>
-  ),
-};
-
-function SymbolChip({ name }: { name: string }) {
+function StatCounter({ value, label }: { value: string; label: string }) {
   return (
-    <div style={{
-      width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-      background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)",
-      border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "rgba(255,255,255,0.88)",
-    }}>
-      {SYMBOLS[name]}
-    </div>
-  );
-}
-
-// ─── Tag style ────────────────────────────────────────────────────────────────
-function tagChipClass(tag: string) {
-  if (tag === "New")         return "text-orange-300 bg-orange-500/20 border-orange-400/40";
-  if (tag === "Opinion")     return "text-purple-300 bg-purple-500/20 border-purple-400/35";
-  if (tag === "Puzzle")      return "text-amber-300 bg-amber-500/20 border-amber-400/35";
-  if (tag === "Stats")       return "text-emerald-300 bg-emerald-500/20 border-emerald-400/35";
-  if (tag === "Daily")       return "text-purple-300 bg-purple-500/20 border-purple-400/35";
-  if (tag === "Streak")      return "text-amber-300 bg-amber-500/20 border-amber-400/35";
-  if (tag.includes("min"))   return "text-red-300 bg-red-500/20 border-red-400/35";
-  return "text-lime-300 bg-lime-500/20 border-lime-400/30";
-}
-
-// ─── Game data ────────────────────────────────────────────────────────────────
-type GameEntry = {
-  href: string; symbol: string; tag: string; title: string;
-  description: string; meta: string;
-  photo: string; photoPos: string; photoFilter?: string; photoCredit: string;
-};
-
-const GAMES_LIST: GameEntry[] = [
-  {
-    href: "/start-bench-cut", symbol: "sbc", tag: "Opinion",
-    title: "Start, Bench, Cut",
-    description: "Jordan, Kobe, LeBron or Jokic, Wemby, SGA — who starts, who rides pine, who gets cut? Two eras of impossible trios.",
-    meta: `${TRIOS.length + CURRENT_TRIOS.length} rounds · All-time & 2025–26`,
-    photo: IMGS.jordan97, photoPos: "center 35%", photoCredit: "Steve Lipofsky · CC BY-SA 3.0",
-  },
-  {
-    href: "/guess-who", symbol: "crosshair", tag: "Puzzle",
-    title: "Guess Who",
-    description: "Decode a mystery player from Wordle-style stat clues — legends or current stars. Green = exact, yellow = close.",
-    meta: `302 all-time + ${CURRENT_NBA_PLAYERS.length} current · 10 guesses`,
-    photo: IMGS.jokic, photoPos: "center 25%", photoFilter: "grayscale(70%) brightness(0.72) contrast(1.1)",
-    photoCredit: "Keith Allison · CC BY-SA 2.0",
-  },
-  {
-    href: "/stat-line-guesser", symbol: "bars", tag: "Stats",
-    title: "Stat Line Guesser",
-    description: "One clue at a time, a career stat line is revealed. Name the player before all five clues drop.",
-    meta: `${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length} players · 5 reveals`,
-    photo: IMGS.kobe81, photoPos: "center 25%", photoCredit: "endlessbender · CC BY 2.0",
-  },
-  {
-    href: "/lineup-guesser", symbol: "dots5", tag: "New",
-    title: "Lineup Guesser",
-    description: "Five starters, their stat lines. Three guesses to name the NBA team and season.",
-    meta: `${LINEUPS.length} puzzles · All eras`,
-    photo: IMGS.dreamTeam, photoPos: "center 20%", photoCredit: "Ken Hackman, USAF · Public Domain",
-  },
-  {
-    href: "/connections", symbol: "grid4", tag: "Daily",
-    title: "NBA Connections",
-    description: "16 players, 4 hidden groups. Find what links them before you run out of lives — new puzzle every day.",
-    meta: "4 categories · 4 lives · Daily",
-    photo: IMGS.curry, photoPos: "center 30%", photoCredit: "via Wikimedia Commons · CC BY-SA 2.0",
-  },
-  {
-    href: "/higher-lower", symbol: "updown", tag: "Streak",
-    title: "Higher or Lower",
-    description: "Career PPG, APG, All-Star appearances — guess which player's stat is higher. Build your streak.",
-    meta: "5 stat categories · Infinite streak",
-    photo: IMGS.luka, photoPos: "center 20%", photoCredit: "via Wikimedia Commons · CC BY-SA 4.0",
-  },
-];
-
-const TIMED_LIST: GameEntry[] = [
-  {
-    href: "/challenges/name-teams", symbol: "clock", tag: "5 min",
-    title: "Name All NBA Teams",
-    description: "30 franchises, 5 minutes. Type every team name before the clock hits zero — nicknames count.",
-    meta: "30 teams · 5:00 timer",
-    photo: IMGS.rayAllen, photoPos: "center 15%", photoCredit: "Keith Allison · CC BY-SA 2.0",
-  },
-  {
-    href: "/challenges/name-players", symbol: "jersey", tag: "10 min",
-    title: "Name the Starters",
-    description: "For each of the 30 teams, name the 5 current starters plus 1 bench player. Beat the clock.",
-    meta: "30 teams · 6 per team · 10:00 timer",
-    photo: IMGS.lebronSteph, photoPos: "center 30%", photoCredit: "Erik Drost · CC BY 2.0",
-  },
-  {
-    href: "/challenges/draft-class", symbol: "mortar", tag: "8 min",
-    title: "Draft Class Challenge",
-    description: "2010 through 2025 — name 3 players from every draft class. One hint is given per year.",
-    meta: "16 classes · 48 players · 8:00 timer",
-    photo: IMGS.wemby, photoPos: "center 20%", photoCredit: "Daiei Onoguchi · CC BY 4.0",
-  },
-  {
-    href: "/challenges/champions", symbol: "trophy", tag: "6 min",
-    title: "Champions by Year",
-    description: "Type a team name and all their championship years fill in at once. 35 years to conquer.",
-    meta: "1990–2024 · 35 years · 6:00 timer",
-    photo: IMGS.lebron2016, photoPos: "center 30%", photoCredit: "Erik Drost · CC BY 2.0",
-  },
-];
-
-const SIMULATIONS_LIST: GameEntry[] = [
-  {
-    href: "/simulations", symbol: "squad", tag: "New",
-    title: "Lineup Simulator",
-    description: "Draft a 12-man roster under a $100M salary cap, assign minutes, and run an advanced projection — offense, defense, chemistry, and championship odds.",
-    meta: `${CURRENT_NBA_PLAYERS.length}+ players · $100M cap · Full projection`,
-    photo: IMGS.jokic, photoPos: "center 25%", photoCredit: "Keith Allison · CC BY-SA 2.0",
-  },
-  {
-    href: "/franchise", symbol: "franchise", tag: "New",
-    title: "Franchise Mode",
-    description: "Build your roster, simulate full 82-game seasons with real standings, run the playoffs, and manage your franchise through the draft and free agency year after year.",
-    meta: "30 teams · Full playoffs · Multi-season",
-    photo: IMGS.dreamTeam, photoPos: "center 20%", photoCredit: "Ken Hackman, USAF · Public Domain",
-  },
-];
-
-// ─── Photo game card ──────────────────────────────────────────────────────────
-function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos, photoFilter, photoCredit }: GameEntry) {
-  return (
-    <Link href={href} className="group block">
-      <motion.div
-        whileHover={{ y: -3 }}
-        transition={{ type: "spring", stiffness: 380, damping: 28 }}
-        className="relative overflow-hidden"
-        style={{ height: 260, border: "2px solid #111827", background: "#111827" }}
-      >
-        {/* Photo background */}
-        <div
-          className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
-          style={{
-            backgroundImage: `url(${photo})`,
-            backgroundSize: "cover",
-            backgroundPosition: photoPos,
-            filter: photoFilter ?? "brightness(0.55) contrast(1.1)",
-          }}
-        />
-
-        {/* Dark overlay */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.15) 100%)" }} />
-
-        {/* Green hover border accent */}
-        <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#84cc16] transition-colors duration-300 pointer-events-none" />
-
-        {/* Top: tag */}
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3">
-          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.25em] px-2.5 py-1 border border-[#84cc16] text-[#84cc16]" style={{ background: "rgba(0,0,0,0.5)" }}>
-            {tag}
-          </span>
-          <SymbolChip name={symbol} />
-        </div>
-
-        {/* Bottom: editorial text */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.2)", marginBottom: "10px" }} />
-          <h3
-            className="font-playfair font-black text-white group-hover:text-[#84cc16] transition-colors leading-tight mb-2"
-            style={{ fontSize: "1.35rem", letterSpacing: "-0.01em" }}
-          >
-            {title}
-          </h3>
-          <p className="text-white/60 leading-relaxed mb-3" style={{ fontSize: "11px" }}>{description}</p>
-          <div className="flex items-center justify-between">
-            <p className="text-white/35 font-mono" style={{ fontSize: "9px" }}>{meta}</p>
-            <span className="text-[#84cc16] font-mono font-bold text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Play →</span>
-          </div>
-        </div>
-      </motion.div>
-    </Link>
-  );
-}
-
-// ─── Section header ───────────────────────────────────────────────────────────
-function SectionHeader({ label, title }: { label: string; title: string }) {
-  return (
-    <motion.div
-      className="mb-8"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
-    >
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-3 h-3 rounded-none" style={{ background: "#84cc16" }} />
-        <p className="text-[11px] font-mono font-bold uppercase tracking-[0.35em] text-[#84cc16]">{label}</p>
-      </div>
-      <div style={{ borderTop: "2px solid #111827", marginBottom: "16px" }} />
-      <h2 className="font-playfair font-black text-[#111827]" style={{ fontSize: "clamp(36px, 5vw, 60px)", lineHeight: 1.05, letterSpacing: "-0.02em" }}>
-        {title}
-      </h2>
+    <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
+      <p className="font-playfair font-black text-[#84cc16] tabular-nums" style={{ fontSize: "2.2rem", lineHeight: 1 }}>{value}</p>
+      <p className="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-1">{label}</p>
     </motion.div>
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [dailyData, setDailyData] = useState<DailyData>({
-    date: getTodayStr(), guessWhoWon: null, statLineWon: null,
-  });
   const [streakCount, setStreakCount] = useState(0);
-  const [dailyGuessWhoPlayer, setDailyGuessWhoPlayer] = useState<typeof CURRENT_GUESS_WHO_PLAYERS[0] | null>(null);
-  const [dailyStatLinePlayer, setDailyStatLinePlayer] = useState<typeof CURRENT_STAT_LINE_PLAYERS[0] | null>(null);
 
   useEffect(() => {
-    const gwIdx = getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0);
-    const slIdx = getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7);
-    setDailyGuessWhoPlayer(CURRENT_GUESS_WHO_PLAYERS[gwIdx]);
-    setDailyStatLinePlayer(CURRENT_STAT_LINE_PLAYERS[slIdx]);
-
-    const data = loadDailyData();
-    setDailyData(data);
-    if (data.guessWhoWon === true && data.statLineWon === true) updateStreak();
-
     function refreshStreak() {
       const s = loadStreak();
       setStreakCount(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
@@ -457,61 +112,32 @@ export default function HomePage() {
     return () => window.removeEventListener("daily-update", refreshStreak);
   }, []);
 
-  function handleGuessWhoComplete(won: boolean) {
-    const newData = { ...dailyData, guessWhoWon: won };
-    setDailyData(newData);
-    saveDailyData(newData);
-    if (won && newData.statLineWon === true) updateStreak();
-  }
-
-  function handleStatLineComplete(won: boolean) {
-    const newData = { ...dailyData, statLineWon: won };
-    setDailyData(newData);
-    saveDailyData(newData);
-    if (won && newData.guessWhoWon === true) updateStreak();
-  }
-
-  const bothWon = dailyData.guessWhoWon === true && dailyData.statLineWon === true;
-  const bothDone = dailyData.guessWhoWon !== null && dailyData.statLineWon !== null;
-
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{
-        backgroundColor: "#f4f0e6",
-        backgroundImage: [
-          "radial-gradient(ellipse 160% 55% at 50% 0%, rgba(255,253,242,0.90) 0%, transparent 52%)",
-          "radial-gradient(ellipse 75% 45% at 0% 100%, rgba(210,175,115,0.18) 0%, transparent 50%)",
-          "radial-gradient(ellipse 75% 45% at 100% 100%, rgba(195,158,98,0.13) 0%, transparent 50%)",
-          "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 48%, rgba(152,115,62,0.13) 100%)",
-          "repeating-linear-gradient(45deg, transparent 0px, transparent 9px, rgba(148,108,48,0.06) 9px, rgba(148,108,48,0.06) 10px)",
-          "repeating-linear-gradient(-45deg, transparent 0px, transparent 9px, rgba(148,108,48,0.045) 9px, rgba(148,108,48,0.045) 10px)",
-        ].join(", "),
-      }}>
+    <div className="h-screen overflow-hidden flex flex-col" style={{ background: "#030803" }}>
+      <style>{`
+        @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(40px,-30px) scale(1.08)} 70%{transform:translate(-20px,20px) scale(0.95)} }
+        @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
+      `}</style>
 
-      {/* ── Header ── */}
-      <header className="relative z-50 px-6 flex items-center justify-between sticky top-0" style={{ minHeight: 56, background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+      {/* Header */}
+      <header className="relative z-50 px-6 flex items-center justify-between shrink-0" style={{ minHeight: 56, borderBottom: "1px solid rgba(132,204,22,0.15)" }}>
         <div className="flex items-center gap-3">
           <img src="/logo.svg" alt="Courtside Central" className="h-8 w-auto" />
-          <span className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.15rem", letterSpacing: "-0.01em", lineHeight: 1 }}>Courtside Central</span>
+          <span className="font-playfair font-black text-white" style={{ fontSize: "1.1rem", letterSpacing: "-0.01em", lineHeight: 1 }}>Courtside Central</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#65a30d] hidden sm:block">Season 2025–26</span>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#84cc16] hidden sm:block">Season 2025–26</span>
           <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
       </header>
 
-      {/* ── Hero ── */}
-      <section className="relative min-h-[calc(100vh-56px)] flex flex-col items-center justify-center overflow-hidden text-white" style={{ background: "linear-gradient(160deg, #030803 0%, #050d04 40%, #06100a 70%, #040804 100%)" }}>
-        <style>{`
-          @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(40px,-30px) scale(1.08)} 70%{transform:translate(-20px,20px) scale(0.95)} }
-          @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
-        `}</style>
+      {/* Hero — fills remaining height, no scroll */}
+      <section className="relative flex-1 flex flex-col items-center justify-center overflow-hidden text-white">
         <div className="absolute pointer-events-none" style={{ width: 780, height: 620, bottom: "-140px", left: "-160px", background: "radial-gradient(ellipse, rgba(251,146,60,0.28) 0%, rgba(234,88,12,0.12) 45%, transparent 70%)", filter: "blur(60px)", animation: "floatA 9s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
         <div className="absolute pointer-events-none" style={{ width: 720, height: 580, top: "-120px", right: "-140px", background: "radial-gradient(ellipse, rgba(132,204,22,0.25) 0%, rgba(101,163,13,0.10) 50%, transparent 70%)", filter: "blur(65px)", animation: "floatB 11s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
-        <div className="absolute pointer-events-none" style={{ width: "100%", height: 300, bottom: 0, left: 0, background: "linear-gradient(to top, rgba(101,163,13,0.18) 0%, transparent 100%)", filter: "blur(2px)", zIndex: 1 }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(5,14,26,0.82) 100%)", zIndex: 2 }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(132,204,22,0.10) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
-        <div className="absolute inset-0 pointer-events-none speed-lines-bg" style={{ zIndex: 3 }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(3,8,3,0.85) 100%)", zIndex: 2 }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(132,204,22,0.08) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
 
         {PLATE_LAYOUT.map((pl, i) => (
           <PhotoPlate3D key={i} src={HERO_PHOTOS[i].src} label={HERO_PHOTOS[i].label} pos={HERO_PHOTOS[i].pos} x={pl.x} y={pl.y} rx={pl.rx} ry={pl.ry} rz={pl.rz} w={pl.w} idx={i} zLayer={pl.zLayer} />
@@ -526,7 +152,7 @@ export default function HomePage() {
 
         <motion.div className="relative mt-12" style={{ zIndex: 20 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
           <motion.a
-            href="#games"
+            href="/games"
             className="inline-block px-12 py-4 text-[#111827] font-mono font-bold uppercase tracking-[0.2em] text-sm"
             style={{ background: "#84cc16", border: "2px solid #84cc16", boxShadow: "0 0 40px rgba(132,204,22,0.4)" }}
             whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.65)" }}
@@ -544,146 +170,6 @@ export default function HomePage() {
           <StatCounter value={`${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length}+`} label="Players" />
         </motion.div>
       </section>
-
-      {/* ── Scrollable content ── */}
-      <div id="games" className="max-w-5xl mx-auto px-6 py-20 pb-32 space-y-20">
-
-        {/* Games */}
-        <section>
-          <SectionHeader label="Games" title="Pick Your Game" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {GAMES_LIST.map((g, i) => (
-              <motion.div key={g.href} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.4, delay: i * 0.07 }}>
-                <GameCard {...g} />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-        {/* Timed Challenges */}
-        <section>
-          <SectionHeader label="Timed Challenges" title="Race the Clock" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TIMED_LIST.map((g, i) => (
-              <motion.div key={g.href} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.4, delay: i * 0.08 }}>
-                <GameCard {...g} />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-        {/* Simulations */}
-        <section>
-          <SectionHeader label="Simulations" title="Build Your Squad" />
-          <div className="grid grid-cols-1 gap-4">
-            {SIMULATIONS_LIST.map((g, i) => (
-              <motion.div key={g.href} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.4, delay: i * 0.08 }}>
-                <GameCard {...g} />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-        {/* Daily */}
-        <section>
-          <SectionHeader label="Daily" title="Today's Challenges" />
-          <p className="text-gray-500 text-sm -mt-4 mb-8 font-mono">New players every day · Complete both to extend your streak</p>
-
-          {bothWon && (
-            <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="mb-8">
-              <div style={{ background: "linear-gradient(135deg, rgba(101,163,13,0.45) 0%, rgba(132,204,22,0.30) 50%, rgba(101,163,13,0.45) 100%)", border: "1px solid rgba(163,230,53,0.35)", clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 100%, 16px 100%)", boxShadow: "0 0 50px rgba(132,204,22,0.35)", padding: "20px 32px", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #a3e635, #65a30d)" }} />
-                <div className="flex items-center gap-6">
-                  <div>
-                    <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(24px, 4vw, 36px)", letterSpacing: "0.14em", color: "#d9f99d", lineHeight: 1 }}>Daily Complete</p>
-                    <p className="font-mono text-lime-600/70 tracking-widest uppercase mt-1" style={{ fontSize: "0.6rem" }}>Streak badge updated in the header</p>
-                  </div>
-                  <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 1, height: 32, background: "rgba(163,230,53,0.25)" }} />
-                    <div>
-                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1, textAlign: "right" }}>{streakCount}</p>
-                      <p className="font-mono uppercase tracking-widest text-lime-600/70" style={{ fontSize: "0.52rem", textAlign: "right" }}>Day Streak</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Daily Guess Who */}
-            <div className="rounded-2xl p-6 border border-lime-200" style={{ background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(132,204,22,0.10)" }}>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(132,204,22,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(132,204,22,0.30)" }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#65a30d" strokeWidth="1.5" strokeLinecap="round">
-                    <circle cx="9" cy="9" r="4"/><circle cx="9" cy="9" r="7.5"/>
-                    <line x1="9" y1="1" x2="9" y2="4.5"/><line x1="9" y1="13.5" x2="9" y2="17"/>
-                    <line x1="1" y1="9" x2="4.5" y2="9"/><line x1="13.5" y1="9" x2="17" y2="9"/>
-                  </svg>
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "#111827", lineHeight: 1 }}>Daily Guess Who</h3>
-                  <p className="text-gray-500 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 clues · 5 guesses</p>
-                </div>
-                {dailyData.guessWhoWon !== null && (
-                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.guessWhoWon ? "text-lime-700 bg-lime-100 border border-lime-300" : "text-red-600 bg-red-50 border border-red-200"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
-                    {dailyData.guessWhoWon ? "✓ Done" : "✗ Done"}
-                  </span>
-                )}
-              </div>
-              {dailyGuessWhoPlayer ? (
-                <DailyGuessWhoGame player={dailyGuessWhoPlayer} onComplete={handleGuessWhoComplete} alreadyCompleted={dailyData.guessWhoWon !== null} won={dailyData.guessWhoWon} />
-              ) : (
-                <div className="h-32 flex items-center justify-center">
-                  <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
-                </div>
-              )}
-            </div>
-
-            {/* Daily Stat Line */}
-            <div className="rounded-2xl p-6 border border-lime-200" style={{ background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, #f4f0e6 100%)", boxShadow: "0 2px 16px rgba(132,204,22,0.10)" }}>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0" style={{ background: "rgba(132,204,22,0.12)", clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%)", border: "1px solid rgba(132,204,22,0.30)" }}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#65a30d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="1.5" y="12" width="4" height="6.5" rx="0.5"/><rect x="8" y="7.5" width="4" height="11" rx="0.5"/>
-                    <rect x="14.5" y="3" width="4" height="15.5" rx="0.5"/><line x1="0" y1="19" x2="20" y2="19"/>
-                  </svg>
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.25rem", letterSpacing: "0.08em", color: "#111827", lineHeight: 1 }}>Daily Stat Line</h3>
-                  <p className="text-gray-500 text-[10px] font-mono uppercase tracking-wider mt-0.5">Current player · 5 stats · 5 guesses</p>
-                </div>
-                {dailyData.statLineWon !== null && (
-                  <span className={`ml-auto text-xs font-bold px-2 py-1 font-mono ${dailyData.statLineWon ? "text-lime-700 bg-lime-100 border border-lime-300" : "text-red-600 bg-red-50 border border-red-200"}`} style={{ clipPath: "polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%)" }}>
-                    {dailyData.statLineWon ? "✓ Done" : "✗ Done"}
-                  </span>
-                )}
-              </div>
-              {dailyStatLinePlayer ? (
-                <DailyStatLineGame player={dailyStatLinePlayer} onComplete={handleStatLineComplete} alreadyCompleted={dailyData.statLineWon !== null} won={dailyData.statLineWon} />
-              ) : (
-                <div className="h-32 flex items-center justify-center">
-                  <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {bothDone && !bothWon && (
-            <p className="text-center text-gray-400 text-xs font-mono mt-10 uppercase tracking-widest">Come back tomorrow for a new challenge</p>
-          )}
-        </section>
-
-        <p className="text-gray-400 text-xs text-center font-mono uppercase tracking-widest">
-          Stats are career averages · Accolades are highlights, not exhaustive
-        </p>
-      </div>
     </div>
   );
 }

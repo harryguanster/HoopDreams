@@ -11,7 +11,7 @@ export default function GameHeader({ title, era }: { title: string; era?: string
       }}
     >
       <a
-        href="/home"
+        href="/games"
         className="group flex items-center gap-3 hover:opacity-70 transition-opacity duration-150"
       >
         <span className="text-[#9ca3af] group-hover:text-[#84cc16] transition-colors font-bold text-sm">←</span>
