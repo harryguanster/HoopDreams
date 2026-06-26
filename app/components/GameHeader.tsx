@@ -3,56 +3,50 @@
 export default function GameHeader({ title, era }: { title: string; era?: string }) {
   return (
     <header
-      className="px-4 py-0 flex items-center justify-between sticky top-0 z-40 overflow-hidden"
+      className="px-6 flex items-center justify-between sticky top-0 z-40"
       style={{
-        minHeight: 52,
-        background: "rgba(244,240,230,0.95)",
-        backdropFilter: "blur(8px)",
-        borderBottom: "1px solid rgba(0,0,0,0.09)",
+        minHeight: 56,
+        background: "#f4f0e6",
+        borderBottom: "2px solid #111827",
       }}
     >
-      {/* Lime green left accent */}
-      <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: "linear-gradient(to bottom, #84cc16, #84cc1640)" }} />
-
       <a
         href="/home"
-        className="group flex items-center gap-2.5 hover:opacity-80 transition-all duration-150 relative z-10 py-3"
+        className="group flex items-center gap-3 hover:opacity-70 transition-opacity duration-150"
       >
-        <span className="text-[#9ca3af] group-hover:text-[#65a30d] transition-colors text-sm font-bold leading-none">←</span>
-        <img src="/logo.svg" alt="Courtside Central" className="h-8 w-auto" />
-        <span className="font-bebas text-[#111827] text-lg tracking-[0.08em] hidden sm:block" style={{ lineHeight: 1 }}>
+        <span className="text-[#9ca3af] group-hover:text-[#84cc16] transition-colors font-bold text-sm">←</span>
+        <img src="/logo.svg" alt="Courtside Central" className="h-7 w-auto" />
+        <span
+          className="font-playfair font-black text-[#111827] hidden sm:block"
+          style={{ fontSize: "1.1rem", letterSpacing: "-0.01em" }}
+        >
           Courtside Central
         </span>
       </a>
 
-      <div className="flex items-center gap-2 relative z-10 py-3">
+      <div className="flex items-center gap-3">
         {era === "current" && (
           <span
-            className="text-[10px] font-bold px-2.5 py-1 uppercase tracking-widest"
-            style={{
-              background: "rgba(14,165,233,0.12)",
-              color: "#0369a1",
-              border: "1px solid rgba(14,165,233,0.3)",
-              clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 100%, 6px 100%)",
-            }}
+            className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] px-2.5 py-1 border border-[#0369a1] text-[#0369a1]"
+            style={{ background: "rgba(14,165,233,0.08)" }}
           >
-            ⚡ Current
+            Current
           </span>
         )}
         {era === "alltime" && (
           <span
-            className="text-[10px] font-bold px-2.5 py-1 uppercase tracking-widest"
-            style={{
-              background: "rgba(132,204,22,0.1)",
-              color: "#65a30d",
-              border: "1px solid rgba(132,204,22,0.3)",
-              clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 100%, 6px 100%)",
-            }}
+            className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] px-2.5 py-1 border border-[#84cc16] text-[#65a30d]"
+            style={{ background: "rgba(132,204,22,0.08)" }}
           >
             All-Time
           </span>
         )}
-        <span className="font-bebas text-[#111827] text-xl tracking-[0.08em]">{title}</span>
+        <span
+          className="font-playfair font-black text-[#111827]"
+          style={{ fontSize: "1.25rem", letterSpacing: "-0.01em" }}
+        >
+          {title}
+        </span>
       </div>
     </header>
   );

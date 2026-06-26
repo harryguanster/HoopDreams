@@ -16,6 +16,7 @@
   --font-mono: var(--font-geist-mono);
   --font-bebas: var(--font-bebas);
   --font-rajdhani: var(--font-rajdhani);
+  --font-playfair: var(--font-playfair);
 }
 
 body {
@@ -126,9 +127,20 @@ body {
   animation: scanPulse 3s ease-in-out infinite;
 }
 
-/* Bebas Neue display font helper */
-.font-bebas { font-family: var(--font-bebas), 'Impact', sans-serif; }
+/* Display font helpers */
+.font-bebas    { font-family: var(--font-bebas), 'Impact', sans-serif; }
 .font-rajdhani { font-family: var(--font-rajdhani), sans-serif; }
+.font-playfair { font-family: var(--font-playfair), 'Georgia', serif; }
+
+/* Editorial rule line */
+.rule-line {
+  border: none;
+  border-top: 2px solid #111827;
+}
+.rule-line-green {
+  border: none;
+  border-top: 3px solid #84cc16;
+}
 
 .court-bg {
   background-color: #ffffff;

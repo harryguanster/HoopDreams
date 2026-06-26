@@ -40,7 +40,7 @@ const IMGS = {
 function StatCounter({ value, label }: { value: string; label: string }) {
   return (
     <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
-      <p className="font-bebas text-lime-400 tabular-nums" style={{ fontSize: "2rem", letterSpacing: "0.04em", lineHeight: 1 }}>{value}</p>
+      <p className="font-playfair font-black text-[#84cc16] tabular-nums" style={{ fontSize: "2.2rem", lineHeight: 1 }}>{value}</p>
       <p className="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-1">{label}</p>
     </motion.div>
   );
@@ -357,50 +357,50 @@ function GameCard({ href, symbol, tag, title, description, meta, photo, photoPos
   return (
     <Link href={href} className="group block">
       <motion.div
-        whileHover={{ y: -4 }}
+        whileHover={{ y: -3 }}
         transition={{ type: "spring", stiffness: 380, damping: 28 }}
-        className="relative overflow-hidden rounded-2xl"
-        style={{ height: 230, boxShadow: "0 6px 28px rgba(0,0,0,0.55)" }}
+        className="relative overflow-hidden"
+        style={{ height: 260, border: "2px solid #111827", background: "#111827" }}
       >
-        {/* Photo background with subtle zoom on hover */}
+        {/* Photo background */}
         <div
           className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105"
           style={{
             backgroundImage: `url(${photo})`,
             backgroundSize: "cover",
             backgroundPosition: photoPos,
-            filter: photoFilter ?? "none",
+            filter: photoFilter ?? "brightness(0.55) contrast(1.1)",
           }}
         />
 
-        {/* Gradient overlay — stronger at bottom */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.50) 45%, rgba(0,0,0,0.10) 100%)" }} />
+        {/* Dark overlay */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.15) 100%)" }} />
 
-        {/* Hover border */}
-        <div className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-white/20 transition-colors duration-300 pointer-events-none" />
+        {/* Green hover border accent */}
+        <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#84cc16] transition-colors duration-300 pointer-events-none" />
 
-        {/* Top row: symbol + tag */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <SymbolChip name={symbol} />
-          <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border backdrop-blur-sm ${tagChipClass(tag)}`}>
+        {/* Top: tag */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3">
+          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.25em] px-2.5 py-1 border border-[#84cc16] text-[#84cc16]" style={{ background: "rgba(0,0,0,0.5)" }}>
             {tag}
           </span>
+          <SymbolChip name={symbol} />
         </div>
 
-        {/* Bottom: title + description + meta */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 pt-8 pb-4" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }}>
+        {/* Bottom: editorial text */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.2)", marginBottom: "10px" }} />
           <h3
-            className="text-white mb-1.5 group-hover:text-lime-300 transition-colors"
-            style={{ fontFamily: "var(--font-bebas)", fontSize: "1.2rem", letterSpacing: "0.07em", lineHeight: 1.1 }}
+            className="font-playfair font-black text-white group-hover:text-[#84cc16] transition-colors leading-tight mb-2"
+            style={{ fontSize: "1.35rem", letterSpacing: "-0.01em" }}
           >
             {title}
           </h3>
-          <p className="text-white/65 text-[11px] leading-relaxed mb-3">{description}</p>
-          <div className="flex items-center justify-between border-t border-white/12 pt-2">
-            <p className="text-white/35 text-[9px] font-mono">{meta}</p>
-            <span className="text-lime-400 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">Play →</span>
+          <p className="text-white/60 leading-relaxed mb-3" style={{ fontSize: "11px" }}>{description}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-white/35 font-mono" style={{ fontSize: "9px" }}>{meta}</p>
+            <span className="text-[#84cc16] font-mono font-bold text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Play →</span>
           </div>
-          <p className="text-white/18 text-[8px] font-mono mt-1.5">{photoCredit}</p>
         </div>
       </motion.div>
     </Link>
@@ -417,8 +417,12 @@ function SectionHeader({ label, title }: { label: string; title: string }) {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
     >
-      <p className="text-[10px] font-mono uppercase tracking-[0.45em] text-lime-600 mb-2">{label}</p>
-      <h2 className="text-gray-900" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(34px, 5vw, 56px)", letterSpacing: "0.06em", lineHeight: 1 }}>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-3 h-3 rounded-none" style={{ background: "#84cc16" }} />
+        <p className="text-[11px] font-mono font-bold uppercase tracking-[0.35em] text-[#84cc16]">{label}</p>
+      </div>
+      <div style={{ borderTop: "2px solid #111827", marginBottom: "16px" }} />
+      <h2 className="font-playfair font-black text-[#111827]" style={{ fontSize: "clamp(36px, 5vw, 60px)", lineHeight: 1.05, letterSpacing: "-0.02em" }}>
         {title}
       </h2>
     </motion.div>
@@ -484,14 +488,13 @@ export default function HomePage() {
       }}>
 
       {/* ── Header ── */}
-      <header className="relative z-50 backdrop-blur-md border-b border-stone-300/60 px-6 py-0 flex items-center justify-between sticky top-0 overflow-hidden" style={{ minHeight: 56, background: "rgba(244,240,230,0.92)" }}>
-        <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: "linear-gradient(to bottom, #84cc16, #84cc1650)" }} />
-        <div className="flex items-center gap-3 relative z-10 py-3">
-          <img src="/logo.svg" alt="Courtside Central" className="h-9 w-auto" />
-          <span className="font-bebas text-gray-900 text-2xl tracking-[0.08em]" style={{ lineHeight: 1 }}>Courtside Central</span>
+      <header className="relative z-50 px-6 flex items-center justify-between sticky top-0" style={{ minHeight: 56, background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="Courtside Central" className="h-8 w-auto" />
+          <span className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.15rem", letterSpacing: "-0.01em", lineHeight: 1 }}>Courtside Central</span>
         </div>
-        <div className="flex items-center gap-3 relative z-10 py-3">
-          <span className="text-[10px] text-lime-600 hidden sm:block font-mono tracking-widest">SEASON 2025–26</span>
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#65a30d] hidden sm:block">Season 2025–26</span>
           <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
@@ -514,22 +517,22 @@ export default function HomePage() {
           <PhotoPlate3D key={i} src={HERO_PHOTOS[i].src} label={HERO_PHOTOS[i].label} pos={HERO_PHOTOS[i].pos} x={pl.x} y={pl.y} rx={pl.rx} ry={pl.ry} rz={pl.rz} w={pl.w} idx={i} zLayer={pl.zLayer} />
         ))}
 
-        <motion.div className="relative text-center pointer-events-none" style={{ zIndex: 10 }} initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, ease: "easeOut" }}>
-          <p className="text-[11px] font-mono uppercase tracking-[0.5em] text-lime-400 mb-6">Test Your NBA IQ</p>
-          <h1 className="uppercase text-white" style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(80px, 14vw, 210px)", lineHeight: 0.88, letterSpacing: "0.05em", textShadow: "0 0 120px rgba(132,204,22,0.5), 4px 4px 0px rgba(255,0,98,0.25), 0 4px 40px rgba(0,0,0,0.9)" }}>
-            Courtside<br />Central
+        <motion.div className="relative text-center pointer-events-none px-6" style={{ zIndex: 10 }} initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, ease: "easeOut" }}>
+          <p className="text-[11px] font-mono font-bold uppercase tracking-[0.45em] text-[#84cc16] mb-8">Test Your NBA IQ</p>
+          <h1 className="font-playfair font-black text-white italic" style={{ fontSize: "clamp(64px, 12vw, 180px)", lineHeight: 0.92, letterSpacing: "-0.03em", textShadow: "0 0 80px rgba(132,204,22,0.4), 0 4px 40px rgba(0,0,0,0.9)" }}>
+            Courtside<br />Central.
           </h1>
         </motion.div>
 
-        <motion.div className="relative mt-10" style={{ zIndex: 20 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
+        <motion.div className="relative mt-12" style={{ zIndex: 20 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
           <motion.a
             href="#games"
-            className="inline-block px-14 py-4 text-black font-bold uppercase"
-            style={{ fontFamily: "var(--font-bebas)", fontSize: "1.35rem", letterSpacing: "0.2em", background: "linear-gradient(90deg, #84cc16, #ccff00)", clipPath: "polygon(0 0, calc(100% - 14px) 0, 100% 100%, 14px 100%)", boxShadow: "0 0 40px rgba(132,204,22,0.55), 0 2px 12px rgba(0,0,0,0.4)" }}
-            whileHover={{ scale: 1.06, boxShadow: "0 0 65px rgba(132,204,22,0.75), 0 4px 24px rgba(0,0,0,0.4)" }}
+            className="inline-block px-12 py-4 text-[#111827] font-mono font-bold uppercase tracking-[0.2em] text-sm"
+            style={{ background: "#84cc16", border: "2px solid #84cc16", boxShadow: "0 0 40px rgba(132,204,22,0.4)" }}
+            whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.65)" }}
             whileTap={{ scale: 0.96 }}
           >
-            Start Playing
+            Start Playing →
           </motion.a>
         </motion.div>
 

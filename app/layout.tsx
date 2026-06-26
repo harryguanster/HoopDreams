@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bebas_Neue, Rajdhani } from "next/font/google";
+import { Geist, Geist_Mono, Bebas_Neue, Rajdhani, Playfair_Display } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -24,6 +24,14 @@ const bebasNeue = Bebas_Neue({
 const rajdhani = Rajdhani({
   weight: ["400", "500", "600", "700"],
   variable: "--font-rajdhani",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  weight: ["400", "700", "800", "900"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
   subsets: ["latin"],
   display: "swap",
 });
@@ -67,7 +75,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full`}>
+      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} ${playfair.variable} h-full`}>
         <body className="min-h-full flex flex-col text-[#111827] antialiased" style={{ background: "#f4f0e6" }}>
           <script
             type="application/ld+json"
