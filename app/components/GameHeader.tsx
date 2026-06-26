@@ -15,7 +15,7 @@ export default function GameHeader({ title, era }: { title: string; era?: string
         className="group flex items-center gap-3 hover:opacity-70 transition-opacity duration-150"
       >
         <span className="text-[#9ca3af] group-hover:text-[#84cc16] transition-colors font-bold text-sm">←</span>
-        <img src="/logo.svg" alt="Courtside Central" className="h-7 w-auto" />
+        <img src="/logo-cream.png" alt="Courtside Central" className="h-8 w-auto" />
         <span
           className="font-playfair font-black text-[#111827] hidden sm:block"
           style={{ fontSize: "1.1rem", letterSpacing: "-0.01em" }}

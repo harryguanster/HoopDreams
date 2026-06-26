@@ -122,7 +122,7 @@ export default function HomePage() {
       {/* Header */}
       <header className="relative z-50 px-6 flex items-center justify-between shrink-0" style={{ minHeight: 56, borderBottom: "1px solid rgba(132,204,22,0.15)" }}>
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="Courtside Central" className="h-8 w-auto" />
+          <img src="/logo-green.png" alt="Courtside Central" className="h-10 w-auto" />
           <span className="font-playfair font-black text-white" style={{ fontSize: "1.1rem", letterSpacing: "-0.01em", lineHeight: 1 }}>Courtside Central</span>
         </div>
         <div className="flex items-center gap-4">

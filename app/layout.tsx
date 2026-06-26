@@ -44,9 +44,9 @@ export const metadata: Metadata = {
   description: "Free NBA trivia games: Franchise Mode simulator, Higher or Lower, Connections, Guess Who, Start Bench Cut, Stat Line Guesser, and more. Test your NBA knowledge.",
   keywords: ["NBA trivia", "NBA games", "NBA quiz", "basketball trivia", "NBA higher lower", "NBA connections", "NBA franchise mode", "start bench cut NBA", "NBA guess who"],
   icons: {
-    icon: [{ url: "/logo.png", type: "image/png" }],
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: [{ url: "/logo-green.png", type: "image/png" }],
+    shortcut: "/logo-green.png",
+    apple: "/logo-green.png",
   },
   openGraph: {
     type: "website",
@@ -54,13 +54,13 @@ export const metadata: Metadata = {
     title: "Courtside Central — NBA Games & Trivia",
     description: "Free NBA trivia and games. Franchise Mode, Higher or Lower, Connections, Guess Who, and more.",
     url: "https://courtsidecentral.com",
-    images: [{ url: "/logo.png" }],
+    images: [{ url: "/logo-green.png" }],
   },
   twitter: {
     card: "summary",
     title: "Courtside Central — NBA Games & Trivia",
     description: "Free NBA trivia and games. Test your NBA knowledge.",
-    images: ["/logo.png"],
+    images: ["/logo-green.png"],
   },
   metadataBase: new URL("https://courtsidecentral.com"),
   verification: {

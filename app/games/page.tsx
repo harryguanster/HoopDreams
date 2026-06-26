@@ -212,7 +212,7 @@ export default function GamesPage() {
       <header className="sticky top-0 z-50 px-6 flex items-center justify-between" style={{ minHeight: 56, background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
         <div className="flex items-center gap-3">
           <a href="/home" className="text-gray-400 hover:text-[#84cc16] transition-colors font-bold mr-1">←</a>
-          <img src="/logo.svg" alt="" className="h-7 w-auto" />
+          <img src="/logo-cream.png" alt="" className="h-8 w-auto" />
           <span className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.1rem", letterSpacing: "-0.01em" }}>Courtside Central</span>
         </div>
         <div className="flex items-center gap-4">

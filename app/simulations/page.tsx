@@ -547,7 +547,7 @@ export default function SimulationsPage() {
       <header style={{ position: "sticky", top: 0, zIndex: 50, height: 64, background: "rgba(244,240,230,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(0,0,0,0.09)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", overflow: "hidden" }}>
         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: "linear-gradient(to bottom, #84cc16, #84cc1640)" }} />
         <Link href="/home" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/logo.svg" alt="" style={{ height: 34 }} />
+          <img src="/logo-cream.png" alt="" style={{ height: 34 }} />
           <span style={{ fontFamily: "var(--font-bebas)", color: "#111827", fontSize: "1.35rem", letterSpacing: "0.08em" }}>Courtside Central</span>
         </Link>
 
