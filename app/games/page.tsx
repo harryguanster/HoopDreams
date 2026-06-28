@@ -178,6 +178,7 @@ export default function GamesPage() {
   const [dailySLPlayer, setDailySLPlayer] = useState<typeof CURRENT_STAT_LINE_PLAYERS[0] | null>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setDailyGWPlayer(CURRENT_GUESS_WHO_PLAYERS[getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0)]);
     setDailySLPlayer(CURRENT_STAT_LINE_PLAYERS[getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7)]);
     const data = loadDailyData();
