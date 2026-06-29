@@ -157,14 +157,14 @@ export default function HigherLowerPage() {
         {/* Streak display */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <div className="text-5xl font-black text-[#65a30d] tabular-nums">{streak}</div>
+            <div className="text-5xl font-playfair font-black text-[#65a30d] tabular-nums">{streak}</div>
             <div className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">Current Streak</div>
           </div>
           <div className="text-center">
             <div className="text-base text-gray-500 font-mono uppercase tracking-widest">{category.description}</div>
           </div>
           <div className="text-right">
-            <div className="text-5xl font-black text-gray-400 tabular-nums">{best}</div>
+            <div className="text-5xl font-playfair font-black text-gray-400 tabular-nums">{best}</div>
             <div className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">Best Streak</div>
           </div>
         </div>
@@ -173,18 +173,18 @@ export default function HigherLowerPage() {
         <div className="grid grid-cols-2 gap-6 mb-6">
           {/* Current player */}
           <div
-            className="rounded-3xl p-8 flex flex-col justify-between"
+            className="rounded-none p-8 flex flex-col justify-between"
             style={{
-              background: "linear-gradient(135deg, rgba(132,204,22,0.07) 0%, white 100%)",
-              border: "1.5px solid rgba(132,204,22,0.3)",
+              background: "white",
+              border: "2px solid #111827",
               minHeight: 280,
             }}
           >
             <div>
               <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "#65a30d" }}>Current</p>
               <p
-                className="font-bold text-[#111827] leading-tight mb-4"
-                style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.05em" }}
+                className="font-playfair font-black text-[#111827] leading-tight mb-4"
+                style={{ fontSize: "2.2rem", letterSpacing: "-0.02em" }}
               >
                 {current.name}
               </p>
@@ -202,20 +202,10 @@ export default function HigherLowerPage() {
 
           {/* Challenger */}
           <div
-            className="rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden"
+            className="rounded-none p-8 flex flex-col justify-between relative overflow-hidden"
             style={{
-              background:
-                phase === "revealed"
-                  ? isCorrect
-                    ? "linear-gradient(135deg, rgba(34,197,94,0.12) 0%, white 100%)"
-                    : "linear-gradient(135deg, rgba(239,68,68,0.12) 0%, white 100%)"
-                  : "linear-gradient(135deg, rgba(168,85,247,0.08) 0%, white 100%)",
-              border:
-                phase === "revealed"
-                  ? isCorrect
-                    ? "1.5px solid rgba(34,197,94,0.4)"
-                    : "1.5px solid rgba(239,68,68,0.4)"
-                  : "1.5px solid rgba(168,85,247,0.3)",
+              background: "white",
+              border: "2px solid #111827",
               minHeight: 280,
             }}
           >
@@ -225,8 +215,8 @@ export default function HigherLowerPage() {
                 Challenger
               </p>
               <p
-                className="font-bold text-[#111827] leading-tight mb-4"
-                style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.05em" }}
+                className="font-playfair font-black text-[#111827] leading-tight mb-4"
+                style={{ fontSize: "2.2rem", letterSpacing: "-0.02em" }}
               >
                 {challenger.name}
               </p>
@@ -305,8 +295,8 @@ export default function HigherLowerPage() {
               onClick={() => guess("lower")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="py-4 rounded-2xl font-bold text-lg flex flex-col items-center gap-1"
-              style={{ background: "#111827", color: "white", border: "1.5px solid rgba(0,0,0,0.2)" }}
+              className="py-4 font-bold text-lg flex flex-col items-center gap-1"
+              style={{ background: "#111827", color: "white", border: "2px solid #111827" }}
             >
               <span className="text-2xl">↓</span>
               <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1.4rem", letterSpacing: "0.1em" }}>Lower</span>
@@ -315,8 +305,8 @@ export default function HigherLowerPage() {
               onClick={() => guess("higher")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="py-4 rounded-2xl font-bold text-lg flex flex-col items-center gap-1"
-              style={{ background: "#84cc16", color: "#111827", border: "1.5px solid #65a30d" }}
+              className="py-4 font-bold text-lg flex flex-col items-center gap-1"
+              style={{ background: "#84cc16", color: "#111827", border: "2px solid #111827" }}
             >
               <span className="text-2xl">↑</span>
               <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1.4rem", letterSpacing: "0.1em" }}>Higher</span>
@@ -329,11 +319,10 @@ export default function HigherLowerPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={next}
-            className="w-full py-3.5 rounded-2xl text-white font-bold text-base transition-all"
+            className="w-full py-3.5 text-[#111827] font-bold text-base transition-all"
             style={{
-              background: "linear-gradient(135deg, #65a30d, #84cc16)",
-              border: "2px solid rgba(132,204,22,0.4)",
-              fontFamily: "var(--font-bebas)",
+              background: "#84cc16",
+              border: "2px solid #111827",
               fontSize: "1.3rem",
               letterSpacing: "0.12em",
             }}
@@ -346,15 +335,15 @@ export default function HigherLowerPage() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-6 bg-white border border-gray-200 rounded-2xl shadow-sm"
+            className="text-center py-6 bg-white border-2 border-[#111827] rounded-none"
           >
             <p className="text-3xl mb-2">💔</p>
-            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">Streak Broken</h2>
+            <h2 className="text-xl font-playfair font-black text-[#111827] mb-1" style={{ letterSpacing: "-0.02em" }}>Streak Broken</h2>
             <p className="text-sm text-gray-500 mb-1">Final streak: {streak}</p>
             <p className="text-sm text-gray-500 mb-5">Best: {best}</p>
             <button
               onClick={restart}
-              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-6 py-2.5 rounded-xl transition-colors"
+              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-6 py-2.5 border-2 border-[#111827] transition-colors"
             >
               Try Again
             </button>

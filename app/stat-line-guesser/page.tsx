@@ -145,8 +145,8 @@ function StatLineCore({ era }: { era: Era }) {
         {gameState === "correct" && <SLConfetti />}
         <main className="flex flex-col items-center justify-center px-4 py-10 max-w-md mx-auto w-full min-h-full">
           <motion.div
-            className="w-full rounded-2xl p-7 text-center bg-white shadow-sm"
-            style={{ border: gameState === "correct" ? "1.5px solid rgba(132,204,22,0.4)" : "1.5px solid rgba(239,68,68,0.25)" }}
+            className="w-full rounded-none p-7 text-center bg-white"
+            style={{ border: gameState === "correct" ? "2px solid #111827" : "2px solid #111827" }}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -159,7 +159,7 @@ function StatLineCore({ era }: { era: Era }) {
             >
               {gameState === "correct" ? "🎯" : "😬"}
             </motion.div>
-            <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-1">
+            <h2 className="text-2xl font-playfair font-black text-[#111827] mb-1" style={{ letterSpacing: "-0.02em" }}>
               {gameState === "correct" ? "Correct!" : "Not quite!"}
             </h2>
             {gameState === "correct" ? (
@@ -184,7 +184,7 @@ function StatLineCore({ era }: { era: Era }) {
             )}
 
             <motion.div
-              className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4 mb-5 text-left border border-gray-200"
+              className="flex items-center gap-4 bg-gray-50 rounded-none p-4 mb-5 text-left border-2 border-[#111827]"
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
@@ -213,8 +213,8 @@ function StatLineCore({ era }: { era: Era }) {
 
             <motion.button
               onClick={handleNext}
-              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold rounded-2xl tracking-wide text-sm transition-all"
-              style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.15em" }}
+              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold border-2 border-[#111827] tracking-wide text-sm transition-all"
+              style={{ fontSize: "1.1rem", letterSpacing: "0.15em" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
             >
@@ -229,10 +229,10 @@ function StatLineCore({ era }: { era: Era }) {
   return (
     <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-2xl mx-auto w-full">
       <div className="text-center mb-8">
-        <p className="text-sm text-[#65a30d] font-semibold uppercase tracking-widest mb-2">
+        <p className="text-sm font-mono font-bold uppercase tracking-[0.25em] text-[#84cc16] mb-2">
           {stepsRevealed} of 5 clues revealed
         </p>
-        <h1 className="text-5xl font-bebas tracking-widest text-[#111827]">Who Am I?</h1>
+        <h1 className="text-5xl font-playfair font-black italic text-[#111827]" style={{ letterSpacing: "-0.02em" }}>Who Am I?</h1>
         <p className="text-gray-400 text-base mt-2">
           {allRevealed ? "Last chance — who is it?" : "Guess now or reveal the next clue"}
         </p>
@@ -247,7 +247,7 @@ function StatLineCore({ era }: { era: Era }) {
         ❓
       </motion.div>
 
-      <div className="w-full bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+      <div className="w-full bg-white border-2 border-[#111827] rounded-none overflow-hidden mb-6">
         <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
           <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Career Averages</p>
           <div className="flex gap-1">
@@ -319,7 +319,7 @@ function StatLineCore({ era }: { era: Era }) {
         <button
           onClick={checkGuess}
           disabled={!guess.trim()}
-          className="px-7 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-base shrink-0"
+          className="px-7 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold border-2 border-[#111827] disabled:border-gray-200 transition-all active:scale-95 text-base shrink-0"
         >
           Guess
         </button>
@@ -329,14 +329,14 @@ function StatLineCore({ era }: { era: Era }) {
         {!allRevealed && (
           <button
             onClick={() => setRevealStep(s => Math.min(s + 1, 4))}
-            className="flex-1 py-4 bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 font-semibold rounded-xl transition-all active:scale-95 text-base"
+            className="flex-1 py-4 bg-white hover:bg-gray-50 text-gray-600 border-2 border-[#111827] font-semibold transition-all active:scale-95 text-base"
           >
             Reveal Clue 👀
           </button>
         )}
         <button
           onClick={() => setGameState("wrong")}
-          className="py-4 px-6 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-base"
+          className="py-4 px-6 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border-2 border-[#111827] font-semibold transition-all text-base"
         >
           Give Up
         </button>

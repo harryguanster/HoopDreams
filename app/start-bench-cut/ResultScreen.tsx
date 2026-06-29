@@ -64,8 +64,8 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <p className="text-sm text-[#65a30d] font-semibold uppercase tracking-widest mb-2">{trio.category}</p>
-          <h2 className="text-4xl font-bebas tracking-widest text-[#111827] mb-3">Your Picks</h2>
+          <p className="text-sm font-mono font-bold uppercase tracking-[0.25em] text-[#84cc16] mb-2">{trio.category}</p>
+          <h2 className="text-4xl font-playfair font-black text-[#111827] mb-3" style={{ letterSpacing: "-0.02em" }}>Your Picks</h2>
           <p className="text-gray-500 text-base italic bg-gray-50 rounded-xl px-5 py-3 border border-gray-200">
             &ldquo;{comment}&rdquo;
           </p>
@@ -83,7 +83,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
                 variants={cardVariants}
                 initial="hidden"
                 animate="show"
-                className={`flex items-center gap-5 rounded-2xl border-2 p-5 backdrop-blur-sm ${cfg.bg} ${cfg.border}`}
+                className={`flex items-center gap-5 rounded-none border-2 p-5 ${cfg.bg} ${cfg.border}`}
                 whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
               >
                 <PlayerHeadshot
@@ -114,7 +114,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
         >
           <motion.button
             onClick={onPlayAgain}
-            className="flex-1 py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold text-sm rounded-2xl tracking-wide font-bebas"
+            className="flex-1 py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold text-sm tracking-wide border-2 border-[#111827]"
             style={{ fontSize: "1rem", letterSpacing: "0.15em" }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
@@ -139,7 +139,7 @@ export default function ResultScreen({ trio, assignments, onPlayAgain }: {
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
-            className="px-5 py-3.5 bg-white text-zinc-600 border border-zinc-200 font-semibold text-sm rounded-2xl tracking-wide shadow-sm min-w-[80px]"
+            className="px-5 py-3.5 bg-white text-zinc-600 border-2 border-[#111827] font-semibold text-sm tracking-wide min-w-[80px]"
             whileHover={{ scale: 1.02, backgroundColor: "#f4f4f5" }}
             whileTap={{ scale: 0.96 }}
             transition={{ duration: 0.15 }}

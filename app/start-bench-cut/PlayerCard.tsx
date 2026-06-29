@@ -27,7 +27,7 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
   return (
     <motion.div
       onClick={onClick}
-      className={`relative rounded-2xl border-2 p-6 flex flex-col gap-3 cursor-pointer select-none shadow-sm
+      className={`relative rounded-none border-2 p-6 flex flex-col gap-3 cursor-pointer select-none
         ${bgClass} ${borderClass}`}
       animate={{ scale: isSelected ? 1.02 : 1 }}
       whileTap={{ scale: 0.97 }}
@@ -58,7 +58,7 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
       </div>
 
       <div className="text-center">
-        <p className="font-bold text-[#111827] text-xl leading-tight">{player.name}</p>
+        <p className="font-playfair font-black text-[#111827] text-xl leading-tight">{player.name}</p>
         <p className="text-gray-400 text-sm mt-1 truncate">{player.team}</p>
       </div>
 
@@ -76,7 +76,7 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
         ))}
       </div>
 
-      <p className="text-center text-gray-400 text-xs font-mono">{player.era}</p>
+      <p className="text-center text-gray-400 text-xs font-mono uppercase tracking-[0.25em]">{player.era}</p>
     </motion.div>
   );
 }

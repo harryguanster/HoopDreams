@@ -388,8 +388,8 @@ function WordleGame({ players, playerNames }: {
         {won && <Confetti />}
         <main className="flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full min-h-full">
           <motion.div
-            className="w-full rounded-2xl p-7 text-center bg-white shadow-sm"
-            style={{ border: won ? "1.5px solid rgba(132,204,22,0.4)" : "1.5px solid rgba(239,68,68,0.25)" }}
+            className="w-full rounded-none p-7 text-center bg-white"
+            style={{ border: "2px solid #111827" }}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
@@ -402,13 +402,13 @@ function WordleGame({ players, playerNames }: {
             >
               {guessScore}
             </motion.div>
-            <h2 className="text-2xl font-bebas tracking-widest text-[#111827] mb-1">{won ? "Correct!" : "Not quite!"}</h2>
+            <h2 className="text-2xl font-playfair font-black text-[#111827] mb-1" style={{ letterSpacing: "-0.02em" }}>{won ? "Correct!" : "Not quite!"}</h2>
             {won
               ? <p className="font-semibold text-sm mb-5" style={{ color: "#65a30d" }}>Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
               : <p className="text-gray-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
             }
             <motion.div
-              className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4 mb-6 text-left border border-gray-200"
+              className="flex items-center gap-4 bg-gray-50 rounded-none p-4 mb-6 text-left border-2 border-[#111827]"
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.38 }}
@@ -431,8 +431,8 @@ function WordleGame({ players, playerNames }: {
             </motion.div>
             <motion.button
               onClick={handleNext}
-              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold rounded-2xl text-sm tracking-wide transition-all"
-              style={{ fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.15em" }}
+              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold border-2 border-[#111827] text-sm tracking-wide transition-all"
+              style={{ fontSize: "1.1rem", letterSpacing: "0.15em" }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
             >
@@ -448,7 +448,7 @@ function WordleGame({ players, playerNames }: {
     <main className="flex-1 flex flex-col items-center px-6 py-8 w-full max-w-7xl mx-auto">
       <div className="w-full flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <div className="shrink-0">
-          <h1 className="text-4xl font-bebas tracking-widest text-[#111827] leading-none">Who Am I?</h1>
+          <h1 className="text-4xl font-playfair font-black text-[#111827] leading-none" style={{ letterSpacing: "-0.02em" }}>Who Am I?</h1>
           <p className="text-sm text-[#65a30d] font-semibold mt-1">
             {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
           </p>
@@ -464,13 +464,13 @@ function WordleGame({ players, playerNames }: {
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-8 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold rounded-xl transition-all active:scale-95 text-base shrink-0"
+            className="px-8 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold border-2 border-[#111827] disabled:border-gray-200 transition-all active:scale-95 text-base shrink-0"
           >
             Guess
           </button>
           <button
             onClick={() => setGaveUp(true)}
-            className="py-4 px-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border border-gray-200 font-semibold rounded-xl transition-all text-base shrink-0"
+            className="py-4 px-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border-2 border-[#111827] font-semibold transition-all text-base shrink-0"
           >
             Give Up
           </button>

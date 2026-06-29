@@ -97,10 +97,10 @@ function StartBenchCutCore({ era }: { era: Era }) {
   return (
     <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-7xl mx-auto w-full">
       <div className="text-center mb-8">
-        <p className="text-sm text-[#65a30d] font-semibold uppercase tracking-widest mb-2">
+        <p className="text-sm font-mono font-bold uppercase tracking-[0.25em] text-[#84cc16] mb-2">
           Round {roundIndex + 1} of {trios.length}
         </p>
-        <h1 className="text-5xl font-bebas tracking-widest text-[#111827]">{trio.category}</h1>
+        <h1 className="text-5xl font-playfair font-black text-[#111827]" style={{ letterSpacing: "-0.02em" }}>{trio.category}</h1>
         <p className="text-gray-500 text-base mt-2">{trio.description}</p>
       </div>
 
@@ -138,10 +138,10 @@ function StartBenchCutCore({ era }: { era: Era }) {
       <button
         onClick={handleSubmit}
         disabled={!allAssigned}
-        className={`px-14 py-4 rounded-2xl font-bold text-base tracking-wide transition-all duration-200
+        className={`px-14 py-4 font-bold text-base tracking-wide transition-all duration-200 border-2
           ${allAssigned
-            ? "bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] active:scale-95"
-            : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            ? "bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] border-[#111827] active:scale-95"
+            : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
           }`}
       >
         {allAssigned ? "Submit My Picks →" : `Assign ${3 - Object.keys(assignments).length} more`}
@@ -187,7 +187,7 @@ function RoleButton({ label, emoji, color, taken, active, onClick }: {
     <button
       onClick={active ? onClick : undefined}
       disabled={!active}
-      className={`flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 font-bold text-sm tracking-widest transition-all duration-150 select-none ${classes} ${active && !taken ? "active:scale-95" : ""}`}
+      className={`flex flex-col items-center justify-center gap-2 py-6 border-2 font-bold text-sm tracking-widest transition-all duration-150 select-none ${classes} ${active && !taken ? "active:scale-95" : ""}`}
     >
       <span className="text-4xl">{emoji}</span>
       <span>{label}</span>

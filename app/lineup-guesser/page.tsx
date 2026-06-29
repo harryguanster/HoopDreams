@@ -174,12 +174,12 @@ export default function LineupGuesserPage() {
         {/* Header row */}
         <div className="flex items-end justify-between mb-6">
           <div>
-            <p className="text-xs font-bebas tracking-widest text-gray-400 mb-1">Season</p>
-            <p className="text-5xl font-bebas tracking-wide text-[#111827] leading-none">{team.season}</p>
+            <p className="text-xs font-mono font-bold uppercase tracking-[0.25em] text-gray-400 mb-1">Season</p>
+            <p className="text-5xl font-playfair font-black text-[#111827] leading-none" style={{ letterSpacing: "-0.02em" }}>{team.season}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-bebas tracking-widest text-gray-400 mb-1">Score</p>
-            <p className="text-5xl font-bebas tracking-wide text-[#65a30d] leading-none">
+            <p className="text-xs font-mono font-bold uppercase tracking-[0.25em] text-gray-400 mb-1">Score</p>
+            <p className="text-5xl font-playfair font-black text-[#65a30d] leading-none" style={{ letterSpacing: "-0.02em" }}>
               {score.correct}<span className="text-gray-400 font-light">/</span>{score.total}
             </p>
           </div>
@@ -202,7 +202,7 @@ export default function LineupGuesserPage() {
             <button
               onClick={handleHint}
               disabled={hintsLeft === 0}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 font-semibold text-sm transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 border-2 font-semibold text-sm transition-all"
               style={hintsLeft > 0
                 ? { borderColor: "#84cc16", color: "#65a30d", background: "rgba(132,204,22,0.08)" }
                 : { borderColor: "#e5e7eb", color: "#9ca3af", background: "white", cursor: "not-allowed" }}
@@ -226,11 +226,11 @@ export default function LineupGuesserPage() {
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                className="flex-1 px-5 py-4 rounded-xl border border-gray-200 bg-white text-[#111827] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-base"
+                className="flex-1 px-5 py-4 border-2 border-[#111827] rounded-none bg-white text-[#111827] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-base"
               />
               <button
                 type="submit"
-                className="px-8 py-4 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors text-base"
+                className="px-8 py-4 bg-[#84cc16] text-[#111827] font-bold border-2 border-[#111827] hover:bg-[#65a30d] transition-colors text-base"
               >
                 Guess
               </button>
@@ -265,14 +265,14 @@ export default function LineupGuesserPage() {
 
         {/* Won */}
         {status === "won" && (
-          <div className="text-center py-6 rounded-2xl" style={{ background: "rgba(132,204,22,0.08)", border: "1.5px solid rgba(132,204,22,0.35)" }}>
-            <p className="text-3xl font-bebas tracking-widest mb-1" style={{ color: "#65a30d" }}>Correct!</p>
+          <div className="text-center py-6 rounded-none" style={{ background: "rgba(132,204,22,0.08)", border: "2px solid #111827" }}>
+            <p className="text-3xl font-playfair font-black mb-1" style={{ color: "#65a30d", letterSpacing: "-0.02em" }}>Correct!</p>
             <p className="text-gray-700 font-medium mb-4">
               {team.season} {team.answer}
             </p>
             <button
               onClick={handleNext}
-              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors"
+              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold border-2 border-[#111827] hover:bg-[#65a30d] transition-colors"
             >
               Next Team
             </button>
@@ -281,14 +281,14 @@ export default function LineupGuesserPage() {
 
         {/* Lost */}
         {status === "lost" && (
-          <div className="text-center py-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <div className="text-center py-6 bg-white rounded-none border-2 border-[#111827]">
             <p className="text-base font-semibold text-gray-500 mb-1">The answer was</p>
-            <p className="text-2xl font-black text-[#111827] mb-4">
+            <p className="text-2xl font-playfair font-black text-[#111827] mb-4" style={{ letterSpacing: "-0.02em" }}>
               {team.season} {team.answer}
             </p>
             <button
               onClick={handleNext}
-              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold rounded-xl hover:bg-[#65a30d] transition-colors"
+              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold border-2 border-[#111827] hover:bg-[#65a30d] transition-colors"
             >
               Next Team
             </button>
