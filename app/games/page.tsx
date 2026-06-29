@@ -15,6 +15,15 @@ import {
 } from "@/lib/dailyUtils";
 
 // ─── Game mode data ────────────────────────────────────────────────────────────
+const FEATURED = {
+  href: "/franchise",
+  title: "Franchise Mode",
+  desc: "Build your roster, simulate full 82-game seasons, run the playoffs, and manage your franchise through the draft and free agency year after year.",
+  tag: "Simulation",
+  color: "#111827",
+  textColor: "#ffffff",
+};
+
 const GAMES = [
   {
     href: "/start-bench-cut",
@@ -23,15 +32,15 @@ const GAMES = [
     tag: "Opinion",
     color: "#84cc16",
     textColor: "#111827",
-    size: "large",
+    size: "medium",
   },
   {
     href: "/guess-who",
     title: "Guess Who",
     desc: "Decode a mystery player from Wordle-style stat clues.",
     tag: "Puzzle",
-    color: "#111827",
-    textColor: "#ffffff",
+    color: "#f4f0e6",
+    textColor: "#111827",
     size: "medium",
   },
   {
@@ -39,8 +48,8 @@ const GAMES = [
     title: "Higher or Lower",
     desc: "Guess which player's career stat is higher. Build your streak.",
     tag: "Streak",
-    color: "#f4f0e6",
-    textColor: "#111827",
+    color: "#1a1a1a",
+    textColor: "#ffffff",
     size: "medium",
   },
   {
@@ -48,8 +57,8 @@ const GAMES = [
     title: "Stat Line Guesser",
     desc: "Five clues, one player. Name them before all clues drop.",
     tag: "Stats",
-    color: "#1a1a1a",
-    textColor: "#ffffff",
+    color: "#f4f0e6",
+    textColor: "#111827",
     size: "medium",
   },
   {
@@ -57,8 +66,8 @@ const GAMES = [
     title: "Lineup Guesser",
     desc: "Five starters, their stats. Name the team and season.",
     tag: "Trivia",
-    color: "#f4f0e6",
-    textColor: "#111827",
+    color: "#111827",
+    textColor: "#ffffff",
     size: "medium",
   },
   {
@@ -66,8 +75,8 @@ const GAMES = [
     title: "NBA Connections",
     desc: "16 players, 4 hidden groups. Daily puzzle.",
     tag: "Daily",
-    color: "#111827",
-    textColor: "#ffffff",
+    color: "#84cc16",
+    textColor: "#111827",
     size: "medium",
   },
 ];
@@ -79,10 +88,6 @@ const TIMED = [
   { href: "/challenges/champions",    title: "Champions by Year",       tag: "6 min",  desc: "Type a team, all their title years fill in at once." },
 ];
 
-const SIMS = [
-  { href: "/simulations", title: "Lineup Simulator", desc: "Build a 12-man roster under $100M cap and run projections." },
-  { href: "/franchise",   title: "Franchise Mode",   desc: "Full 82-game seasons, playoffs, draft, and free agency." },
-];
 
 // ─── Components ────────────────────────────────────────────────────────────────
 
@@ -99,7 +104,7 @@ function Tag({ label, green }: { label: string; green?: boolean }) {
   );
 }
 
-function FeaturedCard({ game }: { game: typeof GAMES[0] }) {
+function FeaturedCard({ game }: { game: typeof FEATURED }) {
   return (
     <Link href={game.href} className="group block h-full">
       <motion.div
@@ -248,7 +253,7 @@ export default function GamesPage() {
 
           {/* Right: featured Start Bench Cut */}
           <div className="lg:col-span-3">
-            <FeaturedCard game={GAMES[0]} />
+            <FeaturedCard game={FEATURED} />
           </div>
         </div>
 
@@ -356,28 +361,6 @@ export default function GamesPage() {
                     <p className="font-playfair font-black text-[#111827] group-hover:text-white transition-colors" style={{ fontSize: "1.1rem", letterSpacing: "-0.01em", lineHeight: 1.2 }}>{g.title}</p>
                     <p className="font-mono text-gray-400 group-hover:text-white/40 transition-colors mt-1" style={{ fontSize: "10px" }}>{g.desc}</p>
                   </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ── SIMULATIONS ── */}
-        <section>
-          <RuleHeader label="Simulations" title="Build Your Squad" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-2 border-[#111827]">
-            {SIMS.map((g, i) => (
-              <Link key={g.href} href={g.href} className="group block">
-                <motion.div
-                  whileHover={{ background: "#84cc16" }}
-                  className="p-8 flex flex-col justify-between transition-colors"
-                  style={{ borderRight: i === 0 ? "2px solid #111827" : undefined, minHeight: 180, background: "#f4f0e6" }}
-                >
-                  <div>
-                    <p className="font-playfair font-black text-[#111827] mb-2 group-hover:text-[#111827]" style={{ fontSize: "1.6rem", letterSpacing: "-0.02em" }}>{g.title}</p>
-                    <p className="font-mono text-gray-500 text-xs leading-relaxed">{g.desc}</p>
-                  </div>
-                  <span className="font-mono font-bold text-[10px] uppercase tracking-[0.2em] text-[#84cc16] group-hover:text-[#111827] transition-colors mt-4">Play →</span>
                 </motion.div>
               </Link>
             ))}
