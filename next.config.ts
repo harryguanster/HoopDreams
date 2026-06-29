@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
-  experimental: {
-    scrollRestoration: false,
-  },
 };
 
 export default nextConfig;
