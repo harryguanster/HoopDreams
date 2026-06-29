@@ -20,8 +20,9 @@ const FEATURED = {
   title: "Franchise Mode",
   desc: "Build your roster, simulate full 82-game seasons, run the playoffs, and manage your franchise through the draft and free agency year after year.",
   tag: "Simulation",
-  color: "#111827",
+  bg: "linear-gradient(135deg, #0a1628 0%, #111827 60%, #1a2f1a 100%)",
   textColor: "#ffffff",
+  accentColor: "#84cc16",
 };
 
 const GAMES = [
@@ -30,62 +31,74 @@ const GAMES = [
     title: "Start, Bench, Cut",
     desc: "Jordan, Kobe, LeBron — who starts, who rides pine, who gets cut?",
     tag: "Opinion",
-    color: "#84cc16",
+    bg: "#84cc16",
     textColor: "#111827",
-    size: "medium",
+    hoverBg: "#65a30d",
+    tagBorderColor: "#111827",
+    tagTextColor: "#111827",
   },
   {
     href: "/guess-who",
     title: "Guess Who",
     desc: "Decode a mystery player from Wordle-style stat clues.",
     tag: "Puzzle",
-    color: "#f4f0e6",
-    textColor: "#111827",
-    size: "medium",
+    bg: "#111827",
+    textColor: "#ffffff",
+    hoverBg: "#1f2937",
+    tagBorderColor: "#84cc16",
+    tagTextColor: "#84cc16",
   },
   {
     href: "/higher-lower",
     title: "Higher or Lower",
     desc: "Guess which player's career stat is higher. Build your streak.",
     tag: "Streak",
-    color: "#1a1a1a",
-    textColor: "#ffffff",
-    size: "medium",
+    bg: "#f4f0e6",
+    textColor: "#111827",
+    hoverBg: "#e8e2d4",
+    tagBorderColor: "#111827",
+    tagTextColor: "#111827",
   },
   {
     href: "/stat-line-guesser",
     title: "Stat Line Guesser",
     desc: "Five clues, one player. Name them before all clues drop.",
     tag: "Stats",
-    color: "#f4f0e6",
+    bg: "#84cc16",
     textColor: "#111827",
-    size: "medium",
+    hoverBg: "#65a30d",
+    tagBorderColor: "#111827",
+    tagTextColor: "#111827",
   },
   {
     href: "/lineup-guesser",
     title: "Lineup Guesser",
     desc: "Five starters, their stats. Name the team and season.",
     tag: "Trivia",
-    color: "#111827",
+    bg: "#111827",
     textColor: "#ffffff",
-    size: "medium",
+    hoverBg: "#1f2937",
+    tagBorderColor: "#84cc16",
+    tagTextColor: "#84cc16",
   },
   {
     href: "/connections",
     title: "NBA Connections",
     desc: "16 players, 4 hidden groups. Daily puzzle.",
     tag: "Daily",
-    color: "#84cc16",
+    bg: "#f4f0e6",
     textColor: "#111827",
-    size: "medium",
+    hoverBg: "#e8e2d4",
+    tagBorderColor: "#111827",
+    tagTextColor: "#111827",
   },
 ];
 
 const TIMED = [
-  { href: "/challenges/name-teams",   title: "Name All 30 Teams",      tag: "5 min",  desc: "Type every NBA franchise before time runs out." },
-  { href: "/challenges/name-players", title: "Name the Starters",      tag: "10 min", desc: "Name the 5 starters + 1 bench for all 30 teams." },
-  { href: "/challenges/draft-class",  title: "Draft Class Challenge",   tag: "8 min",  desc: "Name 3 players from every draft class 2010–2025." },
-  { href: "/challenges/champions",    title: "Champions by Year",       tag: "6 min",  desc: "Type a team, all their title years fill in at once." },
+  { href: "/challenges/name-teams",   title: "Name All 30 Teams",    tag: "5 min",  desc: "Type every NBA franchise before time runs out.", bg: "#111827", textColor: "#fff" },
+  { href: "/challenges/name-players", title: "Name the Starters",    tag: "10 min", desc: "Name the 5 starters + 1 bench for all 30 teams.", bg: "#84cc16", textColor: "#111827" },
+  { href: "/challenges/draft-class",  title: "Draft Class Challenge", tag: "8 min",  desc: "Name 3 players from every draft class 2010–2025.", bg: "#111827", textColor: "#fff" },
+  { href: "/challenges/champions",    title: "Champions by Year",     tag: "6 min",  desc: "Type a team, all their title years fill in at once.", bg: "#84cc16", textColor: "#111827" },
 ];
 
 
@@ -108,25 +121,27 @@ function FeaturedCard({ game }: { game: typeof FEATURED }) {
   return (
     <Link href={game.href} className="group block h-full">
       <motion.div
-        whileHover={{ scale: 1.01 }}
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        className="h-full flex flex-col justify-between p-8 border-2 border-[#111827]"
-        style={{ background: game.color, color: game.textColor, minHeight: 320 }}
+        whileHover={{ opacity: 0.93 }}
+        transition={{ duration: 0.2 }}
+        className="h-full flex flex-col justify-between p-10 relative overflow-hidden"
+        style={{ background: game.bg, color: game.textColor, minHeight: 320, border: "2px solid #111827" }}
       >
-        <Tag label={game.tag} green={game.color !== "#84cc16"} />
-        <div>
+        {/* Decorative green glow blob */}
+        <div className="absolute -bottom-16 -right-16 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(132,204,22,0.18) 0%, transparent 70%)" }} />
+        <span className="text-[9px] font-mono font-bold uppercase tracking-[0.25em] px-2.5 py-1 border self-start" style={{ borderColor: game.accentColor, color: game.accentColor }}>
+          {game.tag}
+        </span>
+        <div className="relative z-10">
           <h2
-            className="font-playfair font-black mb-3 group-hover:opacity-80 transition-opacity"
-            style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)", lineHeight: 1.05, letterSpacing: "-0.02em" }}
+            className="font-playfair font-black mb-3"
+            style={{ fontSize: "clamp(2.2rem, 3.5vw, 3.2rem)", lineHeight: 1.02, letterSpacing: "-0.02em", color: game.textColor }}
           >
             {game.title}
           </h2>
-          <p className="font-mono text-sm opacity-60 leading-relaxed mb-6">{game.desc}</p>
+          <p className="font-mono text-sm leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.5)" }}>{game.desc}</p>
           <span
-            className="inline-block font-mono font-bold text-xs uppercase tracking-[0.2em] px-5 py-3 border-2 transition-all"
-            style={game.color === "#84cc16"
-              ? { borderColor: "#111827", color: "#111827", background: "transparent" }
-              : { borderColor: "#84cc16", color: "#84cc16", background: "transparent" }}
+            className="inline-block font-mono font-bold text-xs uppercase tracking-[0.2em] px-6 py-3 transition-all group-hover:bg-[#84cc16] group-hover:text-[#111827] group-hover:border-[#84cc16]"
+            style={{ borderWidth: 2, borderStyle: "solid", borderColor: "#84cc16", color: "#84cc16" }}
           >
             Play Now →
           </span>
@@ -140,20 +155,22 @@ function SmallCard({ game }: { game: typeof GAMES[0] }) {
   return (
     <Link href={game.href} className="group block h-full">
       <motion.div
-        whileHover={{ scale: 1.02 }}
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        className="h-full flex flex-col justify-between p-5 border-2 border-[#111827]"
-        style={{ background: game.color, color: game.textColor, minHeight: 160 }}
+        className="h-full flex flex-col justify-between p-5 transition-colors duration-200"
+        style={{ background: game.bg, color: game.textColor, minHeight: 180 }}
+        whileHover={{ background: game.hoverBg } as never}
+        transition={{ duration: 0.15 }}
       >
-        <Tag label={game.tag} green={game.color === "#f4f0e6" || game.color === "#1a1a1a"} />
+        <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] px-2 py-0.5 border self-start" style={{ borderColor: game.tagBorderColor, color: game.tagTextColor }}>
+          {game.tag}
+        </span>
         <div>
           <h3
-            className="font-playfair font-black mb-1 group-hover:opacity-75 transition-opacity"
-            style={{ fontSize: "1.4rem", letterSpacing: "-0.01em", lineHeight: 1.1 }}
+            className="font-playfair font-black mb-2 leading-tight"
+            style={{ fontSize: "1.35rem", letterSpacing: "-0.01em" }}
           >
             {game.title}
           </h3>
-          <p className="font-mono opacity-50 leading-tight" style={{ fontSize: "10px" }}>{game.desc}</p>
+          <p className="font-mono leading-snug" style={{ fontSize: "10px", opacity: 0.55 }}>{game.desc}</p>
         </div>
       </motion.div>
     </Link>
@@ -232,22 +249,24 @@ export default function GamesPage() {
       <main className="max-w-7xl mx-auto px-6 py-12 space-y-16 pb-24">
 
         {/* ── BENTO HERO: intro + featured game ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 border-2 border-[#111827]">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-0" style={{ border: "2px solid #111827" }}>
 
           {/* Left: intro panel */}
-          <div className="lg:col-span-2 flex flex-col justify-between p-10" style={{ background: "#111827", borderRight: "2px solid #84cc16" }}>
-            <div>
-              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.35em] text-[#84cc16] mb-4">Pick Your Game</p>
-              <h1 className="font-playfair font-black text-white italic mb-6" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: 1, letterSpacing: "-0.03em" }}>
+          <div className="lg:col-span-2 flex flex-col justify-between p-10 relative overflow-hidden" style={{ background: "#84cc16", borderRight: "2px solid #111827" }}>
+            {/* Decorative large number watermark */}
+            <div className="absolute -bottom-8 -left-4 font-playfair font-black text-[#65a30d] pointer-events-none select-none" style={{ fontSize: "clamp(120px, 18vw, 200px)", lineHeight: 1, opacity: 0.25 }}>IQ</div>
+            <div className="relative z-10">
+              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.35em] text-[#111827] mb-4 opacity-60">Pick Your Game</p>
+              <h1 className="font-playfair font-black text-[#111827] italic mb-6" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: 1, letterSpacing: "-0.03em" }}>
                 Test your<br />NBA brain.
               </h1>
-              <p className="font-mono text-white/40 text-sm leading-relaxed">
-                Six game modes. Daily challenges. Infinite streak. All free.
+              <p className="font-mono text-[#111827]/60 text-sm leading-relaxed">
+                Seven game modes. Daily challenges. Infinite streak. All free.
               </p>
             </div>
-            <div className="mt-8 pt-6" style={{ borderTop: "1px solid rgba(132,204,22,0.2)" }}>
-              <p className="text-[9px] font-mono uppercase tracking-widest text-white/30 mb-3">Today&apos;s streak</p>
-              <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{streakCount}</p>
+            <div className="relative z-10 mt-8 pt-6" style={{ borderTop: "1px solid rgba(0,0,0,0.15)" }}>
+              <p className="text-[9px] font-mono uppercase tracking-widest text-[#111827]/50 mb-2">Today&apos;s streak</p>
+              <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{streakCount}</p>
             </div>
           </div>
 
@@ -260,11 +279,11 @@ export default function GamesPage() {
         {/* ── GAME MODES GRID ── */}
         <section>
           <RuleHeader label="Game Modes" title="Choose Your Challenge" />
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-0 border-2 border-[#111827]">
-            {GAMES.slice(1).map((g, i) => (
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-0" style={{ border: "2px solid #111827" }}>
+            {GAMES.map((g, i) => (
               <div
                 key={g.href}
-                className={i < 4 ? "border-b-2 lg:border-b-0 lg:border-r-2 border-[#111827]" : "border-[#111827]"}
+                style={{ borderRight: i < GAMES.length - 1 ? "2px solid #111827" : undefined }}
               >
                 <SmallCard game={g} />
               </div>
@@ -346,20 +365,25 @@ export default function GamesPage() {
         {/* ── TIMED CHALLENGES ── */}
         <section>
           <RuleHeader label="Timed Challenges" title="Race the Clock" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border-2 border-[#111827]">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0" style={{ border: "2px solid #111827" }}>
             {TIMED.map((g, i) => (
               <Link key={g.href} href={g.href} className="group block">
                 <motion.div
-                  whileHover={{ background: "#111827" }}
-                  className="h-full p-5 flex flex-col justify-between transition-colors"
-                  style={{ borderRight: i < 3 ? "2px solid #111827" : undefined, minHeight: 140, background: "#f4f0e6" }}
+                  className="h-full p-6 flex flex-col justify-between transition-all duration-200"
+                  style={{ borderRight: i < 3 ? "2px solid #111827" : undefined, minHeight: 160, background: g.bg, color: g.textColor }}
+                  whileHover={{ opacity: 0.85 } as never}
                 >
-                  <span className="text-[9px] font-mono font-bold uppercase tracking-[0.25em] px-2 py-0.5 border border-[#111827] text-[#111827] self-start group-hover:border-[#84cc16] group-hover:text-[#84cc16] transition-colors">
+                  <span
+                    className="text-[9px] font-mono font-bold uppercase tracking-[0.25em] px-2 py-0.5 border self-start"
+                    style={g.bg === "#84cc16"
+                      ? { borderColor: "#111827", color: "#111827" }
+                      : { borderColor: "#84cc16", color: "#84cc16" }}
+                  >
                     {g.tag}
                   </span>
                   <div>
-                    <p className="font-playfair font-black text-[#111827] group-hover:text-white transition-colors" style={{ fontSize: "1.1rem", letterSpacing: "-0.01em", lineHeight: 1.2 }}>{g.title}</p>
-                    <p className="font-mono text-gray-400 group-hover:text-white/40 transition-colors mt-1" style={{ fontSize: "10px" }}>{g.desc}</p>
+                    <p className="font-playfair font-black" style={{ fontSize: "1.15rem", letterSpacing: "-0.01em", lineHeight: 1.2 }}>{g.title}</p>
+                    <p className="font-mono mt-1" style={{ fontSize: "10px", opacity: 0.55 }}>{g.desc}</p>
                   </div>
                 </motion.div>
               </Link>
