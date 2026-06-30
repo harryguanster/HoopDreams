@@ -220,7 +220,8 @@ export default function AuctionDraftPage() {
       // AI gets it uncontested for $1
       appendLog({ bidder: "sys", text: `You already have a ${player.position}. AI wins uncontested.` });
       setTimeout(() => {
-        const { aRoster: cur, aBudget: curB } = stateRef.current;
+        const cur = stateRef.current.aiRoster;
+        const curB = stateRef.current.aiBudget;
         const newAiRoster = [...cur, { player, paid: 1 }];
         const newAiBudget = curB - 1;
         setAiRoster(newAiRoster);

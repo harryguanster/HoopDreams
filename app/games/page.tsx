@@ -290,12 +290,18 @@ export default function GamesPage() {
         {/* ── GAME MODES GRID ── */}
         <section>
           <RuleHeader label="Game Modes" title="Choose Your Challenge" />
-          <div className="grid grid-cols-2 lg:grid-cols-6 gap-0" style={{ border: "2px solid #111827" }}>
-            {GAMES.map((g, i) => (
-              <div
-                key={g.href}
-                style={{ borderRight: i < GAMES.length - 1 ? "2px solid #111827" : undefined }}
-              >
+          {/* Row 1: first 4 games */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0" style={{ border: "2px solid #111827", borderBottom: "none" }}>
+            {GAMES.slice(0, 4).map((g, i) => (
+              <div key={g.href} style={{ borderRight: i < 3 ? "2px solid #111827" : undefined }}>
+                <SmallCard game={g} />
+              </div>
+            ))}
+          </div>
+          {/* Row 2: remaining games */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-0" style={{ border: "2px solid #111827" }}>
+            {GAMES.slice(4).map((g, i) => (
+              <div key={g.href} style={{ borderRight: i < GAMES.slice(4).length - 1 ? "2px solid #111827" : undefined }}>
                 <SmallCard game={g} />
               </div>
             ))}
