@@ -92,6 +92,17 @@ const GAMES = [
     tagBorderColor: "#111827",
     tagTextColor: "#111827",
   },
+  {
+    href: "/auction-draft",
+    title: "Auction Draft",
+    desc: "Bid on all-time legends against an AI. Build your dream team, then play a game to 7.",
+    tag: "New",
+    bg: "#84cc16",
+    textColor: "#111827",
+    hoverBg: "#65a30d",
+    tagBorderColor: "#111827",
+    tagTextColor: "#111827",
+  },
 ];
 
 const TIMED = [
