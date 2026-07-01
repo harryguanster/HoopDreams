@@ -124,148 +124,137 @@ export default function HigherLowerPage() {
 
   if (!mounted || !current || !challenger) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#f4f0e6" }}>
+        <p className="font-mono text-xs uppercase tracking-widest text-gray-400">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
       <GameHeader title="Higher or Lower" />
 
       <main className="max-w-5xl mx-auto px-6 sm:px-10 py-10 pb-20">
 
         {/* Category tabs */}
-        <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
-          {HL_CATEGORIES.map((cat, i) => (
-            <button
-              key={cat.id}
-              onClick={() => switchCategory(i)}
-              className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150"
-              style={{
-                background: i === catIdx ? "#84cc16" : "white",
-                color: i === catIdx ? "#111827" : "#6b7280",
-                border: i === catIdx ? "1.5px solid #65a30d" : "1.5px solid #e5e7eb",
-              }}
-            >
-              {cat.label}
-            </button>
-          ))}
+        <div className="border-2 border-[#111827] mb-6 overflow-x-auto">
+          <div className="flex">
+            {HL_CATEGORIES.map((cat, i) => (
+              <button
+                key={cat.id}
+                onClick={() => switchCategory(i)}
+                className="shrink-0 px-5 py-3 font-mono font-bold text-xs uppercase tracking-[0.1em] transition-colors"
+                style={{
+                  background: i === catIdx ? "#111827" : "#f4f0e6",
+                  color: i === catIdx ? "#84cc16" : "#111827",
+                  borderRight: i < HL_CATEGORIES.length - 1 ? "2px solid #111827" : undefined,
+                }}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Streak display */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="text-5xl font-playfair font-black text-[#65a30d] tabular-nums">{streak}</div>
-            <div className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">Current Streak</div>
-          </div>
-          <div className="text-center">
-            <div className="text-base text-gray-500 font-mono uppercase tracking-widest">{category.description}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-5xl font-playfair font-black text-gray-400 tabular-nums">{best}</div>
-            <div className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">Best Streak</div>
+        {/* Streak banner */}
+        <div className="border-2 border-[#111827] mb-8" style={{ background: "#111827" }}>
+          <div className="flex items-center justify-between px-8 py-5">
+            <div>
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">Current Streak</p>
+              <div className="font-playfair font-black tabular-nums" style={{ fontSize: "3rem", color: "#84cc16", lineHeight: 1 }}>{streak}</div>
+            </div>
+            <div className="text-center">
+              <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">{category.description}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">Best Streak</p>
+              <div className="font-playfair font-black tabular-nums" style={{ fontSize: "3rem", color: "#6b7280", lineHeight: 1 }}>{best}</div>
+            </div>
           </div>
         </div>
 
         {/* Player cards */}
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-2 gap-0 border-2 border-[#111827] mb-6">
           {/* Current player */}
-          <div
-            className="rounded-none p-8 flex flex-col justify-between"
-            style={{
-              background: "white",
-              border: "2px solid #111827",
-              minHeight: 280,
-            }}
-          >
-            <div>
-              <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "#65a30d" }}>Current</p>
-              <p
-                className="font-playfair font-black text-[#111827] leading-tight mb-4"
-                style={{ fontSize: "2.2rem", letterSpacing: "-0.02em" }}
-              >
+          <div style={{ borderRight: "2px solid #111827" }}>
+            {/* Dark top: name */}
+            <div className="px-6 py-5" style={{ background: "#111827", borderBottom: "2px solid #111827" }}>
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">Current</p>
+              <p className="font-playfair font-black text-white leading-tight" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-0.02em" }}>
                 {current.name}
               </p>
-              <p className="text-sm text-gray-500">{current.hint}</p>
+              <p className="font-mono text-xs text-gray-400 mt-1">{current.hint}</p>
             </div>
-            <div>
-              <p className="text-6xl font-black tabular-nums" style={{ color: "#65a30d" }}>
+            {/* Cream bottom: stat value */}
+            <div className="px-6 py-5" style={{ background: "#f4f0e6" }}>
+              <p className="font-playfair font-black tabular-nums" style={{ fontSize: "3.5rem", color: "#84cc16", lineHeight: 1 }}>
                 {formatValue(current.value, category.format)}
               </p>
-              <p className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mt-1">
                 {category.unit}
               </p>
             </div>
           </div>
 
           {/* Challenger */}
-          <div
-            className="rounded-none p-8 flex flex-col justify-between relative overflow-hidden"
-            style={{
-              background: "white",
-              border: "2px solid #111827",
-              minHeight: 280,
-            }}
-          >
-            <div>
-              <p className="text-xs font-mono uppercase tracking-widest mb-2"
-                style={{ color: phase === "revealed" ? (isCorrect ? "#16a34a" : "#dc2626") : "#7c3aed" }}>
+          <div>
+            {/* Dark top: name */}
+            <div className="px-6 py-5 relative" style={{ background: "#111827", borderBottom: "2px solid #111827" }}>
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] mb-2"
+                style={{ color: phase === "revealed" ? (isCorrect ? "#84cc16" : "#ef4444") : "#a78bfa" }}>
                 Challenger
               </p>
-              <p
-                className="font-playfair font-black text-[#111827] leading-tight mb-4"
-                style={{ fontSize: "2.2rem", letterSpacing: "-0.02em" }}
-              >
+              <p className="font-playfair font-black text-white leading-tight" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-0.02em" }}>
                 {challenger.name}
               </p>
-              <p className="text-xs text-gray-500">{challenger.hint}</p>
-            </div>
+              <p className="font-mono text-xs text-gray-400 mt-1">{challenger.hint}</p>
 
-            <AnimatePresence mode="wait">
-              {phase === "guessing" ? (
+              {phase === "revealed" && (
                 <motion.div
-                  key="hidden"
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute top-4 right-4 font-playfair font-black text-3xl"
+                  style={{ color: isTie ? "#f59e0b" : isCorrect ? "#84cc16" : "#ef4444" }}
                 >
-                  <p className="text-6xl font-black tabular-nums text-purple-500">???</p>
-                  <p className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">
-                    {category.unit}
-                  </p>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="revealed"
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 350, damping: 22 }}
-                >
-                  <p
-                    className="text-6xl font-black tabular-nums"
-                    style={{ color: isCorrect ? "#16a34a" : "#dc2626" }}
-                  >
-                    {formatValue(challenger.value, category.format)}
-                  </p>
-                  <p className="text-xs text-gray-400 font-mono uppercase tracking-wide mt-1">
-                    {category.unit}
-                  </p>
+                  {isTie ? "=" : isCorrect ? "✓" : "✗"}
                 </motion.div>
               )}
-            </AnimatePresence>
-
-            {phase === "revealed" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute top-4 right-4 text-3xl font-black"
-                style={{ color: isTie ? "#d97706" : isCorrect ? "#16a34a" : "#dc2626" }}
-              >
-                {isTie ? "=" : isCorrect ? "✓" : "✗"}
-              </motion.div>
-            )}
+            </div>
+            {/* Cream bottom: stat value */}
+            <div className="px-6 py-5" style={{ background: "#f4f0e6" }}>
+              <AnimatePresence mode="wait">
+                {phase === "guessing" ? (
+                  <motion.div
+                    key="hidden"
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <p className="font-playfair font-black tabular-nums" style={{ fontSize: "3.5rem", color: "#8b5cf6", lineHeight: 1 }}>???</p>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mt-1">
+                      {category.unit}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="revealed"
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 22 }}
+                  >
+                    <p
+                      className="font-playfair font-black tabular-nums"
+                      style={{ fontSize: "3.5rem", lineHeight: 1, color: isCorrect ? "#84cc16" : "#ef4444" }}
+                    >
+                      {formatValue(challenger.value, category.format)}
+                    </p>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mt-1">
+                      {category.unit}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
@@ -276,8 +265,8 @@ export default function HigherLowerPage() {
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-center text-sm font-bold mb-4"
-              style={{ color: isTie ? "#d97706" : isCorrect ? "#16a34a" : "#dc2626" }}
+              className="text-center font-mono font-bold text-sm mb-4 uppercase tracking-[0.1em]"
+              style={{ color: isTie ? "#f59e0b" : isCorrect ? "#84cc16" : "#ef4444" }}
             >
               {isTie
                 ? "It's a tie — both correct!"
@@ -288,28 +277,28 @@ export default function HigherLowerPage() {
           )}
         </AnimatePresence>
 
-        {/* Buttons */}
+        {/* Guess buttons */}
         {phase === "guessing" && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-0 border-2 border-[#111827]">
             <motion.button
               onClick={() => guess("lower")}
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              className="py-4 font-bold text-lg flex flex-col items-center gap-1"
-              style={{ background: "#111827", color: "white", border: "2px solid #111827" }}
+              className="py-6 font-mono font-bold text-lg flex flex-col items-center gap-1 uppercase tracking-[0.1em]"
+              style={{ background: "#111827", color: "white", borderRight: "2px solid #111827" }}
             >
               <span className="text-2xl">↓</span>
-              <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1.4rem", letterSpacing: "0.1em" }}>Lower</span>
+              <span>Lower</span>
             </motion.button>
             <motion.button
               onClick={() => guess("higher")}
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              className="py-4 font-bold text-lg flex flex-col items-center gap-1"
-              style={{ background: "#84cc16", color: "#111827", border: "2px solid #111827" }}
+              className="py-6 font-mono font-bold text-lg flex flex-col items-center gap-1 uppercase tracking-[0.1em]"
+              style={{ background: "#84cc16", color: "#111827" }}
             >
               <span className="text-2xl">↑</span>
-              <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1.4rem", letterSpacing: "0.1em" }}>Higher</span>
+              <span>Higher</span>
             </motion.button>
           </div>
         )}
@@ -319,12 +308,10 @@ export default function HigherLowerPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={next}
-            className="w-full py-3.5 text-[#111827] font-bold text-base transition-all"
+            className="w-full py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] transition-colors"
             style={{
               background: "#84cc16",
-              border: "2px solid #111827",
-              fontSize: "1.3rem",
-              letterSpacing: "0.12em",
+              color: "#111827",
             }}
           >
             Next →
@@ -335,23 +322,33 @@ export default function HigherLowerPage() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-6 bg-white border-2 border-[#111827] rounded-none"
+            className="border-2 border-[#111827]"
+            style={{ background: "#111827" }}
           >
-            <p className="text-3xl mb-2">💔</p>
-            <h2 className="text-xl font-playfair font-black text-[#111827] mb-1" style={{ letterSpacing: "-0.02em" }}>Streak Broken</h2>
-            <p className="text-sm text-gray-500 mb-1">Final streak: {streak}</p>
-            <p className="text-sm text-gray-500 mb-5">Best: {best}</p>
-            <button
-              onClick={restart}
-              className="bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold px-6 py-2.5 border-2 border-[#111827] transition-colors"
-            >
-              Try Again
-            </button>
+            {/* Dark header */}
+            <div className="px-6 py-5 text-center" style={{ borderBottom: "2px solid #84cc16" }}>
+              <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-2">Defeat</p>
+              <h2 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)", letterSpacing: "-0.03em", lineHeight: 0.92 }}>
+                Streak<br />Broken.
+              </h2>
+            </div>
+            {/* Cream content */}
+            <div className="px-6 py-5 text-center" style={{ background: "#f4f0e6" }}>
+              <p className="font-mono text-xs text-gray-500 mb-1 uppercase tracking-[0.1em]">Final streak: <span className="font-bold text-[#111827]">{streak}</span></p>
+              <p className="font-mono text-xs text-gray-500 mb-5 uppercase tracking-[0.1em]">Best: <span className="font-bold text-[#111827]">{best}</span></p>
+              <button
+                onClick={restart}
+                className="px-10 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] transition-colors"
+                style={{ background: "#84cc16", color: "#111827" }}
+              >
+                Try Again
+              </button>
+            </div>
           </motion.div>
         )}
 
         {phase === "guessing" && (
-          <p className="text-center text-xs text-gray-400 mt-5">
+          <p className="text-center font-mono text-xs text-gray-400 mt-5">
             Does {challenger.name} have a higher or lower {category.label} than {current.name}?
           </p>
         )}

@@ -7,9 +7,9 @@ import PlayerHeadshot from "@/app/components/PlayerHeadshot";
 type Role = "start" | "bench" | "cut" | null;
 
 const ROLE_CONFIG = {
-  start: { label: "START", bg: "bg-green-50",  border: "border-green-300", text: "text-green-700", badge: "bg-green-500 text-white", emoji: "⭐" },
-  bench: { label: "BENCH", bg: "bg-yellow-50", border: "border-yellow-300", text: "text-yellow-700", badge: "bg-yellow-400 text-slate-900", emoji: "🪑" },
-  cut:   { label: "CUT",   bg: "bg-red-50",    border: "border-red-300",   text: "text-red-700",   badge: "bg-red-500 text-white",      emoji: "✂️" },
+  start: { label: "START", bg: "#84cc16",  border: "#84cc16", text: "#111827", emoji: "⭐" },
+  bench: { label: "BENCH", bg: "#f59e0b", border: "#f59e0b", text: "#111827", emoji: "🪑" },
+  cut:   { label: "CUT",   bg: "#ef4444", border: "#ef4444", text: "#ffffff", emoji: "✂️" },
 };
 
 export default function PlayerCard({ player, role, isSelected, onClick }: {
@@ -17,75 +17,82 @@ export default function PlayerCard({ player, role, isSelected, onClick }: {
 }) {
   const roleConfig = role ? ROLE_CONFIG[role] : null;
 
-  const borderClass = isSelected
-    ? "border-[#65a30d] ring-2 ring-[#84cc16]/30"
-    : roleConfig ? roleConfig.border
-    : "border-gray-200 hover:border-[#84cc16]/50";
-
-  const bgClass = roleConfig ? roleConfig.bg : isSelected ? "bg-[#f0fdf4]" : "bg-white";
+  const borderColor = isSelected
+    ? "#84cc16"
+    : "#111827";
 
   return (
     <motion.div
       onClick={onClick}
-      className={`relative rounded-none border-2 p-6 flex flex-col gap-3 cursor-pointer select-none
-        ${bgClass} ${borderClass}`}
+      className="relative rounded-none border-2 flex flex-col cursor-pointer select-none overflow-hidden"
+      style={{ borderColor }}
       animate={{ scale: isSelected ? 1.02 : 1 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
+      {/* Role badge */}
       <AnimatePresence>
         {roleConfig && (
           <motion.div
             key={role}
-            className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${roleConfig.badge}`}
-            initial={{ opacity: 0, scale: 0.6, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.6, y: -4 }}
+            className="absolute top-0 left-0 right-0 z-10 flex items-center justify-center gap-1.5 py-1.5 font-mono font-bold text-[10px] uppercase tracking-[0.2em]"
+            style={{ background: roleConfig.bg, color: roleConfig.text, borderBottom: "2px solid #111827" }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ type: "spring", stiffness: 500, damping: 28 }}
           >
-            {roleConfig.emoji} {roleConfig.label}
+            <span>{roleConfig.emoji}</span>
+            <span>{roleConfig.label}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex justify-center pt-2">
+      {/* Dark top section: headshot */}
+      <div className="flex justify-center items-center pt-10 pb-4" style={{ background: "#111827", minHeight: 160 }}>
         <PlayerHeadshot
           playerId={player.id}
           teamColor={player.teamColor}
           jersey={player.jersey}
-          size={144}
+          size={120}
         />
       </div>
 
-      <div className="text-center">
-        <p className="font-playfair font-black text-[#111827] text-xl leading-tight">{player.name}</p>
-        <p className="text-gray-400 text-sm mt-1 truncate">{player.team}</p>
-      </div>
+      {/* Cream bottom section: name + stats */}
+      <div className="p-4 flex flex-col gap-3" style={{ background: "#f4f0e6", borderTop: "2px solid #111827" }}>
+        <div className="text-center">
+          <p className="font-playfair font-black text-[#111827] text-xl leading-tight">{player.name}</p>
+          <p className="font-mono text-gray-400 text-xs mt-1 truncate uppercase tracking-[0.1em]">{player.team}</p>
+        </div>
 
-      <div className="grid grid-cols-3 gap-2 border-t border-gray-100 pt-4">
-        <StatPill label="PPG" value={player.stats.ppg} />
-        <StatPill label="RPG" value={player.stats.rpg} />
-        <StatPill label="APG" value={player.stats.apg} />
-      </div>
+        <div className="grid grid-cols-3 gap-0 border-2 border-[#111827]">
+          <StatCell label="PPG" value={player.stats.ppg} last={false} />
+          <StatCell label="RPG" value={player.stats.rpg} last={false} />
+          <StatCell label="APG" value={player.stats.apg} last={true} />
+        </div>
 
-      <div className="flex flex-wrap gap-1.5 justify-center">
-        {player.accolades.slice(0, 2).map((a) => (
-          <span key={a} className="text-xs bg-gray-100 text-gray-500 rounded-full px-3 py-1 leading-tight border border-gray-200">
-            {a}
-          </span>
-        ))}
-      </div>
+        <div className="flex flex-wrap gap-1.5 justify-center">
+          {player.accolades.slice(0, 2).map((a) => (
+            <span key={a} className="font-mono text-[9px] uppercase tracking-[0.1em] px-2 py-0.5 border border-[#111827] text-gray-500">
+              {a}
+            </span>
+          ))}
+        </div>
 
-      <p className="text-center text-gray-400 text-xs font-mono uppercase tracking-[0.25em]">{player.era}</p>
+        <p className="text-center font-mono text-[9px] uppercase tracking-[0.25em] text-gray-400">{player.era}</p>
+      </div>
     </motion.div>
   );
 }
 
-function StatPill({ label, value }: { label: string; value: number }) {
+function StatCell({ label, value, last }: { label: string; value: number; last: boolean }) {
   return (
-    <div className="flex flex-col items-center">
-      <span className="text-[#111827] font-bold text-lg leading-tight">{value}</span>
-      <span className="text-gray-400 text-xs font-medium">{label}</span>
+    <div
+      className="flex flex-col items-center py-2"
+      style={{ borderRight: last ? undefined : "2px solid #111827" }}
+    >
+      <span className="font-playfair font-black text-[#111827] text-lg leading-tight">{value}</span>
+      <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-gray-400">{label}</span>
     </div>
   );
 }

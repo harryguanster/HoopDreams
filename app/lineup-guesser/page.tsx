@@ -171,131 +171,133 @@ export default function LineupGuesserPage() {
       <GameHeader title="Lineup Guesser" />
 
       <main className="max-w-5xl mx-auto px-6 py-8">
-        {/* Header row */}
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <p className="text-xs font-mono font-bold uppercase tracking-[0.25em] text-gray-400 mb-1">Season</p>
-            <p className="text-5xl font-playfair font-black text-[#111827] leading-none" style={{ letterSpacing: "-0.02em" }}>{team.season}</p>
+        {/* Outer bordered container */}
+        <div className="border-2 border-[#111827] mb-6">
+          {/* Dark header */}
+          <div className="flex items-center justify-between px-8 py-5" style={{ background: "#111827" }}>
+            <div>
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">Season</p>
+              <p className="font-playfair font-black italic text-white leading-none" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.03em" }}>{team.season}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">Score</p>
+              <p className="font-playfair font-black leading-none" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: "#84cc16", letterSpacing: "-0.02em" }}>
+                {score.correct}<span className="text-gray-500 font-light">/</span>{score.total}
+              </p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-xs font-mono font-bold uppercase tracking-[0.25em] text-gray-400 mb-1">Score</p>
-            <p className="text-5xl font-playfair font-black text-[#65a30d] leading-none" style={{ letterSpacing: "-0.02em" }}>
-              {score.correct}<span className="text-gray-400 font-light">/</span>{score.total}
-            </p>
-          </div>
-        </div>
 
-        {/* Court */}
-        <div
-          className="relative w-full rounded-2xl overflow-hidden shadow-2xl mb-4"
-          style={{ aspectRatio: "500 / 420" }}
-        >
+          {/* Court */}
+          <div
+            className="relative w-full overflow-hidden"
+            style={{ aspectRatio: "500 / 420", borderTop: "2px solid #111827" }}
+          >
           <HalfCourtSVG />
           {team.players.map((p, i) => (
             <PlayerCard key={p.name + p.position} player={p} revealed={revealedIndices.has(i)} />
           ))}
-        </div>
+          </div>{/* close court div */}
 
-        {/* Hint button */}
-        {status === "playing" && (
-          <div className="flex justify-end mb-5">
-            <button
-              onClick={handleHint}
-              disabled={hintsLeft === 0}
-              className="flex items-center gap-2 px-5 py-2.5 border-2 font-semibold text-sm transition-all"
-              style={hintsLeft > 0
-                ? { borderColor: "#84cc16", color: "#65a30d", background: "rgba(132,204,22,0.08)" }
-                : { borderColor: "#e5e7eb", color: "#9ca3af", background: "white", cursor: "not-allowed" }}
-            >
-              <span>👁️ Hint</span>
-              <span className="text-xs font-mono opacity-60">({hintsLeft} left)</span>
-            </button>
-          </div>
-        )}
+          {/* Cream bottom: hint + guess controls */}
+          <div className="px-6 py-5" style={{ background: "#f4f0e6", borderTop: "2px solid #111827" }}>
 
+            {/* Guess form */}
+            {status === "playing" && (
+              <div>
+                <form onSubmit={handleSubmit} className="flex gap-0 mb-4 border-2 border-[#111827]">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Which NBA team is this?"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    className="flex-1 px-5 py-4 bg-white text-[#111827] placeholder-gray-400 font-mono focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-base"
+                  />
+                  <button
+                    type="submit"
+                    className="px-8 py-4 bg-[#84cc16] text-[#111827] font-mono font-bold border-l-2 border-[#111827] hover:bg-[#65a30d] transition-colors text-sm uppercase tracking-[0.1em]"
+                  >
+                    Guess
+                  </button>
+                </form>
 
-        {/* Guess form */}
-        {status === "playing" && (
-          <div>
-            <form onSubmit={handleSubmit} className="flex gap-3 mb-4">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Which NBA team is this?"
-                autoComplete="off"
-                autoCorrect="off"
-                spellCheck={false}
-                className="flex-1 px-5 py-4 border-2 border-[#111827] rounded-none bg-white text-[#111827] placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#84cc16] text-base"
-              />
-              <button
-                type="submit"
-                className="px-8 py-4 bg-[#84cc16] text-[#111827] font-bold border-2 border-[#111827] hover:bg-[#65a30d] transition-colors text-base"
-              >
-                Guess
-              </button>
-            </form>
-
-            {guesses.length > 0 && (
-              <div className="space-y-1 mb-2">
-                {guesses.map((g, i) => (
-                  <div key={i} className="text-sm text-red-500 font-medium">
-                    <span className="mr-1">✕</span>{g}
+                {guesses.length > 0 && (
+                  <div className="space-y-1 mb-3">
+                    {guesses.map((g, i) => (
+                      <div key={i} className="font-mono text-xs text-[#ef4444]">
+                        ✕ {g}
+                      </div>
+                    ))}
+                    <p className="font-mono text-[10px] text-gray-400 uppercase tracking-[0.1em]">
+                      {MAX_GUESSES - guesses.length} guess{MAX_GUESSES - guesses.length !== 1 ? "es" : ""} remaining
+                    </p>
                   </div>
-                ))}
-                <p className="text-xs text-gray-500">
-                  {MAX_GUESSES - guesses.length} guess{MAX_GUESSES - guesses.length !== 1 ? "es" : ""} remaining
-                </p>
+                )}
+
+                {guesses.length >= 1 && (
+                  <button
+                    onClick={() => { setStatus("lost"); setScore((s) => ({ ...s, total: s.total + 1 })); }}
+                    className="font-mono text-[10px] text-gray-400 uppercase tracking-[0.1em] underline hover:text-gray-700 transition-colors"
+                  >
+                    Give up
+                  </button>
+                )}
+
+                {/* Hint button inside cream panel */}
+                <div className="flex justify-end mt-3">
+                  <button
+                    onClick={handleHint}
+                    disabled={hintsLeft === 0}
+                    className="flex items-center gap-2 px-4 py-2 border-2 font-mono font-bold text-xs uppercase tracking-[0.1em] transition-colors"
+                    style={hintsLeft > 0
+                      ? { borderColor: "#111827", color: "#111827", background: "#84cc16" }
+                      : { borderColor: "#d1d5db", color: "#9ca3af", background: "white", cursor: "not-allowed" }}
+                  >
+                    👁 Hint ({hintsLeft} left)
+                  </button>
+                </div>
               </div>
             )}
 
-            {guesses.length >= 1 && (
-              <button
-                onClick={() => {
-                  setStatus("lost");
-                  setScore((s) => ({ ...s, total: s.total + 1 }));
-                }}
-                className="text-xs text-gray-400 underline underline-offset-2 hover:text-gray-700 transition-colors"
-              >
-                Give up
-              </button>
+            {/* Won */}
+            {status === "won" && (
+              <div className="border-2 border-[#111827] p-8" style={{ background: "#111827" }}>
+                <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">Correct!</p>
+                <p className="font-playfair font-black italic text-white mb-1" style={{ fontSize: "2.5rem", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                  {team.season}
+                </p>
+                <p className="font-mono text-gray-400 text-sm mb-6">{team.answer}</p>
+                <button
+                  onClick={handleNext}
+                  className="px-8 py-4 bg-[#84cc16] text-[#111827] font-mono font-bold border-2 border-[#84cc16] hover:bg-[#65a30d] transition-colors text-sm uppercase tracking-[0.1em]"
+                >
+                  Next Team →
+                </button>
+              </div>
             )}
-          </div>
-        )}
 
-        {/* Won */}
-        {status === "won" && (
-          <div className="text-center py-6 rounded-none" style={{ background: "rgba(132,204,22,0.08)", border: "2px solid #111827" }}>
-            <p className="text-3xl font-playfair font-black mb-1" style={{ color: "#65a30d", letterSpacing: "-0.02em" }}>Correct!</p>
-            <p className="text-gray-700 font-medium mb-4">
-              {team.season} {team.answer}
-            </p>
-            <button
-              onClick={handleNext}
-              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold border-2 border-[#111827] hover:bg-[#65a30d] transition-colors"
-            >
-              Next Team
-            </button>
-          </div>
-        )}
+            {/* Lost */}
+            {status === "lost" && (
+              <div className="border-2 border-[#111827] p-8" style={{ background: "#f4f0e6" }}>
+                <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-2">The answer was</p>
+                <p className="font-playfair font-black italic text-[#111827] mb-1" style={{ fontSize: "2.5rem", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                  {team.season}
+                </p>
+                <p className="font-mono text-gray-500 text-sm mb-6">{team.answer}</p>
+                <button
+                  onClick={handleNext}
+                  className="px-8 py-4 bg-[#111827] text-[#84cc16] font-mono font-bold border-2 border-[#111827] hover:bg-gray-800 transition-colors text-sm uppercase tracking-[0.1em]"
+                >
+                  Next Team →
+                </button>
+              </div>
+            )}
+          </div>{/* close cream bottom */}
+        </div>{/* close outer bordered container */}
 
-        {/* Lost */}
-        {status === "lost" && (
-          <div className="text-center py-6 bg-white rounded-none border-2 border-[#111827]">
-            <p className="text-base font-semibold text-gray-500 mb-1">The answer was</p>
-            <p className="text-2xl font-playfair font-black text-[#111827] mb-4" style={{ letterSpacing: "-0.02em" }}>
-              {team.season} {team.answer}
-            </p>
-            <button
-              onClick={handleNext}
-              className="px-7 py-3 bg-[#84cc16] text-[#111827] font-bold border-2 border-[#111827] hover:bg-[#65a30d] transition-colors"
-            >
-              Next Team
-            </button>
-          </div>
-        )}
-
-        <p className="text-[11px] text-gray-400 text-center mt-8">
+        <p className="font-mono text-[10px] text-gray-400 text-center mt-6 uppercase tracking-widest">
           Stats are regular season averages for that season
         </p>
       </main>

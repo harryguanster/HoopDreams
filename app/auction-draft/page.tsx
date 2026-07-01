@@ -138,7 +138,12 @@ function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
 }
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
-function RosterPanel({ title, roster, budget, dark }: { title: string; roster: RosterSlot[]; budget: number; dark?: boolean }) {
+function RosterPanel({
+  title, roster, budget, dark, onSwapClick,
+}: {
+  title: string; roster: RosterSlot[]; budget: number; dark?: boolean;
+  onSwapClick?: (slot: RosterSlot) => void;
+}) {
   return (
     <div>
       <div className="px-5 py-4 flex items-center justify-between" style={{ background: dark ? "#111827" : "#84cc16", borderBottom: "2px solid #111827" }}>
@@ -149,11 +154,20 @@ function RosterPanel({ title, roster, budget, dark }: { title: string; roster: R
         {POSITIONS.map(pos => {
           const slot = roster.find(r => r.player.position === pos);
           return (
-            <div key={pos} className="px-5 py-3 flex items-center gap-3" style={{ borderBottom: "1px solid #e5e7eb" }}>
+            <div
+              key={pos}
+              className="px-5 py-3 flex items-center gap-3"
+              style={{ borderBottom: "1px solid #e5e7eb", cursor: slot && onSwapClick ? "pointer" : "default" }}
+              onClick={() => slot && onSwapClick && onSwapClick(slot)}
+              title={slot && onSwapClick ? "Click to move this player to another position" : undefined}
+            >
               <span className="text-[9px] font-mono font-bold w-6 shrink-0" style={{ color: POS_COLOR[pos] }}>{pos}</span>
               {slot ? (
                 <>
                   <span className="font-mono text-xs flex-1 truncate" style={{ color: dark ? "#d1d5db" : "#111827" }}>{slot.player.name}</span>
+                  {onSwapClick && (
+                    <span className="font-mono text-[9px] text-gray-400 hover:text-[#84cc16]">↕</span>
+                  )}
                   <span className="font-mono text-[10px]" style={{ color: dark ? "#6b7280" : "#65a30d" }}>${slot.paid}</span>
                 </>
               ) : (
@@ -188,6 +202,7 @@ export default function AuctionDraftPage() {
   const [roundMsg, setRoundMsg] = useState("");
 
   const [gameResult, setGameResult] = useState<ReturnType<typeof simulateGame> | null>(null);
+  const [swapTarget, setSwapTarget] = useState<RosterSlot | null>(null); // player being repositioned
 
   // Refs for stable access inside timers
   const stateRef = useRef({ userRoster, aiRoster, userBudget, aiBudget, currentBid, holder, qIdx, queue, difficulty });
@@ -351,6 +366,7 @@ export default function AuctionDraftPage() {
     const { currentBid: cb, userRoster: uR, userBudget: uB, aiRoster: aR, aiBudget: aB, queue: q, qIdx: qi } = stateRef.current;
     const player = q[qi];
     const paid = Math.max(1, cb);
+    const existingAtPos = uR.find(s => s.player.position === player.position);
     const newRoster = [...uR, { player, paid }];
     const newBudget = uB - paid;
     setUserRoster(newRoster);
@@ -358,7 +374,11 @@ export default function AuctionDraftPage() {
     appendLog({ bidder: "sys", text: `✅ You win ${player.name} for $${paid}!` });
     setRoundMsg(`You win ${player.name} for $${paid}!`);
     setAuctionState("round_over");
-    setTimeout(() => advanceRound(newRoster, aR, newBudget, aB), 1500);
+    // If we won via swap-bid, prompt the user to move the existing player
+    if (existingAtPos) {
+      setSwapTarget(existingAtPos);
+    }
+    setTimeout(() => advanceRound(newRoster, aR, newBudget, aB), existingAtPos ? 2500 : 1500);
   }
 
   function awardToAi() {
@@ -506,21 +526,76 @@ export default function AuctionDraftPage() {
 
     const uNeeded = neededPositions(userRoster);
     const uSlots = uNeeded.length;
-    const canBid = uNeeded.includes(player.position);
-    const cap = canBid ? maxBid(userBudget, uSlots) : 0;
+    const alreadyHasPos = !uNeeded.includes(player.position);
+    // Can swap if: already have this position BUT have at least one other empty slot to move them to
+    const canSwapBid = alreadyHasPos && uNeeded.length > 0;
+    const canBid = !alreadyHasPos || canSwapBid;
+    // Budget slots: if we're swap-bidding, we're replacing an existing slot so slot count stays the same
+    const effectiveSlots = canSwapBid ? uSlots + 1 : uSlots;
+    const cap = canBid ? maxBid(userBudget, effectiveSlots) : 0;
     const bidNum = parseInt(bidInput) || 0;
     const bidOk = bidNum >= 1 && bidNum > currentBid && bidNum <= cap;
     const isUserTurn = (auctionState === "user_act") && canBid;
 
+    // Empty positions on user roster (for swap target)
+    const emptyPositions = uNeeded;
+
+    // Handle swap after winning a player whose position is taken
+    function doSwap(toPos: Position) {
+      if (!swapTarget) return;
+      setUserRoster(r => r.map(slot =>
+        slot.player.id === swapTarget.player.id
+          ? { ...slot, player: { ...slot.player, position: toPos } }
+          : slot
+      ));
+      setSwapTarget(null);
+    }
+
     return (
       <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
         <GameHeader title="Auction Draft" />
+
+        {/* Swap modal */}
+        {swapTarget && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.6)" }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="border-2 border-[#111827] bg-[#f4f0e6] p-8 max-w-sm w-full mx-4"
+            >
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">Position Swap</p>
+              <p className="font-playfair font-black text-[#111827] mb-1" style={{ fontSize: "1.3rem" }}>
+                Move {swapTarget.player.name}
+              </p>
+              <p className="font-mono text-xs text-gray-400 mb-6">Select a new position for this player to make room:</p>
+              <div className="flex flex-col gap-2">
+                {emptyPositions.map(pos => (
+                  <button
+                    key={pos}
+                    onClick={() => doSwap(pos)}
+                    className="flex items-center gap-3 px-4 py-3 border-2 border-[#111827] bg-white hover:bg-[#84cc16] hover:border-[#111827] transition-colors font-mono font-bold text-sm"
+                  >
+                    <span style={{ color: POS_COLOR[pos] }}>{pos}</span>
+                    <span className="text-[#111827]">Move to {pos}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={() => setSwapTarget(null)}
+                  className="px-4 py-3 border-2 border-gray-300 bg-white text-gray-400 font-mono text-sm hover:border-[#111827] transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         <main className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-2 border-[#111827]" style={{ minHeight: 600 }}>
 
             {/* Left: rosters */}
             <div style={{ borderRight: "2px solid #111827" }}>
-              <RosterPanel title="Your Squad" roster={userRoster} budget={userBudget} />
+              <RosterPanel title="Your Squad" roster={userRoster} budget={userBudget} onSwapClick={slot => setSwapTarget(slot)} />
               <div style={{ borderTop: "2px solid #111827" }}>
                 <RosterPanel title="AI Squad" roster={aiRoster} budget={aiBudget} dark />
               </div>
@@ -568,7 +643,10 @@ export default function AuctionDraftPage() {
                   </div>
                 )}
                 {!canBid && (
-                  <p className="ml-auto font-mono text-sm text-gray-400">You already have a {player.position}</p>
+                  <p className="ml-auto font-mono text-sm text-gray-400">Roster full — no open slots to swap</p>
+                )}
+                {canBid && canSwapBid && isUserTurn && (
+                  <p className="font-mono text-xs text-[#84cc16]">Win this player → swap your existing {player.position} to another open slot</p>
                 )}
                 {auctionState === "ai_thinking" && (
                   <p className="ml-auto font-mono text-sm text-gray-400 animate-pulse">AI is deciding…</p>

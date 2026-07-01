@@ -445,49 +445,59 @@ function WordleGame({ players, playerNames }: {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center px-6 py-8 w-full max-w-7xl mx-auto">
-      <div className="w-full flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-        <div className="shrink-0">
-          <h1 className="text-4xl font-playfair font-black text-[#111827] leading-none" style={{ letterSpacing: "-0.02em" }}>Who Am I?</h1>
-          <p className="text-sm text-[#65a30d] font-semibold mt-1">
+    <main className="flex-1 flex flex-col px-6 py-8 w-full max-w-7xl mx-auto">
+      {/* Dark header banner */}
+      <div className="w-full border-2 border-[#111827] mb-6">
+        <div className="px-6 py-5" style={{ background: "#111827" }}>
+          <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">
             {guesses.length === 0 ? "Guess the mystery player" : `${guesses.length} / ${MAX_GUESSES} guesses used`}
           </p>
+          <h1 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.03em", lineHeight: 0.95 }}>
+            Who Am I?
+          </h1>
         </div>
-        <div className="flex gap-3 flex-1">
-          <PlayerAutocomplete
-            players={playerNames}
-            value={guess}
-            onChange={v => { setGuess(v); setError(""); }}
-            onSubmit={checkGuess}
-            autoFocus
-          />
+        {/* Input row */}
+        <div className="flex gap-0" style={{ borderTop: "2px solid #111827" }}>
+          <div className="flex-1">
+            <PlayerAutocomplete
+              players={playerNames}
+              value={guess}
+              onChange={v => { setGuess(v); setError(""); }}
+              onSubmit={checkGuess}
+              autoFocus
+            />
+          </div>
           <button
             onClick={checkGuess}
             disabled={!guess.trim()}
-            className="px-8 py-4 bg-[#84cc16] hover:bg-[#65a30d] disabled:bg-gray-100 disabled:text-gray-400 text-[#111827] font-bold border-2 border-[#111827] disabled:border-gray-200 transition-all active:scale-95 text-base shrink-0"
+            className="px-8 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-l-2 border-[#111827] transition-colors shrink-0"
+            style={guess.trim()
+              ? { background: "#84cc16", color: "#111827" }
+              : { background: "#f4f0e6", color: "#d1d5db", cursor: "not-allowed" }}
           >
             Guess
           </button>
           <button
             onClick={() => setGaveUp(true)}
-            className="py-4 px-5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 border-2 border-[#111827] font-semibold transition-all text-base shrink-0"
+            className="px-6 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-l-2 border-[#111827] bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
           >
             Give Up
           </button>
         </div>
-      </div>
-
-      <div className="w-full flex gap-4 text-xs text-gray-400 font-semibold mb-4">
-        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded inline-block" /> Match</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-yellow-400 rounded inline-block" /> Close</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-gray-300 rounded inline-block" /> Off</span>
-        <span className="flex items-center gap-1 text-gray-400">↑↓ = direction to answer</span>
+        {/* Legend strip */}
+        <div className="flex gap-6 px-6 py-3" style={{ borderTop: "2px solid #111827", background: "#f4f0e6" }}>
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500"><span className="w-3 h-3 bg-green-500 inline-block" /> Match</span>
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500"><span className="w-3 h-3 bg-yellow-400 inline-block" /> Close</span>
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500"><span className="w-3 h-3 bg-gray-300 inline-block" /> Off</span>
+          <span className="font-mono text-[10px] text-gray-400">↑↓ = direction</span>
+        </div>
       </div>
 
       <AnimatePresence>
         {error && (
           <motion.p
-            className="w-full text-red-500 text-sm mb-2 font-medium bg-red-50 border border-red-100 rounded-xl px-3 py-2"
+            className="w-full font-mono text-xs mb-3 border-2 border-[#ef4444] px-4 py-3 text-center"
+            style={{ color: "#ef4444", background: "#f4f0e6" }}
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: [0, -6, 6, -4, 4, 0] }}
             exit={{ opacity: 0 }}

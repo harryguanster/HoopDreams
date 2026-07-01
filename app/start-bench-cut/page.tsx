@@ -23,22 +23,20 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 function EraTab({ era, setEra }: { era: Era; setEra: (e: Era) => void }) {
   return (
-    <div className="sticky top-[52px] z-30 backdrop-blur-md border-b overflow-hidden" style={{ background: "rgba(244,240,230,0.95)", borderColor: "rgba(0,0,0,0.09)" }}>
-      <div className="max-w-6xl mx-auto px-4 flex items-center gap-1 py-2.5">
-        {(["alltime", "current"] as const).map(e => (
+    <div className="sticky top-[52px] z-30" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+      <div className="max-w-6xl mx-auto px-4 flex items-center gap-0 py-0">
+        {(["alltime", "current"] as const).map((e, i) => (
           <button
             key={e}
             onClick={() => setEra(e)}
-            className="relative px-5 py-2 text-sm font-bold transition-all duration-200 font-bebas tracking-widest"
-            style={era === e ? {
-              background: e === "current"
-                ? "linear-gradient(90deg, #0ea5e9, #0284c7)"
-                : "linear-gradient(90deg, #84cc16, #65a30d)",
-              color: "#111827",
-              clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
-            } : { color: "#6b7280" }}
+            className="px-6 py-3 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-colors"
+            style={{
+              borderRight: i === 0 ? "2px solid #111827" : undefined,
+              background: era === e ? "#111827" : "#f4f0e6",
+              color: era === e ? "#84cc16" : "#111827",
+            }}
           >
-            {e === "alltime" ? "ALL-TIME LEGENDS" : "CURRENT 2025–26"}
+            {e === "alltime" ? "All-Time Legends" : "Current 2025–26"}
           </button>
         ))}
       </div>
@@ -96,24 +94,31 @@ function StartBenchCutCore({ era }: { era: Era }) {
 
   return (
     <main className="flex-1 flex flex-col items-center px-6 py-10 max-w-7xl mx-auto w-full">
-      <div className="text-center mb-8">
-        <p className="text-sm font-mono font-bold uppercase tracking-[0.25em] text-[#84cc16] mb-2">
-          Round {roundIndex + 1} of {trios.length}
-        </p>
-        <h1 className="text-5xl font-playfair font-black text-[#111827]" style={{ letterSpacing: "-0.02em" }}>{trio.category}</h1>
-        <p className="text-gray-500 text-base mt-2">{trio.description}</p>
+      {/* Round / Category header */}
+      <div className="w-full border-2 border-[#111827] mb-8">
+        <div className="px-6 py-5" style={{ background: "#111827" }}>
+          <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">
+            Round {roundIndex + 1} of {trios.length}
+          </p>
+          <h1 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}>
+            {trio.category}
+          </h1>
+        </div>
+        <div className="px-6 py-3" style={{ background: "#f4f0e6", borderTop: "2px solid #111827" }}>
+          <p className="font-mono text-xs text-gray-400">{trio.description}</p>
+        </div>
       </div>
 
       <div className="mb-6 text-center">
         {selectedPlayer ? (
-          <p className="text-[#65a30d] text-base font-semibold">
+          <p className="font-mono text-sm text-[#84cc16] font-bold uppercase tracking-[0.1em]">
             Assign a role for{" "}
-            <span className="text-[#111827] font-bold">
+            <span className="text-[#111827]">
               {trio.players.find(p => p.id === selectedPlayer)?.name.split(" ")[0]}
             </span>
           </p>
         ) : (
-          <p className="text-gray-400 text-base">Tap a player, then assign their role</p>
+          <p className="font-mono text-xs text-gray-400 uppercase tracking-[0.1em]">Tap a player, then assign their role</p>
         )}
       </div>
 
@@ -129,7 +134,7 @@ function StartBenchCutCore({ era }: { era: Era }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-4 w-full max-w-2xl mb-8">
+      <div className="grid grid-cols-3 gap-0 w-full max-w-2xl mb-8 border-2 border-[#111827]">
         <RoleButton role="start" label="START" emoji="⭐" color="green" taken={takenRoles.has("start")} active={!!selectedPlayer} onClick={() => handleRoleClick("start")} />
         <RoleButton role="bench" label="BENCH" emoji="🪑" color="yellow" taken={takenRoles.has("bench")} active={!!selectedPlayer} onClick={() => handleRoleClick("bench")} />
         <RoleButton role="cut" label="CUT" emoji="✂️" color="red" taken={takenRoles.has("cut")} active={!!selectedPlayer} onClick={() => handleRoleClick("cut")} />
@@ -138,11 +143,10 @@ function StartBenchCutCore({ era }: { era: Era }) {
       <button
         onClick={handleSubmit}
         disabled={!allAssigned}
-        className={`px-14 py-4 font-bold text-base tracking-wide transition-all duration-200 border-2
-          ${allAssigned
-            ? "bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] border-[#111827] active:scale-95"
-            : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-          }`}
+        className="px-14 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 transition-colors"
+        style={allAssigned
+          ? { background: "#84cc16", borderColor: "#111827", color: "#111827" }
+          : { background: "#f4f0e6", borderColor: "#d1d5db", color: "#d1d5db", cursor: "not-allowed" }}
       >
         {allAssigned ? "Submit My Picks →" : `Assign ${3 - Object.keys(assignments).length} more`}
       </button>
@@ -157,7 +161,7 @@ function StartBenchCutGame() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: "#f4f0e6" }}>
       <GameHeader title="Start · Bench · Cut" era={era} />
       <EraTab era={era} setEra={setEra} />
       <StartBenchCutCore key={era} era={era} />
@@ -178,18 +182,36 @@ function RoleButton({ label, emoji, color, taken, active, onClick }: {
   taken: boolean; active: boolean; onClick: () => void;
 }) {
   const colorMap = {
-    green:  { base: "border-green-200 bg-green-50 text-green-300",   active: "border-green-400 bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer",   taken: "border-green-400 bg-green-100 text-green-700" },
-    yellow: { base: "border-yellow-200 bg-yellow-50 text-yellow-300", active: "border-yellow-400 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer", taken: "border-yellow-400 bg-yellow-100 text-yellow-700" },
-    red:    { base: "border-red-200 bg-red-50 text-red-300",          active: "border-red-400 bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer",           taken: "border-red-400 bg-red-100 text-red-700" },
+    green:  {
+      base:   { background: "#f4f0e6", color: "#d1d5db" },
+      active: { background: "#f4f0e6", color: "#111827" },
+      taken:  { background: "#84cc16", color: "#111827" },
+    },
+    yellow: {
+      base:   { background: "#f4f0e6", color: "#d1d5db" },
+      active: { background: "#f4f0e6", color: "#111827" },
+      taken:  { background: "#f59e0b", color: "#111827" },
+    },
+    red: {
+      base:   { background: "#f4f0e6", color: "#d1d5db" },
+      active: { background: "#f4f0e6", color: "#111827" },
+      taken:  { background: "#ef4444", color: "#ffffff" },
+    },
   };
-  const classes = taken ? colorMap[color].taken : active ? colorMap[color].active : colorMap[color].base;
+  const styleObj = taken ? colorMap[color].taken : active ? colorMap[color].active : colorMap[color].base;
+
   return (
     <button
       onClick={active ? onClick : undefined}
-      disabled={!active}
-      className={`flex flex-col items-center justify-center gap-2 py-6 border-2 font-bold text-sm tracking-widest transition-all duration-150 select-none ${classes} ${active && !taken ? "active:scale-95" : ""}`}
+      disabled={!active && !taken}
+      className="flex flex-col items-center justify-center gap-2 py-6 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-all duration-150 select-none"
+      style={{
+        ...styleObj,
+        borderRight: color !== "red" ? "2px solid #111827" : undefined,
+        cursor: active ? "pointer" : "default",
+      }}
     >
-      <span className="text-4xl">{emoji}</span>
+      <span className="text-3xl">{emoji}</span>
       <span>{label}</span>
     </button>
   );
