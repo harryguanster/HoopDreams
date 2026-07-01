@@ -7,6 +7,7 @@ import GameHeader from "@/app/components/GameHeader";
 // ─── Types ─────────────────────────────────────────────────────────────────────
 type Position = "PG" | "SG" | "SF" | "PF" | "C";
 type Difficulty = "easy" | "medium" | "hard";
+type Era = "alltime" | "current";
 type Phase = "setup" | "auction" | "rosters" | "final";
 type AuctionState = "user_act" | "ai_thinking" | "round_over";
 type LogEntry = { bidder: "user" | "ai" | "sys"; text: string };
@@ -24,18 +25,43 @@ interface Player {
 
 interface RosterSlot { player: Player; paid: number; }
 
-// ─── Player Pool ───────────────────────────────────────────────────────────────
-const POOL: Player[] = [
-  { id: "magic",   name: "Magic Johnson",       position: "PG", era: "1979–96",      desc: "5× Champion · 3× Finals MVP · ran Showtime",             value: 9.0, off: 9.2, def: 7.5 },
-  { id: "curry",   name: "Stephen Curry",       position: "PG", era: "2009–present", desc: "4× Champion · 2× MVP · greatest shooter ever",           value: 8.8, off: 9.5, def: 6.8 },
-  { id: "jordan",  name: "Michael Jordan",      position: "SG", era: "1984–2003",    desc: "6× Champion · 6× Finals MVP · The GOAT",                 value: 10,  off: 10,  def: 9.2 },
-  { id: "kobe",    name: "Kobe Bryant",         position: "SG", era: "1996–2016",    desc: "5× Champion · 81 points · Mamba Mentality",              value: 9.0, off: 9.3, def: 8.5 },
-  { id: "lebron",  name: "LeBron James",        position: "SF", era: "2003–present", desc: "4× Champion · 4× MVP · all-time scoring leader",         value: 9.8, off: 9.8, def: 8.8 },
-  { id: "bird",    name: "Larry Bird",          position: "SF", era: "1979–92",      desc: "3× Champion · 3× MVP · Celtic legend",                   value: 8.8, off: 9.0, def: 7.8 },
-  { id: "duncan",  name: "Tim Duncan",          position: "PF", era: "1997–2016",    desc: "5× Champion · 3× Finals MVP · The Big Fundamental",      value: 9.2, off: 8.8, def: 9.5 },
-  { id: "kg",      name: "Kevin Garnett",       position: "PF", era: "1995–2016",    desc: "1× Champion · 1× MVP · 1× DPOY · defensive anchor",      value: 8.5, off: 8.2, def: 9.8 },
-  { id: "kareem",  name: "Kareem Abdul-Jabbar", position: "C",  era: "1969–89",      desc: "6× Champion · 6× MVP · unstoppable skyhook",             value: 9.5, off: 9.3, def: 8.8 },
-  { id: "shaq",    name: "Shaquille O'Neal",    position: "C",  era: "1992–2011",    desc: "4× Champion · 3× Finals MVP · most dominant big man",    value: 9.3, off: 9.5, def: 8.0 },
+// ─── Player Pools ──────────────────────────────────────────────────────────────
+// All-Time: 2 per position — one elite, one solid-but-not-elite
+const ALLTIME_POOL: Player[] = [
+  // PG
+  { id: "magic",    name: "Magic Johnson",       position: "PG", era: "1979–96",   desc: "5× Champion · 3× Finals MVP · ran Showtime",              value: 9.0, off: 9.2, def: 7.5 },
+  { id: "isiah",    name: "Isiah Thomas",        position: "PG", era: "1981–94",   desc: "2× Champion · 2× Finals MVP · Bad Boys leader",           value: 7.2, off: 7.4, def: 7.0 },
+  // SG
+  { id: "jordan",   name: "Michael Jordan",      position: "SG", era: "1984–2003", desc: "6× Champion · 6× Finals MVP · The GOAT",                  value: 10,  off: 10,  def: 9.2 },
+  { id: "reggie",   name: "Reggie Miller",       position: "SG", era: "1987–2005", desc: "5× All-Star · clutch shooter · Knicks tormentor",          value: 6.2, off: 7.0, def: 6.0 },
+  // SF
+  { id: "lebron",   name: "LeBron James",        position: "SF", era: "2003–pres", desc: "4× Champion · 4× MVP · all-time scoring leader",          value: 9.8, off: 9.8, def: 8.8 },
+  { id: "worthy",   name: "James Worthy",        position: "SF", era: "1982–94",   desc: "3× Champion · 1× Finals MVP · Big Game James",            value: 6.8, off: 7.2, def: 6.5 },
+  // PF
+  { id: "duncan",   name: "Tim Duncan",          position: "PF", era: "1997–2016", desc: "5× Champion · 3× Finals MVP · The Big Fundamental",       value: 9.2, off: 8.8, def: 9.5 },
+  { id: "rodman",   name: "Dennis Rodman",       position: "PF", era: "1986–2000", desc: "5× Champion · 2× DPOY · greatest rebounder ever",          value: 6.0, off: 4.5, def: 9.8 },
+  // C
+  { id: "shaq",     name: "Shaquille O'Neal",    position: "C",  era: "1992–2011", desc: "4× Champion · 3× Finals MVP · most dominant big man",      value: 9.3, off: 9.5, def: 8.0 },
+  { id: "mourning", name: "Alonzo Mourning",     position: "C",  era: "1992–2008", desc: "1× Champion · 1× DPOY · Miami anchor",                    value: 6.5, off: 6.8, def: 8.2 },
+];
+
+// Current: 2 per position — one star, one role player
+const CURRENT_POOL: Player[] = [
+  // PG
+  { id: "sga",      name: "Shai Gilgeous-Alexander", position: "PG", era: "2025–26", desc: "31 PPG · 6.6 APG · OKC franchise cornerstone",           value: 9.0, off: 9.3, def: 7.8 },
+  { id: "brunson",  name: "Jalen Brunson",           position: "PG", era: "2025–26", desc: "26 PPG · 6.8 APG · Knicks engine",                       value: 7.0, off: 7.5, def: 6.5 },
+  // SG
+  { id: "jbrown",   name: "Jaylen Brown",            position: "SG", era: "2025–26", desc: "28.7 PPG · 6.9 RPG · 2024 Finals MVP",                   value: 7.8, off: 8.0, def: 7.5 },
+  { id: "dbane",    name: "Desmond Bane",            position: "SG", era: "2025–26", desc: "20.1 PPG · solid 3&D wing · Orlando breakout",            value: 6.0, off: 6.8, def: 6.2 },
+  // SF
+  { id: "lebron_c", name: "LeBron James",            position: "SF", era: "2025–26", desc: "20.9 PPG · 7.2 APG · still elite at 40",                 value: 8.0, off: 8.2, def: 7.5 },
+  { id: "sbarnes",  name: "Scottie Barnes",          position: "SF", era: "2025–26", desc: "18.1 PPG · 7.5 RPG · versatile Toronto star",             value: 6.5, off: 6.8, def: 7.0 },
+  // PF
+  { id: "giannis",  name: "Giannis Antetokounmpo",  position: "PF", era: "2025–26", desc: "27.7 PPG · 11.7 RPG · 2× MVP · Greek Freak",             value: 9.5, off: 9.4, def: 8.5 },
+  { id: "randle",   name: "Julius Randle",           position: "PF", era: "2025–26", desc: "21.1 PPG · 6.7 RPG · MIN double-double machine",          value: 6.8, off: 7.2, def: 6.0 },
+  // C
+  { id: "jokic",    name: "Nikola Jokic",            position: "C",  era: "2025–26", desc: "27.7 PPG · 12.9 RPG · 10.7 APG · 3× MVP",               value: 9.8, off: 9.8, def: 8.0 },
+  { id: "bam",      name: "Bam Adebayo",             position: "C",  era: "2025–26", desc: "20.1 PPG · 10 RPG · elite defensive anchor",              value: 7.0, off: 7.2, def: 8.5 },
 ];
 
 const POSITIONS: Position[] = ["PG", "SG", "SF", "PF", "C"];
@@ -145,6 +171,7 @@ function RosterPanel({ title, roster, budget, dark }: { title: string; roster: R
 export default function AuctionDraftPage() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [era, setEra] = useState<Era>("alltime");
 
   const [queue, setQueue] = useState<Player[]>([]);
   const [qIdx, setQIdx] = useState(0);
@@ -172,7 +199,7 @@ export default function AuctionDraftPage() {
 
   // ── Start game ───────────────────────────────────────────────────────────────
   function startGame() {
-    const q = shuffle(POOL);
+    const q = shuffle(era === "current" ? CURRENT_POOL : ALLTIME_POOL);
     setQueue(q);
     setQIdx(0);
     setUserRoster([]); setAiRoster([]);
@@ -405,6 +432,32 @@ export default function AuctionDraftPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Era */}
+          <div className="mb-8">
+            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-3 text-center">Player Pool</p>
+            <div className="grid grid-cols-2 gap-0 border-2 border-[#111827]">
+              {(["alltime", "current"] as Era[]).map((e, i) => (
+                <button
+                  key={e}
+                  onClick={() => setEra(e)}
+                  className="py-5 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-colors"
+                  style={{
+                    borderRight: i === 0 ? "2px solid #111827" : undefined,
+                    background: era === e ? "#111827" : "#f4f0e6",
+                    color: era === e ? "#84cc16" : "#111827",
+                  }}
+                >
+                  {e === "alltime" ? "All-Time Legends" : "Current 2025–26"}
+                </button>
+              ))}
+            </div>
+            <p className="font-mono text-xs text-gray-400 mt-2.5 text-center">
+              {era === "alltime"
+                ? "Jordan, LeBron, Shaq — but also Rodman, Reggie Miller, Alonzo Mourning."
+                : "Jokic, Giannis, SGA — but also Bane, Randle, Scottie Barnes."}
+            </p>
           </div>
 
           {/* Difficulty */}
