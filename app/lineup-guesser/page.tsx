@@ -167,7 +167,7 @@ export default function LineupGuesserPage() {
   const hintsLeft = MAX_HINTS - revealedIndices.size;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
       <GameHeader title="Lineup Guesser" />
 
       <main className="max-w-5xl mx-auto px-6 py-8">

@@ -23,22 +23,20 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 function EraTab({ era, setEra }: { era: Era; setEra: (e: Era) => void }) {
   return (
-    <div className="sticky top-[52px] z-30 backdrop-blur-md border-b overflow-hidden" style={{ background: "rgba(244,240,230,0.95)", borderColor: "rgba(0,0,0,0.09)" }}>
-      <div className="max-w-6xl mx-auto px-4 flex items-center gap-1 py-2.5">
-        {(["alltime", "current"] as const).map(e => (
+    <div className="sticky top-[52px] z-30" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+      <div className="max-w-6xl mx-auto px-4 flex items-center gap-0 py-0">
+        {(["alltime", "current"] as const).map((e, i) => (
           <button
             key={e}
             onClick={() => setEra(e)}
-            className="relative px-5 py-2 text-sm font-bold transition-all duration-200 font-bebas tracking-widest"
-            style={era === e ? {
-              background: e === "current"
-                ? "linear-gradient(90deg, #0ea5e9, #0284c7)"
-                : "linear-gradient(90deg, #84cc16, #65a30d)",
-              color: "#111827",
-              clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
-            } : { color: "#6b7280" }}
+            className="px-6 py-3 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-colors"
+            style={{
+              borderRight: i === 0 ? "2px solid #111827" : undefined,
+              background: era === e ? "#111827" : "#f4f0e6",
+              color: era === e ? "#84cc16" : "#111827",
+            }}
           >
-            {e === "alltime" ? "ALL-TIME LEGENDS" : "CURRENT 2025–26"}
+            {e === "alltime" ? "All-Time Legends" : "Current 2025–26"}
           </button>
         ))}
       </div>
@@ -384,60 +382,76 @@ function WordleGame({ players, playerNames }: {
   if (won || gaveUp) {
     const guessScore = won ? ["🏆","🔥","💯","⭐","👍","🤔","😅","😬","😓","😱"][Math.min(guesses.length - 1, 9)] : "😬";
     return (
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden" style={{ background: "#f4f0e6" }}>
         {won && <Confetti />}
         <main className="flex flex-col items-center justify-center px-4 py-10 max-w-lg mx-auto w-full min-h-full">
           <motion.div
-            className="w-full rounded-none p-7 text-center bg-white"
+            className="w-full"
             style={{ border: "2px solid #111827" }}
             initial={{ opacity: 0, scale: 0.88, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 26 }}
           >
-            <motion.div
-              className="text-6xl mb-3"
-              initial={{ scale: 0.3, rotate: -15 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.1 }}
-            >
-              {guessScore}
-            </motion.div>
-            <h2 className="text-2xl font-playfair font-black text-[#111827] mb-1" style={{ letterSpacing: "-0.02em" }}>{won ? "Correct!" : "Not quite!"}</h2>
-            {won
-              ? <p className="font-semibold text-sm mb-5" style={{ color: "#65a30d" }}>Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
-              : <p className="text-gray-500 text-sm mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses! The answer was:" : "The answer was:"}</p>
-            }
-            <motion.div
-              className="flex items-center gap-4 bg-gray-50 rounded-none p-4 mb-6 text-left border-2 border-[#111827]"
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.22, duration: 0.38 }}
-            >
-              <PlayerHeadshot
-                playerId={answer.id}
-                teamColor={answer.teamColor}
-                jersey={answer.jersey}
-                size={64}
-              />
-              <div>
-                <p className="font-bold text-[#111827] text-base">{answer.name}</p>
-                <p className="text-gray-500 text-sm">{answer.team} · {formatHeight(answer.height)}</p>
-                <div className="flex gap-3 mt-1 text-xs font-semibold text-gray-400">
-                  <span>{answer.ppg} PPG</span>
-                  <span>{answer.rpg} RPG</span>
-                  <span>{answer.apg} APG</span>
+            {/* Dark header */}
+            <div className="px-7 pt-7 pb-5 text-center" style={{ background: "#111827", borderBottom: "2px solid #111827" }}>
+              <motion.div
+                className="text-6xl mb-3"
+                initial={{ scale: 0.3, rotate: -15 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.1 }}
+              >
+                {guessScore}
+              </motion.div>
+              <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-2">
+                {won ? "Correct" : "Not Quite"}
+              </p>
+              <h2 className="font-playfair font-black italic text-white mb-0" style={{
+                fontSize: "clamp(2.5rem, 6vw, 3.5rem)",
+                letterSpacing: "-0.03em",
+                lineHeight: 0.92,
+              }}>
+                {won ? "Got it!" : "Nice try."}
+              </h2>
+            </div>
+
+            {/* Cream content */}
+            <div className="p-6" style={{ background: "#f4f0e6" }}>
+              {won
+                ? <p className="font-mono text-xs text-gray-500 text-center mb-5">Got it in {guesses.length} guess{guesses.length !== 1 ? "es" : ""}!</p>
+                : <p className="font-mono text-xs text-gray-500 text-center mb-5">{guesses.length >= MAX_GUESSES ? "Out of guesses — the answer was:" : "The answer was:"}</p>
+              }
+              <motion.div
+                className="flex items-center gap-4 p-4 mb-6 text-left border-2 border-[#111827]"
+                style={{ background: "#ffffff" }}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.22, duration: 0.38 }}
+              >
+                <PlayerHeadshot
+                  playerId={answer.id}
+                  teamColor={answer.teamColor}
+                  jersey={answer.jersey}
+                  size={64}
+                />
+                <div>
+                  <p className="font-playfair font-black text-base text-[#111827]">{answer.name}</p>
+                  <p className="font-mono text-xs text-gray-400">{answer.team} · {formatHeight(answer.height)}</p>
+                  <div className="flex gap-3 mt-1 font-mono text-xs text-gray-400">
+                    <span>{answer.ppg} PPG</span>
+                    <span>{answer.rpg} RPG</span>
+                    <span>{answer.apg} APG</span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-            <motion.button
-              onClick={handleNext}
-              className="w-full py-3.5 bg-[#84cc16] hover:bg-[#65a30d] text-[#111827] font-bold border-2 border-[#111827] text-sm tracking-wide transition-all"
-              style={{ fontSize: "1.1rem", letterSpacing: "0.15em" }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              Next Player →
-            </motion.button>
+              </motion.div>
+              <motion.button
+                onClick={handleNext}
+                className="w-full py-4 font-mono font-bold text-sm uppercase tracking-[0.15em] border-2 border-[#111827] bg-[#84cc16] text-[#111827] transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                Next Player →
+              </motion.button>
+            </div>
           </motion.div>
         </main>
       </div>
@@ -542,7 +556,7 @@ function GuessWhoGame() {
   const playerNames = era === "current" ? CURRENT_PLAYER_NAMES : ALL_TIME_GW_PLAYER_NAMES;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: "#f4f0e6" }}>
       <GameHeader title="Guess Who" era={era} />
       <EraTab era={era} setEra={setEra} />
       <WordleGame key={era} players={players} playerNames={playerNames} />

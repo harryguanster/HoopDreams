@@ -118,7 +118,7 @@ function StartBenchCutCore({ era }: { era: Era }) {
             </span>
           </p>
         ) : (
-          <p className="font-mono text-xs text-gray-400 uppercase tracking-[0.1em]">Tap a player, then assign their role</p>
+          <p className="font-mono text-xs text-gray-400 uppercase tracking-[0.15em]">Tap a player, then assign their role</p>
         )}
       </div>
 
