@@ -201,14 +201,14 @@ export default function ConnectionsPage() {
 
   if (!puzzle) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#f4f0e6" }}>
         <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
       <style>{`
         @keyframes shake {
           0%,100%{transform:translateX(0)}
@@ -224,31 +224,44 @@ export default function ConnectionsPage() {
 
       <GameHeader title="NBA Connections" />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-20">
+      <main className="max-w-5xl mx-auto px-6 py-10 pb-20">
 
-        {/* Top row: lives + progress */}
-        <div className="flex items-center justify-between mb-5">
+        {/* Header: title + meta */}
+        <div className="flex items-start justify-between mb-8">
           <div>
-            <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1.5">Lives Left</p>
-            <div className="flex gap-1.5">
-              {Array.from({ length: MAX_LIVES }).map((_, i) => (
-                <div
-                  key={i}
-                  className="w-4 h-4 rounded-full transition-all duration-300"
-                  style={{ background: i < livesLeft ? "#a855f7" : "rgba(0,0,0,0.12)" }}
-                />
-              ))}
-            </div>
+            <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-3">Daily Puzzle</p>
+            <h1 className="font-playfair font-black italic text-[#111827]" style={{ fontSize: "clamp(2.8rem, 5vw, 4.5rem)", letterSpacing: "-0.02em", lineHeight: 0.9 }}>
+              NBA<br />Connections
+            </h1>
           </div>
           <div className="text-right">
-            <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1">
+            <p className="font-mono font-bold uppercase tracking-[0.2em] text-[10px] text-gray-400 mb-2">
               {getTodayStr()} · Puzzle #{puzzle.id + 1}
             </p>
-            <p className="text-sm font-bold text-gray-500">
+            <p className="font-mono font-bold text-[#111827] text-sm">
               {solvedColors.length} / {puzzle.categories.length} solved
             </p>
           </div>
         </div>
+
+        {/* Lives */}
+        <div className="mb-6">
+          <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-gray-400 mb-2">Lives Left</p>
+          <div className="flex gap-2">
+            {Array.from({ length: MAX_LIVES }).map((_, i) => (
+              <div
+                key={i}
+                className="w-5 h-5 border-2 transition-all duration-300"
+                style={{
+                  borderColor: "#111827",
+                  background: i < livesLeft ? "#84cc16" : "transparent",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div style={{ borderTop: "2px solid #111827", marginBottom: "24px" }} />
 
         {/* Feedback */}
         <AnimatePresence>
@@ -259,8 +272,8 @@ export default function ConnectionsPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
-              className="text-center text-sm font-bold mb-3"
-              style={{ color: feedback.ok ? "#4ade80" : "#f87171" }}
+              className="text-center font-mono font-bold text-sm mb-4 uppercase tracking-[0.1em]"
+              style={{ color: feedback.ok ? "#84cc16" : "#ef4444" }}
             >
               {feedback.msg}
             </motion.div>
@@ -268,46 +281,48 @@ export default function ConnectionsPage() {
         </AnimatePresence>
 
         {/* Solved category banners */}
-        <div className="flex flex-col gap-2 mb-3">
-          {sortedSolved.map(cat => (
-            <motion.div
-              key={cat.color}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="w-full rounded-xl px-4 py-3 text-center"
-              style={{
-                background: COLOR_HEX[cat.color].bg,
-                color: COLOR_HEX[cat.color].text,
-              }}
-            >
-              <p className="font-bold text-sm uppercase tracking-wide leading-tight">{cat.title}</p>
-              <p className="text-xs opacity-75 mt-0.5">{cat.members.join(" · ")}</p>
-            </motion.div>
-          ))}
-
-          {/* Revealed unsolved categories (game over) */}
-          {unsolvedCategories.map(cat => (
-            <motion.div
-              key={cat.color}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="w-full rounded-xl px-4 py-3 text-center opacity-60"
-              style={{
-                background: COLOR_HEX[cat.color].bg,
-                color: COLOR_HEX[cat.color].text,
-              }}
-            >
-              <p className="font-bold text-sm uppercase tracking-wide leading-tight">{cat.title}</p>
-              <p className="text-xs opacity-75 mt-0.5">{cat.members.join(" · ")}</p>
-            </motion.div>
-          ))}
-        </div>
+        {(sortedSolved.length > 0 || unsolvedCategories.length > 0) && (
+          <div className="flex flex-col mb-4" style={{ border: "2px solid #111827" }}>
+            {sortedSolved.map((cat, i) => (
+              <motion.div
+                key={cat.color}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="px-6 py-4 text-center"
+                style={{
+                  background: COLOR_HEX[cat.color].bg,
+                  color: COLOR_HEX[cat.color].text,
+                  borderBottom: i < sortedSolved.length - 1 || unsolvedCategories.length > 0 ? "2px solid #111827" : undefined,
+                }}
+              >
+                <p className="font-mono font-bold text-sm uppercase tracking-[0.2em] leading-tight">{cat.title}</p>
+                <p className="font-mono text-xs opacity-75 mt-1">{cat.members.join(" · ")}</p>
+              </motion.div>
+            ))}
+            {unsolvedCategories.map((cat, i) => (
+              <motion.div
+                key={cat.color}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="px-6 py-4 text-center opacity-50"
+                style={{
+                  background: COLOR_HEX[cat.color].bg,
+                  color: COLOR_HEX[cat.color].text,
+                  borderBottom: i < unsolvedCategories.length - 1 ? "2px solid #111827" : undefined,
+                }}
+              >
+                <p className="font-mono font-bold text-sm uppercase tracking-[0.2em] leading-tight">{cat.title}</p>
+                <p className="font-mono text-xs opacity-75 mt-1">{cat.members.join(" · ")}</p>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Tile grid */}
         {!revealedAll && (
-          <div className={`grid grid-cols-4 gap-2 mb-4 ${shake ? "shake" : ""}`}>
+          <div className={`grid grid-cols-4 gap-2.5 mb-6 ${shake ? "shake" : ""}`}>
             <AnimatePresence>
               {visibleTiles.map(name => {
                 const isSel = selected.includes(name);
@@ -315,17 +330,16 @@ export default function ConnectionsPage() {
                   <motion.button
                     key={name}
                     layout
-                    initial={{ opacity: 0, scale: 0.85 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.85 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.18 }}
                     onClick={() => toggleSelect(name)}
-                    className="relative rounded-xl py-4 px-1 text-center text-xs sm:text-sm font-bold transition-colors duration-150 leading-tight"
+                    className="py-7 px-3 text-center font-mono font-bold text-sm transition-colors duration-150 leading-tight border-2"
                     style={{
                       background: isSel ? "#84cc16" : "white",
-                      border: isSel ? "2px solid #65a30d" : "2px solid rgba(0,0,0,0.1)",
-                      color: isSel ? "#111827" : "#111827",
-                      minHeight: 64,
+                      borderColor: isSel ? "#65a30d" : "#111827",
+                      color: "#111827",
                     }}
                   >
                     {name}
@@ -336,25 +350,23 @@ export default function ConnectionsPage() {
           </div>
         )}
 
-        {/* Buttons */}
+        {/* Action buttons */}
         {!gameOver && (
-          <div className="flex gap-3 mb-4">
+          <div className="flex gap-3 mb-6">
             <button
               onClick={() => setSelected([])}
               disabled={selected.length === 0}
-              className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-500 hover:text-[#111827] hover:border-gray-400 transition-colors disabled:opacity-30"
+              className="flex-1 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] bg-white text-[#111827] hover:bg-gray-100 transition-colors disabled:opacity-30"
             >
               Deselect All
             </button>
             <button
               onClick={submit}
               disabled={selected.length !== 4}
-              className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all duration-150 disabled:opacity-30"
-              style={{
-                background: selected.length === 4 ? "#a855f7" : "rgba(168,85,247,0.15)",
-                color: "#fff",
-                border: "2px solid rgba(168,85,247,0.4)",
-              }}
+              className="flex-1 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 transition-colors disabled:opacity-30"
+              style={selected.length === 4
+                ? { background: "#111827", borderColor: "#111827", color: "#84cc16" }
+                : { background: "#f4f0e6", borderColor: "#d1d5db", color: "#9ca3af" }}
             >
               Submit ({selected.length}/4)
             </button>
@@ -367,29 +379,35 @@ export default function ConnectionsPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 280, damping: 24 }}
-            className="mt-4 text-center py-6 bg-white border border-gray-200 rounded-2xl shadow-sm"
+            className="mt-4 border-2 border-[#111827] overflow-hidden"
           >
-            <div className="text-4xl mb-3">{won ? "🏆" : "💔"}</div>
-            <h2 className="text-xl font-bebas tracking-widest text-[#111827] mb-1">
-              {won ? "Genius!" : "Better luck tomorrow"}
-            </h2>
-            <p className="text-sm text-gray-500 mb-5">
-              {won
-                ? `Solved in ${MAX_LIVES - livesLeft} mistake${MAX_LIVES - livesLeft === 1 ? "" : "s"}`
-                : `${solvedColors.length} / ${puzzle.categories.length} categories solved`}
-            </p>
-            <button
-              onClick={restart}
-              className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-2.5 rounded-xl transition-colors"
-            >
-              Play Again
-            </button>
+            <div className="px-8 py-6 text-center" style={{ background: won ? "#84cc16" : "#111827" }}>
+              <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] mb-3" style={{ color: won ? "#111827" : "#84cc16" }}>
+                {won ? "Well Done" : "Game Over"}
+              </p>
+              <h2 className="font-playfair font-black italic" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", letterSpacing: "-0.02em", lineHeight: 0.9, color: won ? "#111827" : "#ffffff" }}>
+                {won ? "Genius!" : "Better Luck\nTomorrow"}
+              </h2>
+            </div>
+            <div className="px-8 py-6 text-center" style={{ background: won ? "#f4f0e6" : "#f4f0e6" }}>
+              <p className="font-mono text-sm text-gray-500 mb-6">
+                {won
+                  ? `Solved with ${MAX_LIVES - livesLeft} mistake${MAX_LIVES - livesLeft === 1 ? "" : "s"}`
+                  : `${solvedColors.length} / ${puzzle.categories.length} categories solved`}
+              </p>
+              <button
+                onClick={restart}
+                className="px-12 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm border-2 border-[#111827] bg-[#111827] text-[#84cc16] hover:bg-[#1f2937] transition-colors"
+              >
+                Play Again
+              </button>
+            </div>
           </motion.div>
         )}
 
         {/* Instructions */}
         {!gameOver && solvedColors.length === 0 && (
-          <p className="text-center text-xs text-gray-400 mt-6">
+          <p className="text-center font-mono text-xs text-gray-400 mt-2">
             Select 4 players that share a connection · Yellow = easiest · Purple = hardest
           </p>
         )}
