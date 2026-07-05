@@ -212,7 +212,12 @@ export default function GamesPage() {
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    } else {
+      const el = document.querySelector(window.location.hash);
+      if (el) el.scrollIntoView({ behavior: "instant" });
+    }
     setDailyGWPlayer(CURRENT_GUESS_WHO_PLAYERS[getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0)]);
     setDailySLPlayer(CURRENT_STAT_LINE_PLAYERS[getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7)]);
     const data = loadDailyData();
