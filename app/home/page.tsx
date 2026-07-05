@@ -152,7 +152,7 @@ export default function HomePage() {
 
         <motion.div className="relative mt-12" style={{ zIndex: 20 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
           <motion.a
-            href="/games"
+            href="/games#daily-challenges"
             className="inline-block px-12 py-4 text-[#111827] font-mono font-bold uppercase tracking-[0.2em] text-sm"
             style={{ background: "#84cc16", border: "2px solid #84cc16", boxShadow: "0 0 40px rgba(132,204,22,0.4)" }}
             whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.65)" }}

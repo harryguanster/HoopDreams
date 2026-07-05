@@ -309,7 +309,7 @@ export default function GamesPage() {
         </section>
 
         {/* ── DAILY CHALLENGES ── */}
-        <section>
+        <section id="daily-challenges">
           <RuleHeader label="Daily" title="Today's Challenges" />
           <p className="font-mono text-gray-500 text-xs -mt-2 mb-6 uppercase tracking-widest">New players every day · Complete both to extend your streak</p>
 
