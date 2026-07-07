@@ -197,6 +197,6 @@ export const CURRENT_STAT_LINE_PLAYERS: StatLinePlayer[] = [
     position: "C",
     jersey: "13",
     era: "2017–present",
-    stats: { ppg: 20.1, rpg: 10.0, apg: 3.2, spg: 1.0, bpg: 1.6, fgPct: 44.2, threePct: 31.8 },
+    stats: { ppg: 20.1, rpg: 10.0, apg: 3.2, spg: 1.0, bpg: 1.6, fgPct: 55.2, threePct: 20.4 },
   },
 ];
