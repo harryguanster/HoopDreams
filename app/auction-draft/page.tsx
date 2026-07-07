@@ -155,7 +155,7 @@ function aiTargetBid(player: Player, difficulty: Difficulty, budget: number, slo
   }
 
   const t = Math.floor(Math.min(cap, Math.max(1, target)));
-  return t > currentBid ? t : null;
+  return t > currentBid ? currentBid + 1 : null;
 }
 
 function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
