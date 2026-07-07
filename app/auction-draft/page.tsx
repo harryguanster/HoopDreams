@@ -26,42 +26,75 @@ interface Player {
 interface RosterSlot { player: Player; paid: number; }
 
 // ─── Player Pools ──────────────────────────────────────────────────────────────
-// All-Time: 2 per position — one elite, one solid-but-not-elite
+// Values ranked on a true 1–10 scale so the bidding algorithm prices correctly.
+// Elite (9.5+) → fair bid ~$8–10 | Star (8–9.4) → ~$6–8 | Solid (6–7.9) → ~$3–5 | Role (<6) → ~$1–2
+
+// All-Time: 5 per position (25 total) — shuffled each game so variety is high
 const ALLTIME_POOL: Player[] = [
-  // PG
-  { id: "magic",    name: "Magic Johnson",       position: "PG", era: "1979–96",   desc: "5× Champion · 3× Finals MVP · ran Showtime",              value: 9.0, off: 9.2, def: 7.5 },
-  { id: "isiah",    name: "Isiah Thomas",        position: "PG", era: "1981–94",   desc: "2× Champion · 2× Finals MVP · Bad Boys leader",           value: 7.2, off: 7.4, def: 7.0 },
-  // SG
-  { id: "jordan",   name: "Michael Jordan",      position: "SG", era: "1984–2003", desc: "6× Champion · 6× Finals MVP · The GOAT",                  value: 10,  off: 10,  def: 9.2 },
-  { id: "reggie",   name: "Reggie Miller",       position: "SG", era: "1987–2005", desc: "5× All-Star · clutch shooter · Knicks tormentor",          value: 6.2, off: 7.0, def: 6.0 },
-  // SF
-  { id: "lebron",   name: "LeBron James",        position: "SF", era: "2003–pres", desc: "4× Champion · 4× MVP · all-time scoring leader",          value: 9.8, off: 9.8, def: 8.8 },
-  { id: "worthy",   name: "James Worthy",        position: "SF", era: "1982–94",   desc: "3× Champion · 1× Finals MVP · Big Game James",            value: 6.8, off: 7.2, def: 6.5 },
-  // PF
-  { id: "duncan",   name: "Tim Duncan",          position: "PF", era: "1997–2016", desc: "5× Champion · 3× Finals MVP · The Big Fundamental",       value: 9.2, off: 8.8, def: 9.5 },
-  { id: "rodman",   name: "Dennis Rodman",       position: "PF", era: "1986–2000", desc: "5× Champion · 2× DPOY · greatest rebounder ever",          value: 6.0, off: 4.5, def: 9.8 },
-  // C
-  { id: "shaq",     name: "Shaquille O'Neal",    position: "C",  era: "1992–2011", desc: "4× Champion · 3× Finals MVP · most dominant big man",      value: 9.3, off: 9.5, def: 8.0 },
-  { id: "mourning", name: "Alonzo Mourning",     position: "C",  era: "1992–2008", desc: "1× Champion · 1× DPOY · Miami anchor",                    value: 6.5, off: 6.8, def: 8.2 },
+  // ── PG ──
+  { id: "magic",    name: "Magic Johnson",       position: "PG", era: "1979–96",   desc: "5× Champion · 3× Finals MVP · ran Showtime",              value: 9.5, off: 9.2, def: 8.0 },
+  { id: "stockton", name: "John Stockton",       position: "PG", era: "1984–2003", desc: "All-time assists & steals leader · 2× runner-up",          value: 8.0, off: 7.8, def: 8.5 },
+  { id: "oscar",    name: "Oscar Robertson",     position: "PG", era: "1960–74",   desc: "1× Champion · 1× MVP · averaged a triple-double over a full season", value: 8.8, off: 9.0, def: 7.5 },
+  { id: "isiah",    name: "Isiah Thomas",        position: "PG", era: "1981–94",   desc: "2× Champion · 1990 Finals MVP · Bad Boys leader",          value: 7.5, off: 7.8, def: 7.2 },
+  { id: "cp3",      name: "Chris Paul",          position: "PG", era: "2005–24",   desc: "12× All-Star · career assists/steals pace setter",          value: 7.2, off: 7.5, def: 8.2 },
+  // ── SG ──
+  { id: "jordan",   name: "Michael Jordan",      position: "SG", era: "1984–2003", desc: "6× Champion · 6× Finals MVP · The GOAT",                  value: 10.0, off: 10.0, def: 9.5 },
+  { id: "kobe",     name: "Kobe Bryant",         position: "SG", era: "1996–2016", desc: "5× Champion · 2009 Finals MVP · 81-point game",            value: 9.0, off: 9.2, def: 8.5 },
+  { id: "wade",     name: "Dwyane Wade",         position: "SG", era: "2003–19",   desc: "3× Champion · 2006 Finals MVP · South Beach icon",         value: 8.2, off: 8.5, def: 8.0 },
+  { id: "iverson",  name: "Allen Iverson",       position: "SG", era: "1996–2010", desc: "2001 MVP · scoring title king · answered the call",         value: 7.8, off: 8.5, def: 6.5 },
+  { id: "reggie",   name: "Reggie Miller",       position: "SG", era: "1987–2005", desc: "5× All-Star · clutch three-point assassin",                value: 6.2, off: 7.0, def: 6.0 },
+  // ── SF ──
+  { id: "lebron",   name: "LeBron James",        position: "SF", era: "2003–pres", desc: "4× Champion · 4× Finals MVP · all-time scoring leader",    value: 9.8, off: 9.8, def: 8.8 },
+  { id: "bird",     name: "Larry Bird",          position: "SF", era: "1979–92",   desc: "3× Champion · 3× MVP · Celtics legend",                    value: 9.0, off: 9.2, def: 7.8 },
+  { id: "drj",      name: "Julius Erving",       position: "SF", era: "1971–87",   desc: "1× Champion · 3× ABA MVP · invented the modern dunk",      value: 8.2, off: 8.5, def: 7.5 },
+  { id: "pippen",   name: "Scottie Pippen",      position: "SF", era: "1987–2004", desc: "6× Champion · top-5 defender all time · Jordan's co-star",  value: 7.8, off: 7.5, def: 9.2 },
+  { id: "worthy",   name: "James Worthy",        position: "SF", era: "1982–94",   desc: "3× Champion · 1988 Finals MVP · Big Game James",           value: 6.8, off: 7.2, def: 6.5 },
+  // ── PF ──
+  { id: "duncan",   name: "Tim Duncan",          position: "PF", era: "1997–2016", desc: "5× Champion · 3× Finals MVP · The Big Fundamental",        value: 9.2, off: 8.8, def: 9.5 },
+  { id: "malone",   name: "Karl Malone",         position: "PF", era: "1985–2004", desc: "2× MVP · 14× All-Star · most points without a ring",        value: 8.5, off: 9.0, def: 7.5 },
+  { id: "kg",       name: "Kevin Garnett",       position: "PF", era: "1995–2016", desc: "1× Champion · 2004 MVP · greatest two-way PF ever",         value: 8.5, off: 8.2, def: 9.3 },
+  { id: "barkley",  name: "Charles Barkley",     position: "PF", era: "1984–2000", desc: "1993 MVP · 11× All-Star · never won a ring",                value: 8.2, off: 9.0, def: 7.2 },
+  { id: "rodman",   name: "Dennis Rodman",       position: "PF", era: "1986–2000", desc: "5× Champion · 2× DPOY · greatest rebounder ever",           value: 6.5, off: 4.5, def: 9.8 },
+  // ── C ──
+  { id: "kareem",   name: "Kareem Abdul-Jabbar", position: "C",  era: "1969–89",   desc: "6× Champion · 6× MVP · all-time scoring record holder",     value: 9.5, off: 9.5, def: 8.5 },
+  { id: "wilt",     name: "Wilt Chamberlain",    position: "C",  era: "1959–73",   desc: "2× Champion · 4× MVP · 100-point game",                     value: 9.5, off: 10.0, def: 8.5 },
+  { id: "shaq",     name: "Shaquille O'Neal",    position: "C",  era: "1992–2011", desc: "4× Champion · 3× Finals MVP · most dominant big man",       value: 9.3, off: 9.5, def: 8.0 },
+  { id: "hakeem",   name: "Hakeem Olajuwon",     position: "C",  era: "1984–2002", desc: "2× Champion · 2× Finals MVP · Dream Shake inventor",        value: 9.0, off: 9.0, def: 9.5 },
+  { id: "russell",  name: "Bill Russell",        position: "C",  era: "1956–69",   desc: "11× Champion · 5× MVP · the greatest winner in sports",     value: 9.3, off: 7.5, def: 10.0 },
 ];
 
-// Current: 2 per position — one star, one role player
+// Current: 5 per position (25 total) — 2025–26 season
 const CURRENT_POOL: Player[] = [
-  // PG
-  { id: "sga",      name: "Shai Gilgeous-Alexander", position: "PG", era: "2025–26", desc: "31 PPG · 6.6 APG · OKC franchise cornerstone",           value: 9.0, off: 9.3, def: 7.8 },
-  { id: "brunson",  name: "Jalen Brunson",           position: "PG", era: "2025–26", desc: "26 PPG · 6.8 APG · Knicks engine",                       value: 7.0, off: 7.5, def: 6.5 },
-  // SG
-  { id: "jbrown",   name: "Jaylen Brown",            position: "SG", era: "2025–26", desc: "28.7 PPG · 6.9 RPG · 2024 Finals MVP",                   value: 7.8, off: 8.0, def: 7.5 },
-  { id: "dbane",    name: "Desmond Bane",            position: "SG", era: "2025–26", desc: "20.1 PPG · solid 3&D wing · Orlando breakout",            value: 6.0, off: 6.8, def: 6.2 },
-  // SF
-  { id: "lebron_c", name: "LeBron James",            position: "SF", era: "2025–26", desc: "20.9 PPG · 7.2 APG · still elite at 40",                 value: 8.0, off: 8.2, def: 7.5 },
-  { id: "sbarnes",  name: "Scottie Barnes",          position: "SF", era: "2025–26", desc: "18.1 PPG · 7.5 RPG · versatile Toronto star",             value: 6.5, off: 6.8, def: 7.0 },
-  // PF
-  { id: "giannis",  name: "Giannis Antetokounmpo",  position: "PF", era: "2025–26", desc: "27.7 PPG · 11.7 RPG · 2× MVP · Greek Freak",             value: 9.5, off: 9.4, def: 8.5 },
-  { id: "randle",   name: "Julius Randle",           position: "PF", era: "2025–26", desc: "21.1 PPG · 6.7 RPG · MIN double-double machine",          value: 6.8, off: 7.2, def: 6.0 },
-  // C
-  { id: "jokic",    name: "Nikola Jokic",            position: "C",  era: "2025–26", desc: "27.7 PPG · 12.9 RPG · 10.7 APG · 3× MVP",               value: 9.8, off: 9.8, def: 8.0 },
-  { id: "bam",      name: "Bam Adebayo",             position: "C",  era: "2025–26", desc: "20.1 PPG · 10 RPG · elite defensive anchor",              value: 7.0, off: 7.2, def: 8.5 },
+  // ── PG ──
+  { id: "sga",      name: "Shai Gilgeous-Alexander", position: "PG", era: "2025–26", desc: "31.1 PPG · 2× MVP · OKC franchise cornerstone",          value: 9.0, off: 9.3, def: 7.8 },
+  { id: "curry_c",  name: "Stephen Curry",           position: "PG", era: "2025–26", desc: "4× Champion · all-time 3PM record · 2× unanimous MVP",    value: 8.5, off: 9.2, def: 7.0 },
+  { id: "dame_c",   name: "Damian Lillard",          position: "PG", era: "2025–26", desc: "7× All-Star · deep-range specialist · 24.7 PPG career",   value: 7.5, off: 8.0, def: 6.5 },
+  { id: "hali_c",   name: "Tyrese Haliburton",       position: "PG", era: "2025–26", desc: "22.4 PPG · 10.9 APG · Indiana's engine",                  value: 7.2, off: 7.5, def: 6.8 },
+  { id: "brunson",  name: "Jalen Brunson",           position: "PG", era: "2025–26", desc: "26 PPG · 6.8 APG · Knicks engine",                        value: 7.0, off: 7.5, def: 6.5 },
+  // ── SG ──
+  { id: "ant_c",    name: "Anthony Edwards",         position: "SG", era: "2025–26", desc: "28.8 PPG · elite two-way SG · #1 pick in 2020",           value: 8.5, off: 8.8, def: 8.0 },
+  { id: "booker_c", name: "Devin Booker",            position: "SG", era: "2025–26", desc: "26.1 PPG · 2× Olympic gold · scored 70 at age 20",        value: 8.0, off: 8.5, def: 7.0 },
+  { id: "jbrown",   name: "Jaylen Brown",            position: "SG", era: "2025–26", desc: "28.7 PPG · 2024 Finals MVP · Celtic lockdown wing",        value: 7.8, off: 8.0, def: 7.5 },
+  { id: "dmitch_c", name: "Donovan Mitchell",        position: "SG", era: "2025–26", desc: "26.1 PPG · elite playoff performer · Spida",               value: 7.5, off: 8.0, def: 7.0 },
+  { id: "dbane",    name: "Desmond Bane",            position: "SG", era: "2025–26", desc: "20.1 PPG · 3&D specialist · Orlando breakout",             value: 6.0, off: 6.8, def: 6.2 },
+  // ── SF ──
+  { id: "durant_c", name: "Kevin Durant",            position: "SF", era: "2025–26", desc: "2× Champion · 2× Finals MVP · unguardable at 7 feet",     value: 8.8, off: 9.2, def: 7.5 },
+  { id: "tatum_c",  name: "Jayson Tatum",            position: "SF", era: "2025–26", desc: "2024 Champion · Finals MVP · Boston's cornerstone",        value: 8.5, off: 8.8, def: 7.5 },
+  { id: "kawhi_c",  name: "Kawhi Leonard",           position: "SF", era: "2025–26", desc: "2× Champion · 2× Finals MVP · two-way elite",             value: 7.8, off: 8.2, def: 8.5 },
+  { id: "lebron_c", name: "LeBron James",            position: "SF", era: "2025–26", desc: "4× Champion · 4× Finals MVP · still elite at 40+",        value: 8.0, off: 8.2, def: 7.5 },
+  { id: "sbarnes",  name: "Scottie Barnes",          position: "SF", era: "2025–26", desc: "18.1 PPG · 7.5 RPG · versatile two-way wing",              value: 6.5, off: 6.8, def: 7.0 },
+  // ── PF ──
+  { id: "giannis",  name: "Giannis Antetokounmpo",  position: "PF", era: "2025–26", desc: "27.7 PPG · 11.7 RPG · 2021 Champion · 2× MVP",            value: 9.5, off: 9.4, def: 8.5 },
+  { id: "ad_c",     name: "Anthony Davis",           position: "PF", era: "2025–26", desc: "2020 Champion · elite rim protector · 8× All-Star",        value: 8.0, off: 8.5, def: 9.0 },
+  { id: "zion_c",   name: "Zion Williamson",         position: "PF", era: "2025–26", desc: "28.9 PPG · 8.2 RPG · most powerful player in the game",   value: 8.0, off: 8.8, def: 7.0 },
+  { id: "siakam_c", name: "Pascal Siakam",           position: "PF", era: "2025–26", desc: "2019 Champion · 23.9 PPG · versatile four",                value: 7.5, off: 7.8, def: 7.2 },
+  { id: "randle",   name: "Julius Randle",           position: "PF", era: "2025–26", desc: "21.1 PPG · 6.7 RPG · Minnesota double-double machine",     value: 6.8, off: 7.2, def: 6.0 },
+  // ── C ──
+  { id: "jokic",    name: "Nikola Jokic",            position: "C",  era: "2025–26", desc: "27.7 PPG · 12.9 RPG · 10.7 APG · 3× MVP",                value: 9.8, off: 9.8, def: 8.0 },
+  { id: "wemby_c",  name: "Victor Wembanyama",       position: "C",  era: "2025–26", desc: "25.0 PPG · 11.5 RPG · 3.1 BPG · generational talent",     value: 8.5, off: 8.2, def: 9.5 },
+  { id: "embiid_c", name: "Joel Embiid",             position: "C",  era: "2025–26", desc: "2022–23 MVP · dominant scorer-rebounder combo",            value: 8.8, off: 9.0, def: 7.5 },
+  { id: "bam_c",    name: "Bam Adebayo",             position: "C",  era: "2025–26", desc: "20.1 PPG · 10 RPG · elite defensive anchor",               value: 7.0, off: 7.2, def: 8.5 },
+  { id: "gobert_c", name: "Rudy Gobert",             position: "C",  era: "2025–26", desc: "3× DPOY · elite shot-blocker and screener",                value: 6.8, off: 6.5, def: 9.2 },
 ];
 
 const POSITIONS: Position[] = ["PG", "SG", "SF", "PF", "C"];
@@ -91,21 +124,38 @@ function maxBid(budget: number, slotsLeft: number): number {
   return Math.max(0, budget - Math.max(0, slotsLeft - 1));
 }
 
+// Fair value: non-linear scale so elite players (9.5+) cost $8–10,
+// stars (7.5–9) cost $5–7, solid starters (6–7.5) cost $3–5, role players $1–2.
+// Formula: fair = (value - 4) * 1.5, clamped to [1, BUDGET-slotsLeft+1]
+function playerFairValue(player: Player): number {
+  return Math.max(1, Math.round((player.value - 4) * 1.5));
+}
+
 function aiTargetBid(player: Player, difficulty: Difficulty, budget: number, slotsLeft: number, currentBid: number): number | null {
   const cap = maxBid(budget, slotsLeft);
   if (cap <= currentBid) return null;
 
-  // Fair value: scale player value to budget per slot
-  const fair = (player.value / 9.5) * (BUDGET / 5); // ~$4.2 avg
+  const fair = playerFairValue(player);
   let target: number;
   switch (difficulty) {
-    case "easy":   target = fair * 0.45 + Math.random() * fair * 0.2; break;
-    case "medium": target = fair * 0.85 + (Math.random() - 0.5) * fair * 0.15; break;
-    case "hard":   target = fair * 1.05 + Math.random() * fair * 0.12; break;
+    case "easy":
+      // Underbids by 40–60% — good players can be stolen
+      target = fair * 0.50 + Math.random() * fair * 0.15;
+      break;
+    case "medium":
+      // Bids close to fair value ±10%
+      target = fair * 0.90 + (Math.random() - 0.5) * fair * 0.20;
+      break;
+    case "hard":
+      // Slightly overbids on stars, rarely lets them go cheap
+      target = fair * 1.10 + Math.random() * fair * 0.15;
+      break;
+    default:
+      target = fair;
   }
 
   const t = Math.floor(Math.min(cap, Math.max(1, target)));
-  return t > currentBid ? currentBid + 1 : null;
+  return t > currentBid ? t : null;
 }
 
 function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
@@ -590,8 +640,8 @@ export default function AuctionDraftPage() {
           </div>
         )}
 
-        <main className="max-w-7xl mx-auto px-6 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-2 border-[#111827]" style={{ minHeight: 600 }}>
+        <main className="max-w-screen-2xl mx-auto px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-2 border-[#111827]" style={{ minHeight: 700 }}>
 
             {/* Left: rosters */}
             <div style={{ borderRight: "2px solid #111827" }}>
@@ -605,33 +655,33 @@ export default function AuctionDraftPage() {
             <div className="lg:col-span-3 flex flex-col">
 
               {/* Player on the block */}
-              <div className="p-8 relative overflow-hidden" style={{ background: "#111827", borderBottom: "2px solid #111827", minHeight: 180 }}>
-                <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${POS_COLOR[player.position]}33 0%, transparent 70%)` }} />
-                <div className="flex items-start justify-between mb-4">
-                  <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] px-2.5 py-1 border" style={{ borderColor: POS_COLOR[player.position], color: POS_COLOR[player.position] }}>
+              <div className="p-10 relative overflow-hidden" style={{ background: "#111827", borderBottom: "2px solid #111827", minHeight: 220 }}>
+                <div className="absolute -right-8 -top-8 w-56 h-56 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${POS_COLOR[player.position]}44 0%, transparent 70%)` }} />
+                <div className="flex items-start justify-between mb-5">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] px-3 py-1.5 border" style={{ borderColor: POS_COLOR[player.position], color: POS_COLOR[player.position] }}>
                     {player.position}
                   </span>
-                  <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">{qIdx + 1} / {queue.length}</span>
+                  <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{qIdx + 1} / {queue.length}</span>
                 </div>
-                <h2 className="font-playfair font-black text-white mb-1" style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                <h2 className="font-playfair font-black text-white mb-2" style={{ fontSize: "clamp(2.4rem, 4.5vw, 4rem)", letterSpacing: "-0.02em", lineHeight: 1 }}>
                   {player.name}
                 </h2>
-                <p className="font-mono text-gray-500 text-xs mb-1">{player.era}</p>
-                <p className="font-mono text-gray-400 text-sm">{player.desc}</p>
+                <p className="font-mono text-gray-500 text-sm mb-2">{player.era}</p>
+                <p className="font-mono text-gray-300 text-base">{player.desc}</p>
               </div>
 
               {/* Bid status bar */}
-              <div className="flex items-center gap-8 px-8 py-4" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+              <div className="flex items-center gap-10 px-10 py-5" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
                 <div>
-                  <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-0.5">Current Bid</p>
-                  <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "2rem", lineHeight: 1 }}>
+                  <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1">Current Bid</p>
+                  <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "2.8rem", lineHeight: 1 }}>
                     {currentBid === 0 ? "—" : `$${currentBid}`}
                   </p>
                 </div>
                 {holder && (
                   <div>
-                    <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-0.5">Holds</p>
-                    <p className="font-mono font-bold text-sm" style={{ color: holder === "user" ? "#84cc16" : "#ef4444" }}>
+                    <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1">Holds</p>
+                    <p className="font-mono font-bold text-base" style={{ color: holder === "user" ? "#84cc16" : "#ef4444" }}>
                       {holder === "user" ? "You" : "AI"}
                     </p>
                   </div>
@@ -658,7 +708,7 @@ export default function AuctionDraftPage() {
 
               {/* Bid controls */}
               {isUserTurn && (
-                <div className="px-8 py-5" style={{ borderBottom: "2px solid #111827", background: "#f4f0e6" }}>
+                <div className="px-10 py-6" style={{ borderBottom: "2px solid #111827", background: "#f4f0e6" }}>
                   <div className="flex gap-3">
                     <input
                       type="number"
@@ -668,13 +718,13 @@ export default function AuctionDraftPage() {
                       onChange={e => setBidInput(e.target.value)}
                       onKeyDown={e => e.key === "Enter" && bidOk && handleUserBid()}
                       placeholder={`$${currentBid + 1} minimum`}
-                      className="flex-1 px-4 py-3 font-mono text-sm border-2 bg-white text-[#111827] focus:outline-none"
+                      className="flex-1 px-5 py-4 font-mono text-base border-2 bg-white text-[#111827] focus:outline-none"
                       style={{ borderColor: bidOk ? "#84cc16" : "#111827" }}
                     />
                     <button
                       onClick={handleUserBid}
                       disabled={!bidOk}
-                      className="px-8 py-3 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 transition-colors"
+                      className="px-10 py-4 font-mono font-bold text-base uppercase tracking-[0.1em] border-2 transition-colors"
                       style={bidOk
                         ? { background: "#84cc16", borderColor: "#111827", color: "#111827" }
                         : { background: "#f4f0e6", borderColor: "#d1d5db", color: "#d1d5db", cursor: "not-allowed" }}
@@ -683,7 +733,7 @@ export default function AuctionDraftPage() {
                     </button>
                     <button
                       onClick={handleUserPass}
-                      className="px-6 py-3 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] bg-white text-[#111827] hover:bg-gray-100 transition-colors"
+                      className="px-8 py-4 font-mono font-bold text-base uppercase tracking-[0.1em] border-2 border-[#111827] bg-white text-[#111827] hover:bg-gray-100 transition-colors"
                     >
                       Pass
                     </button>
@@ -692,7 +742,7 @@ export default function AuctionDraftPage() {
               )}
 
               {/* Bid log */}
-              <div className="flex-1 p-6 overflow-y-auto" style={{ maxHeight: 200 }}>
+              <div className="flex-1 p-6 overflow-y-auto" style={{ maxHeight: 240 }}>
                 <div className="space-y-1">
                   {[...log].reverse().map((entry, i) => (
                     <p key={i} className="font-mono text-xs leading-relaxed" style={{
