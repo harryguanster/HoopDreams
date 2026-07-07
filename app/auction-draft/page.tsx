@@ -8,7 +8,7 @@ import GameHeader from "@/app/components/GameHeader";
 type Position = "PG" | "SG" | "SF" | "PF" | "C";
 type Difficulty = "easy" | "medium" | "hard";
 type Era = "alltime" | "current";
-type Phase = "setup" | "auction" | "rosters" | "final";
+type Phase = "setup" | "auction" | "rosters" | "simcast";
 type AuctionState = "user_act" | "ai_thinking" | "round_over";
 type LogEntry = { bidder: "user" | "ai" | "sys"; text: string };
 
@@ -178,33 +178,48 @@ function aiBestSlot(player: Player, roster: RosterSlot[]): Position {
   return POSITIONS.find(p => !filled.has(p))!;
 }
 
-function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
-  const uOff = userRoster.reduce((s, r) => s + r.player.off, 0) / userRoster.length;
-  const uDef = userRoster.reduce((s, r) => s + r.player.def, 0) / userRoster.length;
-  const aOff = aiRoster.reduce((s, r) => s + r.player.off, 0) / aiRoster.length;
-  const aDef = aiRoster.reduce((s, r) => s + r.player.def, 0) / aiRoster.length;
+// ─── Simulation helpers ────────────────────────────────────────────────────────
+type GameLog = { num: number; winner: "user"|"ai"; uTotal: number; aTotal: number; };
+type BoxRow  = { name: string; slot: Position; pts: number; reb: number; ast: number; stl: number; blk: number; };
 
-  const uStrength = uOff * 0.55 + (10 - aDef) * 0.45;
-  const aStrength = aOff * 0.55 + (10 - uDef) * 0.45;
-  const pUser = uStrength / (uStrength + aStrength);
+function getWinProb(uR: RosterSlot[], aR: RosterSlot[]): number {
+  const uOff = uR.reduce((s,r)=>s+r.player.off,0)/uR.length;
+  const uDef = uR.reduce((s,r)=>s+r.player.def,0)/uR.length;
+  const aOff = aR.reduce((s,r)=>s+r.player.off,0)/aR.length;
+  const aDef = aR.reduce((s,r)=>s+r.player.def,0)/aR.length;
+  const uStr = uOff*0.55 + (10-aDef)*0.45;
+  const aStr = aOff*0.55 + (10-uDef)*0.45;
+  return uStr/(uStr+aStr);
+}
 
-  let uScore = 0, aScore = 0;
-  while (uScore < 4 && aScore < 4) {
-    if (Math.random() < pUser) uScore++; else aScore++;
+function generateSeries(pUser: number): GameLog[] {
+  const games: GameLog[] = [];
+  let uW=0, aW=0, n=1;
+  while (uW<4 && aW<4) {
+    const won = Math.random() < pUser;
+    let uT = 92 + Math.floor(Math.random()*22);
+    let aT = 92 + Math.floor(Math.random()*22);
+    if (won  && uT<=aT) uT = aT + 1 + Math.floor(Math.random()*9);
+    if (!won && aT<=uT) aT = uT + 1 + Math.floor(Math.random()*9);
+    games.push({ num: n++, winner: won?"user":"ai", uTotal: uT, aTotal: aT });
+    if (won) uW++; else aW++;
   }
+  return games;
+}
 
-  const uStar = userRoster.reduce((a, b) => a.player.value > b.player.value ? a : b).player;
-  const aStar = aiRoster.reduce((a, b) => a.player.value > b.player.value ? a : b).player;
-  const winner = uScore === 4 ? "user" : "ai";
-
-  return {
-    winner: winner as "user" | "ai",
-    userScore: uScore,
-    aiScore: aScore,
-    mvp: (winner === "user" ? uStar : aStar).name,
-    userStar: uStar.name,
-    aiStar: aStar.name,
-  };
+function buildBoxScore(roster: RosterSlot[], isWinner: boolean): BoxRow[] {
+  const basePts = isWinner ? 108 : 100;
+  const totOff = roster.reduce((s,r)=>s+r.player.off, 0);
+  return roster.map(({player, slot}) => {
+    const share = player.off / totOff;
+    const pts  = Math.max(4, Math.round(basePts*share + (Math.random()-0.5)*10));
+    const reb  = Math.max(1, Math.round(player.def*0.7 + Math.random()*5));
+    const isG  = player.position==="PG" || player.position==="SG";
+    const ast  = Math.max(0, Math.round((isG?5:2) + Math.random()*5));
+    const stl  = Math.max(0, Math.round(Math.random()*2));
+    const blk  = Math.max(0, Math.round((player.position==="C"||player.position==="PF"?1:0)+Math.random()*2));
+    return { name: player.name, slot, pts, reb, ast, stl, blk };
+  });
 }
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
@@ -316,8 +331,21 @@ export default function AuctionDraftPage() {
   const [log, setLog] = useState<LogEntry[]>([]);
   const [roundMsg, setRoundMsg] = useState("");
 
-  const [gameResult, setGameResult] = useState<ReturnType<typeof simulateGame> | null>(null);
   const [pendingPlayer, setPendingPlayer] = useState<{ player: Player; paid: number } | null>(null);
+
+  // ── Simcast state ────────────────────────────────────────────────────────────
+  const [simGames,       setSimGames]       = useState<GameLog[]>([]);
+  const [simGameIdx,     setSimGameIdx]     = useState(0);
+  const [simCurU,        setSimCurU]        = useState(0);  // live score current game
+  const [simCurA,        setSimCurA]        = useState(0);
+  const [simSeriesU,     setSimSeriesU]     = useState(0);  // series wins
+  const [simSeriesA,     setSimSeriesA]     = useState(0);
+  const [simDoneGames,   setSimDoneGames]   = useState<GameLog[]>([]);
+  const [simStep,        setSimStep]        = useState<"scoring"|"pause"|"done">("done");
+  const [simPUser,       setSimPUser]       = useState(0.5);
+  const [simWinner,      setSimWinner]      = useState<"user"|"ai"|null>(null);
+  const [bsUser,         setBsUser]         = useState<BoxRow[]>([]);
+  const [bsAi,           setBsAi]           = useState<BoxRow[]>([]);
 
   // Refs for stable access inside timers
   const stateRef = useRef({ userRoster, aiRoster, userBudget, aiBudget, currentBid, holder, qIdx, queue, difficulty });
@@ -511,13 +539,68 @@ export default function AuctionDraftPage() {
 
   // ── Simulate ─────────────────────────────────────────────────────────────────
   function runSimulation() {
-    setTimeout(() => {
-      const result = simulateGame(userRoster, aiRoster);
-      setGameResult(result);
-      setPhase("final");
-    }, 1800);
-    setPhase("final"); // will show loading until result is set
+    const p = getWinProb(userRoster, aiRoster);
+    const games = generateSeries(p);
+    setSimGames(games);
+    setSimGameIdx(0);
+    setSimCurU(0); setSimCurA(0);
+    setSimSeriesU(0); setSimSeriesA(0);
+    setSimDoneGames([]);
+    setSimWinner(null);
+    setSimPUser(p);
+    setBsUser([]); setBsAi([]);
+    setSimStep("scoring");
+    setPhase("simcast");
   }
+
+  // ── Simcast: score ticker ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (phase !== "simcast" || simStep !== "scoring" || simGames.length === 0) return;
+    const game = simGames[simGameIdx];
+    if (!game) return;
+    const p = simPUser;
+    const interval = setInterval(() => {
+      setSimCurU(u => u < game.uTotal ? Math.min(u + (Math.random()<p ? Math.ceil(Math.random()*3) : 0), game.uTotal) : u);
+      setSimCurA(a => a < game.aTotal ? Math.min(a + (Math.random()>=p ? Math.ceil(Math.random()*3) : 0), game.aTotal) : a);
+    }, 35);
+    return () => clearInterval(interval);
+  }, [phase, simStep, simGameIdx, simGames, simPUser]);
+
+  // ── Simcast: detect when current game finishes scoring ───────────────────────
+  useEffect(() => {
+    if (phase !== "simcast" || simStep !== "scoring" || simGames.length === 0) return;
+    const game = simGames[simGameIdx];
+    if (!game) return;
+    if (simCurU >= game.uTotal && simCurA >= game.aTotal) setSimStep("pause");
+  }, [phase, simStep, simCurU, simCurA, simGameIdx, simGames]);
+
+  // ── Simcast: pause → advance to next game or end series ──────────────────────
+  useEffect(() => {
+    if (phase !== "simcast" || simStep !== "pause" || simGames.length === 0) return;
+    const game = simGames[simGameIdx];
+    if (!game) return;
+    const timer = setTimeout(() => {
+      const newDone  = [...simDoneGames, game];
+      const newSU    = simSeriesU + (game.winner==="user" ? 1 : 0);
+      const newSA    = simSeriesA + (game.winner==="ai"   ? 1 : 0);
+      setSimDoneGames(newDone);
+      setSimSeriesU(newSU);
+      setSimSeriesA(newSA);
+      if (newSU>=4 || newSA>=4) {
+        const winner = newSU>=4 ? "user" : "ai";
+        setSimWinner(winner);
+        setBsUser(buildBoxScore(userRoster, winner==="user"));
+        setBsAi(buildBoxScore(aiRoster, winner==="ai"));
+        setSimStep("done");
+      } else {
+        setSimGameIdx(i => i+1);
+        setSimCurU(0); setSimCurA(0);
+        setSimStep("scoring");
+      }
+    }, 1400);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, simStep, simGameIdx]);
 
   // ─── RENDER ────────────────────────────────────────────────────────────────────
 
@@ -804,75 +887,174 @@ export default function AuctionDraftPage() {
   }
 
   // ── Final ──
-  if (phase === "final") {
-    if (!gameResult) {
-      return (
-        <div className="min-h-screen flex items-center justify-center" style={{ background: "#111827" }}>
-          <p className="font-mono text-[#84cc16] uppercase tracking-widest animate-pulse">Simulating…</p>
-        </div>
-      );
-    }
+  // ── Simcast ──
+  if (phase === "simcast") {
+    const currentGame = simGames[simGameIdx];
+    const won = simWinner === "user";
+    const uStar = userRoster.reduce((a,b) => a.player.value>b.player.value?a:b).player.name;
+    const aStar = aiRoster.reduce((a,b)  => a.player.value>b.player.value?a:b).player.name;
 
-    const won = gameResult.winner === "user";
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: won ? "#f4f0e6" : "#111827" }}>
-        <motion.div
-          className="w-full max-w-lg text-center"
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <p className="font-mono font-bold uppercase tracking-[0.35em] text-xs text-[#84cc16] mb-6">
-            {won ? "Victory" : "Defeat"}
-          </p>
-          <h2 className="font-playfair font-black italic mb-2" style={{
-            fontSize: "clamp(5rem, 12vw, 9rem)",
-            letterSpacing: "-0.03em", lineHeight: 0.88,
-            color: won ? "#111827" : "#ffffff",
-          }}>
-            {won ? "You\nWin!" : "AI\nWins."}
-          </h2>
-          <div style={{ borderTop: `2px solid ${won ? "#111827" : "#84cc16"}`, margin: "28px auto", maxWidth: 100 }} />
+      <div className="min-h-screen flex flex-col" style={{ background: "#111827" }}>
+        <GameHeader title="Auction Draft" />
 
-          <p className="font-playfair font-black mb-2" style={{ fontSize: "4.5rem", lineHeight: 1, color: "#84cc16" }}>
-            {gameResult.userScore} – {gameResult.aiScore}
-          </p>
-          <p className="font-mono text-base mb-8" style={{ color: won ? "#9ca3af" : "#6b7280" }}>Best of 7 Series</p>
+        <main className="flex-1 flex flex-col items-center px-6 py-8 gap-6">
 
-          <div className="border-2 p-6 mb-10 text-left" style={{ borderColor: won ? "#111827" : "#84cc16" }}>
-            <p className="font-mono text-xs uppercase tracking-widest mb-4" style={{ color: "#84cc16" }}>Recap</p>
-            <p className="font-mono text-base mb-2" style={{ color: won ? "#6b7280" : "#9ca3af" }}>
-              Your star: <strong style={{ color: won ? "#111827" : "#ffffff" }}>{gameResult.userStar}</strong>
-            </p>
-            <p className="font-mono text-base mb-4" style={{ color: won ? "#6b7280" : "#9ca3af" }}>
-              AI star: <strong style={{ color: won ? "#111827" : "#ffffff" }}>{gameResult.aiStar}</strong>
-            </p>
-            <p className="font-mono text-base font-bold" style={{ color: "#84cc16" }}>
-              MVP: {gameResult.mvp}
-            </p>
+          {/* ── Live Scoreboard ── */}
+          <div className="w-full max-w-4xl border-2 border-[#84cc16]">
+            {/* Header row */}
+            <div className="grid grid-cols-3 border-b-2 border-[#84cc16]">
+              <div className="px-6 py-5 border-r-2 border-[#84cc16] text-center">
+                <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">Your Squad</p>
+                <p className="font-playfair font-black text-white" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{simSeriesU}</p>
+                <p className="font-mono text-[10px] text-[#84cc16] mt-1 uppercase tracking-widest">series wins</p>
+              </div>
+              <div className="px-6 py-5 text-center flex flex-col justify-center">
+                {simStep !== "done" ? (
+                  <>
+                    <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-3">
+                      Game {currentGame?.num ?? 1} · Live
+                    </p>
+                    <div className="flex items-center justify-center gap-5">
+                      <span className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "3rem", lineHeight: 1 }}>{simCurU}</span>
+                      <span className="font-mono text-gray-600 text-xl">–</span>
+                      <span className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "3rem", lineHeight: 1 }}>{simCurA}</span>
+                    </div>
+                    <p className="font-mono text-xs text-[#84cc16] mt-2 animate-pulse">● LIVE</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-2">Series Final</p>
+                    <p className="font-playfair font-black" style={{ fontSize: "2rem", lineHeight: 1, color: "#84cc16" }}>
+                      {simSeriesU} – {simSeriesA}
+                    </p>
+                    <p className="font-mono text-xs text-gray-400 mt-2">Best of 7</p>
+                  </>
+                )}
+              </div>
+              <div className="px-6 py-5 border-l-2 border-[#84cc16] text-center">
+                <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">AI Squad</p>
+                <p className="font-playfair font-black text-white" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{simSeriesA}</p>
+                <p className="font-mono text-[10px] text-gray-500 mt-1 uppercase tracking-widest">series wins</p>
+              </div>
+            </div>
+
+            {/* Game log */}
+            <div className="divide-y divide-gray-800">
+              {simDoneGames.map(g => (
+                <div key={g.num} className="flex items-center gap-4 px-6 py-3">
+                  <span className="font-mono text-xs text-gray-600 w-16 shrink-0">Game {g.num}</span>
+                  <span className="font-mono text-sm font-bold" style={{ color: g.winner==="user" ? "#84cc16" : "#ef4444" }}>
+                    {g.winner==="user" ? "Your Squad wins" : "AI Squad wins"}
+                  </span>
+                  <span className="font-mono text-sm text-gray-500 ml-auto">{g.uTotal} – {g.aTotal}</span>
+                </div>
+              ))}
+              {simStep === "scoring" && currentGame && (
+                <div className="flex items-center gap-4 px-6 py-3">
+                  <span className="font-mono text-xs text-gray-600 w-16 shrink-0">Game {currentGame.num}</span>
+                  <span className="font-mono text-xs text-[#84cc16] animate-pulse">In progress…</span>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => setPhase("setup")}
-              className="px-12 py-5 font-mono font-bold uppercase tracking-[0.2em] text-base border-2 transition-colors"
-              style={won
-                ? { borderColor: "#111827", background: "#111827", color: "#84cc16" }
-                : { borderColor: "#84cc16", background: "#84cc16", color: "#111827" }}
+          {/* ── Series result banner ── */}
+          {simStep === "done" && simWinner && (
+            <motion.div
+              className="w-full max-w-4xl text-center py-8 border-2"
+              style={{ borderColor: "#84cc16" }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              Play Again
-            </button>
-            <button
-              onClick={() => setPhase("rosters")}
-              className="px-10 py-5 font-mono font-bold uppercase tracking-[0.2em] text-base border-2 transition-colors"
-              style={won
-                ? { borderColor: "#111827", background: "transparent", color: "#111827" }
-                : { borderColor: "#84cc16", background: "transparent", color: "#84cc16" }}
+              <p className="font-mono text-xs uppercase tracking-[0.35em] text-[#84cc16] mb-2">
+                {won ? "Victory" : "Defeat"}
+              </p>
+              <h2 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", lineHeight: 0.9, letterSpacing: "-0.03em" }}>
+                {won ? "Your Squad\nWins!" : "AI Squad\nWins."}
+              </h2>
+              <p className="font-mono text-sm text-gray-500 mt-3">
+                Series stars — You: <strong className="text-white">{uStar}</strong> · AI: <strong className="text-white">{aStar}</strong>
+              </p>
+            </motion.div>
+          )}
+
+          {/* ── Box Score ── */}
+          {simStep === "done" && bsUser.length > 0 && (
+            <motion.div
+              className="w-full max-w-4xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              View Rosters
-            </button>
-          </div>
-        </motion.div>
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-[#84cc16] mb-3">Box Score</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-2 border-[#84cc16]">
+                {/* User box score */}
+                <div style={{ borderRight: "2px solid #84cc16" }}>
+                  <div className="px-5 py-3 flex items-center justify-between" style={{ background: "#84cc16" }}>
+                    <p className="font-playfair font-black text-[#111827]">Your Squad</p>
+                    <p className="font-mono text-xs text-[#111827] font-bold">{won ? "SERIES WIN" : "SERIES LOSS"}</p>
+                  </div>
+                  <div className="px-5 py-2 grid grid-cols-6 gap-1 border-b border-gray-700">
+                    {["PLAYER","PTS","REB","AST","STL","BLK"].map(h => (
+                      <span key={h} className="font-mono text-[9px] text-gray-500 uppercase tracking-wider text-center first:text-left">{h}</span>
+                    ))}
+                  </div>
+                  {bsUser.map((row, i) => (
+                    <div key={i} className="px-5 py-2.5 grid grid-cols-6 gap-1 border-b border-gray-800">
+                      <span className="font-mono text-xs text-white truncate col-span-1">{row.name.split(" ").slice(-1)[0]}</span>
+                      <span className="font-mono text-sm font-bold text-center" style={{ color: "#84cc16" }}>{row.pts}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.reb}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.ast}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.stl}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.blk}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* AI box score */}
+                <div>
+                  <div className="px-5 py-3 flex items-center justify-between" style={{ background: "#1f2937", borderBottom: "2px solid #374151" }}>
+                    <p className="font-playfair font-black text-white">AI Squad</p>
+                    <p className="font-mono text-xs text-gray-400 font-bold">{!won ? "SERIES WIN" : "SERIES LOSS"}</p>
+                  </div>
+                  <div className="px-5 py-2 grid grid-cols-6 gap-1 border-b border-gray-700">
+                    {["PLAYER","PTS","REB","AST","STL","BLK"].map(h => (
+                      <span key={h} className="font-mono text-[9px] text-gray-500 uppercase tracking-wider text-center first:text-left">{h}</span>
+                    ))}
+                  </div>
+                  {bsAi.map((row, i) => (
+                    <div key={i} className="px-5 py-2.5 grid grid-cols-6 gap-1 border-b border-gray-800">
+                      <span className="font-mono text-xs text-white truncate">{row.name.split(" ").slice(-1)[0]}</span>
+                      <span className="font-mono text-sm font-bold text-center" style={{ color: !won ? "#84cc16" : "#ef4444" }}>{row.pts}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.reb}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.ast}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.stl}</span>
+                      <span className="font-mono text-xs text-gray-300 text-center">{row.blk}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-4 mt-8 justify-center">
+                <button
+                  onClick={() => setPhase("setup")}
+                  className="px-12 py-5 font-mono font-bold uppercase tracking-[0.2em] text-base border-2 border-[#84cc16] bg-[#84cc16] text-[#111827] hover:bg-[#65a30d] transition-colors"
+                >
+                  Play Again
+                </button>
+                <button
+                  onClick={() => setPhase("rosters")}
+                  className="px-10 py-5 font-mono font-bold uppercase tracking-[0.2em] text-base border-2 border-[#84cc16] text-[#84cc16] hover:bg-[#84cc16]/10 transition-colors"
+                >
+                  View Rosters
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+        </main>
       </div>
     );
   }
