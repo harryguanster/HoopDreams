@@ -67,8 +67,8 @@ const ALLTIME_POOL: Player[] = [
 const CURRENT_POOL: Player[] = [
   // ── PG ──
   { id: "sga",      name: "Shai Gilgeous-Alexander", position: "PG", era: "2025–26", desc: "31.1 PPG · 2× MVP · OKC franchise cornerstone",          value: 9.0, off: 9.3, def: 7.8 },
-  { id: "curry_c",  name: "Stephen Curry",           position: "PG", era: "2025–26", desc: "4× Champion · all-time 3PM record · 2× unanimous MVP",    value: 8.5, off: 9.2, def: 7.0 },
-  { id: "dame_c",   name: "Damian Lillard",          position: "PG", era: "2025–26", desc: "7× All-Star · deep-range specialist · 24.7 PPG career",   value: 7.5, off: 8.0, def: 6.5 },
+  { id: "curry_c",  name: "Stephen Curry",           position: "PG", era: "2025–26", desc: "25.1 PPG · still elite shooter at 37 · all-time 3PM record", value: 7.8, off: 8.5, def: 6.2 },
+  { id: "dame_c",   name: "Damian Lillard",          position: "PG", era: "2025–26", desc: "19.8 PPG · returning from torn Achilles · Portland",      value: 6.5, off: 7.2, def: 6.0 },
   { id: "hali_c",   name: "Tyrese Haliburton",       position: "PG", era: "2025–26", desc: "22.4 PPG · 10.9 APG · Indiana's engine",                  value: 7.2, off: 7.5, def: 6.8 },
   { id: "brunson",  name: "Jalen Brunson",           position: "PG", era: "2025–26", desc: "26 PPG · 6.8 APG · Knicks engine",                        value: 7.0, off: 7.5, def: 6.5 },
   // ── SG ──
@@ -78,10 +78,10 @@ const CURRENT_POOL: Player[] = [
   { id: "dmitch_c", name: "Donovan Mitchell",        position: "SG", era: "2025–26", desc: "26.1 PPG · elite playoff performer · Spida",               value: 7.5, off: 8.0, def: 7.0 },
   { id: "dbane",    name: "Desmond Bane",            position: "SG", era: "2025–26", desc: "20.1 PPG · 3&D specialist · Orlando breakout",             value: 6.0, off: 6.8, def: 6.2 },
   // ── SF ──
-  { id: "durant_c", name: "Kevin Durant",            position: "SF", era: "2025–26", desc: "2× Champion · 2× Finals MVP · unguardable at 7 feet",     value: 8.8, off: 9.2, def: 7.5 },
+  { id: "durant_c", name: "Kevin Durant",            position: "SF", era: "2025–26", desc: "24.5 PPG · elite mid-range at 36 · less explosive than peak", value: 8.0, off: 8.5, def: 6.8 },
   { id: "tatum_c",  name: "Jayson Tatum",            position: "SF", era: "2025–26", desc: "2024 Champion · Finals MVP · Boston's cornerstone",        value: 8.5, off: 8.8, def: 7.5 },
-  { id: "kawhi_c",  name: "Kawhi Leonard",           position: "SF", era: "2025–26", desc: "2× Champion · 2× Finals MVP · two-way elite",             value: 7.8, off: 8.2, def: 8.5 },
-  { id: "lebron_c", name: "LeBron James",            position: "SF", era: "2025–26", desc: "4× Champion · 4× Finals MVP · still elite at 40+",        value: 8.0, off: 8.2, def: 7.5 },
+  { id: "kawhi_c",  name: "Kawhi Leonard",           position: "SF", era: "2025–26", desc: "20.5 PPG when healthy · load managed · Clippers",         value: 7.0, off: 7.8, def: 8.0 },
+  { id: "lebron_c", name: "LeBron James",            position: "SF", era: "2025–26", desc: "20.9 PPG · IQ still elite but athleticism declining at 41", value: 7.5, off: 7.8, def: 7.0 },
   { id: "sbarnes",  name: "Scottie Barnes",          position: "SF", era: "2025–26", desc: "18.1 PPG · 7.5 RPG · versatile two-way wing",              value: 6.5, off: 6.8, def: 7.0 },
   // ── PF ──
   { id: "giannis",  name: "Giannis Antetokounmpo",  position: "PF", era: "2025–26", desc: "27.7 PPG · 11.7 RPG · 2021 Champion · 2× MVP",            value: 9.5, off: 9.4, def: 8.5 },
