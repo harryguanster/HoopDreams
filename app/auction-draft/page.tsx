@@ -124,6 +124,17 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// Pick 2 random players per position (10 total) so every game has a fresh set
+function samplePool(pool: Player[]): Player[] {
+  const byPos: Record<Position, Player[]> = { PG: [], SG: [], SF: [], PF: [], C: [] };
+  pool.forEach(p => byPos[p.position].push(p));
+  const selected: Player[] = [];
+  for (const pos of POSITIONS) {
+    selected.push(...shuffle(byPos[pos]).slice(0, 2));
+  }
+  return shuffle(selected);
+}
+
 // Must keep $1 per remaining slot after this one
 function maxBid(budget: number, slotsLeft: number): number {
   return Math.max(0, budget - Math.max(0, slotsLeft - 1));
@@ -357,7 +368,7 @@ export default function AuctionDraftPage() {
 
   // ── Start game ───────────────────────────────────────────────────────────────
   function startGame() {
-    const q = shuffle(era === "current" ? CURRENT_POOL : ALLTIME_POOL);
+    const q = samplePool(era === "current" ? CURRENT_POOL : ALLTIME_POOL);
     setQueue(q);
     setQIdx(0);
     setUserRoster([]); setAiRoster([]);
