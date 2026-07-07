@@ -189,13 +189,13 @@ function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
   const pUser = uStrength / (uStrength + aStrength);
 
   let uScore = 0, aScore = 0;
-  while (uScore < 7 && aScore < 7) {
+  while (uScore < 4 && aScore < 4) {
     if (Math.random() < pUser) uScore++; else aScore++;
   }
 
   const uStar = userRoster.reduce((a, b) => a.player.value > b.player.value ? a : b).player;
   const aStar = aiRoster.reduce((a, b) => a.player.value > b.player.value ? a : b).player;
-  const winner = uScore === 7 ? "user" : "ai";
+  const winner = uScore === 4 ? "user" : "ai";
 
   return {
     winner: winner as "user" | "ai",
@@ -217,9 +217,9 @@ function RosterPanel({
   const [dragFrom, setDragFrom] = useState<Position | null>(null);
   return (
     <div>
-      <div className="px-5 py-4 flex items-center justify-between" style={{ background: dark ? "#111827" : "#84cc16", borderBottom: "2px solid #111827" }}>
-        <p className="font-playfair font-black" style={{ fontSize: "1rem", color: dark ? "#fff" : "#111827" }}>{title}</p>
-        <span className="font-mono font-bold" style={{ color: dark ? "#84cc16" : "#111827", fontSize: "1.1rem" }}>${budget}</span>
+      <div className="px-6 py-5 flex items-center justify-between" style={{ background: dark ? "#111827" : "#84cc16", borderBottom: "2px solid #111827" }}>
+        <p className="font-playfair font-black" style={{ fontSize: "1.15rem", color: dark ? "#fff" : "#111827" }}>{title}</p>
+        <span className="font-mono font-bold" style={{ color: dark ? "#84cc16" : "#111827", fontSize: "1.25rem" }}>${budget}</span>
       </div>
       <div>
         {POSITIONS.map(pos => {
@@ -228,7 +228,7 @@ function RosterPanel({
           return (
             <div
               key={pos}
-              className="px-5 py-3 flex items-center gap-3"
+              className="px-6 py-4 flex items-center gap-3"
               style={{
                 borderBottom: "1px solid #e5e7eb",
                 background: isTarget ? "rgba(132,204,22,0.07)" : undefined,
@@ -237,7 +237,7 @@ function RosterPanel({
               onDragOver={e => { if (onSwap) e.preventDefault(); }}
               onDrop={() => { if (onSwap && dragFrom && dragFrom !== pos) { onSwap(dragFrom, pos); setDragFrom(null); } }}
             >
-              <span className="text-[9px] font-mono font-bold w-6 shrink-0" style={{ color: POS_COLOR[pos] }}>{pos}</span>
+              <span className="text-xs font-mono font-bold w-7 shrink-0" style={{ color: POS_COLOR[pos] }}>{pos}</span>
               {s ? (
                 <div
                   className="flex items-center gap-2 flex-1 min-w-0"
@@ -246,13 +246,13 @@ function RosterPanel({
                   onDragEnd={() => setDragFrom(null)}
                   style={{ cursor: onSwap ? "grab" : "default" }}
                 >
-                  <span className="font-mono text-[9px] font-bold shrink-0" style={{ color: POS_COLOR[s.player.position] }}>{s.player.position}</span>
-                  <span className="font-mono text-xs flex-1 truncate" style={{ color: dark ? "#d1d5db" : "#111827" }}>{s.player.name}</span>
-                  {onSwap && <span className="font-mono text-[9px] text-gray-400 select-none">⠿</span>}
-                  <span className="font-mono text-[10px]" style={{ color: dark ? "#6b7280" : "#65a30d" }}>${s.paid}</span>
+                  <span className="font-mono text-[10px] font-bold shrink-0" style={{ color: POS_COLOR[s.player.position] }}>{s.player.position}</span>
+                  <span className="font-mono text-sm flex-1 truncate" style={{ color: dark ? "#d1d5db" : "#111827" }}>{s.player.name}</span>
+                  {onSwap && <span className="font-mono text-xs text-gray-400 select-none">⠿</span>}
+                  <span className="font-mono text-xs" style={{ color: dark ? "#6b7280" : "#65a30d" }}>${s.paid}</span>
                 </div>
               ) : (
-                <span className="font-mono text-xs text-gray-300">— empty</span>
+                <span className="font-mono text-sm text-gray-300">— empty</span>
               )}
             </div>
           );
@@ -547,7 +547,7 @@ export default function AuctionDraftPage() {
                 ["Budget", "$20 each — spend wisely across all 5 roster spots"],
                 ["Bidding", "You bid first. AI responds. Raise or pass each turn."],
                 ["Reserve", "Must keep $1 per remaining unfilled position"],
-                ["Win", "After the draft, your 5 players face the AI's 5 in a game to 7"],
+                ["Win", "After the draft, your 5 players face the AI's 5 in a best-of-7 playoff series"],
               ].map(([label, text]) => (
                 <div key={label} className="flex gap-4">
                   <span className="font-mono font-bold text-[10px] text-[#84cc16] uppercase tracking-wider w-14 shrink-0 pt-0.5">{label}</span>
@@ -651,7 +651,7 @@ export default function AuctionDraftPage() {
         )}
 
         <main className="max-w-screen-2xl mx-auto px-6 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-2 border-[#111827]" style={{ minHeight: 700 }}>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-2 border-[#111827]" style={{ minHeight: 860 }}>
 
             {/* Left: rosters */}
             <div style={{ borderRight: "2px solid #111827" }}>
@@ -665,58 +665,58 @@ export default function AuctionDraftPage() {
             <div className="lg:col-span-3 flex flex-col">
 
               {/* Player on the block */}
-              <div className="p-10 relative overflow-hidden" style={{ background: "#111827", borderBottom: "2px solid #111827", minHeight: 220 }}>
-                <div className="absolute -right-8 -top-8 w-56 h-56 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${POS_COLOR[player.position]}44 0%, transparent 70%)` }} />
-                <div className="flex items-start justify-between mb-5">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] px-3 py-1.5 border" style={{ borderColor: POS_COLOR[player.position], color: POS_COLOR[player.position] }}>
+              <div className="p-12 relative overflow-hidden" style={{ background: "#111827", borderBottom: "2px solid #111827", minHeight: 260 }}>
+                <div className="absolute -right-8 -top-8 w-72 h-72 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${POS_COLOR[player.position]}44 0%, transparent 70%)` }} />
+                <div className="flex items-start justify-between mb-6">
+                  <span className="text-xs font-mono font-bold uppercase tracking-[0.25em] px-4 py-2 border" style={{ borderColor: POS_COLOR[player.position], color: POS_COLOR[player.position] }}>
                     {player.position}
                   </span>
-                  <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{qIdx + 1} / {queue.length}</span>
+                  <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">{qIdx + 1} / {queue.length}</span>
                 </div>
-                <h2 className="font-playfair font-black text-white mb-2" style={{ fontSize: "clamp(2.4rem, 4.5vw, 4rem)", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                <h2 className="font-playfair font-black text-white mb-3" style={{ fontSize: "clamp(3rem, 5vw, 5rem)", letterSpacing: "-0.02em", lineHeight: 1 }}>
                   {player.name}
                 </h2>
-                <p className="font-mono text-gray-500 text-sm mb-2">{player.era}</p>
-                <p className="font-mono text-gray-300 text-base">{player.desc}</p>
+                <p className="font-mono text-gray-500 text-base mb-2">{player.era}</p>
+                <p className="font-mono text-gray-300 text-lg">{player.desc}</p>
               </div>
 
               {/* Bid status bar */}
-              <div className="flex items-center gap-10 px-10 py-5" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+              <div className="flex items-center gap-12 px-12 py-6" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
                 <div>
-                  <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1">Current Bid</p>
-                  <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "2.8rem", lineHeight: 1 }}>
+                  <p className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-1">Current Bid</p>
+                  <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "3.5rem", lineHeight: 1 }}>
                     {currentBid === 0 ? "—" : `$${currentBid}`}
                   </p>
                 </div>
                 {holder && (
                   <div>
-                    <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-1">Holds</p>
-                    <p className="font-mono font-bold text-base" style={{ color: holder === "user" ? "#84cc16" : "#ef4444" }}>
+                    <p className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-1">Holds</p>
+                    <p className="font-mono font-bold text-lg" style={{ color: holder === "user" ? "#84cc16" : "#ef4444" }}>
                       {holder === "user" ? "You" : "AI"}
                     </p>
                   </div>
                 )}
                 {canBid && isUserTurn && (
                   <div className="ml-auto text-right">
-                    <p className="text-[9px] font-mono uppercase tracking-widest text-gray-400 mb-0.5">Your cap here</p>
-                    <p className="font-mono font-bold text-[#111827]">${cap} max · ${userBudget} left · {uSlots} slots</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-0.5">Your cap here</p>
+                    <p className="font-mono font-bold text-base text-[#111827]">${cap} max · ${userBudget} left · {uSlots} slots</p>
                   </div>
                 )}
                 {!canBid && (
-                  <p className="ml-auto font-mono text-sm text-gray-400">Roster full</p>
+                  <p className="ml-auto font-mono text-base text-gray-400">Roster full</p>
                 )}
                 {auctionState === "ai_thinking" && (
-                  <p className="ml-auto font-mono text-sm text-gray-400 animate-pulse">AI is deciding…</p>
+                  <p className="ml-auto font-mono text-base text-gray-400 animate-pulse">AI is deciding…</p>
                 )}
                 {auctionState === "round_over" && roundMsg && (
-                  <p className="ml-auto font-mono text-sm font-bold" style={{ color: roundMsg.startsWith("✅") ? "#84cc16" : "#6b7280" }}>{roundMsg}</p>
+                  <p className="ml-auto font-mono text-base font-bold" style={{ color: roundMsg.startsWith("✅") ? "#84cc16" : "#6b7280" }}>{roundMsg}</p>
                 )}
               </div>
 
               {/* Bid controls */}
               {isUserTurn && (
-                <div className="px-10 py-6" style={{ borderBottom: "2px solid #111827", background: "#f4f0e6" }}>
-                  <div className="flex gap-3">
+                <div className="px-12 py-7" style={{ borderBottom: "2px solid #111827", background: "#f4f0e6" }}>
+                  <div className="flex gap-4">
                     <input
                       type="number"
                       min={currentBid + 1}
@@ -725,13 +725,13 @@ export default function AuctionDraftPage() {
                       onChange={e => setBidInput(e.target.value)}
                       onKeyDown={e => e.key === "Enter" && bidOk && handleUserBid()}
                       placeholder={`$${currentBid + 1} minimum`}
-                      className="flex-1 px-5 py-4 font-mono text-base border-2 bg-white text-[#111827] focus:outline-none"
+                      className="flex-1 px-6 py-5 font-mono text-lg border-2 bg-white text-[#111827] focus:outline-none"
                       style={{ borderColor: bidOk ? "#84cc16" : "#111827" }}
                     />
                     <button
                       onClick={handleUserBid}
                       disabled={!bidOk}
-                      className="px-10 py-4 font-mono font-bold text-base uppercase tracking-[0.1em] border-2 transition-colors"
+                      className="px-12 py-5 font-mono font-bold text-lg uppercase tracking-[0.1em] border-2 transition-colors"
                       style={bidOk
                         ? { background: "#84cc16", borderColor: "#111827", color: "#111827" }
                         : { background: "#f4f0e6", borderColor: "#d1d5db", color: "#d1d5db", cursor: "not-allowed" }}
@@ -740,7 +740,7 @@ export default function AuctionDraftPage() {
                     </button>
                     <button
                       onClick={handleUserPass}
-                      className="px-8 py-4 font-mono font-bold text-base uppercase tracking-[0.1em] border-2 border-[#111827] bg-white text-[#111827] hover:bg-gray-100 transition-colors"
+                      className="px-10 py-5 font-mono font-bold text-lg uppercase tracking-[0.1em] border-2 border-[#111827] bg-white text-[#111827] hover:bg-gray-100 transition-colors"
                     >
                       Pass
                     </button>
@@ -749,10 +749,10 @@ export default function AuctionDraftPage() {
               )}
 
               {/* Bid log */}
-              <div className="flex-1 p-6 overflow-y-auto" style={{ maxHeight: 240 }}>
-                <div className="space-y-1">
+              <div className="flex-1 p-8 overflow-y-auto" style={{ maxHeight: 280 }}>
+                <div className="space-y-2">
                   {[...log].reverse().map((entry, i) => (
-                    <p key={i} className="font-mono text-xs leading-relaxed" style={{
+                    <p key={i} className="font-mono text-sm leading-relaxed" style={{
                       color: entry.bidder === "user" ? "#65a30d" : entry.bidder === "ai" ? "#ef4444" : "#9ca3af"
                     }}>
                       {entry.bidder === "user" ? "▶ " : entry.bidder === "ai" ? "◀ " : "  "}{entry.text}
@@ -795,7 +795,7 @@ export default function AuctionDraftPage() {
               onClick={runSimulation}
               className="px-14 py-5 font-mono font-bold uppercase tracking-[0.2em] text-sm border-2 border-[#111827] bg-[#84cc16] text-[#111827] hover:bg-[#65a30d] transition-colors"
             >
-              Simulate Game to 7 →
+              Simulate Best of 7 →
             </button>
           </div>
         </main>
@@ -822,32 +822,32 @@ export default function AuctionDraftPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-6">
+          <p className="font-mono font-bold uppercase tracking-[0.35em] text-xs text-[#84cc16] mb-6">
             {won ? "Victory" : "Defeat"}
           </p>
           <h2 className="font-playfair font-black italic mb-2" style={{
-            fontSize: "clamp(4rem, 10vw, 7rem)",
+            fontSize: "clamp(5rem, 12vw, 9rem)",
             letterSpacing: "-0.03em", lineHeight: 0.88,
             color: won ? "#111827" : "#ffffff",
           }}>
             {won ? "You\nWin!" : "AI\nWins."}
           </h2>
-          <div style={{ borderTop: `2px solid ${won ? "#111827" : "#84cc16"}`, margin: "24px auto", maxWidth: 100 }} />
+          <div style={{ borderTop: `2px solid ${won ? "#111827" : "#84cc16"}`, margin: "28px auto", maxWidth: 100 }} />
 
-          <p className="font-playfair font-black mb-1" style={{ fontSize: "3.5rem", lineHeight: 1, color: "#84cc16" }}>
+          <p className="font-playfair font-black mb-2" style={{ fontSize: "4.5rem", lineHeight: 1, color: "#84cc16" }}>
             {gameResult.userScore} – {gameResult.aiScore}
           </p>
-          <p className="font-mono text-sm mb-6" style={{ color: won ? "#9ca3af" : "#6b7280" }}>Game to 7</p>
+          <p className="font-mono text-base mb-8" style={{ color: won ? "#9ca3af" : "#6b7280" }}>Best of 7 Series</p>
 
-          <div className="border-2 p-5 mb-8 text-left" style={{ borderColor: won ? "#111827" : "#84cc16" }}>
-            <p className="font-mono text-[10px] uppercase tracking-widest mb-3" style={{ color: "#84cc16" }}>Recap</p>
-            <p className="font-mono text-sm mb-1" style={{ color: won ? "#6b7280" : "#9ca3af" }}>
+          <div className="border-2 p-6 mb-10 text-left" style={{ borderColor: won ? "#111827" : "#84cc16" }}>
+            <p className="font-mono text-xs uppercase tracking-widest mb-4" style={{ color: "#84cc16" }}>Recap</p>
+            <p className="font-mono text-base mb-2" style={{ color: won ? "#6b7280" : "#9ca3af" }}>
               Your star: <strong style={{ color: won ? "#111827" : "#ffffff" }}>{gameResult.userStar}</strong>
             </p>
-            <p className="font-mono text-sm mb-3" style={{ color: won ? "#6b7280" : "#9ca3af" }}>
+            <p className="font-mono text-base mb-4" style={{ color: won ? "#6b7280" : "#9ca3af" }}>
               AI star: <strong style={{ color: won ? "#111827" : "#ffffff" }}>{gameResult.aiStar}</strong>
             </p>
-            <p className="font-mono text-sm font-bold" style={{ color: "#84cc16" }}>
+            <p className="font-mono text-base font-bold" style={{ color: "#84cc16" }}>
               MVP: {gameResult.mvp}
             </p>
           </div>
@@ -855,7 +855,7 @@ export default function AuctionDraftPage() {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => setPhase("setup")}
-              className="px-10 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm border-2 transition-colors"
+              className="px-12 py-5 font-mono font-bold uppercase tracking-[0.2em] text-base border-2 transition-colors"
               style={won
                 ? { borderColor: "#111827", background: "#111827", color: "#84cc16" }
                 : { borderColor: "#84cc16", background: "#84cc16", color: "#111827" }}
@@ -864,7 +864,7 @@ export default function AuctionDraftPage() {
             </button>
             <button
               onClick={() => setPhase("rosters")}
-              className="px-8 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm border-2 transition-colors"
+              className="px-10 py-5 font-mono font-bold uppercase tracking-[0.2em] text-base border-2 transition-colors"
               style={won
                 ? { borderColor: "#111827", background: "transparent", color: "#111827" }
                 : { borderColor: "#84cc16", background: "transparent", color: "#84cc16" }}
