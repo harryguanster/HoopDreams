@@ -23,7 +23,7 @@ interface Player {
   def: number;
 }
 
-interface RosterSlot { player: Player; paid: number; }
+interface RosterSlot { player: Player; paid: number; slot: Position; }
 
 // ─── Player Pools ──────────────────────────────────────────────────────────────
 // Values ranked on a true 1–10 scale so the bidding algorithm prices correctly.
@@ -104,6 +104,16 @@ const POS_COLOR: Record<Position, string> = {
   PG: "#84cc16", SG: "#f59e0b", SF: "#3b82f6", PF: "#8b5cf6", C: "#ef4444",
 };
 
+// Positional flexibility chain: PG ↔ SG ↔ SF ↔ PF ↔ C
+// A player can reasonably occupy their own slot or an adjacent one.
+const POS_ADJACENT: Record<Position, Position[]> = {
+  PG: ["PG", "SG"],
+  SG: ["SG", "PG", "SF"],
+  SF: ["SF", "SG", "PF"],
+  PF: ["PF", "SF", "C"],
+  C:  ["C",  "PF"],
+};
+
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -153,6 +163,21 @@ function aiTargetBid(player: Player, difficulty: Difficulty, budget: number, slo
   return t > currentBid ? currentBid + 1 : null;
 }
 
+// Can this player realistically fit the AI's roster? (checks adjacent slots)
+function aiCanFit(player: Player, roster: RosterSlot[]): boolean {
+  const filled = new Set(roster.map(r => r.slot));
+  return POS_ADJACENT[player.position].some(p => !filled.has(p));
+}
+
+// Best slot for AI to assign a player: natural position first, then adjacent
+function aiBestSlot(player: Player, roster: RosterSlot[]): Position {
+  const filled = new Set(roster.map(r => r.slot));
+  for (const pos of POS_ADJACENT[player.position]) {
+    if (!filled.has(pos)) return pos;
+  }
+  return POSITIONS.find(p => !filled.has(p))!;
+}
+
 function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
   const uOff = userRoster.reduce((s, r) => s + r.player.off, 0) / userRoster.length;
   const uDef = userRoster.reduce((s, r) => s + r.player.def, 0) / userRoster.length;
@@ -184,11 +209,12 @@ function simulateGame(userRoster: RosterSlot[], aiRoster: RosterSlot[]) {
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 function RosterPanel({
-  title, roster, budget, dark,
+  title, roster, budget, dark, onSwap,
 }: {
   title: string; roster: RosterSlot[]; budget: number; dark?: boolean;
+  onSwap?: (from: Position, to: Position) => void;
 }) {
-  const slots = Array.from({ length: 5 }, (_, i) => roster[i] ?? null);
+  const [dragFrom, setDragFrom] = useState<Position | null>(null);
   return (
     <div>
       <div className="px-5 py-4 flex items-center justify-between" style={{ background: dark ? "#111827" : "#84cc16", borderBottom: "2px solid #111827" }}>
@@ -196,21 +222,76 @@ function RosterPanel({
         <span className="font-mono font-bold" style={{ color: dark ? "#84cc16" : "#111827", fontSize: "1.1rem" }}>${budget}</span>
       </div>
       <div>
-        {slots.map((slot, i) => (
-          <div key={i} className="px-5 py-3 flex items-center gap-3" style={{ borderBottom: "1px solid #e5e7eb" }}>
-            <span className="text-[9px] font-mono font-bold w-6 shrink-0 text-gray-400">#{i + 1}</span>
-            {slot ? (
-              <>
-                <span className="font-mono text-[9px] font-bold shrink-0" style={{ color: POS_COLOR[slot.player.position] }}>{slot.player.position}</span>
-                <span className="font-mono text-xs flex-1 truncate" style={{ color: dark ? "#d1d5db" : "#111827" }}>{slot.player.name}</span>
-                <span className="font-mono text-[10px]" style={{ color: dark ? "#6b7280" : "#65a30d" }}>${slot.paid}</span>
-              </>
-            ) : (
-              <span className="font-mono text-xs text-gray-300">— empty</span>
-            )}
-          </div>
-        ))}
+        {POSITIONS.map(pos => {
+          const s = roster.find(r => r.slot === pos);
+          const isTarget = dragFrom !== null && dragFrom !== pos;
+          return (
+            <div
+              key={pos}
+              className="px-5 py-3 flex items-center gap-3"
+              style={{
+                borderBottom: "1px solid #e5e7eb",
+                background: isTarget ? "rgba(132,204,22,0.07)" : undefined,
+                outline: isTarget ? "1px dashed #84cc16" : undefined,
+              }}
+              onDragOver={e => { if (onSwap) e.preventDefault(); }}
+              onDrop={() => { if (onSwap && dragFrom && dragFrom !== pos) { onSwap(dragFrom, pos); setDragFrom(null); } }}
+            >
+              <span className="text-[9px] font-mono font-bold w-6 shrink-0" style={{ color: POS_COLOR[pos] }}>{pos}</span>
+              {s ? (
+                <div
+                  className="flex items-center gap-2 flex-1 min-w-0"
+                  draggable={!!onSwap}
+                  onDragStart={e => { e.dataTransfer.effectAllowed = "move"; setDragFrom(pos); }}
+                  onDragEnd={() => setDragFrom(null)}
+                  style={{ cursor: onSwap ? "grab" : "default" }}
+                >
+                  <span className="font-mono text-[9px] font-bold shrink-0" style={{ color: POS_COLOR[s.player.position] }}>{s.player.position}</span>
+                  <span className="font-mono text-xs flex-1 truncate" style={{ color: dark ? "#d1d5db" : "#111827" }}>{s.player.name}</span>
+                  {onSwap && <span className="font-mono text-[9px] text-gray-400 select-none">⠿</span>}
+                  <span className="font-mono text-[10px]" style={{ color: dark ? "#6b7280" : "#65a30d" }}>${s.paid}</span>
+                </div>
+              ) : (
+                <span className="font-mono text-xs text-gray-300">— empty</span>
+              )}
+            </div>
+          );
+        })}
       </div>
+    </div>
+  );
+}
+
+function PlacementModal({ player, openSlots, onPlace }: {
+  player: Player; openSlots: Position[]; onPlace: (slot: Position) => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.65)" }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="border-2 border-[#111827] bg-[#f4f0e6] p-8 max-w-sm w-full mx-4"
+      >
+        <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">Assign Position</p>
+        <p className="font-playfair font-black text-[#111827] mb-1" style={{ fontSize: "1.3rem" }}>{player.name}</p>
+        <p className="font-mono text-xs mb-1">
+          Natural slot: <span style={{ color: POS_COLOR[player.position] }}>{player.position}</span>
+          <span className="text-gray-400"> · already filled</span>
+        </p>
+        <p className="font-mono text-xs text-gray-400 mb-6">Choose an open slot. Drag players to rearrange after drafting.</p>
+        <div className="flex flex-col gap-2">
+          {openSlots.map(pos => (
+            <button
+              key={pos}
+              onClick={() => onPlace(pos)}
+              className="flex items-center gap-3 px-4 py-3 border-2 border-[#111827] bg-white hover:bg-[#84cc16] transition-colors font-mono font-bold text-sm"
+            >
+              <span style={{ color: POS_COLOR[pos] }}>{pos}</span>
+              <span className="text-[#111827]">Place at {pos}</span>
+            </button>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }
@@ -236,6 +317,7 @@ export default function AuctionDraftPage() {
   const [roundMsg, setRoundMsg] = useState("");
 
   const [gameResult, setGameResult] = useState<ReturnType<typeof simulateGame> | null>(null);
+  const [pendingPlayer, setPendingPlayer] = useState<{ player: Player; paid: number } | null>(null);
 
   // Refs for stable access inside timers
   const stateRef = useRef({ userRoster, aiRoster, userBudget, aiBudget, currentBid, holder, qIdx, queue, difficulty });
@@ -255,6 +337,7 @@ export default function AuctionDraftPage() {
     setCurrentBid(0); setHolder(null);
     setBidInput(""); setLog([]); setRoundMsg("");
     setGameResult(null);
+    setPendingPlayer(null);
     setPhase("auction");
 
     // Begin first round immediately
@@ -300,8 +383,9 @@ export default function AuctionDraftPage() {
       // User passes opening — AI claims it for $1 if they have room
       const { aiRoster: aR, aiBudget: aB, userRoster: uR, userBudget: uB } = stateRef.current;
       const player = stateRef.current.queue[stateRef.current.qIdx];
-      if (aR.length < 5) {
-        const newAiRoster = [...aR, { player, paid: 1 }];
+      if (aR.length < 5 && aiCanFit(player, aR)) {
+        const slot = aiBestSlot(player, aR);
+        const newAiRoster = [...aR, { player, paid: 1, slot }];
         const newAiBudget = aB - 1;
         setAiRoster(newAiRoster);
         setAiBudget(newAiBudget);
@@ -327,9 +411,8 @@ export default function AuctionDraftPage() {
       const player = q[qi];
       if (!player) return;
 
-      if (aR.length >= 5) {
-        // AI roster is full
-        appendLog({ bidder: "ai", text: "AI passes (roster full)." });
+      if (aR.length >= 5 || !aiCanFit(player, aR)) {
+        appendLog({ bidder: "ai", text: "AI passes." });
         if (h === "user") awardToUser();
         else advanceRound(uR, aR, uB, aB);
         return;
@@ -358,24 +441,54 @@ export default function AuctionDraftPage() {
 
   // ── Award helpers ─────────────────────────────────────────────────────────────
   function awardToUser() {
-    const { currentBid: cb, userRoster: uR, userBudget: uB, aiRoster: aR, aiBudget: aB, queue: q, qIdx: qi } = stateRef.current;
+    const { currentBid: cb, userRoster: uR, userBudget: uB, queue: q, qIdx: qi } = stateRef.current;
     const player = q[qi];
     const paid = Math.max(1, cb);
-    const newRoster = [...uR, { player, paid }];
-    const newBudget = uB - paid;
-    setUserRoster(newRoster);
-    setUserBudget(newBudget);
     appendLog({ bidder: "sys", text: `✅ You win ${player.name} for $${paid}!` });
     setRoundMsg(`You win ${player.name} for $${paid}!`);
     setAuctionState("round_over");
-    setTimeout(() => advanceRound(newRoster, aR, newBudget, aB), 1500);
+
+    const filledSlots = new Set(uR.map(r => r.slot));
+    if (!filledSlots.has(player.position)) {
+      // Natural slot open — auto-assign and advance
+      const newRoster = [...uR, { player, paid, slot: player.position }];
+      const newBudget = uB - paid;
+      setUserRoster(newRoster);
+      setUserBudget(newBudget);
+      setTimeout(() => {
+        const { aiRoster: aR, aiBudget: aB } = stateRef.current;
+        advanceRound(newRoster, aR, newBudget, aB);
+      }, 1500);
+    } else {
+      // Natural slot taken — show placement modal, wait for user to choose
+      setPendingPlayer({ player, paid });
+    }
+  }
+
+  function handlePlacement(slot: Position) {
+    if (!pendingPlayer) return;
+    const { player, paid } = pendingPlayer;
+    const { userRoster: uR, userBudget: uB, aiRoster: aR, aiBudget: aB } = stateRef.current;
+    const newRoster = [...uR, { player, paid, slot }];
+    const newBudget = uB - paid;
+    setUserRoster(newRoster);
+    setUserBudget(newBudget);
+    setPendingPlayer(null);
+    setTimeout(() => advanceRound(newRoster, aR, newBudget, aB), 500);
+  }
+
+  function handleRosterSwap(from: Position, to: Position) {
+    setUserRoster(r => r.map(s =>
+      s.slot === from ? { ...s, slot: to } : s.slot === to ? { ...s, slot: from } : s
+    ));
   }
 
   function awardToAi() {
     const { currentBid: cb, aiRoster: aR, aiBudget: aB, userRoster: uR, userBudget: uB, queue: q, qIdx: qi } = stateRef.current;
     const player = q[qi];
     const paid = Math.max(1, cb);
-    const newRoster = [...aR, { player, paid }];
+    const slot = aiBestSlot(player, aR);
+    const newRoster = [...aR, { player, paid, slot }];
     const newBudget = aB - paid;
     setAiRoster(newRoster);
     setAiBudget(newBudget);
@@ -521,16 +634,28 @@ export default function AuctionDraftPage() {
     const bidOk = bidNum >= 1 && bidNum > currentBid && bidNum <= cap;
     const isUserTurn = (auctionState === "user_act") && canBid;
 
+    // Open slots for the placement modal
+    const filledUserSlots = new Set(userRoster.map(r => r.slot));
+    const openUserSlots = POSITIONS.filter(p => !filledUserSlots.has(p));
+
     return (
       <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
         <GameHeader title="Auction Draft" />
+
+        {pendingPlayer && (
+          <PlacementModal
+            player={pendingPlayer.player}
+            openSlots={openUserSlots}
+            onPlace={handlePlacement}
+          />
+        )}
 
         <main className="max-w-screen-2xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 border-2 border-[#111827]" style={{ minHeight: 700 }}>
 
             {/* Left: rosters */}
             <div style={{ borderRight: "2px solid #111827" }}>
-              <RosterPanel title="Your Squad" roster={userRoster} budget={userBudget} />
+              <RosterPanel title="Your Squad" roster={userRoster} budget={userBudget} onSwap={handleRosterSwap} />
               <div style={{ borderTop: "2px solid #111827" }}>
                 <RosterPanel title="AI Squad" roster={aiRoster} budget={aiBudget} dark />
               </div>
@@ -655,41 +780,13 @@ export default function AuctionDraftPage() {
             </h2>
           </div>
 
+          <p className="font-mono text-xs text-gray-400 text-center mb-4">Drag players on your squad to rearrange positions before simulating.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-2 border-[#111827] mb-10">
             <div style={{ borderRight: "2px solid #111827" }}>
-              <div className="p-5" style={{ background: "#84cc16", borderBottom: "2px solid #111827" }}>
-                <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.3rem" }}>Your Squad</p>
-                <p className="font-mono text-[10px] text-[#111827]/60 mt-0.5">${BUDGET - userBudget} spent · ${userBudget} left</p>
-              </div>
-              {userRoster.length === 0 && <p className="p-5 font-mono text-sm text-gray-400">No players drafted.</p>}
-              {userRoster.map(slot => (
-                <div key={slot.player.id} className="p-4 flex items-center gap-3" style={{ borderBottom: "1px solid #e5e7eb" }}>
-                  <span className="text-[9px] font-mono font-bold w-6 shrink-0" style={{ color: POS_COLOR[slot.player.position] }}>{slot.player.position}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-playfair font-black text-[#111827] truncate" style={{ fontSize: "1rem" }}>{slot.player.name}</p>
-                    <p className="font-mono text-gray-400 text-[10px]">{slot.player.era}</p>
-                  </div>
-                  <span className="font-mono font-bold text-sm text-[#84cc16]">${slot.paid}</span>
-                </div>
-              ))}
+              <RosterPanel title="Your Squad" roster={userRoster} budget={userBudget} onSwap={handleRosterSwap} />
             </div>
-
             <div>
-              <div className="p-5" style={{ background: "#111827", borderBottom: "2px solid #111827" }}>
-                <p className="font-playfair font-black text-white" style={{ fontSize: "1.3rem" }}>AI Squad</p>
-                <p className="font-mono text-[10px] text-gray-400 mt-0.5">${BUDGET - aiBudget} spent · ${aiBudget} left</p>
-              </div>
-              {aiRoster.length === 0 && <p className="p-5 font-mono text-sm text-gray-400">No players drafted.</p>}
-              {aiRoster.map(slot => (
-                <div key={slot.player.id} className="p-4 flex items-center gap-3" style={{ borderBottom: "1px solid #e5e7eb" }}>
-                  <span className="text-[9px] font-mono font-bold w-6 shrink-0" style={{ color: POS_COLOR[slot.player.position] }}>{slot.player.position}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-playfair font-black text-[#111827] truncate" style={{ fontSize: "1rem" }}>{slot.player.name}</p>
-                    <p className="font-mono text-gray-400 text-[10px]">{slot.player.era}</p>
-                  </div>
-                  <span className="font-mono font-bold text-sm text-gray-400">${slot.paid}</span>
-                </div>
-              ))}
+              <RosterPanel title="AI Squad" roster={aiRoster} budget={aiBudget} dark />
             </div>
           </div>
 
