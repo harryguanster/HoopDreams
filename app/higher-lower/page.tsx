@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@clerk/nextjs";
 import GameHeader from "@/app/components/GameHeader";
 import { HL_CATEGORIES, type HLCategory, type HLPlayer } from "@/lib/higherLowerData";
 
@@ -36,6 +37,8 @@ function saveBest(categoryId: string, streak: number) {
 type Phase = "idle" | "guessing" | "revealed" | "wrong";
 
 export default function HigherLowerPage() {
+  const { user } = useUser();
+  const userName = user?.firstName || user?.username || null;
   const [catIdx, setCatIdx] = useState(0);
   const [deck, setDeck] = useState<HLPlayer[]>([]);
   const [deckIdx, setDeckIdx] = useState(0);
@@ -167,7 +170,9 @@ export default function HigherLowerPage() {
               <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">{category.description}</p>
             </div>
             <div className="text-right">
-              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">Best Streak</p>
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">
+                {userName ? `${userName}'s Best` : "Best Streak"}
+              </p>
               <div className="font-playfair font-black tabular-nums" style={{ fontSize: "3rem", color: "#6b7280", lineHeight: 1 }}>{best}</div>
             </div>
           </div>

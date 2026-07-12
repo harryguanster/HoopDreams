@@ -394,6 +394,43 @@ export default function AuctionDraftPage() {
     setBidInput("");
     setLog([{ bidder: "sys", text: `🏀 Now up: ${player.name} (${player.position}) · ${player.era}` }]);
     setRoundMsg("");
+
+    const uFull = uRoster.length >= 5;
+    const aFull = aRoster.length >= 5;
+
+    if (uFull && aFull) {
+      // Both rosters done — end auction
+      setPhase("rosters");
+      return;
+    }
+
+    if (uFull) {
+      // User is full — auto-give to AI for $1 if it fits, else skip
+      if (aiCanFit(player, aRoster) && aRoster.length < 5) {
+        const slot = aiBestSlot(player, aRoster);
+        const newAiRoster = [...aRoster, { player, paid: 1, slot }];
+        const newAiBudget = aBudget - 1;
+        setAiRoster(newAiRoster);
+        setAiBudget(newAiBudget);
+        appendLog({ bidder: "sys", text: `Roster full — AI claims ${player.name} for $1.` });
+        setRoundMsg(`AI claims ${player.name} for $1 (your roster is full).`);
+        setAuctionState("round_over");
+        setTimeout(() => advanceRound(uRoster, newAiRoster, uBudget, newAiBudget), 1200);
+      } else {
+        appendLog({ bidder: "sys", text: `Skipping ${player.name} — no room on either roster.` });
+        setAuctionState("round_over");
+        setTimeout(() => advanceRound(uRoster, aRoster, uBudget, aBudget), 800);
+      }
+      return;
+    }
+
+    if (aFull) {
+      // AI is full — user bids uncontested, just set user_act (AI will auto-pass in ai_thinking)
+      setAuctionState("user_act");
+      appendLog({ bidder: "sys", text: `AI roster full — bid uncontested.` });
+      return;
+    }
+
     setAuctionState("user_act");
   }
 
@@ -422,7 +459,7 @@ export default function AuctionDraftPage() {
       // User passes opening — AI claims it for $1 if they have room
       const { aiRoster: aR, aiBudget: aB, userRoster: uR, userBudget: uB } = stateRef.current;
       const player = stateRef.current.queue[stateRef.current.qIdx];
-      if (aR.length < 5 && aiCanFit(player, aR)) {
+      if (aR.length < 5 && aiCanFit(player, aR) && aB >= 1) {
         const slot = aiBestSlot(player, aR);
         const newAiRoster = [...aR, { player, paid: 1, slot }];
         const newAiBudget = aB - 1;
