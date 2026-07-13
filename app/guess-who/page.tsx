@@ -40,6 +40,14 @@ function compareHeight(guess: number, answer: number): CellColor {
   if (guess === answer) return "green";
   return Math.abs(guess - answer) <= 1 ? "yellow" : "gray";
 }
+function comparePosition(g: string, a: string): CellColor {
+  if (g === a) return "green";
+  const guards = ["PG","SG"], forwards = ["SF","PF"], bigs = ["PF","C"];
+  if ((guards.includes(g) && guards.includes(a)) ||
+      (forwards.includes(g) && forwards.includes(a)) ||
+      (bigs.includes(g) && bigs.includes(a))) return "yellow";
+  return "gray";
+}
 function formatHeight(inches: number): string {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
 }
@@ -118,18 +126,18 @@ function getArrow(guess: number, answer: number): "up" | "down" | null {
 const CELL_STYLES: Record<CellColor, React.CSSProperties> = {
   green:  { background: "#84cc16", color: "white" },
   yellow: { background: "#f59e0b", color: "white" },
-  gray:   { background: "#f4f0e6", color: "#aaa49b", border: "1px solid #ddd8cc" },
+  gray:   { background: "#ede9e0", color: "#888" },
 };
 
 function StatCell({ value, color, arrow }: { value: string; color: CellColor; arrow?: "up"|"down"|null }) {
   return (
     <div
       className="flex flex-col items-center justify-center text-center"
-      style={{ height: 76, borderRadius: 5, ...CELL_STYLES[color] }}
+      style={{ height: 62, borderRadius: 4, ...CELL_STYLES[color] }}
     >
-      <span className="font-playfair font-black leading-none" style={{ fontSize: "1.05rem" }}>{value}</span>
+      <span className="font-playfair font-black leading-none" style={{ fontSize: "0.95rem" }}>{value}</span>
       {arrow && (
-        <span className="font-mono font-bold leading-none mt-1" style={{ fontSize: "0.7rem" }}>
+        <span className="font-mono font-bold leading-none mt-0.5" style={{ fontSize: "0.65rem" }}>
           {arrow === "up" ? "↑" : "↓"}
         </span>
       )}
@@ -177,15 +185,20 @@ function PlayerFace({ player }: { player: CurrentNBAPlayer }) {
 }
 
 // ── Grid layout ────────────────────────────────────────────────────────────────
+// Columns: Name | Team | Conf | Div | Pos | PPG | RPG | APG | Height | Age | #
 
-const GRID_COLS = "minmax(180px,3fr) repeat(12,minmax(0,1fr))";
+const GRID_COLS = "minmax(160px,2.5fr) repeat(10,minmax(0,1fr))";
 
 function GuessTableHeader() {
-  const cols = ["PLAYER","TEAM","CONF","DIV","PPG","RPG","APG","SPG","BPG","HT","AGE","DRFT","#"];
+  const cols = ["Name","Team","Conf","Div","Pos","PPG","RPG","APG","Height","Age","#"];
   return (
-    <div className="grid gap-2 pb-2" style={{ gridTemplateColumns: GRID_COLS, borderBottom: "2px solid #111827" }}>
+    <div className="grid gap-1.5" style={{ gridTemplateColumns: GRID_COLS, borderBottom: "2px solid #111827", paddingBottom: 8 }}>
       {cols.map((c, i) => (
-        <div key={c} className={`font-mono font-bold uppercase tracking-widest text-[10px] ${i === 0 ? "pl-3" : "text-center"}`} style={{ color: "#84cc16" }}>
+        <div
+          key={c}
+          className={`font-mono font-bold uppercase tracking-widest ${i === 0 ? "pl-2" : "text-center"}`}
+          style={{ fontSize: "10px", color: "#111827" }}
+        >
           {c}
         </div>
       ))}
@@ -196,10 +209,15 @@ function GuessTableHeader() {
 function EmptyRow({ num }: { num: number }) {
   return (
     <div
-      className="flex items-center px-4"
-      style={{ height: 76, background: "#f4f0e6", border: "1px solid #ddd8cc", borderRadius: 5 }}
+      className="flex items-center justify-center"
+      style={{
+        height: 62,
+        border: "2px dashed #ccc8bc",
+        borderRadius: 4,
+        background: "transparent",
+      }}
     >
-      <span className="font-playfair font-black" style={{ fontSize: "1.5rem", color: "#e0dbd0" }}>{num}</span>
+      <span className="font-mono font-bold" style={{ color: "#ccc8bc", fontSize: "0.85rem" }}>{num}</span>
     </div>
   );
 }
@@ -210,28 +228,26 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
   const ppgC = compareStat(guess.ppg, answer.ppg, 4);
   const rpgC = compareStat(guess.rpg, answer.rpg, 2);
   const apgC = compareStat(guess.apg, answer.apg, 2);
-  const spgC = compareStat(guess.spg, answer.spg, 0.5);
-  const bpgC = compareStat(guess.bpg, answer.bpg, 0.5);
   const htC  = compareHeight(guess.height, answer.height);
   const ageC = compareAge(guess.age, answer.age);
-  const drfC = compareDraftYear(guess.draftYear, answer.draftYear);
+  const posC = comparePosition(guess.position, answer.position);
 
   return (
-    <div className="grid gap-2" style={{ gridTemplateColumns: GRID_COLS }}>
+    <div className="grid gap-1.5" style={{ gridTemplateColumns: GRID_COLS }}>
       {/* Name cell */}
       <div
-        className="flex items-center gap-3 px-3"
+        className="flex items-center gap-2.5 px-3"
         style={{
-          height: 76, borderRadius: 5,
+          height: 62, borderRadius: 4,
           background: isCorrect ? "#84cc16" : "white",
           color: isCorrect ? "white" : "#111827",
-          border: isCorrect ? "2px solid #84cc16" : "2px solid #111827",
+          border: `2px solid ${isCorrect ? "#84cc16" : "#111827"}`,
         }}
       >
         <PlayerFace player={guess} />
         <div className="min-w-0 flex-1">
-          <p className="font-mono font-bold leading-tight truncate" style={{ fontSize: "0.78rem" }}>{guess.name}</p>
-          <p className="font-mono leading-tight truncate" style={{ fontSize: "0.68rem", color: isCorrect ? "rgba(255,255,255,0.75)" : "#9ca3af" }}>
+          <p className="font-mono font-bold leading-tight truncate" style={{ fontSize: "0.75rem" }}>{guess.name}</p>
+          <p className="font-mono leading-tight truncate" style={{ fontSize: "0.65rem", color: isCorrect ? "rgba(255,255,255,0.7)" : "#9ca3af" }}>
             {getTeamAbbr(guess.team)}
           </p>
         </div>
@@ -239,18 +255,12 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
       <StatCell value={getTeamAbbr(guess.team)} color={compareTeam(guess.team, answer.team)} />
       <StatCell value={getConference(guess.team) === "East" ? "E" : "W"} color={compareConference(guess.team, answer.team)} />
       <StatCell value={DIVISION_ABBR[getDivision(guess.team)] ?? "?"} color={compareDivisionFn(guess.team, answer.team)} />
+      <StatCell value={guess.position} color={posC} />
       <StatCell value={`${guess.ppg}`} color={ppgC} arrow={af(guess.ppg, answer.ppg, ppgC)} />
       <StatCell value={`${guess.rpg}`} color={rpgC} arrow={af(guess.rpg, answer.rpg, rpgC)} />
       <StatCell value={`${guess.apg}`} color={apgC} arrow={af(guess.apg, answer.apg, apgC)} />
-      <StatCell value={`${guess.spg}`} color={spgC} arrow={af(guess.spg, answer.spg, spgC)} />
-      <StatCell value={`${guess.bpg}`} color={bpgC} arrow={af(guess.bpg, answer.bpg, bpgC)} />
       <StatCell value={formatHeight(guess.height)} color={htC} arrow={af(guess.height, answer.height, htC)} />
       <StatCell value={`${guess.age}`} color={ageC} arrow={af(guess.age, answer.age, ageC)} />
-      <StatCell
-        value={guess.draftYear ? `'${String(guess.draftYear).slice(2)}` : "UD"}
-        color={drfC}
-        arrow={guess.draftYear && answer.draftYear ? af(guess.draftYear, answer.draftYear, drfC) : null}
-      />
       <StatCell value={`#${guess.jersey}`} color={guess.jersey === answer.jersey ? "green" : "gray"} />
     </div>
   );
@@ -429,93 +439,86 @@ function WordleGame({ players, playerNames }: { players: CurrentNBAPlayer[]; pla
 
   // ── Game screen ───────────────────────────────────────────────────────────
   return (
-    <main className="flex-1 flex flex-col px-6 py-6 w-full max-w-7xl mx-auto">
+    <main className="flex-1 flex flex-col px-6 py-8 w-full max-w-5xl mx-auto">
 
-      {/* Header + input + legend — all one bordered block */}
-      <div className="w-full border-2 border-[#111827] mb-5">
-
-        {/* Top bar: title + streak */}
-        <div className="flex items-center justify-between gap-4 px-6 py-5" style={{ background: "#111827" }}>
-          <div>
-            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">
-              {guesses.length === 0
-                ? "Current Players · 2025–26 · Guess the mystery player"
-                : `${MAX_GUESSES - guesses.length} guess${MAX_GUESSES - guesses.length === 1 ? "" : "es"} remaining`}
+      {/* Title + streak row */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <p className="font-mono font-bold uppercase tracking-[0.3em] text-[10px] mb-1" style={{ color: "#84cc16" }}>
+            Current Players · 2025–26
+          </p>
+          <h1 className="font-playfair font-black italic" style={{ fontSize: "clamp(2rem,4vw,2.6rem)", letterSpacing: "-0.03em", lineHeight: 0.95, color: "#111827" }}>
+            Who Am I?
+          </h1>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="text-center">
+            <p className="font-mono font-bold uppercase tracking-[0.2em] text-[9px] mb-1" style={{ color: "#aaa" }}>Streak</p>
+            <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2rem", color: "#84cc16", lineHeight: 1 }}>{streak}</p>
+          </div>
+          <div className="text-center">
+            <p className="font-mono font-bold uppercase tracking-[0.2em] text-[9px] mb-1" style={{ color: "#aaa" }}>
+              {userName ? `${userName}'s Best` : "Best"}
             </p>
-            <h1 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2.2rem,4vw,2.8rem)", letterSpacing: "-0.03em", lineHeight: 0.95 }}>
-              Who Am I?
-            </h1>
-          </div>
-
-          {/* Streak leaderboard */}
-          <div className="flex items-stretch gap-0 border-2 border-[#ffffff18] shrink-0">
-            <div className="flex flex-col items-center justify-center px-6 py-3" style={{ borderRight: "1px solid rgba(255,255,255,0.12)" }}>
-              <p className="font-mono font-bold uppercase tracking-[0.2em] text-[9px] text-gray-500 mb-1">Streak</p>
-              <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2.2rem", color: "#84cc16", lineHeight: 1 }}>{streak}</p>
-            </div>
-            <div className="flex flex-col items-center justify-center px-6 py-3">
-              <p className="font-mono font-bold uppercase tracking-[0.2em] text-[9px] text-gray-500 mb-1">
-                {userName ? `${userName}'s Best` : "Best"}
-              </p>
-              <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2.2rem", color: "#6b7280", lineHeight: 1 }}>{best}</p>
-            </div>
+            <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2rem", color: "#6b7280", lineHeight: 1 }}>{best}</p>
           </div>
         </div>
+      </div>
 
-        {/* Input row */}
-        <div className="flex gap-0" style={{ borderTop: "2px solid #111827" }}>
-          <div className="flex-1">
-            <PlayerAutocomplete
-              players={playerNames}
-              value={inputVal}
-              onChange={v => { setInputVal(v); setError(""); }}
-              onSubmit={checkGuess}
-              autoFocus
-            />
-          </div>
-          <button
-            onClick={checkGuess}
-            disabled={!inputVal.trim()}
-            className="px-8 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-l-2 border-[#111827] transition-colors shrink-0"
-            style={inputVal.trim()
-              ? { background: "#84cc16", color: "#111827" }
-              : { background: "#f4f0e6", color: "#d1d5db", cursor: "not-allowed" }}
-          >
-            Guess
-          </button>
-          <button
-            onClick={() => setGaveUp(true)}
-            className="px-6 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-l-2 border-[#111827] bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
-          >
-            Give Up
-          </button>
+      {/* Input bar */}
+      <div className="flex border-2 border-[#111827] mb-2">
+        <div className="flex-1">
+          <PlayerAutocomplete
+            players={playerNames}
+            value={inputVal}
+            onChange={v => { setInputVal(v); setError(""); }}
+            onSubmit={checkGuess}
+            autoFocus
+          />
         </div>
+        <button
+          onClick={checkGuess}
+          disabled={!inputVal.trim()}
+          className="px-7 py-3 font-mono font-bold text-sm uppercase tracking-[0.1em] border-l-2 border-[#111827] transition-colors shrink-0"
+          style={inputVal.trim()
+            ? { background: "#84cc16", color: "#111827" }
+            : { background: "#f4f0e6", color: "#ccc", cursor: "not-allowed" }}
+        >
+          Guess
+        </button>
+        <button
+          onClick={() => setGaveUp(true)}
+          className="px-5 py-3 font-mono font-bold text-sm uppercase tracking-[0.1em] border-l-2 border-[#111827] text-gray-400 hover:text-red-500 transition-colors shrink-0"
+          style={{ background: "white" }}
+        >
+          Give Up
+        </button>
+      </div>
 
-        {/* Legend */}
-        <div className="flex gap-6 px-6 py-3" style={{ borderTop: "2px solid #111827", background: "#f4f0e6" }}>
-          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500">
-            <span className="w-3 h-3 rounded-sm inline-block" style={{ background: "#84cc16" }} /> Match
-          </span>
-          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500">
-            <span className="w-3 h-3 rounded-sm inline-block" style={{ background: "#f59e0b" }} /> Close
-          </span>
-          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-gray-500">
-            <span className="w-3 h-3 rounded-sm inline-block bg-gray-200" /> Off
-          </span>
-          <span className="font-mono text-[10px] text-gray-400">↑↓ = direction</span>
-        </div>
+      {/* Legend */}
+      <div className="flex gap-5 mb-5">
+        <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide" style={{ color: "#888" }}>
+          <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: "#84cc16" }} /> Match
+        </span>
+        <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide" style={{ color: "#888" }}>
+          <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: "#f59e0b" }} /> Close
+        </span>
+        <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide" style={{ color: "#888" }}>
+          <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: "#ede9e0" }} /> Off
+        </span>
+        <span className="font-mono text-[10px]" style={{ color: "#bbb" }}>↑↓ direction</span>
       </div>
 
       {/* Error */}
       <AnimatePresence>
         {error && (
           <motion.p
-            className="w-full font-mono text-xs mb-4 border-2 border-[#ef4444] px-4 py-3 text-center"
-            style={{ color: "#ef4444", background: "#f4f0e6" }}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: [0, -6, 6, -4, 4, 0] }}
+            className="w-full font-mono text-xs mb-3 px-4 py-2.5 text-center border border-red-300"
+            style={{ color: "#ef4444", background: "#fff5f5", borderRadius: 4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, x: [0, -5, 5, -3, 3, 0] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.35 }}
           >
             {error}
           </motion.p>
@@ -524,23 +527,25 @@ function WordleGame({ players, playerNames }: { players: CurrentNBAPlayer[]; pla
 
       {/* Guess grid */}
       <div className="w-full overflow-x-auto">
-        <div className="flex flex-col gap-2" style={{ minWidth: "1020px" }}>
+        <div className="flex flex-col gap-1.5" style={{ minWidth: "820px" }}>
           <GuessTableHeader />
-          <AnimatePresence initial={false}>
-            {guesses.map((g, i) => (
-              <motion.div
-                key={`${g.id}-${i}`}
-                initial={{ opacity: 0, y: -16, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              >
-                <GuessRow guess={g} answer={answer} />
-              </motion.div>
+          <div className="mt-2 flex flex-col gap-1.5">
+            <AnimatePresence initial={false}>
+              {guesses.map((g, i) => (
+                <motion.div
+                  key={`${g.id}-${i}`}
+                  initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                >
+                  <GuessRow guess={g} answer={answer} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {Array.from({ length: Math.max(0, MAX_GUESSES - guesses.length) }).map((_, i) => (
+              <EmptyRow key={i} num={guesses.length + i + 1} />
             ))}
-          </AnimatePresence>
-          {Array.from({ length: Math.max(0, MAX_GUESSES - guesses.length) }).map((_, i) => (
-            <EmptyRow key={i} num={guesses.length + i + 1} />
-          ))}
+          </div>
         </div>
       </div>
     </main>
