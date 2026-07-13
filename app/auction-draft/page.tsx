@@ -375,7 +375,6 @@ export default function AuctionDraftPage() {
     setUserBudget(BUDGET); setAiBudget(BUDGET);
     setCurrentBid(0); setHolder(null);
     setBidInput(""); setLog([]); setRoundMsg("");
-    setGameResult(null);
     setPendingPlayer(null);
     setPhase("auction");
 
