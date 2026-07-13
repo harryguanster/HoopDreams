@@ -96,12 +96,23 @@ const GAMES = [
     href: "/auction-draft",
     title: "Auction Draft",
     desc: "Bid on all-time legends against an AI. Build your dream team, then play a game to 7.",
-    tag: "New",
+    tag: "Strategy",
     bg: "#84cc16",
     textColor: "#111827",
     hoverBg: "#65a30d",
     tagBorderColor: "#111827",
     tagTextColor: "#111827",
+  },
+  {
+    href: "/snake-draft",
+    title: "Draft Duel",
+    desc: "Snake draft 5 legends, then battle through a 3-round bracket. Win 3 of 5 stat categories to advance.",
+    tag: "New",
+    bg: "#111827",
+    textColor: "#ffffff",
+    hoverBg: "#1f2937",
+    tagBorderColor: "#84cc16",
+    tagTextColor: "#84cc16",
   },
 ];
 
@@ -277,7 +288,7 @@ export default function GamesPage() {
                 Test your<br />NBA brain.
               </h1>
               <p className="font-mono text-[#111827]/60 text-sm leading-relaxed">
-                Seven game modes. Daily challenges. Infinite streak. All free.
+                Eight game modes. Daily challenges. Infinite streak. All free.
               </p>
             </div>
             <div className="relative z-10 mt-8 pt-6" style={{ borderTop: "1px solid rgba(0,0,0,0.15)" }}>
@@ -304,7 +315,7 @@ export default function GamesPage() {
             ))}
           </div>
           {/* Row 2: remaining games */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-0" style={{ border: "2px solid #111827" }}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0" style={{ border: "2px solid #111827" }}>
             {GAMES.slice(4).map((g, i) => (
               <div key={g.href} style={{ borderRight: i < GAMES.slice(4).length - 1 ? "2px solid #111827" : undefined }}>
                 <SmallCard game={g} />
