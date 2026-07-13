@@ -133,11 +133,11 @@ function StatCell({ value, color, arrow }: { value: string; color: CellColor; ar
   return (
     <div
       className="flex flex-col items-center justify-center text-center"
-      style={{ height: 62, borderRadius: 4, ...CELL_STYLES[color] }}
+      style={{ height: 80, borderRadius: 5, ...CELL_STYLES[color] }}
     >
-      <span className="font-playfair font-black leading-none" style={{ fontSize: "0.95rem" }}>{value}</span>
+      <span className="font-playfair font-black leading-none" style={{ fontSize: "1.1rem" }}>{value}</span>
       {arrow && (
-        <span className="font-mono font-bold leading-none mt-0.5" style={{ fontSize: "0.65rem" }}>
+        <span className="font-mono font-bold leading-none mt-1" style={{ fontSize: "0.75rem" }}>
           {arrow === "up" ? "↑" : "↓"}
         </span>
       )}
@@ -197,7 +197,7 @@ function GuessTableHeader() {
         <div
           key={c}
           className={`font-mono font-bold uppercase tracking-widest ${i === 0 ? "pl-2" : "text-center"}`}
-          style={{ fontSize: "10px", color: "#111827" }}
+          style={{ fontSize: "11px", color: "#111827" }}
         >
           {c}
         </div>
@@ -211,13 +211,13 @@ function EmptyRow({ num }: { num: number }) {
     <div
       className="flex items-center justify-center"
       style={{
-        height: 62,
+        height: 80,
         border: "2px dashed #ccc8bc",
-        borderRadius: 4,
+        borderRadius: 5,
         background: "transparent",
       }}
     >
-      <span className="font-mono font-bold" style={{ color: "#ccc8bc", fontSize: "0.85rem" }}>{num}</span>
+      <span className="font-mono font-bold" style={{ color: "#ccc8bc", fontSize: "1rem" }}>{num}</span>
     </div>
   );
 }
@@ -236,9 +236,9 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
     <div className="grid gap-1.5" style={{ gridTemplateColumns: GRID_COLS }}>
       {/* Name cell */}
       <div
-        className="flex items-center gap-2.5 px-3"
+        className="flex items-center gap-3 px-4"
         style={{
-          height: 62, borderRadius: 4,
+          height: 80, borderRadius: 5,
           background: isCorrect ? "#84cc16" : "white",
           color: isCorrect ? "white" : "#111827",
           border: `2px solid ${isCorrect ? "#84cc16" : "#111827"}`,
@@ -246,8 +246,8 @@ function GuessRow({ guess, answer }: { guess: CurrentNBAPlayer; answer: CurrentN
       >
         <PlayerFace player={guess} />
         <div className="min-w-0 flex-1">
-          <p className="font-mono font-bold leading-tight truncate" style={{ fontSize: "0.75rem" }}>{guess.name}</p>
-          <p className="font-mono leading-tight truncate" style={{ fontSize: "0.65rem", color: isCorrect ? "rgba(255,255,255,0.7)" : "#9ca3af" }}>
+          <p className="font-mono font-bold leading-tight truncate" style={{ fontSize: "0.85rem" }}>{guess.name}</p>
+          <p className="font-mono leading-tight truncate" style={{ fontSize: "0.72rem", color: isCorrect ? "rgba(255,255,255,0.7)" : "#9ca3af" }}>
             {getTeamAbbr(guess.team)}
           </p>
         </div>
@@ -439,7 +439,7 @@ function WordleGame({ players, playerNames }: { players: CurrentNBAPlayer[]; pla
 
   // ── Game screen ───────────────────────────────────────────────────────────
   return (
-    <main className="flex-1 flex flex-col px-6 py-8 w-full max-w-5xl mx-auto">
+    <main className="flex-1 flex flex-col px-8 py-8 w-full max-w-7xl mx-auto">
 
       {/* Title + streak row */}
       <div className="flex items-center justify-between mb-5">
@@ -447,20 +447,20 @@ function WordleGame({ players, playerNames }: { players: CurrentNBAPlayer[]; pla
           <p className="font-mono font-bold uppercase tracking-[0.3em] text-[10px] mb-1" style={{ color: "#84cc16" }}>
             Current Players · 2025–26
           </p>
-          <h1 className="font-playfair font-black italic" style={{ fontSize: "clamp(2rem,4vw,2.6rem)", letterSpacing: "-0.03em", lineHeight: 0.95, color: "#111827" }}>
+          <h1 className="font-playfair font-black italic" style={{ fontSize: "clamp(2.4rem,4vw,3.2rem)", letterSpacing: "-0.03em", lineHeight: 0.95, color: "#111827" }}>
             Who Am I?
           </h1>
         </div>
         <div className="flex items-center gap-6">
           <div className="text-center">
             <p className="font-mono font-bold uppercase tracking-[0.2em] text-[9px] mb-1" style={{ color: "#aaa" }}>Streak</p>
-            <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2rem", color: "#84cc16", lineHeight: 1 }}>{streak}</p>
+            <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2.6rem", color: "#84cc16", lineHeight: 1 }}>{streak}</p>
           </div>
           <div className="text-center">
             <p className="font-mono font-bold uppercase tracking-[0.2em] text-[9px] mb-1" style={{ color: "#aaa" }}>
               {userName ? `${userName}'s Best` : "Best"}
             </p>
-            <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2rem", color: "#6b7280", lineHeight: 1 }}>{best}</p>
+            <p className="font-playfair font-black tabular-nums" style={{ fontSize: "2.6rem", color: "#6b7280", lineHeight: 1 }}>{best}</p>
           </div>
         </div>
       </div>
@@ -527,7 +527,7 @@ function WordleGame({ players, playerNames }: { players: CurrentNBAPlayer[]; pla
 
       {/* Guess grid */}
       <div className="w-full overflow-x-auto">
-        <div className="flex flex-col gap-1.5" style={{ minWidth: "820px" }}>
+        <div className="flex flex-col gap-1.5" style={{ minWidth: "960px" }}>
           <GuessTableHeader />
           <div className="mt-2 flex flex-col gap-1.5">
             <AnimatePresence initial={false}>
