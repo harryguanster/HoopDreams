@@ -37,30 +37,41 @@ const ALLTIME_POOL: Player[] = [
   { id: "oscar",    name: "Oscar Robertson",     position: "PG", era: "1960–74",   desc: "1× Champion · 1× MVP · averaged a triple-double over a full season", value: 8.8, off: 9.0, def: 7.5 },
   { id: "isiah",    name: "Isiah Thomas",        position: "PG", era: "1981–94",   desc: "2× Champion · 1990 Finals MVP · Bad Boys leader",          value: 7.5, off: 7.8, def: 7.2 },
   { id: "cp3",      name: "Chris Paul",          position: "PG", era: "2005–24",   desc: "12× All-Star · career assists/steals pace setter",          value: 7.2, off: 7.5, def: 8.2 },
+  { id: "price",    name: "Mark Price",          position: "PG", era: "1986–98",   desc: "4× All-Star · elite free-throw shooter from Cleveland",     value: 5.5, off: 6.2, def: 5.0 },
+  { id: "bogues",   name: "Muggsy Bogues",       position: "PG", era: "1987–2001", desc: "Shortest player in NBA history · solid floor general",       value: 4.0, off: 4.5, def: 5.0 },
   // ── SG ──
   { id: "jordan",   name: "Michael Jordan",      position: "SG", era: "1984–2003", desc: "6× Champion · 6× Finals MVP · The GOAT",                  value: 10.0, off: 10.0, def: 9.5 },
   { id: "kobe",     name: "Kobe Bryant",         position: "SG", era: "1996–2016", desc: "5× Champion · 2009 Finals MVP · 81-point game",            value: 9.0, off: 9.2, def: 8.5 },
   { id: "wade",     name: "Dwyane Wade",         position: "SG", era: "2003–19",   desc: "3× Champion · 2006 Finals MVP · South Beach icon",         value: 8.2, off: 8.5, def: 8.0 },
   { id: "iverson",  name: "Allen Iverson",       position: "SG", era: "1996–2010", desc: "2001 MVP · scoring title king · answered the call",         value: 7.8, off: 8.5, def: 6.5 },
   { id: "reggie",   name: "Reggie Miller",       position: "SG", era: "1987–2005", desc: "5× All-Star · clutch three-point assassin",                value: 6.2, off: 7.0, def: 6.0 },
+  { id: "korver",   name: "Kyle Korver",         position: "SG", era: "2003–19",   desc: "Career 43% from three · best shooter of his era",           value: 4.5, off: 5.5, def: 3.8 },
+  { id: "bbowen",   name: "Bruce Bowen",         position: "SG", era: "1997–2009", desc: "3× Champion · elite perimeter defender · ≤1 PPG on D",      value: 4.8, off: 3.2, def: 8.5 },
+  { id: "ingram",   name: "Andre Ingram",        position: "SG", era: "2018–23",   desc: "Made the NBA at age 32 after 10 years in the G League",     value: 2.5, off: 3.0, def: 2.5 },
   // ── SF ──
   { id: "lebron",   name: "LeBron James",        position: "SF", era: "2003–pres", desc: "4× Champion · 4× Finals MVP · all-time scoring leader",    value: 9.8, off: 9.8, def: 8.8 },
   { id: "bird",     name: "Larry Bird",          position: "SF", era: "1979–92",   desc: "3× Champion · 3× MVP · Celtics legend",                    value: 9.0, off: 9.2, def: 7.8 },
   { id: "drj",      name: "Julius Erving",       position: "SF", era: "1971–87",   desc: "1× Champion · 3× ABA MVP · invented the modern dunk",      value: 8.2, off: 8.5, def: 7.5 },
   { id: "pippen",   name: "Scottie Pippen",      position: "SF", era: "1987–2004", desc: "6× Champion · top-5 defender all time · Jordan's co-star",  value: 7.8, off: 7.5, def: 9.2 },
   { id: "worthy",   name: "James Worthy",        position: "SF", era: "1982–94",   desc: "3× Champion · 1988 Finals MVP · Big Game James",           value: 6.8, off: 7.2, def: 6.5 },
+  { id: "iggy",     name: "Andre Iguodala",      position: "SF", era: "2004–21",   desc: "2015 Finals MVP · 4× Champion · elite two-way wing",        value: 6.0, off: 5.5, def: 8.5 },
+  { id: "tprince",  name: "Tayshaun Prince",     position: "SF", era: "2002–16",   desc: "2004 Champion · lockdown wing · famous block on Reggie",    value: 5.0, off: 5.0, def: 7.5 },
   // ── PF ──
   { id: "duncan",   name: "Tim Duncan",          position: "PF", era: "1997–2016", desc: "5× Champion · 3× Finals MVP · The Big Fundamental",        value: 9.2, off: 8.8, def: 9.5 },
   { id: "malone",   name: "Karl Malone",         position: "PF", era: "1985–2004", desc: "2× MVP · 14× All-Star · most points without a ring",        value: 8.5, off: 9.0, def: 7.5 },
   { id: "kg",       name: "Kevin Garnett",       position: "PF", era: "1995–2016", desc: "1× Champion · 2004 MVP · greatest two-way PF ever",         value: 8.5, off: 8.2, def: 9.3 },
   { id: "barkley",  name: "Charles Barkley",     position: "PF", era: "1984–2000", desc: "1993 MVP · 11× All-Star · never won a ring",                value: 8.2, off: 9.0, def: 7.2 },
   { id: "rodman",   name: "Dennis Rodman",       position: "PF", era: "1986–2000", desc: "5× Champion · 2× DPOY · greatest rebounder ever",           value: 6.5, off: 4.5, def: 9.8 },
+  { id: "horace",   name: "Horace Grant",        position: "PF", era: "1987–2004", desc: "4× Champion · essential glue guy on Bulls dynasty",          value: 5.5, off: 5.0, def: 7.0 },
+  { id: "pjbrown",  name: "P.J. Brown",          position: "PF", era: "1993–2007", desc: "2006 Champion · tough defensive big · 14-year grinder",      value: 4.0, off: 3.8, def: 6.2 },
   // ── C ──
   { id: "kareem",   name: "Kareem Abdul-Jabbar", position: "C",  era: "1969–89",   desc: "6× Champion · 6× MVP · all-time scoring record holder",     value: 9.5, off: 9.5, def: 8.5 },
   { id: "wilt",     name: "Wilt Chamberlain",    position: "C",  era: "1959–73",   desc: "2× Champion · 4× MVP · 100-point game",                     value: 9.5, off: 10.0, def: 8.5 },
   { id: "shaq",     name: "Shaquille O'Neal",    position: "C",  era: "1992–2011", desc: "4× Champion · 3× Finals MVP · most dominant big man",       value: 9.3, off: 9.5, def: 8.0 },
   { id: "hakeem",   name: "Hakeem Olajuwon",     position: "C",  era: "1984–2002", desc: "2× Champion · 2× Finals MVP · Dream Shake inventor",        value: 9.0, off: 9.0, def: 9.5 },
   { id: "russell",  name: "Bill Russell",        position: "C",  era: "1956–69",   desc: "11× Champion · 5× MVP · the greatest winner in sports",     value: 9.3, off: 7.5, def: 10.0 },
+  { id: "haywood",  name: "Brendan Haywood",    position: "C",  era: "2001–14",   desc: "2011 Champion · solid backup center · shot-blocker",         value: 3.8, off: 3.5, def: 5.5 },
+  { id: "dampier",  name: "Erick Dampier",      position: "C",  era: "1996–2011", desc: "Journeyman center · 2011 Champion · defensive presence",      value: 4.0, off: 3.8, def: 5.8 },
 ];
 
 // Current: 5 per position (25 total) — 2025–26 season
@@ -71,30 +82,40 @@ const CURRENT_POOL: Player[] = [
   { id: "dame_c",   name: "Damian Lillard",          position: "PG", era: "2025–26", desc: "19.8 PPG · returning from torn Achilles · Portland",      value: 6.5, off: 7.2, def: 6.0 },
   { id: "hali_c",   name: "Tyrese Haliburton",       position: "PG", era: "2025–26", desc: "22.4 PPG · 10.9 APG · Indiana's engine",                  value: 7.2, off: 7.5, def: 6.8 },
   { id: "brunson",  name: "Jalen Brunson",           position: "PG", era: "2025–26", desc: "26 PPG · 6.8 APG · Knicks engine",                        value: 7.0, off: 7.5, def: 6.5 },
+  { id: "tyusjones",name: "Tyus Jones",              position: "PG", era: "2025–26", desc: "Elite backup PG · low turnover rate · veteran leader",    value: 4.8, off: 5.2, def: 5.0 },
+  { id: "mmorris",  name: "Monte Morris",            position: "PG", era: "2025–26", desc: "Steady backup PG · career 49% FG · no flash, just solid", value: 4.2, off: 4.5, def: 4.5 },
   // ── SG ──
   { id: "ant_c",    name: "Anthony Edwards",         position: "SG", era: "2025–26", desc: "28.8 PPG · elite two-way SG · #1 pick in 2020",           value: 8.5, off: 8.8, def: 8.0 },
   { id: "booker_c", name: "Devin Booker",            position: "SG", era: "2025–26", desc: "26.1 PPG · 2× Olympic gold · scored 70 at age 20",        value: 8.0, off: 8.5, def: 7.0 },
   { id: "jbrown",   name: "Jaylen Brown",            position: "SG", era: "2025–26", desc: "28.7 PPG · 2024 Finals MVP · Celtic lockdown wing",        value: 7.8, off: 8.0, def: 7.5 },
   { id: "dmitch_c", name: "Donovan Mitchell",        position: "SG", era: "2025–26", desc: "26.1 PPG · elite playoff performer · Spida",               value: 7.5, off: 8.0, def: 7.0 },
   { id: "dbane",    name: "Desmond Bane",            position: "SG", era: "2025–26", desc: "20.1 PPG · 3&D specialist · Orlando breakout",             value: 6.0, off: 6.8, def: 6.2 },
+  { id: "gp2",      name: "Gary Payton II",          position: "SG", era: "2025–26", desc: "Elite perimeter defender · son of The Glove",              value: 5.0, off: 4.5, def: 8.0 },
+  { id: "connaughton", name: "Pat Connaughton",      position: "SG", era: "2025–26", desc: "3&D role player · former minor-league baseball player",    value: 3.8, off: 4.2, def: 4.5 },
   // ── SF ──
   { id: "durant_c", name: "Kevin Durant",            position: "SF", era: "2025–26", desc: "24.5 PPG · elite mid-range at 36 · less explosive than peak", value: 8.0, off: 8.5, def: 6.8 },
   { id: "tatum_c",  name: "Jayson Tatum",            position: "SF", era: "2025–26", desc: "2024 Champion · Finals MVP · Boston's cornerstone",        value: 8.5, off: 8.8, def: 7.5 },
   { id: "kawhi_c",  name: "Kawhi Leonard",           position: "SF", era: "2025–26", desc: "20.5 PPG when healthy · load managed · Clippers",         value: 7.0, off: 7.8, def: 8.0 },
   { id: "lebron_c", name: "LeBron James",            position: "SF", era: "2025–26", desc: "20.9 PPG · IQ still elite but athleticism declining at 41", value: 7.5, off: 7.8, def: 7.0 },
   { id: "sbarnes",  name: "Scottie Barnes",          position: "SF", era: "2025–26", desc: "18.1 PPG · 7.5 RPG · versatile two-way wing",              value: 6.5, off: 6.8, def: 7.0 },
+  { id: "jhart",    name: "Josh Hart",               position: "SF", era: "2025–26", desc: "Hustle machine · elite rebounder for a wing · Knicks",     value: 5.2, off: 5.0, def: 6.5 },
+  { id: "oneale",   name: "Royce O'Neale",           position: "SF", era: "2025–26", desc: "3&D glue guy · won't wow you but won't hurt you either",  value: 4.5, off: 4.8, def: 6.0 },
   // ── PF ──
   { id: "giannis",  name: "Giannis Antetokounmpo",  position: "PF", era: "2025–26", desc: "27.7 PPG · 11.7 RPG · 2021 Champion · 2× MVP",            value: 9.5, off: 9.4, def: 8.5 },
   { id: "ad_c",     name: "Anthony Davis",           position: "PF", era: "2025–26", desc: "2020 Champion · elite rim protector · 8× All-Star",        value: 8.0, off: 8.5, def: 9.0 },
   { id: "zion_c",   name: "Zion Williamson",         position: "PF", era: "2025–26", desc: "28.9 PPG · 8.2 RPG · most powerful player in the game",   value: 8.0, off: 8.8, def: 7.0 },
   { id: "siakam_c", name: "Pascal Siakam",           position: "PF", era: "2025–26", desc: "2019 Champion · 23.9 PPG · versatile four",                value: 7.5, off: 7.8, def: 7.2 },
   { id: "randle",   name: "Julius Randle",           position: "PF", era: "2025–26", desc: "21.1 PPG · 6.7 RPG · Minnesota double-double machine",     value: 6.8, off: 7.2, def: 6.0 },
+  { id: "istewart", name: "Isaiah Stewart",          position: "PF", era: "2025–26", desc: "Defensive anchor · physical big · Detroit staple",          value: 5.2, off: 4.8, def: 7.0 },
+  { id: "mwagner",  name: "Moritz Wagner",           position: "PF", era: "2025–26", desc: "Energetic stretch big · fan favorite · Orlando spark",      value: 4.5, off: 5.2, def: 4.2 },
   // ── C ──
   { id: "jokic",    name: "Nikola Jokic",            position: "C",  era: "2025–26", desc: "27.7 PPG · 12.9 RPG · 10.7 APG · 3× MVP",                value: 9.8, off: 9.8, def: 8.0 },
   { id: "wemby_c",  name: "Victor Wembanyama",       position: "C",  era: "2025–26", desc: "25.0 PPG · 11.5 RPG · 3.1 BPG · generational talent",     value: 8.5, off: 8.2, def: 9.5 },
   { id: "embiid_c", name: "Joel Embiid",             position: "C",  era: "2025–26", desc: "2022–23 MVP · dominant scorer-rebounder combo",            value: 8.8, off: 9.0, def: 7.5 },
   { id: "bam_c",    name: "Bam Adebayo",             position: "C",  era: "2025–26", desc: "20.1 PPG · 10 RPG · elite defensive anchor",               value: 7.0, off: 7.2, def: 8.5 },
   { id: "gobert_c", name: "Rudy Gobert",             position: "C",  era: "2025–26", desc: "3× DPOY · elite shot-blocker and screener",                value: 6.8, off: 6.5, def: 9.2 },
+  { id: "nclaxton", name: "Nic Claxton",             position: "C",  era: "2025–26", desc: "Athletic rim protector · elite PnR defender · Brooklyn",   value: 5.5, off: 5.0, def: 7.5 },
+  { id: "rwilliams",name: "Robert Williams III",     position: "C",  era: "2025–26", desc: "Time Lord · elite shot-blocker when healthy · Boston",     value: 4.8, off: 4.5, def: 7.8 },
 ];
 
 const POSITIONS: Position[] = ["PG", "SG", "SF", "PF", "C"];
@@ -575,13 +596,54 @@ export default function AuctionDraftPage() {
 
   // ── Advance to next round ──────────────────────────────────────────────────
   function advanceRound(uRoster: RosterSlot[], aRoster: RosterSlot[], uBudget: number, aBudget: number) {
-    const next = stateRef.current.qIdx + 1;
-    if (next >= stateRef.current.queue.length || (uRoster.length === 5 && aRoster.length === 5)) {
+    const { qIdx: qi, queue: q } = stateRef.current;
+    const next = qi + 1;
+    const uFull = uRoster.length >= 5;
+    const aFull = aRoster.length >= 5;
+
+    if (next >= q.length || (uFull && aFull)) {
       setPhase("rosters");
       return;
     }
+
+    // If user is full — batch-assign all remaining to AI instantly
+    if (uFull) {
+      let newAR = [...aRoster];
+      let newAB = aBudget;
+      for (const p of q.slice(next)) {
+        if (newAR.length >= 5) break;
+        if (aiCanFit(p, newAR)) {
+          newAR = [...newAR, { player: p, paid: 1, slot: aiBestSlot(p, newAR) }];
+          newAB = Math.max(0, newAB - 1);
+        }
+      }
+      setAiRoster(newAR);
+      setAiBudget(newAB);
+      setPhase("rosters");
+      return;
+    }
+
+    // If AI is full — batch-assign all remaining to user instantly
+    if (aFull) {
+      let newUR = [...uRoster];
+      let newUB = uBudget;
+      for (const p of q.slice(next)) {
+        if (newUR.length >= 5) break;
+        const filledSlots = new Set(newUR.map(r => r.slot));
+        const slot: Position = !filledSlots.has(p.position)
+          ? p.position
+          : (POSITIONS.find(pos => !filledSlots.has(pos)) ?? p.position);
+        newUR = [...newUR, { player: p, paid: 1, slot }];
+        newUB = Math.max(0, newUB - 1);
+      }
+      setUserRoster(newUR);
+      setUserBudget(newUB);
+      setPhase("rosters");
+      return;
+    }
+
     setQIdx(next);
-    beginRound(stateRef.current.queue[next], uRoster, aRoster, uBudget, aBudget);
+    beginRound(q[next], uRoster, aRoster, uBudget, aBudget);
   }
 
   // ── Simulate ─────────────────────────────────────────────────────────────────
