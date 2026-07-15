@@ -7,8 +7,6 @@ import DailyBadge from "@/app/components/DailyBadge";
 import { LINEUPS } from "@/lib/lineupData";
 import { TRIOS } from "@/lib/playerData";
 import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
-import { STAT_LINE_PLAYERS } from "@/lib/statLineData";
-import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import { useEffect, useState } from "react";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
@@ -167,7 +165,7 @@ export default function HomePage() {
           <div className="h-8 w-px bg-lime-500/20" />
           <StatCounter value={`${LINEUPS.length}+`} label="Lineup Puzzles" />
           <div className="h-8 w-px bg-lime-500/20" />
-          <StatCounter value={`${STAT_LINE_PLAYERS.length + CURRENT_STAT_LINE_PLAYERS.length}+`} label="Players" />
+          <StatCounter value="500+" label="Players" />
         </motion.div>
       </section>
     </div>

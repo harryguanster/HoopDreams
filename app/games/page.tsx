@@ -6,9 +6,7 @@ import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
 import DailyGuessWhoGame from "@/app/components/DailyGuessWhoGame";
-import DailyStatLineGame from "@/app/components/DailyStatLineGame";
 import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
-import { CURRENT_STAT_LINE_PLAYERS } from "@/lib/currentStatLineData";
 import {
   getTodayStr, getDailyIndex, loadDailyData, saveDailyData, updateStreak, loadStreak,
   type DailyData,
@@ -26,17 +24,6 @@ const FEATURED = {
 };
 
 const GAMES = [
-  {
-    href: "/start-bench-cut",
-    title: "Start, Bench, Cut",
-    desc: "Jordan, Kobe, LeBron — who starts, who rides pine, who gets cut?",
-    tag: "Opinion",
-    bg: "#84cc16",
-    textColor: "#111827",
-    hoverBg: "#65a30d",
-    tagBorderColor: "#111827",
-    tagTextColor: "#111827",
-  },
   {
     href: "/guess-who",
     title: "Guess Who",
@@ -60,59 +47,37 @@ const GAMES = [
     tagTextColor: "#111827",
   },
   {
-    href: "/stat-line-guesser",
-    title: "Stat Line Guesser",
-    desc: "Five clues, one player. Name them before all clues drop.",
-    tag: "Stats",
+    href: "/lineup-guesser",
+    title: "Lineup Guesser",
+    desc: "Five starters, their stats. Name the team and season.",
+    tag: "Trivia",
     bg: "#84cc16",
     textColor: "#111827",
     hoverBg: "#65a30d",
     tagBorderColor: "#111827",
     tagTextColor: "#111827",
-  },
-  {
-    href: "/lineup-guesser",
-    title: "Lineup Guesser",
-    desc: "Five starters, their stats. Name the team and season.",
-    tag: "Trivia",
-    bg: "#111827",
-    textColor: "#ffffff",
-    hoverBg: "#1f2937",
-    tagBorderColor: "#84cc16",
-    tagTextColor: "#84cc16",
   },
   {
     href: "/connections",
     title: "NBA Connections",
     desc: "16 players, 4 hidden groups. Daily puzzle.",
     tag: "Daily",
-    bg: "#f4f0e6",
-    textColor: "#111827",
-    hoverBg: "#e8e2d4",
-    tagBorderColor: "#111827",
-    tagTextColor: "#111827",
+    bg: "#111827",
+    textColor: "#ffffff",
+    hoverBg: "#1f2937",
+    tagBorderColor: "#84cc16",
+    tagTextColor: "#84cc16",
   },
   {
     href: "/auction-draft",
     title: "Auction Draft",
     desc: "Bid on all-time legends against an AI. Build your dream team, then play a game to 7.",
     tag: "Strategy",
-    bg: "#84cc16",
+    bg: "#f4f0e6",
     textColor: "#111827",
-    hoverBg: "#65a30d",
+    hoverBg: "#e8e2d4",
     tagBorderColor: "#111827",
     tagTextColor: "#111827",
-  },
-  {
-    href: "/snake-draft",
-    title: "Draft Duel",
-    desc: "Snake draft 5 legends, then battle through a 3-round bracket. Win 3 of 5 stat categories to advance.",
-    tag: "New",
-    bg: "#111827",
-    textColor: "#ffffff",
-    hoverBg: "#1f2937",
-    tagBorderColor: "#84cc16",
-    tagTextColor: "#84cc16",
   },
 ];
 
@@ -219,7 +184,6 @@ export default function GamesPage() {
   const [dailyData, setDailyData] = useState<DailyData>({ date: getTodayStr(), guessWhoWon: null, statLineWon: null });
   const [streakCount, setStreakCount] = useState(0);
   const [dailyGWPlayer, setDailyGWPlayer] = useState<typeof CURRENT_GUESS_WHO_PLAYERS[0] | null>(null);
-  const [dailySLPlayer, setDailySLPlayer] = useState<typeof CURRENT_STAT_LINE_PLAYERS[0] | null>(null);
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -230,10 +194,9 @@ export default function GamesPage() {
       if (el) el.scrollIntoView({ behavior: "instant" });
     }
     setDailyGWPlayer(CURRENT_GUESS_WHO_PLAYERS[getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0)]);
-    setDailySLPlayer(CURRENT_STAT_LINE_PLAYERS[getDailyIndex(CURRENT_STAT_LINE_PLAYERS.length, 7)]);
     const data = loadDailyData();
     setDailyData(data);
-    if (data.guessWhoWon === true && data.statLineWon === true) updateStreak();
+    if (data.guessWhoWon === true) updateStreak();
     function refresh() {
       const s = loadStreak();
       setStreakCount(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
@@ -246,15 +209,10 @@ export default function GamesPage() {
   function handleGWComplete(won: boolean) {
     const next = { ...dailyData, guessWhoWon: won };
     setDailyData(next); saveDailyData(next);
-    if (won && next.statLineWon === true) updateStreak();
-  }
-  function handleSLComplete(won: boolean) {
-    const next = { ...dailyData, statLineWon: won };
-    setDailyData(next); saveDailyData(next);
-    if (won && next.guessWhoWon === true) updateStreak();
+    if (won) updateStreak();
   }
 
-  const bothWon = dailyData.guessWhoWon === true && dailyData.statLineWon === true;
+  const dailyWon = dailyData.guessWhoWon === true;
 
   return (
     <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
@@ -288,7 +246,7 @@ export default function GamesPage() {
                 Test your<br />NBA brain.
               </h1>
               <p className="font-mono text-[#111827]/60 text-sm leading-relaxed">
-                Eight game modes. Daily challenges. Infinite streak. All free.
+                Five game modes. Daily challenges. Infinite streak. All free.
               </p>
             </div>
             <div className="relative z-10 mt-8 pt-6" style={{ borderTop: "1px solid rgba(0,0,0,0.15)" }}>
@@ -306,18 +264,9 @@ export default function GamesPage() {
         {/* ── GAME MODES GRID ── */}
         <section>
           <RuleHeader label="Game Modes" title="Choose Your Challenge" />
-          {/* Row 1: first 4 games */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0" style={{ border: "2px solid #111827", borderBottom: "none" }}>
-            {GAMES.slice(0, 4).map((g, i) => (
-              <div key={g.href} style={{ borderRight: i < 3 ? "2px solid #111827" : undefined }}>
-                <SmallCard game={g} />
-              </div>
-            ))}
-          </div>
-          {/* Row 2: remaining games */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-0" style={{ border: "2px solid #111827" }}>
-            {GAMES.slice(4).map((g, i) => (
-              <div key={g.href} style={{ borderRight: i < GAMES.slice(4).length - 1 ? "2px solid #111827" : undefined }}>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-0" style={{ border: "2px solid #111827" }}>
+            {GAMES.map((g, i) => (
+              <div key={g.href} style={{ borderRight: i < GAMES.length - 1 ? "2px solid #111827" : undefined }}>
                 <SmallCard game={g} />
               </div>
             ))}
@@ -326,10 +275,10 @@ export default function GamesPage() {
 
         {/* ── DAILY CHALLENGES ── */}
         <section id="daily-challenges">
-          <RuleHeader label="Daily" title="Today's Challenges" />
-          <p className="font-mono text-gray-500 text-xs -mt-2 mb-6 uppercase tracking-widest">New players every day · Complete both to extend your streak</p>
+          <RuleHeader label="Daily" title="Today's Challenge" />
+          <p className="font-mono text-gray-500 text-xs -mt-2 mb-6 uppercase tracking-widest">New player every day · Complete to extend your streak</p>
 
-          {bothWon && (
+          {dailyWon && (
             <motion.div
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
               className="mb-6 p-5 border-2 border-[#84cc16] flex items-center justify-between"
@@ -346,14 +295,13 @@ export default function GamesPage() {
             </motion.div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-2 border-[#111827]">
-            {/* Daily Guess Who */}
-            <div className="p-6 border-b-2 md:border-b-0 md:border-r-2 border-[#111827]">
+          <div className="border-2 border-[#111827]">
+            <div className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-[#84cc16] mb-1">Daily · Guess Who</p>
                   <h3 className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.5rem", letterSpacing: "-0.01em" }}>Who Am I?</h3>
-                  <p className="font-mono text-gray-400 text-[10px] mt-1">Current player · 5 clues · 5 guesses</p>
+                  <p className="font-mono text-gray-400 text-[10px] mt-1">Current player · 6 guesses</p>
                 </div>
                 {dailyData.guessWhoWon !== null && (
                   <span className={`text-xs font-mono font-bold px-2 py-1 border ${dailyData.guessWhoWon ? "border-[#84cc16] text-[#65a30d]" : "border-red-300 text-red-500"}`}>
@@ -363,29 +311,6 @@ export default function GamesPage() {
               </div>
               {dailyGWPlayer ? (
                 <DailyGuessWhoGame player={dailyGWPlayer} onComplete={handleGWComplete} alreadyCompleted={dailyData.guessWhoWon !== null} won={dailyData.guessWhoWon} />
-              ) : (
-                <div className="h-32 flex items-center justify-center">
-                  <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
-                </div>
-              )}
-            </div>
-
-            {/* Daily Stat Line */}
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-[#84cc16] mb-1">Daily · Stat Line</p>
-                  <h3 className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.5rem", letterSpacing: "-0.01em" }}>Who Am I?</h3>
-                  <p className="font-mono text-gray-400 text-[10px] mt-1">Current player · 5 stats · 5 guesses</p>
-                </div>
-                {dailyData.statLineWon !== null && (
-                  <span className={`text-xs font-mono font-bold px-2 py-1 border ${dailyData.statLineWon ? "border-[#84cc16] text-[#65a30d]" : "border-red-300 text-red-500"}`}>
-                    {dailyData.statLineWon ? "✓ Done" : "✗ Done"}
-                  </span>
-                )}
-              </div>
-              {dailySLPlayer ? (
-                <DailyStatLineGame player={dailySLPlayer} onComplete={handleSLComplete} alreadyCompleted={dailyData.statLineWon !== null} won={dailyData.statLineWon} />
               ) : (
                 <div className="h-32 flex items-center justify-center">
                   <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
