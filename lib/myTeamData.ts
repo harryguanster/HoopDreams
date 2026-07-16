@@ -299,19 +299,11 @@ export const MY_TEAM_CARDS: MTCard[] = [
 
   // ── Luka Doncic ─────────────────────────────────────────────────────────────
   {
-    id: "luka-2122", firstName: "Luka", lastName: "Dončić", era: "2021-22",
-    team: "Dallas Mavericks", teamAbbr: "DAL", position: "PG", starLevel: 7,
-    photo: P.luka21, photoPos: "center 12%",
-    teamColor: "#00538C", accentColor: "#B8C4CA",
-    badges: ["Ankle Breaker", "Floor General"],
-    ppg: 28.4, rpg: 9.1, apg: 8.7, fg: 45.7,
-  },
-  {
-    id: "luka-2223", firstName: "Luka", lastName: "Dončić", era: "2022-23",
+    id: "luka-2123", firstName: "Luka", lastName: "Dončić", era: "2021-23",
     team: "Dallas Mavericks", teamAbbr: "DAL", position: "PG", starLevel: 8,
     photo: P.luka22, photoPos: "center 12%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
-    badges: ["Ankle Breaker", "Volume Scorer"],
+    badges: ["Ankle Breaker", "Volume Scorer", "Floor General"],
     ppg: 32.4, rpg: 8.6, apg: 8.0, fg: 49.6,
   },
   {
@@ -369,38 +361,22 @@ export const MY_TEAM_CARDS: MTCard[] = [
 
   // ── Magic Johnson ────────────────────────────────────────────────────────────
   {
-    id: "magic-8687", firstName: "Magic", lastName: "Johnson", era: "1986-87",
+    id: "magic-8689", firstName: "Magic", lastName: "Johnson", era: "1986-89",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "PG", starLevel: 13,
     photo: P.magic87, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Floor General", "Flashy Passer", "Pick & Roll"],
     ppg: 23.9, rpg: 6.3, apg: 12.2, fg: 52.2,
   },
-  {
-    id: "magic-8889", firstName: "Magic", lastName: "Johnson", era: "1988-89",
-    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "PG", starLevel: 11,
-    photo: P.magic89, photoPos: "center 12%",
-    teamColor: "#552583", accentColor: "#FDB927",
-    badges: ["Floor General", "Flashy Passer"],
-    ppg: 22.5, rpg: 7.9, apg: 12.8, fg: 50.9,
-  },
 
   // ── Hakeem Olajuwon ──────────────────────────────────────────────────────────
   {
-    id: "hakeem-9394", firstName: "Hakeem", lastName: "Olajuwon", era: "1993-94",
+    id: "hakeem-9395", firstName: "Hakeem", lastName: "Olajuwon", era: "1993-95",
     team: "Houston Rockets", teamAbbr: "HOU", position: "C", starLevel: 13,
     photo: P.hakeem, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#C4CED4",
     badges: ["Dream Shake", "Rim Runner", "Box Out Beast"],
     ppg: 27.3, rpg: 11.9, apg: 3.6, fg: 52.8,
-  },
-  {
-    id: "hakeem-9495", firstName: "Hakeem", lastName: "Olajuwon", era: "1994-95",
-    team: "Houston Rockets", teamAbbr: "HOU", position: "C", starLevel: 11,
-    photo: P.hakeem, photoPos: "center 12%",
-    teamColor: "#CE1141", accentColor: "#C4CED4",
-    badges: ["Dream Shake", "Rim Runner"],
-    ppg: 27.8, rpg: 10.8, apg: 3.5, fg: 51.7,
   },
 
   // ── Allen Iverson ────────────────────────────────────────────────────────────
