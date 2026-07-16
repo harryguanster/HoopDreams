@@ -129,8 +129,9 @@ const P = {
   wade06:       WC("4/44/Dwyane_Wade_2006.jpg"),                               // 2005-06
   wade12:       WC("6/69/Dwyane_Wade_2012.jpg"),                               // 2011-12
 
-  // Single-photo players (1-2 eras, still valid in-game shots)
-  ray_heat:     WC("f/f7/Ray_Allen_Heat.jpg"),
+  // Ray Allen — 2 era-specific local photos
+  ray_bos:      "/cards/ray-allen-bos.avif",
+  ray_mia:      "/cards/ray-allen-mia.webp",
   hakeem:       WC("e/ee/Hakeem_Olajuwon_1996.jpg"),
   dirk:         WC("e/e8/Dirk_Nowitzki_2011.jpg"),
   duncan:       WC("a/a6/Tim_Duncan_2005.jpg"),
@@ -584,7 +585,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "rayallen-1011", firstName: "Ray", lastName: "Allen", era: "2010-11",
     team: "Boston Celtics", teamAbbr: "BOS", position: "SG", starLevel: 6,
-    photo: P.ray_heat, photoPos: "center 15%",
+    photo: P.ray_bos, photoPos: "center 15%",
     teamColor: "#007A33", accentColor: "#BA9653",
     badges: ["Limitless Range"],
     ppg: 16.5, rpg: 3.4, apg: 2.6, fg: 47.3,
@@ -592,7 +593,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "rayallen-1213", firstName: "Ray", lastName: "Allen", era: "2012-13",
     team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 7,
-    photo: P.ray_heat, photoPos: "center 15%",
+    photo: P.ray_mia, photoPos: "center 15%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Limitless Range", "Clutch Gene"],
     ppg: 10.9, rpg: 2.7, apg: 1.2, fg: 42.9,
