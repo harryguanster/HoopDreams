@@ -130,7 +130,7 @@ const P = {
   wade12:       WC("6/69/Dwyane_Wade_2012.jpg"),                               // 2011-12
 
   // Ray Allen — 2 era-specific local photos
-  ray_bos:      "/cards/ray-allen-bos.avif",
+  ray_bos:      "/cards/ray-allen-bos.jpg",
   ray_mia:      "/cards/ray-allen-mia.webp",
   hakeem:       WC("e/ee/Hakeem_Olajuwon_1996.jpg"),
   dirk:         WC("e/e8/Dirk_Nowitzki_2011.jpg"),
