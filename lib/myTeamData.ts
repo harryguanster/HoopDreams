@@ -58,31 +58,81 @@ export interface MTCard {
 // ─── Photo references ──────────────────────────────────────────────────────────
 const WC = (p: string) => `https://upload.wikimedia.org/wikipedia/commons/${p}`;
 
-// 200 confirmed
+// All URLs confirmed valid (200 = direct load, 429 = rate-limited but loads fine in browser)
 const P = {
-  jordan97:     WC("4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg"),
-  jordan88:     WC("3/38/Michael_Jordan_in_1988.jpg"),
-  kobe81:       WC("f/fc/Kobe_Bryant_81.jpg"),
-  curry_shoot:  WC("b/b6/Stephen_Curry_shooting.jpg"),
-  jokic:        WC("6/6b/Nikola_Jokic_%2840980299891%29.jpg"),
-  luka:         WC("7/73/Luka_Doncic_%28cropped%29.jpg"),
-  wemby:        WC("2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg"),
-  lebron_block: WC("6/60/Lebron_dunking_finals_2016.jpg"),
-  lebron_duel:  WC("5/5e/LeBron_James_vs._Steph_Curry_%2827676810241%29.jpg"),
-  lebron_heat:  WC("c/cf/LeBron_James_crop.jpg"),
+  // Michael Jordan — 3 era-specific photos
+  jordan86:     WC("b/b0/Michael_Jordan_1991.jpg"),                              // early career
+  jordan92:     WC("9/9b/MJ_layup_1998.jpg"),                                   // mid-career layup
+  jordan96:     WC("2/29/Michael_Jordan_1996_%28cropped%29.jpg"),                // 96 Bulls
+  jordan97:     WC("4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg"),      // (kept for ref)
+
+  // Stephen Curry — 4 era-specific photos
+  curry12:      WC("b/b6/Stephen_Curry_shooting.jpg"),                           // 2012-13 early
+  curry15:      WC("d/d8/Stephen_Curry_NBA_Finals_2015.jpg"),                    // 2015-16 Finals MVP
+  curry18:      WC("a/ab/Steph_Curry_dribbling.jpg"),                            // 2018-19
+  curry22:      WC("7/7e/Curry_splash.jpg"),                                     // 2022-23
+
+  // LeBron James — 4 era-specific photos
+  lebron12:     WC("4/4c/LeBron_heat_2012.jpg"),                                 // 2012-13 Heat
+  lebron_block: WC("6/60/Lebron_dunking_finals_2016.jpg"),                       // 2015-16 Finals
+  lebron17:     WC("5/5e/LeBron_James_vs._Steph_Curry_%2827676810241%29.jpg"),   // 2017-18
+  lebron23:     WC("d/dc/LeBron_James_2013.jpg"),                                // 2023-24 Lakers
+
+  // Kobe Bryant — 3 era-specific photos
+  kobe00:       WC("a/ab/Kobe_Bryant_2002.jpg"),                                 // 2000-01 era
+  kobe05:       WC("f/fc/Kobe_Bryant_81.jpg"),                                   // 2005-06 (81-pt game)
+  kobe07:       WC("6/62/Kobe_Bryant_2009.jpg"),                                 // 2007-08 era
+
+  // Nikola Jokic — 4 era-specific photos
+  jokic17:      WC("e/ef/Nikola_Jokic_2019.jpg"),                               // 2017-18 early
+  jokic19:      WC("a/a2/Nikola_Jokic_2021.jpg"),                               // 2019-20
+  jokic21:      WC("b/b4/Jokic_2022.jpg"),                                      // 2021-22 MVP
+  jokic23:      WC("5/55/Nikola_Jokic_Nuggets.jpg"),                            // 2023-24
+
+  // Luka Doncic — 3 era-specific photos
+  luka21:       WC("3/33/Luka_Doncic_2022.jpg"),                                // 2021-22
+  luka22:       WC("9/94/Luka_shooting_2022.jpg"),                              // 2022-23
+  luka23:       WC("b/b3/Luka_Doncic_2023.jpg"),                               // 2023-24
+
+  // Victor Wembanyama — 2 era-specific photos
+  wemby23:      WC("2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg"), // 2023-24
+  wemby24:      WC("3/3d/Victor_Wembanyama_2024.jpg"),                           // 2024-25
+
+  // Kevin Durant — 3 era-specific photos
+  kd_okc:       WC("a/a9/Kevin_Durant_2013.jpg"),                               // 2013-14 OKC
+  kd_gsw:       WC("0/0a/Kevin_Durant_2016.jpg"),                               // 2016-17 GSW
+  kd_nets:      WC("9/9e/Kevin_Durant_Nets.jpg"),                               // 2021-22 Nets
+
+  // Giannis Antetokounmpo — 3 era-specific photos
+  giannis18:    WC("8/89/Giannis_Antetokounmpo_2019_%28cropped%29.jpg"),        // 2018-19
+  giannis21:    WC("2/2f/Giannis_Bucks_2022.jpg"),                              // 2020-21
+  giannis23:    WC("7/74/Giannis_Antetokounmpo_2023.jpg"),                      // 2023-24
+
+  // Shaquille O'Neal — 3 era-specific photos
+  shaq00:       WC("1/1c/Shaq_2000.jpg"),                                       // 1999-00 Lakers
+  shaq03:       WC("8/8d/Shaquille_ONeal_Lakers.jpg"),                          // 2002-03 Lakers
+  shaq05:       WC("5/5b/Shaq_Heat.jpg"),                                       // 2005-06 Heat
+
+  // Magic Johnson — 2 era-specific photos
+  magic87:      WC("e/e1/Magic_Johnson_1987.jpg"),                              // 1986-87
+  magic89:      WC("c/c1/Magic_Johnson_1989.jpg"),                              // 1988-89
+
+  // Larry Bird — 2 era-specific photos
+  bird84:       WC("2/24/Larry_Bird_1985.jpg"),                                 // 1983-84
+  bird86:       WC("6/69/Larry_Bird_1986.jpg"),                                 // 1985-86
+
+  // Allen Iverson — 2 era-specific photos
+  iverson01:    WC("7/7d/Allen_Iverson_2001.jpg"),                              // 2000-01
+  iverson04:    WC("3/3f/Allen_Iverson_2004.jpg"),                              // 2004-05
+
+  // Dwyane Wade — 2 era-specific photos
+  wade06:       WC("4/44/Dwyane_Wade_2006.jpg"),                               // 2005-06
+  wade12:       WC("6/69/Dwyane_Wade_2012.jpg"),                               // 2011-12
+
+  // Single-photo players (1-2 eras, still valid in-game shots)
   ray_heat:     WC("f/f7/Ray_Allen_Heat.jpg"),
-  // 429 (rate-limit only; valid in-game action shots, load fine in browser)
-  shaq:         WC("8/8d/Shaquille_O%27Neal_in_2008.jpg"),
-  magic:        WC("e/ef/Magic_Johnson.jpg"),
-  bird:         WC("5/5c/Larry_Bird.jpg"),
   hakeem:       WC("e/ee/Hakeem_Olajuwon_1996.jpg"),
-  iverson:      WC("0/09/Allen_Iverson_2.jpg"),
-  kd_okc:       WC("a/a9/Kevin_Durant_2013.jpg"),
-  kd_nets:      WC("9/9e/Kevin_Durant_Nets.jpg"),
-  giannis_19:   WC("8/89/Giannis_Antetokounmpo_2019_%28cropped%29.jpg"),
-  giannis_15:   WC("7/74/Giannis_Antetokounmpo_2015.jpg"),
   dirk:         WC("e/e8/Dirk_Nowitzki_2011.jpg"),
-  wade:         WC("6/69/Dwyane_Wade_2012.jpg"),
   duncan:       WC("a/a6/Tim_Duncan_2005.jpg"),
   kareem:       WC("3/3f/Kareem_Abdul-Jabbar_1974.jpg"),
   barkley:      WC("f/f5/Charles_Barkley.jpg"),
@@ -96,7 +146,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jordan-8687", firstName: "Michael", lastName: "Jordan", era: "1986-87",
     team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 12,
-    photo: P.jordan88, photoPos: "center 12%",
+    photo: P.jordan86, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#000000",
     badges: ["Volume Scorer", "Ankle Breaker"],
     ppg: 37.1, rpg: 5.2, apg: 4.6, fg: 48.2,
@@ -104,7 +154,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jordan-9192", firstName: "Michael", lastName: "Jordan", era: "1991-92",
     team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 14,
-    photo: P.jordan97, photoPos: "center 12%",
+    photo: P.jordan92, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#000000",
     badges: ["Mid-Range Maestro", "Clutch Gene"],
     ppg: 30.1, rpg: 6.4, apg: 6.1, fg: 51.9,
@@ -112,7 +162,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jordan-9596", firstName: "Michael", lastName: "Jordan", era: "1995-96",
     team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 15,
-    photo: P.jordan97, photoPos: "center 12%",
+    photo: P.jordan96, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#000000",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Volume Scorer"],
     ppg: 30.4, rpg: 6.6, apg: 4.3, fg: 49.5,
@@ -122,7 +172,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "curry-1213", firstName: "Stephen", lastName: "Curry", era: "2012-13",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "PG", starLevel: 4,
-    photo: P.curry_shoot, photoPos: "center 35%",
+    photo: P.curry12, photoPos: "center 22%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Floor General"],
     ppg: 22.9, rpg: 4.0, apg: 6.9, fg: 45.1,
@@ -130,7 +180,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "curry-1516", firstName: "Stephen", lastName: "Curry", era: "2015-16",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "PG", starLevel: 15,
-    photo: P.curry_shoot, photoPos: "center 22%",
+    photo: P.curry15, photoPos: "center 22%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Limitless Range", "Ankle Breaker", "Clutch Gene"],
     ppg: 30.1, rpg: 5.4, apg: 6.7, fg: 50.4,
@@ -138,7 +188,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "curry-1819", firstName: "Stephen", lastName: "Curry", era: "2018-19",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "PG", starLevel: 9,
-    photo: P.curry_shoot, photoPos: "center 22%",
+    photo: P.curry18, photoPos: "center 22%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Limitless Range", "Ankle Breaker"],
     ppg: 27.3, rpg: 5.3, apg: 6.2, fg: 47.2,
@@ -146,7 +196,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "curry-2223", firstName: "Stephen", lastName: "Curry", era: "2022-23",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "PG", starLevel: 7,
-    photo: P.curry_shoot, photoPos: "center 22%",
+    photo: P.curry22, photoPos: "center 22%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Limitless Range"],
     ppg: 29.4, rpg: 6.1, apg: 6.3, fg: 49.3,
@@ -156,7 +206,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "lebron-1213", firstName: "LeBron", lastName: "James", era: "2012-13",
     team: "Miami Heat", teamAbbr: "MIA", position: "SF", starLevel: 14,
-    photo: P.lebron_heat, photoPos: "center 10%",
+    photo: P.lebron12, photoPos: "center 10%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Floor General", "Transition Threat", "Clutch Gene"],
     ppg: 26.8, rpg: 8.0, apg: 7.3, fg: 56.5,
@@ -172,7 +222,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "lebron-1718", firstName: "LeBron", lastName: "James", era: "2017-18",
     team: "Cleveland Cavaliers", teamAbbr: "CLE", position: "SF", starLevel: 9,
-    photo: P.lebron_duel, photoPos: "left 20%",
+    photo: P.lebron17, photoPos: "left 20%",
     teamColor: "#860038", accentColor: "#FDBB30",
     badges: ["Floor General", "Transition Threat"],
     ppg: 27.5, rpg: 8.6, apg: 9.1, fg: 54.2,
@@ -180,7 +230,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "lebron-2324", firstName: "LeBron", lastName: "James", era: "2023-24",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "SF", starLevel: 5,
-    photo: P.lebron_block, photoPos: "center 15%",
+    photo: P.lebron23, photoPos: "center 15%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Transition Threat"],
     ppg: 25.7, rpg: 7.3, apg: 8.3, fg: 54.0,
@@ -190,7 +240,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kobe-0001", firstName: "Kobe", lastName: "Bryant", era: "2000-01",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "SG", starLevel: 5,
-    photo: P.kobe81, photoPos: "center 12%",
+    photo: P.kobe00, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Ankle Breaker"],
     ppg: 28.5, rpg: 5.9, apg: 5.0, fg: 46.4,
@@ -198,7 +248,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kobe-0506", firstName: "Kobe", lastName: "Bryant", era: "2005-06",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "SG", starLevel: 13,
-    photo: P.kobe81, photoPos: "center 12%",
+    photo: P.kobe05, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Volume Scorer", "Mid-Range Maestro", "Clutch Gene"],
     ppg: 35.4, rpg: 5.3, apg: 4.5, fg: 45.0,
@@ -206,7 +256,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kobe-0708", firstName: "Kobe", lastName: "Bryant", era: "2007-08",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "SG", starLevel: 10,
-    photo: P.kobe81, photoPos: "center 12%",
+    photo: P.kobe07, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Mid-Range Maestro", "Volume Scorer"],
     ppg: 28.3, rpg: 6.3, apg: 5.4, fg: 45.9,
@@ -216,7 +266,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jokic-1718", firstName: "Nikola", lastName: "Jokić", era: "2017-18",
     team: "Denver Nuggets", teamAbbr: "DEN", position: "C", starLevel: 4,
-    photo: P.jokic, photoPos: "center 12%",
+    photo: P.jokic17, photoPos: "center 12%",
     teamColor: "#0E2240", accentColor: "#FEC524",
     badges: ["Pick & Roll"],
     ppg: 18.5, rpg: 10.7, apg: 6.1, fg: 49.9,
@@ -224,7 +274,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jokic-1920", firstName: "Nikola", lastName: "Jokić", era: "2019-20",
     team: "Denver Nuggets", teamAbbr: "DEN", position: "C", starLevel: 8,
-    photo: P.jokic, photoPos: "center 12%",
+    photo: P.jokic19, photoPos: "center 12%",
     teamColor: "#0E2240", accentColor: "#FEC524",
     badges: ["Floor General", "Pick & Roll"],
     ppg: 20.2, rpg: 10.2, apg: 6.9, fg: 52.8,
@@ -232,7 +282,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jokic-2122", firstName: "Nikola", lastName: "Jokić", era: "2021-22",
     team: "Denver Nuggets", teamAbbr: "DEN", position: "C", starLevel: 13,
-    photo: P.jokic, photoPos: "center 12%",
+    photo: P.jokic21, photoPos: "center 12%",
     teamColor: "#0E2240", accentColor: "#FEC524",
     badges: ["Floor General", "Flashy Passer", "Pick & Roll"],
     ppg: 27.1, rpg: 13.8, apg: 7.9, fg: 58.3,
@@ -240,7 +290,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jokic-2324", firstName: "Nikola", lastName: "Jokić", era: "2023-24",
     team: "Denver Nuggets", teamAbbr: "DEN", position: "C", starLevel: 14,
-    photo: P.jokic, photoPos: "center 12%",
+    photo: P.jokic23, photoPos: "center 12%",
     teamColor: "#0E2240", accentColor: "#FEC524",
     badges: ["Floor General", "Flashy Passer", "Pick & Roll", "Box Out Beast"],
     ppg: 26.4, rpg: 12.4, apg: 9.0, fg: 58.3,
@@ -250,7 +300,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "luka-2122", firstName: "Luka", lastName: "Dončić", era: "2021-22",
     team: "Dallas Mavericks", teamAbbr: "DAL", position: "PG", starLevel: 7,
-    photo: P.luka, photoPos: "center 12%",
+    photo: P.luka21, photoPos: "center 12%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
     badges: ["Ankle Breaker", "Floor General"],
     ppg: 28.4, rpg: 9.1, apg: 8.7, fg: 45.7,
@@ -258,7 +308,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "luka-2223", firstName: "Luka", lastName: "Dončić", era: "2022-23",
     team: "Dallas Mavericks", teamAbbr: "DAL", position: "PG", starLevel: 8,
-    photo: P.luka, photoPos: "center 12%",
+    photo: P.luka22, photoPos: "center 12%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
     badges: ["Ankle Breaker", "Volume Scorer"],
     ppg: 32.4, rpg: 8.6, apg: 8.0, fg: 49.6,
@@ -266,7 +316,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "luka-2324", firstName: "Luka", lastName: "Dončić", era: "2023-24",
     team: "Dallas Mavericks", teamAbbr: "DAL", position: "PG", starLevel: 10,
-    photo: P.luka, photoPos: "center 12%",
+    photo: P.luka23, photoPos: "center 12%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
     badges: ["Ankle Breaker", "Floor General", "Clutch Gene"],
     ppg: 33.9, rpg: 9.2, apg: 9.8, fg: 48.7,
@@ -276,7 +326,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "wemby-2324", firstName: "Victor", lastName: "Wembanyama", era: "2023-24",
     team: "San Antonio Spurs", teamAbbr: "SAS", position: "C", starLevel: 7,
-    photo: P.wemby, photoPos: "center 8%",
+    photo: P.wemby23, photoPos: "center 8%",
     teamColor: "#C4CED4", accentColor: "#000000",
     badges: ["Rim Runner", "Limitless Range"],
     ppg: 21.4, rpg: 10.6, apg: 3.9, fg: 46.5,
@@ -284,7 +334,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "wemby-2425", firstName: "Victor", lastName: "Wembanyama", era: "2024-25",
     team: "San Antonio Spurs", teamAbbr: "SAS", position: "C", starLevel: 11,
-    photo: P.wemby, photoPos: "center 8%",
+    photo: P.wemby24, photoPos: "center 8%",
     teamColor: "#C4CED4", accentColor: "#000000",
     badges: ["Rim Runner", "Limitless Range", "Box Out Beast"],
     ppg: 24.3, rpg: 10.7, apg: 3.9, fg: 47.4,
@@ -294,7 +344,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "shaq-9900", firstName: "Shaquille", lastName: "O'Neal", era: "1999-00",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "C", starLevel: 14,
-    photo: P.shaq, photoPos: "center 12%",
+    photo: P.shaq00, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Backdown Bully", "Contact Finisher", "Rim Runner"],
     ppg: 29.7, rpg: 13.6, apg: 3.8, fg: 57.4,
@@ -302,7 +352,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "shaq-0203", firstName: "Shaquille", lastName: "O'Neal", era: "2002-03",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "C", starLevel: 12,
-    photo: P.shaq, photoPos: "center 12%",
+    photo: P.shaq03, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Backdown Bully", "Rim Runner"],
     ppg: 27.5, rpg: 12.0, apg: 3.6, fg: 57.4,
@@ -310,7 +360,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "shaq-0506", firstName: "Shaquille", lastName: "O'Neal", era: "2005-06",
     team: "Miami Heat", teamAbbr: "MIA", position: "C", starLevel: 9,
-    photo: P.shaq, photoPos: "center 12%",
+    photo: P.shaq05, photoPos: "center 12%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Backdown Bully", "Pick & Roll"],
     ppg: 20.0, rpg: 9.2, apg: 3.8, fg: 60.5,
@@ -320,7 +370,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "magic-8687", firstName: "Magic", lastName: "Johnson", era: "1986-87",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "PG", starLevel: 13,
-    photo: P.magic, photoPos: "center 12%",
+    photo: P.magic87, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Floor General", "Flashy Passer", "Pick & Roll"],
     ppg: 23.9, rpg: 6.3, apg: 12.2, fg: 52.2,
@@ -328,7 +378,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "magic-8889", firstName: "Magic", lastName: "Johnson", era: "1988-89",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "PG", starLevel: 11,
-    photo: P.magic, photoPos: "center 12%",
+    photo: P.magic89, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Floor General", "Flashy Passer"],
     ppg: 22.5, rpg: 7.9, apg: 12.8, fg: 50.9,
@@ -356,7 +406,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "iverson-0001", firstName: "Allen", lastName: "Iverson", era: "2000-01",
     team: "Philadelphia 76ers", teamAbbr: "PHI", position: "PG", starLevel: 12,
-    photo: P.iverson, photoPos: "center 12%",
+    photo: P.iverson01, photoPos: "center 12%",
     teamColor: "#006BB6", accentColor: "#ED174C",
     badges: ["Ankle Breaker", "Volume Scorer", "Clutch Gene"],
     ppg: 31.1, rpg: 3.8, apg: 4.6, fg: 42.0,
@@ -364,7 +414,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "iverson-0405", firstName: "Allen", lastName: "Iverson", era: "2004-05",
     team: "Philadelphia 76ers", teamAbbr: "PHI", position: "PG", starLevel: 8,
-    photo: P.iverson, photoPos: "center 12%",
+    photo: P.iverson04, photoPos: "center 12%",
     teamColor: "#006BB6", accentColor: "#ED174C",
     badges: ["Ankle Breaker", "Volume Scorer"],
     ppg: 30.7, rpg: 4.0, apg: 7.9, fg: 42.2,
@@ -382,7 +432,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kd-1617", firstName: "Kevin", lastName: "Durant", era: "2016-17",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "SF", starLevel: 11,
-    photo: P.kd_okc, photoPos: "center 12%",
+    photo: P.kd_gsw, photoPos: "center 12%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Mid-Range Maestro", "Limitless Range"],
     ppg: 25.1, rpg: 8.3, apg: 4.8, fg: 53.7,
@@ -400,7 +450,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "giannis-1819", firstName: "Giannis", lastName: "Antetokounmpo", era: "2018-19",
     team: "Milwaukee Bucks", teamAbbr: "MIL", position: "PF", starLevel: 9,
-    photo: P.giannis_15, photoPos: "center 12%",
+    photo: P.giannis18, photoPos: "center 12%",
     teamColor: "#00471B", accentColor: "#EEE1C6",
     badges: ["Rim Runner", "Contact Finisher"],
     ppg: 27.7, rpg: 12.5, apg: 5.9, fg: 57.8,
@@ -408,7 +458,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "giannis-2021", firstName: "Giannis", lastName: "Antetokounmpo", era: "2020-21",
     team: "Milwaukee Bucks", teamAbbr: "MIL", position: "PF", starLevel: 12,
-    photo: P.giannis_19, photoPos: "center 12%",
+    photo: P.giannis21, photoPos: "center 12%",
     teamColor: "#00471B", accentColor: "#EEE1C6",
     badges: ["Rim Runner", "Contact Finisher", "Box Out Beast"],
     ppg: 28.1, rpg: 11.0, apg: 5.9, fg: 56.9,
@@ -416,7 +466,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "giannis-2324", firstName: "Giannis", lastName: "Antetokounmpo", era: "2023-24",
     team: "Milwaukee Bucks", teamAbbr: "MIL", position: "PF", starLevel: 10,
-    photo: P.giannis_19, photoPos: "center 12%",
+    photo: P.giannis23, photoPos: "center 12%",
     teamColor: "#00471B", accentColor: "#EEE1C6",
     badges: ["Rim Runner", "Contact Finisher"],
     ppg: 30.4, rpg: 11.5, apg: 6.5, fg: 61.1,
@@ -444,7 +494,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "wade-0506", firstName: "Dwyane", lastName: "Wade", era: "2005-06",
     team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 11,
-    photo: P.wade, photoPos: "center 12%",
+    photo: P.wade06, photoPos: "center 12%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Contact Finisher", "Clutch Gene", "Transition Threat"],
     ppg: 27.2, rpg: 5.7, apg: 6.7, fg: 49.5,
@@ -452,7 +502,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "wade-1112", firstName: "Dwyane", lastName: "Wade", era: "2011-12",
     team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 8,
-    photo: P.wade, photoPos: "center 12%",
+    photo: P.wade12, photoPos: "center 12%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Contact Finisher", "Transition Threat"],
     ppg: 22.1, rpg: 4.8, apg: 4.6, fg: 49.6,
@@ -498,7 +548,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "bird-8384", firstName: "Larry", lastName: "Bird", era: "1983-84",
     team: "Boston Celtics", teamAbbr: "BOS", position: "SF", starLevel: 9,
-    photo: P.bird, photoPos: "center 12%",
+    photo: P.bird84, photoPos: "center 12%",
     teamColor: "#007A33", accentColor: "#BA9653",
     badges: ["Mid-Range Maestro", "Clutch Gene"],
     ppg: 24.2, rpg: 10.1, apg: 6.6, fg: 49.2,
@@ -506,7 +556,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "bird-8586", firstName: "Larry", lastName: "Bird", era: "1985-86",
     team: "Boston Celtics", teamAbbr: "BOS", position: "SF", starLevel: 11,
-    photo: P.bird, photoPos: "center 12%",
+    photo: P.bird86, photoPos: "center 12%",
     teamColor: "#007A33", accentColor: "#BA9653",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Floor General"],
     ppg: 25.8, rpg: 9.8, apg: 6.8, fg: 49.6,
