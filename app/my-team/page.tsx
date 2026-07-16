@@ -4,21 +4,49 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import {
-  MY_TEAM_CARDS, cardById, generatePack,
+  MY_TEAM_CARDS, cardById, generatePack, computeOVR, packChance,
   getStarColor, STAR_COLORS, TIER_GLOW, tierFromLevel,
   DEFAULT_TEAM_STATE, DAILY_PACK_KEY,
   type MTCard, type TeamState,
 } from "@/lib/myTeamData";
 import { getTodayStr } from "@/lib/dailyUtils";
 
+// ─── Shiny CSS keyframes (injected once) ─────────────────────────────────────
+function ShinyStyles() {
+  return (
+    <style>{`
+      @keyframes shiny-sweep {
+        0%   { transform: translateX(-180%) skewX(-20deg); }
+        100% { transform: translateX(280%)  skewX(-20deg); }
+      }
+      @keyframes shiny-star {
+        0%   { filter: brightness(1) drop-shadow(0 0 3px currentColor); }
+        100% { filter: brightness(2.8) drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor); }
+      }
+      @keyframes rainbow-spin {
+        0%   { background-position: 0%   50%; }
+        100% { background-position: 200% 50%; }
+      }
+    `}</style>
+  );
+}
+
 // ─── Star strip ──────────────────────────────────────────────────────────────
-function Stars({ level, size = 11 }: { level: number; size?: number }) {
+function Stars({ level, size = 11, isShiny = false }: { level: number; size?: number; isShiny?: boolean }) {
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map(slot => {
         const color = getStarColor(slot, level);
+        const c = STAR_COLORS[color];
+        const lit = color !== "empty";
         return (
-          <span key={slot} style={{ fontSize: size, color: STAR_COLORS[color], lineHeight: 1, textShadow: color !== "empty" ? `0 0 5px ${STAR_COLORS[color]}` : "none" }}>
+          <span key={slot} style={{
+            fontSize: size,
+            color: c,
+            lineHeight: 1,
+            textShadow: lit ? `0 0 ${isShiny ? 10 : 5}px ${c}` : "none",
+            animation: lit && isShiny ? `shiny-star ${0.7 + slot * 0.12}s ease-in-out infinite alternate` : "none",
+          }}>
             ★
           </span>
         );
@@ -45,7 +73,7 @@ function Card2K({
   const s = w / 165; // scale factor relative to md
   const tier = tierFromLevel(card.starLevel);
   const glow = TIER_GLOW[tier];
-  const ovr = Math.round(55 + card.starLevel * 2.8);
+  const ovr = computeOVR(card.starLevel);
 
   return (
     <motion.div
@@ -56,14 +84,27 @@ function Card2K({
       whileTap={onClick ? { scale: 0.97 } : {}}
       transition={{ duration: 0.15 }}
     >
+      {/* Shiny rainbow border (behind card) */}
+      {card.isShiny && (
+        <div style={{
+          position: "absolute", inset: -2, borderRadius: w * 0.065 + 2, zIndex: 0,
+          background: "linear-gradient(135deg, #f59e0b, #ec4899, #c084fc, #60a5fa, #34d399, #f59e0b)",
+          backgroundSize: "300% 300%",
+          animation: "rainbow-spin 2s linear infinite",
+        }} />
+      )}
+
       {/* Card frame */}
       <div
         className="absolute inset-0 overflow-hidden"
         style={{
           borderRadius: w * 0.065,
-          border: `${s * 2}px solid rgba(255,255,255,0.1)`,
-          boxShadow: `0 0 ${s * 20}px ${glow}44, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`,
+          border: `${s * 2}px solid ${card.isShiny ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.1)"}`,
+          boxShadow: card.isShiny
+            ? `0 0 ${s * 35}px ${glow}88, 0 0 ${s * 60}px ${glow}33, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`
+            : `0 0 ${s * 20}px ${glow}44, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`,
           background: "#060c18",
+          zIndex: 1,
         }}
       >
         {/* Photo */}
@@ -148,9 +189,18 @@ function Card2K({
           </div>
         )}
 
+        {/* Shiny sweep overlay */}
+        {card.isShiny && (
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 4,
+            background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%)",
+            animation: "shiny-sweep 2.2s ease-in-out infinite",
+          }} />
+        )}
+
         {/* Bottom */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: `${s * 5}px ${s * 8}px ${s * 7}px` }}>
-          <Stars level={card.starLevel} size={s * 10} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: `${s * 5}px ${s * 8}px ${s * 7}px`, zIndex: 3 }}>
+          <Stars level={card.starLevel} size={s * 10} isShiny={card.isShiny} />
           <p style={{
             fontFamily: "monospace", fontWeight: 700, fontSize: s * 8,
             color: "rgba(255,255,255,0.55)", textTransform: "uppercase",
@@ -284,8 +334,27 @@ function PackScreen({
                 >
                   <Card2K card={card} size="md" badge={isNew ? "NEW" : undefined} />
 
+                  {/* Shiny burst */}
+                  {card.isShiny && (
+                    <>
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none"
+                        initial={{ opacity: 1, scale: 1 }}
+                        animate={{ opacity: 0, scale: 2.2 }}
+                        transition={{ duration: 1.0, ease: "easeOut" }}
+                        style={{ background: `radial-gradient(circle, #fff8 0%, #f59e0b66 30%, transparent 70%)`, borderRadius: 11 }}
+                      />
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none"
+                        initial={{ opacity: 0.9, scale: 1 }}
+                        animate={{ opacity: 0, scale: 1.8 }}
+                        transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
+                        style={{ background: `radial-gradient(circle, #c084fc88 0%, transparent 70%)`, borderRadius: 11 }}
+                      />
+                    </>
+                  )}
                   {/* Purple burst */}
-                  {tier === "purple" && (
+                  {!card.isShiny && tier === "purple" && (
                     <motion.div
                       className="absolute inset-0 rounded-xl pointer-events-none"
                       initial={{ opacity: 0.9, scale: 1 }}
@@ -295,7 +364,7 @@ function PackScreen({
                     />
                   )}
                   {/* Blue flash */}
-                  {tier === "blue" && (
+                  {!card.isShiny && tier === "blue" && (
                     <motion.div
                       className="absolute inset-0 rounded-xl pointer-events-none"
                       initial={{ opacity: 0.6, scale: 1 }}
@@ -501,6 +570,23 @@ function CatalogSection({ owned }: { owned: Set<string> }) {
                       </div>
                     )}
 
+                    {/* Pack chance badge */}
+                    {!isOwned && (
+                      <div style={{
+                        position: "absolute", top: s * 9, left: s * 9,
+                        background: "rgba(0,0,0,0.72)", borderRadius: s * 4,
+                        padding: `${s * 2}px ${s * 5}px`,
+                        border: `${s}px solid ${glow}33`,
+                      }}>
+                        <span style={{
+                          fontFamily: "monospace", fontWeight: 700, fontSize: s * 7,
+                          color: glow, letterSpacing: "0.04em",
+                        }}>
+                          {packChance(card)}
+                        </span>
+                      </div>
+                    )}
+
                     {/* Lock overlay */}
                     {!isOwned && (
                       <div style={{
@@ -509,19 +595,7 @@ function CatalogSection({ owned }: { owned: Set<string> }) {
                         alignItems: "center", justifyContent: "center",
                         border: `2px solid rgba(255,255,255,0.06)`,
                       }}>
-                        <span style={{ fontSize: s * 24, opacity: 0.25 }}>🔒</span>
-                        <p style={{
-                          fontFamily: "monospace", fontWeight: 700,
-                          fontSize: s * 7.5, color: "rgba(255,255,255,0.2)",
-                          textTransform: "uppercase", letterSpacing: "0.1em", marginTop: s * 4,
-                        }}>
-                          {card.era}
-                        </p>
-                        <div className="flex gap-0.5 mt-1">
-                          {[1,2,3,4,5].map(slot => (
-                            <span key={slot} style={{ fontSize: s * 8, color: getStarColor(slot, card.starLevel) !== "empty" ? `${glow}44` : "rgba(255,255,255,0.06)" }}>★</span>
-                          ))}
-                        </div>
+                        <span style={{ fontSize: s * 24, opacity: 0.2 }}>🔒</span>
                       </div>
                     )}
                   </motion.div>
@@ -673,7 +747,7 @@ export default function MyTeamPage() {
   const owned = new Set(state.collection);
   const starterCards = state.starters.map(id => cardById(id)).filter(Boolean) as MTCard[];
   const benchCards = state.bench.map(id => cardById(id)).filter(Boolean) as MTCard[];
-  const collectionCards = MY_TEAM_CARDS.filter(c => owned.has(c.id));
+  const collectionCards = state.collection.map(id => cardById(id)).filter(Boolean) as MTCard[];
 
   const filteredCollection = filter === "all" ? collectionCards
     : collectionCards.filter(c => tierFromLevel(c.starLevel) === filter);
@@ -691,6 +765,7 @@ export default function MyTeamPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "#060c18" }}>
+      <ShinyStyles />
       {/* Header */}
       <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3"
         style={{ background: "rgba(6,12,24,0.95)", borderBottom: "1px solid rgba(255,255,255,0.05)", backdropFilter: "blur(12px)" }}>
@@ -762,11 +837,15 @@ export default function MyTeamPage() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 rounded-full" style={{ background: TIER_GLOW.blue }} />
-                    <span className="font-mono text-[8px] text-white/30">~33% blue</span>
+                    <span className="font-mono text-[8px] text-white/30">~30% blue</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 rounded-full" style={{ background: TIER_GLOW.gold }} />
-                    <span className="font-mono text-[8px] text-white/30">~55% gold</span>
+                    <span className="font-mono text-[8px] text-white/30">~58% gold</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full" style={{ background: "linear-gradient(135deg,#f59e0b,#c084fc)" }} />
+                    <span className="font-mono text-[8px] text-white/30">3% shiny ✦</span>
                   </div>
                 </div>
               </div>
