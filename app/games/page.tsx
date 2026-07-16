@@ -79,6 +79,17 @@ const GAMES = [
     tagBorderColor: "#111827",
     tagTextColor: "#111827",
   },
+  {
+    href: "/badge-court",
+    title: "Badge Court",
+    desc: "Card battle with NBA legends. Pick plays, activate badges, outscore the AI in 4 quarters.",
+    tag: "New",
+    bg: "#0a0f1a",
+    textColor: "#ffffff",
+    hoverBg: "#0d1526",
+    tagBorderColor: "#84cc16",
+    tagTextColor: "#84cc16",
+  },
 ];
 
 const TIMED = [
@@ -246,7 +257,7 @@ export default function GamesPage() {
                 Test your<br />NBA brain.
               </h1>
               <p className="font-mono text-[#111827]/60 text-sm leading-relaxed">
-                Five game modes. Daily challenges. Infinite streak. All free.
+                Six game modes. Daily challenges. Infinite streak. All free.
               </p>
             </div>
             <div className="relative z-10 mt-8 pt-6" style={{ borderTop: "1px solid rgba(0,0,0,0.15)" }}>
@@ -264,7 +275,7 @@ export default function GamesPage() {
         {/* ── GAME MODES GRID ── */}
         <section>
           <RuleHeader label="Game Modes" title="Choose Your Challenge" />
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-0" style={{ border: "2px solid #111827" }}>
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-0" style={{ border: "2px solid #111827" }}>
             {GAMES.map((g, i) => (
               <div key={g.href} style={{ borderRight: i < GAMES.length - 1 ? "2px solid #111827" : undefined }}>
                 <SmallCard game={g} />
