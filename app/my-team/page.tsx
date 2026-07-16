@@ -415,6 +415,126 @@ function CardModal({
   );
 }
 
+// ─── Card catalog (all cards by era) ─────────────────────────────────────────
+function CatalogSection({ owned }: { owned: Set<string> }) {
+  // Group cards by decade, sorted chronologically
+  const groups: Record<string, MTCard[]> = {};
+  const sorted = [...MY_TEAM_CARDS].sort((a, b) => parseInt(a.era) - parseInt(b.era));
+  for (const card of sorted) {
+    const year = parseInt(card.era);
+    const dec = `${Math.floor(year / 10) * 10}s`;
+    if (!groups[dec]) groups[dec] = [];
+    groups[dec].push(card);
+  }
+
+  const totalOwned = sorted.filter(c => owned.has(c.id)).length;
+
+  return (
+    <div className="space-y-12">
+      {/* Progress bar */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <p className="font-mono text-[9px] uppercase tracking-widest text-white/30">Collection Progress</p>
+          <p className="font-mono text-[9px] text-white/30">{totalOwned} / {MY_TEAM_CARDS.length} cards</p>
+        </div>
+        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: "linear-gradient(90deg, #84cc16, #c084fc)" }}
+            initial={{ width: 0 }}
+            animate={{ width: `${(totalOwned / MY_TEAM_CARDS.length) * 100}%` }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          />
+        </div>
+      </div>
+
+      {Object.entries(groups).map(([decade, cards]) => {
+        const ownedInGroup = cards.filter(c => owned.has(c.id)).length;
+        return (
+          <div key={decade}>
+            {/* Decade header */}
+            <div className="flex items-center gap-4 mb-5">
+              <div>
+                <p className="font-playfair font-black text-white italic" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", lineHeight: 1, letterSpacing: "-0.02em" }}>
+                  {decade}
+                </p>
+                <p className="font-mono text-[8px] text-white/25 uppercase tracking-widest mt-0.5">
+                  {ownedInGroup}/{cards.length} collected
+                </p>
+              </div>
+              <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+              <p className="font-mono text-[8px] text-white/15 uppercase tracking-widest">{cards[0].era.split("-")[0]}–{cards[cards.length - 1].era}</p>
+            </div>
+
+            {/* Cards grid */}
+            <div className="flex flex-wrap gap-4">
+              {cards.map(card => {
+                const isOwned = owned.has(card.id);
+                const tier = tierFromLevel(card.starLevel);
+                const glow = TIER_GLOW[tier];
+                const { w, h } = SIZES.md;
+                const s = w / 165;
+
+                return (
+                  <motion.div
+                    key={card.id}
+                    className="relative flex-shrink-0"
+                    style={{ width: w, height: h }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div style={{ filter: isOwned ? "none" : "grayscale(100%) brightness(0.35)", transition: "filter 0.3s" }}>
+                      <Card2K card={card} size="md" dimmed={false} />
+                    </div>
+
+                    {/* Owned badge */}
+                    {isOwned && (
+                      <div style={{
+                        position: "absolute", top: s * 9, right: s * 9,
+                        background: "#84cc16", color: "#000",
+                        borderRadius: s * 3, padding: `${s}px ${s * 5}px`,
+                        fontFamily: "monospace", fontWeight: 900,
+                        fontSize: s * 7.5, textTransform: "uppercase", letterSpacing: "0.05em",
+                      }}>
+                        Owned
+                      </div>
+                    )}
+
+                    {/* Lock overlay */}
+                    {!isOwned && (
+                      <div style={{
+                        position: "absolute", inset: 0, borderRadius: w * 0.065,
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center",
+                        border: `2px solid rgba(255,255,255,0.06)`,
+                      }}>
+                        <span style={{ fontSize: s * 24, opacity: 0.25 }}>🔒</span>
+                        <p style={{
+                          fontFamily: "monospace", fontWeight: 700,
+                          fontSize: s * 7.5, color: "rgba(255,255,255,0.2)",
+                          textTransform: "uppercase", letterSpacing: "0.1em", marginTop: s * 4,
+                        }}>
+                          {card.era}
+                        </p>
+                        <div className="flex gap-0.5 mt-1">
+                          {[1,2,3,4,5].map(slot => (
+                            <span key={slot} style={{ fontSize: s * 8, color: getStarColor(slot, card.starLevel) !== "empty" ? `${glow}44` : "rgba(255,255,255,0.06)" }}>★</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Filter pill ─────────────────────────────────────────────────────────────
 function FilterBtn({ label, active, color, onClick }: { label: string; active: boolean; color: string; onClick: () => void }) {
   return (
@@ -432,6 +552,7 @@ function FilterBtn({ label, active, color, onClick }: { label: string; active: b
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 type TierFilter = "all" | "purple" | "blue" | "gold";
+type Tab = "team" | "catalog";
 
 export default function MyTeamPage() {
   const { isSignedIn } = useUser();
@@ -442,6 +563,7 @@ export default function MyTeamPage() {
   const [ownedBeforePack, setOwnedBeforePack] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<TierFilter>("all");
   const [hasDailyPack, setHasDailyPack] = useState(false);
+  const [tab, setTab] = useState<Tab>("team");
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Load
@@ -588,7 +710,30 @@ export default function MyTeamPage() {
         </div>
       </header>
 
+      {/* Tab bar */}
+      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(6,12,24,0.9)" }}>
+        <div className="max-w-7xl mx-auto px-4 flex">
+          {(["team", "catalog"] as Tab[]).map(t => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] px-5 py-3.5 transition-colors relative"
+              style={{ color: tab === t ? "#84cc16" : "rgba(255,255,255,0.25)" }}
+            >
+              {t === "team" ? "My Team" : "Card Catalog"}
+              {tab === t && (
+                <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: "#84cc16" }} />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-14 pb-28">
+
+        {tab === "catalog" ? (
+          <CatalogSection owned={owned} />
+        ) : (<>
 
         {/* ── PACKS ── */}
         <section>
@@ -762,6 +907,8 @@ export default function MyTeamPage() {
             </div>
           ))}
         </div>
+
+        </>)}
       </main>
 
       {/* Pack opening overlay */}
