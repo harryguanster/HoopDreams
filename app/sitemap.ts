@@ -8,10 +8,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/franchise`,        lastModified: new Date(), changeFrequency: "weekly",  priority: 0.9 },
     { url: `${BASE}/higher-lower`,     lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/connections`,      lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE}/guess-who`,        lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE}/start-bench-cut`,  lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE}/stat-line-guesser`,lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE}/lineup-guesser`,   lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE}/my-team`,          lastModified: new Date(), changeFrequency: "weekly",  priority: 0.9 },
+    { url: `${BASE}/badge-court`,      lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${BASE}/lineup-thief`,     lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/simulations`,      lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/challenges`,       lastModified: new Date(), changeFrequency: "daily",   priority: 0.7 },
   ];

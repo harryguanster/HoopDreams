@@ -5,12 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
-import DailyGuessWhoGame from "@/app/components/DailyGuessWhoGame";
-import { CURRENT_GUESS_WHO_PLAYERS } from "@/lib/currentGuessWhoData";
-import {
-  getTodayStr, getDailyIndex, loadDailyData, saveDailyData, updateStreak, loadStreak,
-  type DailyData,
-} from "@/lib/dailyUtils";
+import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
 // ─── Game mode data ────────────────────────────────────────────────────────────
 const FEATURED = {
@@ -25,15 +20,15 @@ const FEATURED = {
 
 const GAMES = [
   {
-    href: "/guess-who",
-    title: "Guess Who",
-    desc: "Decode a mystery player from Wordle-style stat clues.",
-    tag: "Puzzle",
-    bg: "#111827",
+    href: "/my-team",
+    title: "My Team",
+    desc: "Collect 2K-style era cards and build your dream 10-man roster.",
+    tag: "New",
+    bg: "#060c18",
     textColor: "#ffffff",
-    hoverBg: "#1f2937",
-    tagBorderColor: "#84cc16",
-    tagTextColor: "#84cc16",
+    hoverBg: "#0d1526",
+    tagBorderColor: "#c084fc",
+    tagTextColor: "#c084fc",
   },
   {
     href: "/higher-lower",
@@ -192,22 +187,11 @@ function RuleHeader({ label, title }: { label: string; title: string }) {
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 export default function GamesPage() {
-  const [dailyData, setDailyData] = useState<DailyData>({ date: getTodayStr(), guessWhoWon: null, statLineWon: null });
   const [streakCount, setStreakCount] = useState(0);
-  const [dailyGWPlayer, setDailyGWPlayer] = useState<typeof CURRENT_GUESS_WHO_PLAYERS[0] | null>(null);
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
-    if (!window.location.hash) {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    } else {
-      const el = document.querySelector(window.location.hash);
-      if (el) el.scrollIntoView({ behavior: "instant" });
-    }
-    setDailyGWPlayer(CURRENT_GUESS_WHO_PLAYERS[getDailyIndex(CURRENT_GUESS_WHO_PLAYERS.length, 0)]);
-    const data = loadDailyData();
-    setDailyData(data);
-    if (data.guessWhoWon === true) updateStreak();
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     function refresh() {
       const s = loadStreak();
       setStreakCount(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
@@ -216,14 +200,6 @@ export default function GamesPage() {
     window.addEventListener("daily-update", refresh);
     return () => window.removeEventListener("daily-update", refresh);
   }, []);
-
-  function handleGWComplete(won: boolean) {
-    const next = { ...dailyData, guessWhoWon: won };
-    setDailyData(next); saveDailyData(next);
-    if (won) updateStreak();
-  }
-
-  const dailyWon = dailyData.guessWhoWon === true;
 
   return (
     <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
@@ -281,53 +257,6 @@ export default function GamesPage() {
                 <SmallCard game={g} />
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* ── DAILY CHALLENGES ── */}
-        <section id="daily-challenges">
-          <RuleHeader label="Daily" title="Today's Challenge" />
-          <p className="font-mono text-gray-500 text-xs -mt-2 mb-6 uppercase tracking-widest">New player every day · Complete to extend your streak</p>
-
-          {dailyWon && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-5 border-2 border-[#84cc16] flex items-center justify-between"
-              style={{ background: "rgba(132,204,22,0.06)" }}
-            >
-              <div>
-                <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.5rem" }}>Daily Complete</p>
-                <p className="font-mono text-[#65a30d] text-xs uppercase tracking-widest mt-1">Streak updated in the header</p>
-              </div>
-              <div className="text-right">
-                <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "3rem", lineHeight: 1 }}>{streakCount}</p>
-                <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">Day Streak</p>
-              </div>
-            </motion.div>
-          )}
-
-          <div className="border-2 border-[#111827]">
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-[#84cc16] mb-1">Daily · Guess Who</p>
-                  <h3 className="font-playfair font-black text-[#111827]" style={{ fontSize: "1.5rem", letterSpacing: "-0.01em" }}>Who Am I?</h3>
-                  <p className="font-mono text-gray-400 text-[10px] mt-1">Current player · 6 guesses</p>
-                </div>
-                {dailyData.guessWhoWon !== null && (
-                  <span className={`text-xs font-mono font-bold px-2 py-1 border ${dailyData.guessWhoWon ? "border-[#84cc16] text-[#65a30d]" : "border-red-300 text-red-500"}`}>
-                    {dailyData.guessWhoWon ? "✓ Done" : "✗ Done"}
-                  </span>
-                )}
-              </div>
-              {dailyGWPlayer ? (
-                <DailyGuessWhoGame player={dailyGWPlayer} onComplete={handleGWComplete} alreadyCompleted={dailyData.guessWhoWon !== null} won={dailyData.guessWhoWon} />
-              ) : (
-                <div className="h-32 flex items-center justify-center">
-                  <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
-                </div>
-              )}
-            </div>
           </div>
         </section>
 
