@@ -64,7 +64,6 @@ const P = {
   jordan88:     WC("3/38/Michael_Jordan_in_1988.jpg"),
   kobe81:       WC("f/fc/Kobe_Bryant_81.jpg"),
   curry_shoot:  WC("b/b6/Stephen_Curry_shooting.jpg"),
-  curry_13:     WC("5/5c/Stephen_Curry_2013.jpg"),
   jokic:        WC("6/6b/Nikola_Jokic_%2840980299891%29.jpg"),
   luka:         WC("7/73/Luka_Doncic_%28cropped%29.jpg"),
   wemby:        WC("2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg"),
@@ -123,7 +122,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "curry-1213", firstName: "Stephen", lastName: "Curry", era: "2012-13",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "PG", starLevel: 4,
-    photo: P.curry_13, photoPos: "center 20%",
+    photo: P.curry_shoot, photoPos: "center 35%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Floor General"],
     ppg: 22.9, rpg: 4.0, apg: 6.9, fg: 45.1,
@@ -383,7 +382,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kd-1617", firstName: "Kevin", lastName: "Durant", era: "2016-17",
     team: "Golden State Warriors", teamAbbr: "GSW", position: "SF", starLevel: 11,
-    photo: P.curry_shoot, photoPos: "right 70%",
+    photo: P.kd_okc, photoPos: "center 12%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Mid-Range Maestro", "Limitless Range"],
     ppg: 25.1, rpg: 8.3, apg: 4.8, fg: 53.7,

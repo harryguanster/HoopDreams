@@ -570,32 +570,27 @@ function CatalogSection({ owned }: { owned: Set<string> }) {
                       </div>
                     )}
 
-                    {/* Pack chance badge */}
-                    {!isOwned && (
-                      <div style={{
-                        position: "absolute", top: s * 9, left: s * 9,
-                        background: "rgba(0,0,0,0.72)", borderRadius: s * 4,
-                        padding: `${s * 2}px ${s * 5}px`,
-                        border: `${s}px solid ${glow}33`,
-                      }}>
-                        <span style={{
-                          fontFamily: "monospace", fontWeight: 700, fontSize: s * 7,
-                          color: glow, letterSpacing: "0.04em",
-                        }}>
-                          {packChance(card)}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Lock overlay */}
+                    {/* Lock overlay with centered pack % */}
                     {!isOwned && (
                       <div style={{
                         position: "absolute", inset: 0, borderRadius: w * 0.065,
                         display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center",
+                        alignItems: "center", justifyContent: "center", gap: s * 4,
                         border: `2px solid rgba(255,255,255,0.06)`,
                       }}>
-                        <span style={{ fontSize: s * 24, opacity: 0.2 }}>🔒</span>
+                        <span style={{ fontSize: s * 22, opacity: 0.18 }}>🔒</span>
+                        <div style={{
+                          background: "rgba(0,0,0,0.75)", borderRadius: s * 4,
+                          padding: `${s * 2.5}px ${s * 6}px`,
+                          border: `${s}px solid ${glow}44`,
+                        }}>
+                          <span style={{
+                            fontFamily: "monospace", fontWeight: 800, fontSize: s * 8.5,
+                            color: glow, letterSpacing: "0.06em",
+                          }}>
+                            {packChance(card)}
+                          </span>
+                        </div>
                       </div>
                     )}
                   </motion.div>
