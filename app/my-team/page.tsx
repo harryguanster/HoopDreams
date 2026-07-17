@@ -648,7 +648,7 @@ export default function MyTeamPage() {
       }
       if (!loaded) {
         try {
-          const raw = localStorage.getItem("my_team_v2");
+          const raw = localStorage.getItem("my_team_v3");
           if (raw) loaded = JSON.parse(raw);
         } catch {}
       }
@@ -673,7 +673,7 @@ export default function MyTeamPage() {
   const saveState = useCallback((s: TeamState) => {
     clearTimeout(saveTimer.current);
     setSaveStatus("saving");
-    localStorage.setItem("my_team_v2", JSON.stringify(s));
+    localStorage.setItem("my_team_v3", JSON.stringify(s));
     if (isSignedIn) {
       saveTimer.current = setTimeout(async () => {
         try {
