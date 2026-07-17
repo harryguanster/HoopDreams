@@ -44,6 +44,7 @@ export interface MTCard {
   position: string;
   starLevel: number;
   isShiny?: boolean;
+  isChampionship?: boolean;
   photo?: string;
   photoPos?: string;
   teamColor: string;
@@ -155,7 +156,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "jordan-9192", firstName: "Michael", lastName: "Jordan", era: "1991-92",
-    team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 14,
+    team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 14, isChampionship: true,
     photo: P.jordan92, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#000000",
     badges: ["Mid-Range Maestro", "Clutch Gene"],
@@ -163,7 +164,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "jordan-9596", firstName: "Michael", lastName: "Jordan", era: "1995-96",
-    team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 15,
+    team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 15, isChampionship: true,
     photo: P.jordan96, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#000000",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Volume Scorer"],
@@ -207,7 +208,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── LeBron James ────────────────────────────────────────────────────────────
   {
     id: "lebron-1213", firstName: "LeBron", lastName: "James", era: "2012-13",
-    team: "Miami Heat", teamAbbr: "MIA", position: "SF", starLevel: 14,
+    team: "Miami Heat", teamAbbr: "MIA", position: "SF", starLevel: 14, isChampionship: true,
     photo: P.lebron12, photoPos: "center 10%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Floor General", "Transition Threat", "Clutch Gene"],
@@ -215,7 +216,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "lebron-1516", firstName: "LeBron", lastName: "James", era: "2015-16",
-    team: "Cleveland Cavaliers", teamAbbr: "CLE", position: "SF", starLevel: 12,
+    team: "Cleveland Cavaliers", teamAbbr: "CLE", position: "SF", starLevel: 12, isChampionship: true,
     photo: P.lebron_block, photoPos: "center 15%",
     teamColor: "#860038", accentColor: "#FDBB30",
     badges: ["Floor General", "Clutch Gene"],
@@ -241,7 +242,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Kobe Bryant ─────────────────────────────────────────────────────────────
   {
     id: "kobe-0001", firstName: "Kobe", lastName: "Bryant", era: "2000-01",
-    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "SG", starLevel: 5,
+    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "SG", starLevel: 5, isChampionship: true,
     photo: P.kobe00, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Ankle Breaker"],
@@ -337,7 +338,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Shaquille O'Neal ─────────────────────────────────────────────────────────
   {
     id: "shaq-9900", firstName: "Shaquille", lastName: "O'Neal", era: "1999-00",
-    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "C", starLevel: 14,
+    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "C", starLevel: 14, isChampionship: true,
     photo: P.shaq00, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Backdown Bully", "Contact Finisher", "Rim Runner"],
@@ -353,7 +354,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "shaq-0506", firstName: "Shaquille", lastName: "O'Neal", era: "2005-06",
-    team: "Miami Heat", teamAbbr: "MIA", position: "C", starLevel: 9,
+    team: "Miami Heat", teamAbbr: "MIA", position: "C", starLevel: 9, isChampionship: true,
     photo: P.shaq05, photoPos: "center 12%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Backdown Bully", "Pick & Roll"],
@@ -363,7 +364,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Magic Johnson ────────────────────────────────────────────────────────────
   {
     id: "magic-8689", firstName: "Magic", lastName: "Johnson", era: "1986-89",
-    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "PG", starLevel: 13,
+    team: "Los Angeles Lakers", teamAbbr: "LAL", position: "PG", starLevel: 13, isChampionship: true,
     photo: P.magic87, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Floor General", "Flashy Passer", "Pick & Roll"],
@@ -373,7 +374,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Hakeem Olajuwon ──────────────────────────────────────────────────────────
   {
     id: "hakeem-9395", firstName: "Hakeem", lastName: "Olajuwon", era: "1993-95",
-    team: "Houston Rockets", teamAbbr: "HOU", position: "C", starLevel: 13,
+    team: "Houston Rockets", teamAbbr: "HOU", position: "C", starLevel: 13, isChampionship: true,
     photo: P.hakeem, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#C4CED4",
     badges: ["Dream Shake", "Rim Runner", "Box Out Beast"],
@@ -409,7 +410,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "kd-1617", firstName: "Kevin", lastName: "Durant", era: "2016-17",
-    team: "Golden State Warriors", teamAbbr: "GSW", position: "SF", starLevel: 11,
+    team: "Golden State Warriors", teamAbbr: "GSW", position: "SF", starLevel: 11, isChampionship: true,
     photo: P.kd_gsw, photoPos: "center 12%",
     teamColor: "#1D428A", accentColor: "#FFC72C",
     badges: ["Mid-Range Maestro", "Limitless Range"],
@@ -435,7 +436,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "giannis-2021", firstName: "Giannis", lastName: "Antetokounmpo", era: "2020-21",
-    team: "Milwaukee Bucks", teamAbbr: "MIL", position: "PF", starLevel: 12,
+    team: "Milwaukee Bucks", teamAbbr: "MIL", position: "PF", starLevel: 12, isChampionship: true,
     photo: P.giannis21, photoPos: "center 12%",
     teamColor: "#00471B", accentColor: "#EEE1C6",
     badges: ["Rim Runner", "Contact Finisher", "Box Out Beast"],
@@ -461,7 +462,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "dirk-1011", firstName: "Dirk", lastName: "Nowitzki", era: "2010-11",
-    team: "Dallas Mavericks", teamAbbr: "DAL", position: "PF", starLevel: 11,
+    team: "Dallas Mavericks", teamAbbr: "DAL", position: "PF", starLevel: 11, isChampionship: true,
     photo: P.dirk_1011, photoPos: "center 15%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Volume Scorer"],
@@ -471,7 +472,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Dwyane Wade ──────────────────────────────────────────────────────────────
   {
     id: "wade-0506", firstName: "Dwyane", lastName: "Wade", era: "2005-06",
-    team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 11,
+    team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 11, isChampionship: true,
     photo: P.wade06, photoPos: "center 12%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Contact Finisher", "Clutch Gene", "Transition Threat"],
@@ -479,7 +480,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "wade-1112", firstName: "Dwyane", lastName: "Wade", era: "2011-12",
-    team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 8,
+    team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 8, isChampionship: true,
     photo: P.wade12, photoPos: "center 12%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Contact Finisher", "Transition Threat"],
@@ -489,7 +490,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Tim Duncan ───────────────────────────────────────────────────────────────
   {
     id: "duncan-0203", firstName: "Tim", lastName: "Duncan", era: "2002-03",
-    team: "San Antonio Spurs", teamAbbr: "SAS", position: "PF", starLevel: 12,
+    team: "San Antonio Spurs", teamAbbr: "SAS", position: "PF", starLevel: 12, isChampionship: true,
     photo: P.duncan, photoPos: "center 12%",
     teamColor: "#C4CED4", accentColor: "#000000",
     badges: ["Mid-Range Maestro", "Box Out Beast", "Pick & Roll"],
@@ -525,7 +526,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   // ── Larry Bird ───────────────────────────────────────────────────────────────
   {
     id: "bird-8384", firstName: "Larry", lastName: "Bird", era: "1983-84",
-    team: "Boston Celtics", teamAbbr: "BOS", position: "SF", starLevel: 9,
+    team: "Boston Celtics", teamAbbr: "BOS", position: "SF", starLevel: 9, isChampionship: true,
     photo: P.bird84, photoPos: "center 12%",
     teamColor: "#007A33", accentColor: "#BA9653",
     badges: ["Mid-Range Maestro", "Clutch Gene"],
@@ -533,7 +534,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "bird-8586", firstName: "Larry", lastName: "Bird", era: "1985-86",
-    team: "Boston Celtics", teamAbbr: "BOS", position: "SF", starLevel: 11,
+    team: "Boston Celtics", teamAbbr: "BOS", position: "SF", starLevel: 11, isChampionship: true,
     photo: P.bird86, photoPos: "center 12%",
     teamColor: "#007A33", accentColor: "#BA9653",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Floor General"],
@@ -569,7 +570,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   },
   {
     id: "rayallen-1213", firstName: "Ray", lastName: "Allen", era: "2012-13",
-    team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 7,
+    team: "Miami Heat", teamAbbr: "MIA", position: "SG", starLevel: 7, isChampionship: true,
     photo: P.ray_mia, photoPos: "center 15%",
     teamColor: "#98002E", accentColor: "#F9A01B",
     badges: ["Limitless Range", "Clutch Gene"],

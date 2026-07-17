@@ -94,15 +94,28 @@ function Card2K({
         }} />
       )}
 
+      {/* Championship gold outer glow (behind card frame) */}
+      {card.isChampionship && !card.isShiny && (
+        <div style={{
+          position: "absolute", inset: -3, borderRadius: w * 0.065 + 3, zIndex: 0,
+          boxShadow: `0 0 ${s * 18}px #f59e0baa, 0 0 ${s * 35}px #f59e0b44`,
+          border: `${s * 1.5}px solid #f59e0b55`,
+          borderRadius: w * 0.065 + 3,
+          pointerEvents: "none",
+        }} />
+      )}
+
       {/* Card frame */}
       <div
         className="absolute inset-0 overflow-hidden"
         style={{
           borderRadius: w * 0.065,
-          border: `${s * 2}px solid ${card.isShiny ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.1)"}`,
+          border: `${s * 2}px solid ${card.isShiny ? "rgba(255,255,255,0.25)" : card.isChampionship ? "#f59e0b55" : "rgba(255,255,255,0.1)"}`,
           boxShadow: card.isShiny
             ? `0 0 ${s * 35}px ${glow}88, 0 0 ${s * 60}px ${glow}33, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`
-            : `0 0 ${s * 20}px ${glow}44, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`,
+            : card.isChampionship
+              ? `0 0 ${s * 20}px ${glow}44, 0 0 ${s * 22}px #f59e0b55, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`
+              : `0 0 ${s * 20}px ${glow}44, 0 ${s * 6}px ${s * 20}px rgba(0,0,0,0.6)`,
           background: "#060c18",
           zIndex: 1,
         }}
@@ -196,6 +209,66 @@ function Card2K({
             background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%)",
             animation: "shiny-sweep 2.2s ease-in-out infinite",
           }} />
+        )}
+
+        {/* Championship border text */}
+        {card.isChampionship && (
+          <>
+            {/* Top edge */}
+            <div style={{
+              position: "absolute", top: s * 3.5, left: 0, right: 0,
+              textAlign: "center", pointerEvents: "none", zIndex: 5, overflow: "hidden",
+              fontFamily: "monospace", fontWeight: 700,
+              fontSize: s * 5, letterSpacing: "0.3em",
+              color: "#f59e0b", opacity: 0.13, textTransform: "uppercase",
+              whiteSpace: "nowrap",
+            }}>
+              {"CHAMPIONSHIP · CHAMPIONSHIP · CHAMPIONSHIP · CHAMPIONSHIP"}
+            </div>
+            {/* Bottom edge */}
+            <div style={{
+              position: "absolute", bottom: s * 3.5, left: 0, right: 0,
+              textAlign: "center", pointerEvents: "none", zIndex: 5, overflow: "hidden",
+              fontFamily: "monospace", fontWeight: 700,
+              fontSize: s * 5, letterSpacing: "0.3em",
+              color: "#f59e0b", opacity: 0.13, textTransform: "uppercase",
+              whiteSpace: "nowrap",
+            }}>
+              {"CHAMPIONSHIP · CHAMPIONSHIP · CHAMPIONSHIP · CHAMPIONSHIP"}
+            </div>
+            {/* Left edge */}
+            <div style={{
+              position: "absolute", left: s * 3, top: 0, bottom: 0,
+              display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 5,
+              overflow: "hidden",
+            }}>
+              <span style={{
+                fontFamily: "monospace", fontWeight: 700,
+                fontSize: s * 5, letterSpacing: "0.3em",
+                color: "#f59e0b", opacity: 0.13, textTransform: "uppercase",
+                writingMode: "vertical-rl", transform: "rotate(180deg)",
+                whiteSpace: "nowrap",
+              }}>
+                {"CHAMPIONSHIP · CHAMPIONSHIP · CHAMPIONSHIP"}
+              </span>
+            </div>
+            {/* Right edge */}
+            <div style={{
+              position: "absolute", right: s * 3, top: 0, bottom: 0,
+              display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 5,
+              overflow: "hidden",
+            }}>
+              <span style={{
+                fontFamily: "monospace", fontWeight: 700,
+                fontSize: s * 5, letterSpacing: "0.3em",
+                color: "#f59e0b", opacity: 0.13, textTransform: "uppercase",
+                writingMode: "vertical-rl",
+                whiteSpace: "nowrap",
+              }}>
+                {"CHAMPIONSHIP · CHAMPIONSHIP · CHAMPIONSHIP"}
+              </span>
+            </div>
+          </>
         )}
 
         {/* Bottom */}
@@ -553,9 +626,7 @@ function CatalogSection({ owned }: { owned: Set<string> }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div style={{ filter: isOwned ? "none" : "grayscale(100%) brightness(0.35)", transition: "filter 0.3s" }}>
-                      <Card2K card={card} size="md" dimmed={false} />
-                    </div>
+                    <Card2K card={card} size="md" dimmed={false} />
 
                     {/* Owned badge */}
                     {isOwned && (
@@ -570,27 +641,20 @@ function CatalogSection({ owned }: { owned: Set<string> }) {
                       </div>
                     )}
 
-                    {/* Lock overlay with centered pack % */}
+                    {/* Pack % badge (always visible) */}
                     {!isOwned && (
                       <div style={{
-                        position: "absolute", inset: 0, borderRadius: w * 0.065,
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center", gap: s * 4,
-                        border: `2px solid rgba(255,255,255,0.06)`,
+                        position: "absolute", bottom: s * 9, left: "50%", transform: "translateX(-50%)",
+                        background: "rgba(0,0,0,0.75)", borderRadius: s * 4,
+                        padding: `${s * 2.5}px ${s * 6}px`,
+                        border: `${s}px solid ${glow}44`,
                       }}>
-                        <span style={{ fontSize: s * 22, opacity: 0.18 }}>🔒</span>
-                        <div style={{
-                          background: "rgba(0,0,0,0.75)", borderRadius: s * 4,
-                          padding: `${s * 2.5}px ${s * 6}px`,
-                          border: `${s}px solid ${glow}44`,
+                        <span style={{
+                          fontFamily: "monospace", fontWeight: 800, fontSize: s * 8.5,
+                          color: glow, letterSpacing: "0.06em",
                         }}>
-                          <span style={{
-                            fontFamily: "monospace", fontWeight: 800, fontSize: s * 8.5,
-                            color: glow, letterSpacing: "0.06em",
-                          }}>
-                            {packChance(card)}
-                          </span>
-                        </div>
+                          {packChance(card)}
+                        </span>
                       </div>
                     )}
                   </motion.div>
