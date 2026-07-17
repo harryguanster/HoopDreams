@@ -61,7 +61,7 @@ const WC = (p: string) => `https://upload.wikimedia.org/wikipedia/commons/${p}`;
 // All URLs confirmed valid (200 = direct load, 429 = rate-limited but loads fine in browser)
 const P = {
   // Michael Jordan — 3 era-specific photos
-  jordan86:     WC("b/b0/Michael_Jordan_1991.jpg"),                              // early career
+  jordan86:     "/cards/jordan-1986.webp",                                       // 1986-87
   jordan92:     WC("9/9b/MJ_layup_1998.jpg"),                                   // mid-career layup
   jordan96:     WC("2/29/Michael_Jordan_1996_%28cropped%29.jpg"),                // 96 Bulls
   jordan97:     WC("4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg"),      // (kept for ref)
@@ -113,13 +113,12 @@ const P = {
   shaq03:       WC("8/8d/Shaquille_ONeal_Lakers.jpg"),                          // 2002-03 Lakers
   shaq05:       WC("5/5b/Shaq_Heat.jpg"),                                       // 2005-06 Heat
 
-  // Magic Johnson — 2 era-specific photos
-  magic87:      WC("e/e1/Magic_Johnson_1987.jpg"),                              // 1986-87
-  magic89:      WC("c/c1/Magic_Johnson_1989.jpg"),                              // 1988-89
+  // Magic Johnson — user photo
+  magic87:      "/cards/magic-1986.webp",                                       // 1986-89
 
   // Larry Bird — 2 era-specific photos
-  bird84:       WC("2/24/Larry_Bird_1985.jpg"),                                 // 1983-84
-  bird86:       WC("6/69/Larry_Bird_1986.jpg"),                                 // 1985-86
+  bird84:       "/cards/bird-1983.jpg",                                         // 1983-84
+  bird86:       "/cards/bird-1985.webp",                                        // 1985-86
 
   // Allen Iverson — 2 era-specific photos
   iverson01:    WC("7/7d/Allen_Iverson_2001.jpg"),                              // 2000-01
