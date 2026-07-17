@@ -133,9 +133,11 @@ const P = {
   ray_bos:      "/cards/ray-allen-bos.jpg",
   ray_mia:      "/cards/ray-allen-mia.webp",
   hakeem:       WC("e/ee/Hakeem_Olajuwon_1996.jpg"),
-  dirk:         WC("e/e8/Dirk_Nowitzki_2011.jpg"),
+  dirk_0506:    WC("e/e8/Dirk_Nowitzki_2011.jpg"),
+  dirk_1011:    "/cards/dirk-2011.jpg",
   duncan:       WC("a/a6/Tim_Duncan_2005.jpg"),
-  kareem:       WC("3/3f/Kareem_Abdul-Jabbar_1974.jpg"),
+  kareem71:     "/cards/kareem-1971.jpg",
+  kareem76:     "/cards/kareem-1976.jpg",
   barkley:      WC("f/f5/Charles_Barkley.jpg"),
   lillard:      WC("6/6d/Damian_Lillard_2019.jpg"),
 };
@@ -453,7 +455,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "dirk-0506", firstName: "Dirk", lastName: "Nowitzki", era: "2005-06",
     team: "Dallas Mavericks", teamAbbr: "DAL", position: "PF", starLevel: 9,
-    photo: P.dirk, photoPos: "center 12%",
+    photo: P.dirk_0506, photoPos: "center 12%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
     badges: ["Mid-Range Maestro", "Volume Scorer"],
     ppg: 26.6, rpg: 9.0, apg: 2.8, fg: 48.0,
@@ -461,7 +463,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "dirk-1011", firstName: "Dirk", lastName: "Nowitzki", era: "2010-11",
     team: "Dallas Mavericks", teamAbbr: "DAL", position: "PF", starLevel: 11,
-    photo: P.dirk, photoPos: "center 12%",
+    photo: P.dirk_1011, photoPos: "center 15%",
     teamColor: "#00538C", accentColor: "#B8C4CA",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Volume Scorer"],
     ppg: 23.0, rpg: 7.0, apg: 2.6, fg: 51.9,
@@ -507,7 +509,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kareem-7172", firstName: "Kareem", lastName: "Abdul-Jabbar", era: "1971-72",
     team: "Milwaukee Bucks", teamAbbr: "MIL", position: "C", starLevel: 13,
-    photo: P.kareem, photoPos: "center 12%",
+    photo: P.kareem71, photoPos: "center 12%",
     teamColor: "#00471B", accentColor: "#EEE1C6",
     badges: ["Dream Shake", "Box Out Beast", "Mid-Range Maestro"],
     ppg: 34.8, rpg: 16.6, apg: 4.6, fg: 57.4,
@@ -515,7 +517,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "kareem-7677", firstName: "Kareem", lastName: "Abdul-Jabbar", era: "1976-77",
     team: "Los Angeles Lakers", teamAbbr: "LAL", position: "C", starLevel: 10,
-    photo: P.kareem, photoPos: "center 12%",
+    photo: P.kareem76, photoPos: "center 12%",
     teamColor: "#552583", accentColor: "#FDB927",
     badges: ["Dream Shake", "Box Out Beast"],
     ppg: 26.2, rpg: 13.3, apg: 3.9, fg: 57.9,
