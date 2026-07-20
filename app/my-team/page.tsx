@@ -100,7 +100,6 @@ function Card2K({
           position: "absolute", inset: -3, borderRadius: w * 0.065 + 3, zIndex: 0,
           boxShadow: `0 0 ${s * 18}px #f59e0baa, 0 0 ${s * 35}px #f59e0b44`,
           border: `${s * 1.5}px solid #f59e0b55`,
-          borderRadius: w * 0.065 + 3,
           pointerEvents: "none",
         }} />
       )}
