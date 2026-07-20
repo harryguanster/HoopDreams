@@ -63,7 +63,7 @@ const WC = (p: string) => `https://upload.wikimedia.org/wikipedia/commons/${p}`;
 const P = {
   // Michael Jordan — 3 era-specific photos
   jordan86:     "/cards/jordan-1986.webp",                                       // 1986-87
-  jordan92:     WC("9/9b/MJ_layup_1998.jpg"),                                   // mid-career layup
+  jordan92:     "/cards/jordan-1991.jpg",                                        // Bulls vs Nets Jan 23 1991
   jordan96:     WC("2/29/Michael_Jordan_1996_%28cropped%29.jpg"),                // 96 Bulls
   jordan97:     WC("4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg"),      // (kept for ref)
 
