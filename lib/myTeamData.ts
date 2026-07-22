@@ -63,7 +63,8 @@ const WC = (p: string) => `https://upload.wikimedia.org/wikipedia/commons/${p}`;
 const P = {
   // Michael Jordan — 3 era-specific photos
   jordan86:     "/cards/jordan-1986.webp",                                       // 1986-87
-  jordan92:     "/cards/jordan-1991.jpg",                                        // Bulls vs Nets Jan 23 1991
+  jordan92:     "/cards/jordan-1991.jpg",                                        // 1991 action
+  jordan95:     "/cards/jordan-1995.webp",                                       // 1995-96
   jordan96:     WC("2/29/Michael_Jordan_1996_%28cropped%29.jpg"),                // 96 Bulls
   jordan97:     WC("4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg"),      // (kept for ref)
 
@@ -110,7 +111,7 @@ const P = {
   giannis23:    WC("7/74/Giannis_Antetokounmpo_2023.jpg"),                      // 2023-24
 
   // Shaquille O'Neal — 3 era-specific photos
-  shaq00:       WC("1/1c/Shaq_2000.jpg"),                                       // 1999-00 Lakers
+  shaq00:       "/cards/shaq-1999.jpg",                                         // 1999-00 Lakers
   shaq03:       WC("8/8d/Shaquille_ONeal_Lakers.jpg"),                          // 2002-03 Lakers
   shaq05:       WC("5/5b/Shaq_Heat.jpg"),                                       // 2005-06 Heat
 
@@ -132,13 +133,14 @@ const P = {
   // Ray Allen — 2 era-specific local photos
   ray_bos:      "/cards/ray-allen-bos.jpg",
   ray_mia:      "/cards/ray-allen-mia.webp",
-  hakeem:       WC("e/ee/Hakeem_Olajuwon_1996.jpg"),
+  hakeem:       "/cards/hakeem-1994.webp",                                       // 1994 championship era
   dirk_0506:    WC("e/e8/Dirk_Nowitzki_2011.jpg"),
   dirk_1011:    "/cards/dirk-2011.jpg",
   duncan:       WC("a/a6/Tim_Duncan_2005.jpg"),
   kareem71:     "/cards/kareem-1971.jpg",
   kareem76:     "/cards/kareem-1976.jpg",
-  barkley:      WC("f/f5/Charles_Barkley.jpg"),
+  barkley92:    "/cards/barkley-1992.webp",                                      // 1992-93 Suns
+  barkley95:    "/cards/barkley-1995.jpg",                                       // 1995-96 Suns
   lillard:      WC("6/6d/Damian_Lillard_2019.jpg"),
 };
 
@@ -165,7 +167,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "jordan-9596", firstName: "Michael", lastName: "Jordan", era: "1995-96",
     team: "Chicago Bulls", teamAbbr: "CHI", position: "SG", starLevel: 15, isChampionship: true,
-    photo: P.jordan96, photoPos: "center 12%",
+    photo: P.jordan95, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#000000",
     badges: ["Mid-Range Maestro", "Clutch Gene", "Volume Scorer"],
     ppg: 30.4, rpg: 6.6, apg: 4.3, fg: 49.5,
@@ -545,7 +547,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "barkley-9293", firstName: "Charles", lastName: "Barkley", era: "1992-93",
     team: "Phoenix Suns", teamAbbr: "PHX", position: "PF", starLevel: 11,
-    photo: P.barkley, photoPos: "center 12%",
+    photo: P.barkley92, photoPos: "center 12%",
     teamColor: "#1D1160", accentColor: "#E56020",
     badges: ["Box Out Beast", "Volume Scorer", "Backdown Bully"],
     ppg: 25.6, rpg: 12.2, apg: 5.1, fg: 52.0,
@@ -553,7 +555,7 @@ export const MY_TEAM_CARDS: MTCard[] = [
   {
     id: "barkley-9596", firstName: "Charles", lastName: "Barkley", era: "1995-96",
     team: "Houston Rockets", teamAbbr: "HOU", position: "PF", starLevel: 8,
-    photo: P.barkley, photoPos: "center 12%",
+    photo: P.barkley95, photoPos: "center 12%",
     teamColor: "#CE1141", accentColor: "#C4CED4",
     badges: ["Box Out Beast", "Volume Scorer"],
     ppg: 23.2, rpg: 11.2, apg: 3.5, fg: 55.7,
