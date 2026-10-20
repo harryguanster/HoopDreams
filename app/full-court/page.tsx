@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Arena3D from "@/app/components/Arena3D";
 import {
   FULL_COURT_QUESTIONS,
   getDailyQuestions,
   matchAnswer,
   calcScore,
   getZoneLabel,
-  normalizeAnswer,
   type FullCourtQuestion,
   type FullCourtAnswer,
 } from "@/lib/fullCourtData";
@@ -30,140 +30,9 @@ type RoundResult = {
 
 // ── Court SVG ─────────────────────────────────────────────────────────────────
 
-function CourtSVG({ ballX, animate }: { ballX: number; animate: boolean }) {
-  // Court: 900 x 480, ball travels from x=80 to x=820
-  return (
-    <svg viewBox="0 0 900 480" width="100%" style={{ display: "block", maxHeight: 220 }}>
-      {/* Wood floor */}
-      <defs>
-        <linearGradient id="woodGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8B5E1A" stopOpacity="0.9" />
-          <stop offset="50%" stopColor="#C17F2A" stopOpacity="1" />
-          <stop offset="100%" stopColor="#8B5E1A" stopOpacity="0.9" />
-        </linearGradient>
-        <linearGradient id="lightBeam" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-        </linearGradient>
-        <radialGradient id="ballGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#84cc16" stopOpacity="0.9" />
-          <stop offset="60%" stopColor="#84cc16" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#84cc16" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="rimGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#f97316" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
-        </radialGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-        {/* Wood planks */}
-        {Array.from({ length: 12 }).map((_, i) => (
-          <line key={i} id={`plank${i}`} x1="0" y1={40 * i} x2="900" y2={40 * i} stroke="#7A520F" strokeWidth="1" strokeOpacity="0.3" />
-        ))}
-      </defs>
-
-      {/* Court background */}
-      <rect x="0" y="0" width="900" height="480" fill="url(#woodGrad)" />
-
-      {/* Plank lines */}
-      {Array.from({ length: 13 }).map((_, i) => (
-        <line key={i} x1="0" y1={37 * i} x2="900" y2={37 * i} stroke="#7A520F" strokeWidth="0.8" strokeOpacity="0.25" />
-      ))}
-
-      {/* Arena light beams from above */}
-      <rect x="100" y="0" width="160" height="480" fill="url(#lightBeam)" />
-      <rect x="380" y="0" width="140" height="480" fill="url(#lightBeam)" />
-      <rect x="660" y="0" width="160" height="480" fill="url(#lightBeam)" />
-
-      {/* Court boundary */}
-      <rect x="30" y="30" width="840" height="420" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="2.5" />
-
-      {/* Center circle */}
-      <circle cx="450" cy="240" r="60" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      <circle cx="450" cy="240" r="4" fill="rgba(255,255,255,0.5)" />
-
-      {/* Half court line */}
-      <line x1="450" y1="30" x2="450" y2="450" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-
-      {/* Left paint */}
-      <rect x="30" y="155" width="170" height="170" fill="rgba(0,0,0,0.15)" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      {/* Left free throw circle */}
-      <circle cx="200" cy="240" r="60" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeDasharray="6 4" />
-
-      {/* Right paint */}
-      <rect x="700" y="155" width="170" height="170" fill="rgba(0,0,0,0.15)" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      {/* Right free throw circle */}
-      <circle cx="700" cy="240" r="60" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeDasharray="6 4" />
-
-      {/* Left 3pt arc */}
-      <path d="M 30 110 A 240 240 0 0 1 30 370" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      <line x1="30" y1="110" x2="220" y2="110" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      <line x1="30" y1="370" x2="220" y2="370" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-
-      {/* Right 3pt arc */}
-      <path d="M 870 110 A 240 240 0 0 0 870 370" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      <line x1="870" y1="110" x2="680" y2="110" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-      <line x1="870" y1="370" x2="680" y2="370" stroke="rgba(255,255,255,0.45)" strokeWidth="2" />
-
-      {/* Left basket */}
-      <circle cx="55" cy="240" r="18" fill="none" stroke="rgba(249,115,22,0.9)" strokeWidth="2.5" filter="url(#glow)" />
-      <circle cx="55" cy="240" r="28" fill="url(#rimGlow)" />
-
-      {/* Right basket */}
-      <circle cx="845" cy="240" r="18" fill="none" stroke="rgba(249,115,22,0.9)" strokeWidth="2.5" filter="url(#glow)" />
-      <circle cx="845" cy="240" r="28" fill="url(#rimGlow)" />
-
-      {/* Zone label lines */}
-      {/* Half court */}
-      <line x1="450" y1="440" x2="450" y2="452" stroke="rgba(132,204,22,0.5)" strokeWidth="1.5" />
-      {/* 3pt entry (right side) */}
-      <line x1="680" y1="440" x2="680" y2="452" stroke="rgba(132,204,22,0.5)" strokeWidth="1.5" />
-      {/* Paint entry */}
-      <line x1="700" y1="440" x2="700" y2="452" stroke="rgba(132,204,22,0.5)" strokeWidth="1.5" />
-
-      {/* Ball glow halo */}
-      <motion.circle
-        cx={ballX}
-        cy={240}
-        r={32}
-        fill="url(#ballGlow)"
-        animate={animate ? { cx: ballX } : {}}
-        transition={{ type: "spring", stiffness: 60, damping: 18 }}
-      />
-
-      {/* Ball */}
-      <motion.circle
-        cx={ballX}
-        cy={240}
-        r={14}
-        fill="#84cc16"
-        stroke="#fff"
-        strokeWidth="2"
-        filter="url(#glow)"
-        animate={animate ? { cx: ballX } : {}}
-        transition={{ type: "spring", stiffness: 60, damping: 18 }}
-      />
-
-      {/* Ball seam lines */}
-      <motion.path
-        d={`M ${ballX - 10} ${240 - 6} Q ${ballX} ${240 - 14} ${ballX + 10} ${240 - 6}`}
-        stroke="rgba(0,0,0,0.4)"
-        strokeWidth="1.5"
-        fill="none"
-        animate={animate ? { d: `M ${ballX - 10} ${240 - 6} Q ${ballX} ${240 - 14} ${ballX + 10} ${240 - 6}` } : {}}
-        transition={{ type: "spring", stiffness: 60, damping: 18 }}
-      />
-    </svg>
-  );
-}
-
-// ── Score to ball X position ───────────────────────────────────────────────────
-function scoreToBallX(score: number): number {
-  // x=80 (inbound) → x=820 (at rim)
-  const pct = score / 10000;
-  return 80 + pct * 740;
+// ── Score to ball progress (0=near end, 1=at rim) ─────────────────────────────
+function scoreToBallProgress(score: number): number {
+  return 0.04 + (score / 10000) * 0.9;
 }
 
 // ── Crowd bars ─────────────────────────────────────────────────────────────────
@@ -268,7 +137,7 @@ export default function FullCourtPage() {
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [input, setInput] = useState("");
   const [results, setResults] = useState<RoundResult[]>([]);
-  const [ballX, setBallX] = useState(80);
+  const [ballProgress, setBallProgress] = useState(0.04);
   const [showCrowdBars, setShowCrowdBars] = useState(false);
   const [lastZone, setLastZone] = useState<{ label: string; sub: string } | null>(null);
   const [lastScore, setLastScore] = useState(0);
@@ -291,7 +160,7 @@ export default function FullCourtPage() {
           setPhase("complete");
           setAlreadyPlayed(true);
           const totalScore = saved.results.reduce((s: number, r: RoundResult) => s + r.score, 0);
-          setBallX(scoreToBallX(Math.min(totalScore / TOTAL_ROUNDS, 10000)));
+          setBallProgress(scoreToBallProgress(Math.min(totalScore / TOTAL_ROUNDS, 10000)));
         }
       }
     } catch { /* ignore */ }
@@ -322,7 +191,7 @@ export default function FullCourtPage() {
 
     setLastScore(score);
     setLastZone(zone);
-    setBallX(scoreToBallX(score));
+    setBallProgress(scoreToBallProgress(score));
     setPhase("revealing");
 
     const newResults = [...results, result];
@@ -337,7 +206,7 @@ export default function FullCourtPage() {
         setResults(newResults);
         setRoundIdx(prev => prev + 1);
         setInput("");
-        setBallX(80);
+        setBallProgress(0.04);
         setShowCrowdBars(false);
         setPhase("crowd");
       }
@@ -374,7 +243,7 @@ export default function FullCourtPage() {
     setPhase("crowd");
     setRoundIdx(0);
     setResults([]);
-    setBallX(80);
+    setBallProgress(0.04);
     setInput("");
   }
 
@@ -394,16 +263,10 @@ export default function FullCourtPage() {
         fontFamily: "var(--font-geist-mono)",
       }}
     >
-      {/* Arena atmosphere */}
+      {/* 3D arena background */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        {/* Ceiling lights */}
-        <div style={{ position: "absolute", top: -80, left: "20%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,220,100,0.12) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", top: -80, left: "50%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,220,100,0.1) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", top: -80, right: "20%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,220,100,0.12) 0%, transparent 70%)" }} />
-        {/* Floor glow */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "40%", background: "linear-gradient(to top, rgba(193,127,42,0.08) 0%, transparent 100%)" }} />
-        {/* Crowd shadows */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "15%", background: "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%)" }} />
+        <Arena3D ballProgress={ballProgress} animateBall={phase === "revealing"} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(3,5,8,0.45)" }} />
       </div>
       <Particles />
 
@@ -460,15 +323,6 @@ export default function FullCourtPage() {
               Beat the crowd — obvious answers barely move you.
             </motion.p>
 
-            {/* Mini court preview */}
-            <motion.div
-              className="w-full max-w-lg mb-10 overflow-hidden rounded-lg"
-              style={{ border: "1px solid rgba(255,255,255,0.1)" }}
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5 }}
-            >
-              <CourtSVG ballX={80} animate={false} />
-            </motion.div>
-
             <motion.button
               onClick={startGame}
               className="px-14 py-4 font-mono font-bold uppercase tracking-[0.3em] text-sm"
@@ -489,11 +343,6 @@ export default function FullCourtPage() {
             className="relative z-10 flex flex-col flex-1 px-4 md:px-8 py-4 gap-4 max-w-3xl mx-auto w-full"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
-            {/* Court */}
-            <div className="overflow-hidden rounded-xl" style={{ border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 0 60px rgba(193,127,42,0.15)" }}>
-              <CourtSVG ballX={ballX} animate={phase === "revealing"} />
-            </div>
-
             {/* Round dots */}
             <div className="flex justify-center gap-2">
               {Array.from({ length: TOTAL_ROUNDS }).map((_, i) => (
@@ -654,11 +503,6 @@ export default function FullCourtPage() {
                   </div>
                 </motion.div>
               ))}
-            </div>
-
-            {/* Final court */}
-            <div className="w-full overflow-hidden rounded-xl mb-8" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
-              <CourtSVG ballX={scoreToBallX(Math.min(Math.round(totalScore / TOTAL_ROUNDS), 10000))} animate={false} />
             </div>
 
             <a

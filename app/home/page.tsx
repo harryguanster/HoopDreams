@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
+import Arena3D from "@/app/components/Arena3D";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
-// ── Floating particles (arena dust) ───────────────────────────────────────────
+// ── Floating particles ─────────────────────────────────────────────────────────
 function ArenaParticles() {
-  const ps = Array.from({ length: 22 }, (_, i) => ({
+  const ps = Array.from({ length: 18 }, (_, i) => ({
     id: i,
     x: 3 + (i * 41) % 96,
     delay: (i * 0.6) % 9,
@@ -17,7 +18,7 @@ function ArenaParticles() {
     opacity: 0.3 + (i * 0.04) % 0.5,
   }));
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }}>
       {ps.map(p => (
         <motion.div
           key={p.id}
@@ -27,33 +28,6 @@ function ArenaParticles() {
           transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear" }}
         />
       ))}
-    </div>
-  );
-}
-
-// ── Court floor strip at bottom ────────────────────────────────────────────────
-function CourtFloor() {
-  return (
-    <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none overflow-hidden">
-      <svg viewBox="0 0 1200 130" width="100%" height="130" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#C17F2A" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#8B5E1A" stopOpacity="0.5" />
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="1200" height="130" fill="url(#floorGrad)" />
-        {/* Plank lines */}
-        {Array.from({ length: 8 }).map((_, i) => (
-          <line key={i} x1="0" y1={16 * i} x2="1200" y2={16 * i} stroke="rgba(139,94,26,0.4)" strokeWidth="1" />
-        ))}
-        {/* Court boundary line */}
-        <line x1="0" y1="2" x2="1200" y2="2" stroke="rgba(255,255,255,0.35)" strokeWidth="2" />
-        {/* Center circle suggestion */}
-        <ellipse cx="600" cy="130" rx="90" ry="40" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
-        {/* Half court line */}
-        <line x1="600" y1="0" x2="600" y2="130" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
-      </svg>
     </div>
   );
 }
@@ -78,22 +52,9 @@ export default function HomePage() {
       className="h-screen overflow-hidden flex flex-col"
       style={{ background: "#030508", color: "white", fontFamily: "var(--font-geist-mono)" }}
     >
-      {/* ── Background atmosphere ── */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        {/* Arena ceiling lights */}
-        <div style={{ position: "absolute", top: -120, left: "18%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,210,80,0.14) 0%, transparent 65%)" }} />
-        <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 560, height: 560, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,210,80,0.1) 0%, transparent 65%)" }} />
-        <div style={{ position: "absolute", top: -120, right: "18%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,210,80,0.14) 0%, transparent 65%)" }} />
-        {/* Green accent glow */}
-        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translateX(-50%)", width: 700, height: 400, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(132,204,22,0.07) 0%, transparent 65%)", filter: "blur(30px)" }} />
-        {/* Crowd darkness at sides */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 80% at 50% 45%, transparent 30%, rgba(3,5,8,0.75) 100%)" }} />
-        {/* Dot grid */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
-      </div>
-
+      {/* 3D arena background */}
+      <Arena3D />
       {mounted && <ArenaParticles />}
-      <CourtFloor />
 
       {/* ── Header ── */}
       <header className="relative z-30 px-6 flex items-center justify-between shrink-0" style={{ minHeight: 58, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
