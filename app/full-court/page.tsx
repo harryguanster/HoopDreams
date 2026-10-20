@@ -266,7 +266,6 @@ export default function FullCourtPage() {
       {/* 3D arena background */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <Arena3D ballProgress={ballProgress} animateBall={phase === "revealing"} />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(3,5,8,0.45)" }} />
       </div>
       <Particles />
 

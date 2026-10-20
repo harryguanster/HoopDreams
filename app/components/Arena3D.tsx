@@ -198,47 +198,41 @@ export default function Arena3D({ ballProgress, animateBall = false }: Props) {
 
       {/* ── Arena atmosphere layers ── */}
 
-      {/* Ceiling darkness + crowd */}
+      {/* Ceiling darkness */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "52%",
-        background: "linear-gradient(to bottom, rgba(2,3,8,0.97) 0%, rgba(2,3,8,0.75) 55%, transparent 100%)",
-      }} />
-
-      {/* Far-end crowd darkness (behind far basket) */}
-      <div style={{
-        position: "absolute", top: "20%", left: 0, right: 0, height: "20%",
-        background: "linear-gradient(to bottom, transparent 0%, rgba(2,3,8,0.35) 100%)",
+        position: "absolute", top: 0, left: 0, right: 0, height: "45%",
+        background: "linear-gradient(to bottom, rgba(2,3,8,0.88) 0%, rgba(2,3,8,0.4) 65%, transparent 100%)",
       }} />
 
       {/* Arena ceiling spotlights */}
       <div style={{ position: "absolute", top: -80, left: "10%", width: 340, height: 340, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(255,210,75,0.2) 0%, transparent 60%)" }} />
+        background: "radial-gradient(circle, rgba(255,210,75,0.25) 0%, transparent 60%)" }} />
       <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 460, height: 460, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(255,210,75,0.16) 0%, transparent 60%)" }} />
-      <div style={{ position: "absolute", top: -80, right: "10%", width: 340, height: 340, borderRadius: "50%",
         background: "radial-gradient(circle, rgba(255,210,75,0.2) 0%, transparent 60%)" }} />
+      <div style={{ position: "absolute", top: -80, right: "10%", width: 340, height: 340, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(255,210,75,0.25) 0%, transparent 60%)" }} />
 
       {/* Light beams */}
       <div style={{ position: "absolute", top: 0, left: "18%", width: 100, height: "62%",
-        background: "linear-gradient(to bottom, rgba(255,210,75,0.07) 0%, transparent 100%)",
+        background: "linear-gradient(to bottom, rgba(255,210,75,0.09) 0%, transparent 100%)",
         transform: "skewX(-8deg)", mixBlendMode: "screen" }} />
       <div style={{ position: "absolute", top: 0, left: "46%", width: 130, height: "68%",
-        background: "linear-gradient(to bottom, rgba(255,210,75,0.06) 0%, transparent 100%)",
+        background: "linear-gradient(to bottom, rgba(255,210,75,0.08) 0%, transparent 100%)",
         mixBlendMode: "screen" }} />
       <div style={{ position: "absolute", top: 0, right: "18%", width: 100, height: "62%",
-        background: "linear-gradient(to bottom, rgba(255,210,75,0.07) 0%, transparent 100%)",
+        background: "linear-gradient(to bottom, rgba(255,210,75,0.09) 0%, transparent 100%)",
         transform: "skewX(8deg)", mixBlendMode: "screen" }} />
 
-      {/* Side crowd vignette */}
+      {/* Side vignette — lighter so court is visible */}
       <div style={{
         position: "absolute", inset: 0,
-        background: "radial-gradient(ellipse 60% 80% at 50% 38%, transparent 15%, rgba(2,3,8,0.78) 80%)",
+        background: "radial-gradient(ellipse 70% 90% at 50% 60%, transparent 25%, rgba(2,3,8,0.55) 90%)",
       }} />
 
       {/* Bottom content fade */}
       <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, height: "38%",
-        background: "linear-gradient(to top, rgba(3,5,8,0.97) 0%, rgba(3,5,8,0.5) 60%, transparent 100%)",
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "30%",
+        background: "linear-gradient(to top, rgba(3,5,8,0.85) 0%, rgba(3,5,8,0.3) 60%, transparent 100%)",
       }} />
     </div>
   );

@@ -122,7 +122,7 @@ export default function GamesPage() {
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <Arena3D />
         {/* Extra fade so cards are readable */}
-        <div style={{ position: "absolute", inset: 0, background: "rgba(3,5,8,0.55)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(3,5,8,0.3)" }} />
       </div>
 
       {/* Header */}
