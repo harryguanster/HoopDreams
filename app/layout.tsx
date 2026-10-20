@@ -76,7 +76,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} ${playfair.variable} h-full`}>
-        <body className="min-h-full flex flex-col text-[#111827] antialiased" style={{ background: "#f4f0e6" }}>
+        <body className="min-h-full flex flex-col text-white antialiased" style={{ background: "#030508" }}>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{

@@ -1,0 +1,494 @@
+export type FullCourtAnswer = {
+  name: string;
+  aliases?: string[];
+  crowdPct: number; // % of crowd who'd pick this (0–100)
+};
+
+export type FullCourtQuestion = {
+  id: number;
+  prompt: string;
+  category: string;
+  answers: FullCourtAnswer[];
+};
+
+// Score = round(10000 * (1 - crowdPct / 100))
+// Unrecognized answers = 0 pts
+
+export const FULL_COURT_QUESTIONS: FullCourtQuestion[] = [
+  {
+    id: 1,
+    prompt: "Name an NBA Finals MVP",
+    category: "Championships",
+    answers: [
+      { name: "Michael Jordan", aliases: ["jordan", "mj", "mike jordan"], crowdPct: 38 },
+      { name: "LeBron James", aliases: ["lebron", "king james", "bron"], crowdPct: 18 },
+      { name: "Shaquille O'Neal", aliases: ["shaq", "shaquille oneal"], crowdPct: 12 },
+      { name: "Kobe Bryant", aliases: ["kobe"], crowdPct: 8 },
+      { name: "Magic Johnson", aliases: ["magic"], crowdPct: 5 },
+      { name: "Larry Bird", aliases: ["bird"], crowdPct: 4 },
+      { name: "Kareem Abdul-Jabbar", aliases: ["kareem", "kareem abdul jabbar", "lew alcindor"], crowdPct: 3 },
+      { name: "Hakeem Olajuwon", aliases: ["hakeem", "akeem", "the dream"], crowdPct: 2.5 },
+      { name: "Dwyane Wade", aliases: ["wade", "d-wade", "dwade"], crowdPct: 2 },
+      { name: "Giannis Antetokounmpo", aliases: ["giannis", "greek freak"], crowdPct: 1.5 },
+      { name: "Kawhi Leonard", aliases: ["kawhi", "the claw"], crowdPct: 1 },
+      { name: "Chauncey Billups", aliases: ["chauncey", "mr big shot"], crowdPct: 0.8 },
+      { name: "Andre Iguodala", aliases: ["iguodala", "iggy"], crowdPct: 0.6 },
+      { name: "Dirk Nowitzki", aliases: ["dirk"], crowdPct: 0.5 },
+      { name: "Tim Duncan", aliases: ["duncan", "the big fundamental"], crowdPct: 0.4 },
+      { name: "Tony Parker", aliases: ["parker", "tp"], crowdPct: 0.3 },
+      { name: "Paul Pierce", aliases: ["pierce", "the truth"], crowdPct: 0.3 },
+      { name: "Kevin Durant", aliases: ["kd", "durant", "slim reaper"], crowdPct: 0.3 },
+      { name: "Willis Reed", aliases: ["reed"], crowdPct: 0.2 },
+      { name: "Jerry West", aliases: ["jerry west", "the logo"], crowdPct: 0.2 },
+      { name: "Cedric Maxwell", aliases: ["maxwell", "cornbread"], crowdPct: 0.1 },
+      { name: "Bill Russell", aliases: ["bill russell", "russell"], crowdPct: 0.4 },
+      { name: "Jo Jo White", aliases: ["jo jo white", "jojo white"], crowdPct: 0.1 },
+      { name: "Dave Cowens", aliases: ["cowens"], crowdPct: 0.1 },
+    ],
+  },
+  {
+    id: 2,
+    prompt: "Name a team that won the NBA Championship",
+    category: "Championships",
+    answers: [
+      { name: "Los Angeles Lakers", aliases: ["lakers", "la lakers", "l.a. lakers"], crowdPct: 28 },
+      { name: "Boston Celtics", aliases: ["celtics", "boston"], crowdPct: 22 },
+      { name: "Chicago Bulls", aliases: ["bulls", "chicago"], crowdPct: 14 },
+      { name: "Golden State Warriors", aliases: ["warriors", "golden state", "gsw"], crowdPct: 10 },
+      { name: "Miami Heat", aliases: ["heat", "miami"], crowdPct: 7 },
+      { name: "San Antonio Spurs", aliases: ["spurs", "san antonio"], crowdPct: 6 },
+      { name: "Detroit Pistons", aliases: ["pistons", "detroit", "bad boys"], crowdPct: 3 },
+      { name: "Houston Rockets", aliases: ["rockets", "houston"], crowdPct: 2 },
+      { name: "Philadelphia 76ers", aliases: ["76ers", "sixers", "philly", "philadelphia"], crowdPct: 1.5 },
+      { name: "New York Knicks", aliases: ["knicks", "new york"], crowdPct: 1.5 },
+      { name: "Milwaukee Bucks", aliases: ["bucks", "milwaukee"], crowdPct: 1 },
+      { name: "Cleveland Cavaliers", aliases: ["cavaliers", "cavs", "cleveland"], crowdPct: 1 },
+      { name: "Dallas Mavericks", aliases: ["mavericks", "mavs", "dallas"], crowdPct: 0.8 },
+      { name: "Toronto Raptors", aliases: ["raptors", "toronto"], crowdPct: 0.5 },
+      { name: "Portland Trail Blazers", aliases: ["trail blazers", "blazers", "portland"], crowdPct: 0.3 },
+      { name: "Seattle SuperSonics", aliases: ["supersonics", "sonics", "seattle"], crowdPct: 0.3 },
+      { name: "Atlanta Hawks", aliases: ["hawks", "atlanta"], crowdPct: 0.2 },
+      { name: "Washington Bullets", aliases: ["bullets", "washington bullets"], crowdPct: 0.2 },
+      { name: "Baltimore Bullets", aliases: ["baltimore bullets"], crowdPct: 0.1 },
+      { name: "Minneapolis Lakers", aliases: ["minneapolis lakers", "minneapolis"], crowdPct: 0.1 },
+      { name: "Rochester Royals", aliases: ["rochester royals", "rochester"], crowdPct: 0.1 },
+      { name: "Syracuse Nationals", aliases: ["syracuse nationals", "syracuse"], crowdPct: 0.1 },
+    ],
+  },
+  {
+    id: 3,
+    prompt: "Name a player who averaged 30+ PPG for a season",
+    category: "Stats",
+    answers: [
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 45 },
+      { name: "Wilt Chamberlain", aliases: ["wilt", "the stilt", "the big dipper"], crowdPct: 28 },
+      { name: "Kobe Bryant", aliases: ["kobe"], crowdPct: 10 },
+      { name: "Elgin Baylor", aliases: ["baylor", "elgin"], crowdPct: 5 },
+      { name: "Rick Barry", aliases: ["barry", "rick barry"], crowdPct: 2.5 },
+      { name: "Pete Maravich", aliases: ["maravich", "pistol pete", "pistol"], crowdPct: 2 },
+      { name: "Bob McAdoo", aliases: ["mcadoo"], crowdPct: 1.5 },
+      { name: "George Gervin", aliases: ["gervin", "the iceman"], crowdPct: 1.5 },
+      { name: "Nate Archibald", aliases: ["archibald", "tiny", "tiny archibald"], crowdPct: 0.8 },
+      { name: "Tracy McGrady", aliases: ["t-mac", "tmac", "mcgrady"], crowdPct: 0.8 },
+      { name: "Allen Iverson", aliases: ["iverson", "ai", "the answer"], crowdPct: 0.5 },
+      { name: "Adrian Dantley", aliases: ["dantley"], crowdPct: 0.3 },
+      { name: "James Harden", aliases: ["harden", "the beard"], crowdPct: 0.5 },
+      { name: "Dominique Wilkins", aliases: ["wilkins", "the human highlight film", "nique"], crowdPct: 0.3 },
+    ],
+  },
+  {
+    id: 4,
+    prompt: "Name a member of the 1992 Olympic Dream Team",
+    category: "History",
+    answers: [
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 32 },
+      { name: "Magic Johnson", aliases: ["magic"], crowdPct: 25 },
+      { name: "Larry Bird", aliases: ["bird"], crowdPct: 18 },
+      { name: "Charles Barkley", aliases: ["barkley", "sir charles", "the round mound"], crowdPct: 10 },
+      { name: "Patrick Ewing", aliases: ["ewing"], crowdPct: 4 },
+      { name: "Scottie Pippen", aliases: ["pippen", "pip"], crowdPct: 3.5 },
+      { name: "Karl Malone", aliases: ["malone", "the mailman"], crowdPct: 2.5 },
+      { name: "John Stockton", aliases: ["stockton"], crowdPct: 1.5 },
+      { name: "Clyde Drexler", aliases: ["drexler", "clyde the glide"], crowdPct: 1 },
+      { name: "David Robinson", aliases: ["robinson", "the admiral"], crowdPct: 0.8 },
+      { name: "Chris Mullin", aliases: ["mullin"], crowdPct: 0.5 },
+      { name: "Christian Laettner", aliases: ["laettner"], crowdPct: 0.2 },
+    ],
+  },
+  {
+    id: 5,
+    prompt: "Name a player selected #1 overall in the NBA Draft",
+    category: "Draft",
+    answers: [
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 30 },
+      { name: "Shaquille O'Neal", aliases: ["shaq"], crowdPct: 18 },
+      { name: "Victor Wembanyama", aliases: ["wemby", "wembanyama"], crowdPct: 12 },
+      { name: "Zion Williamson", aliases: ["zion"], crowdPct: 8 },
+      { name: "Patrick Ewing", aliases: ["ewing"], crowdPct: 7 },
+      { name: "Anthony Davis", aliases: ["ad", "anthony davis", "the brow"], crowdPct: 5 },
+      { name: "Tim Duncan", aliases: ["duncan"], crowdPct: 4 },
+      { name: "Yao Ming", aliases: ["yao"], crowdPct: 4 },
+      { name: "Derrick Rose", aliases: ["rose", "d-rose"], crowdPct: 3 },
+      { name: "Andrew Bogut", aliases: ["bogut"], crowdPct: 1.5 },
+      { name: "Greg Oden", aliases: ["oden"], crowdPct: 1.5 },
+      { name: "Kwame Brown", aliases: ["kwame"], crowdPct: 1 },
+      { name: "Andrea Bargnani", aliases: ["bargnani"], crowdPct: 0.5 },
+      { name: "Markelle Fultz", aliases: ["fultz"], crowdPct: 0.5 },
+      { name: "Ben Simmons", aliases: ["simmons"], crowdPct: 0.5 },
+      { name: "Karl-Anthony Towns", aliases: ["kat", "towns"], crowdPct: 0.5 },
+      { name: "Kyrie Irving", aliases: ["kyrie"], crowdPct: 0.2 },
+      { name: "Kenyon Martin", aliases: ["kenyon"], crowdPct: 0.3 },
+      { name: "Jabari Smith Jr.", aliases: ["jabari smith", "jabari smith jr"], crowdPct: 0.1 },
+      { name: "Cade Cunningham", aliases: ["cade", "cunningham"], crowdPct: 0.3 },
+    ],
+  },
+  {
+    id: 6,
+    prompt: "Name an NBA Defensive Player of the Year",
+    category: "Awards",
+    answers: [
+      { name: "Dikembe Mutombo", aliases: ["mutombo", "dikembe"], crowdPct: 25 },
+      { name: "Ben Wallace", aliases: ["ben wallace", "big ben"], crowdPct: 20 },
+      { name: "Giannis Antetokounmpo", aliases: ["giannis", "greek freak"], crowdPct: 15 },
+      { name: "Rudy Gobert", aliases: ["gobert", "stifle tower"], crowdPct: 12 },
+      { name: "Hakeem Olajuwon", aliases: ["hakeem", "the dream"], crowdPct: 7 },
+      { name: "David Robinson", aliases: ["robinson", "the admiral"], crowdPct: 5 },
+      { name: "Dwight Howard", aliases: ["dwight", "superman"], crowdPct: 4 },
+      { name: "Kevin Garnett", aliases: ["kg", "garnett", "the big ticket"], crowdPct: 3 },
+      { name: "Alonzo Mourning", aliases: ["mourning", "zo"], crowdPct: 2.5 },
+      { name: "Marcus Camby", aliases: ["camby"], crowdPct: 1.5 },
+      { name: "Sidney Moncrief", aliases: ["moncrief"], crowdPct: 0.5 },
+      { name: "Bobby Jones", aliases: ["bobby jones"], crowdPct: 0.2 },
+      { name: "Jaren Jackson Jr.", aliases: ["jaren jackson", "jjj"], crowdPct: 0.8 },
+      { name: "Bam Adebayo", aliases: ["bam"], crowdPct: 0.3 },
+      { name: "Alvin Robertson", aliases: ["robertson"], crowdPct: 0.3 },
+      { name: "Michael Cooper", aliases: ["cooper", "michael cooper"], crowdPct: 0.3 },
+    ],
+  },
+  {
+    id: 7,
+    prompt: "Name a player who scored 60+ points in a single game",
+    category: "Records",
+    answers: [
+      { name: "Wilt Chamberlain", aliases: ["wilt", "the stilt", "the big dipper"], crowdPct: 32 },
+      { name: "Kobe Bryant", aliases: ["kobe"], crowdPct: 28 },
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 12 },
+      { name: "Elgin Baylor", aliases: ["baylor"], crowdPct: 5 },
+      { name: "David Thompson", aliases: ["thompson", "skywalker"], crowdPct: 5 },
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 4 },
+      { name: "Devin Booker", aliases: ["booker", "dbook"], crowdPct: 4 },
+      { name: "Karl-Anthony Towns", aliases: ["kat", "towns"], crowdPct: 2.5 },
+      { name: "Donovan Mitchell", aliases: ["mitchell", "spida"], crowdPct: 2 },
+      { name: "Tracy McGrady", aliases: ["t-mac", "tmac"], crowdPct: 1.5 },
+      { name: "Damian Lillard", aliases: ["dame", "lillard", "dame time"], crowdPct: 0.8 },
+      { name: "Kevin Durant", aliases: ["kd", "durant"], crowdPct: 0.8 },
+      { name: "Kemba Walker", aliases: ["kemba"], crowdPct: 0.5 },
+      { name: "Joel Embiid", aliases: ["embiid", "jojo", "the process"], crowdPct: 0.3 },
+      { name: "Luka Doncic", aliases: ["luka", "doncic", "luka magic"], crowdPct: 0.2 },
+    ],
+  },
+  {
+    id: 8,
+    prompt: "Name a player who won NBA Most Valuable Player",
+    category: "Awards",
+    answers: [
+      { name: "LeBron James", aliases: ["lebron", "king james"], crowdPct: 28 },
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 22 },
+      { name: "Kareem Abdul-Jabbar", aliases: ["kareem", "lew alcindor"], crowdPct: 12 },
+      { name: "Magic Johnson", aliases: ["magic"], crowdPct: 8 },
+      { name: "Larry Bird", aliases: ["bird"], crowdPct: 6 },
+      { name: "Wilt Chamberlain", aliases: ["wilt"], crowdPct: 5 },
+      { name: "Giannis Antetokounmpo", aliases: ["giannis", "greek freak"], crowdPct: 4 },
+      { name: "Nikola Jokic", aliases: ["jokic", "joker"], crowdPct: 3 },
+      { name: "Stephen Curry", aliases: ["steph", "curry"], crowdPct: 2.5 },
+      { name: "Moses Malone", aliases: ["moses malone"], crowdPct: 1.5 },
+      { name: "Bill Russell", aliases: ["russell", "bill russell"], crowdPct: 1 },
+      { name: "Derrick Rose", aliases: ["rose", "d-rose"], crowdPct: 1 },
+      { name: "Tim Duncan", aliases: ["duncan"], crowdPct: 0.8 },
+      { name: "Kevin Durant", aliases: ["kd", "durant"], crowdPct: 0.5 },
+      { name: "Charles Barkley", aliases: ["barkley", "sir charles"], crowdPct: 0.5 },
+      { name: "Bob Pettit", aliases: ["pettit"], crowdPct: 0.2 },
+      { name: "Julius Erving", aliases: ["dr j", "dr. j", "erving"], crowdPct: 0.2 },
+      { name: "Wes Unseld", aliases: ["unseld"], crowdPct: 0.1 },
+      { name: "Willis Reed", aliases: ["reed"], crowdPct: 0.1 },
+      { name: "Dave Cowens", aliases: ["cowens"], crowdPct: 0.1 },
+    ],
+  },
+  {
+    id: 9,
+    prompt: "Name a player on the 1996 Chicago Bulls championship roster",
+    category: "History",
+    answers: [
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 42 },
+      { name: "Scottie Pippen", aliases: ["pippen", "pip"], crowdPct: 30 },
+      { name: "Dennis Rodman", aliases: ["rodman", "the worm"], crowdPct: 16 },
+      { name: "Toni Kukoc", aliases: ["kukoc"], crowdPct: 4 },
+      { name: "Steve Kerr", aliases: ["kerr"], crowdPct: 3 },
+      { name: "Ron Harper", aliases: ["harper", "ron harper"], crowdPct: 1.5 },
+      { name: "Luc Longley", aliases: ["longley"], crowdPct: 1 },
+      { name: "Bill Wennington", aliases: ["wennington"], crowdPct: 0.5 },
+      { name: "Jason Caffey", aliases: ["caffey"], crowdPct: 0.3 },
+      { name: "Jud Buechler", aliases: ["buechler"], crowdPct: 0.2 },
+      { name: "Randy Brown", aliases: ["randy brown"], crowdPct: 0.2 },
+      { name: "Dickey Simpkins", aliases: ["simpkins"], crowdPct: 0.1 },
+      { name: "James Edwards", aliases: ["james edwards"], crowdPct: 0.1 },
+      { name: "Jack Haley", aliases: ["haley", "jack haley"], crowdPct: 0.1 },
+    ],
+  },
+  {
+    id: 10,
+    prompt: "Name a player who averaged a triple-double for an entire season",
+    category: "Stats",
+    answers: [
+      { name: "Russell Westbrook", aliases: ["westbrook", "russ"], crowdPct: 55 },
+      { name: "Oscar Robertson", aliases: ["oscar", "the big o", "robertson"], crowdPct: 38 },
+      { name: "Nikola Jokic", aliases: ["jokic", "joker"], crowdPct: 5 },
+      { name: "Magic Johnson", aliases: ["magic"], crowdPct: 1.5 },
+    ],
+  },
+  {
+    id: 11,
+    prompt: "Name a player who won 6 or more NBA Championships",
+    category: "Championships",
+    answers: [
+      { name: "Bill Russell", aliases: ["russell", "bill russell"], crowdPct: 35 },
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 32 },
+      { name: "Sam Jones", aliases: ["sam jones"], crowdPct: 8 },
+      { name: "Tom Heinsohn", aliases: ["heinsohn"], crowdPct: 5 },
+      { name: "K.C. Jones", aliases: ["kc jones", "k c jones", "kc jones"], crowdPct: 4 },
+      { name: "Satch Sanders", aliases: ["satch sanders", "sanders"], crowdPct: 2 },
+      { name: "John Havlicek", aliases: ["havlicek", "hondo"], crowdPct: 2 },
+      { name: "Scottie Pippen", aliases: ["pippen", "pip"], crowdPct: 4 },
+      { name: "Robert Horry", aliases: ["horry", "big shot rob"], crowdPct: 2 },
+      { name: "Jim Loscutoff", aliases: ["loscutoff"], crowdPct: 0.5 },
+      { name: "Frank Ramsey", aliases: ["ramsey"], crowdPct: 0.5 },
+      { name: "Derek Fisher", aliases: ["fisher", "derek fisher"], crowdPct: 1 },
+    ],
+  },
+  {
+    id: 12,
+    prompt: "Name a player who led the NBA in assists for a season",
+    category: "Stats",
+    answers: [
+      { name: "John Stockton", aliases: ["stockton"], crowdPct: 32 },
+      { name: "Magic Johnson", aliases: ["magic"], crowdPct: 25 },
+      { name: "Chris Paul", aliases: ["cp3", "chris paul"], crowdPct: 15 },
+      { name: "Isiah Thomas", aliases: ["isiah", "zeke"], crowdPct: 7 },
+      { name: "Rajon Rondo", aliases: ["rondo"], crowdPct: 3 },
+      { name: "Russell Westbrook", aliases: ["westbrook", "russ"], crowdPct: 3 },
+      { name: "Oscar Robertson", aliases: ["oscar", "the big o"], crowdPct: 1 },
+      { name: "Jason Kidd", aliases: ["kidd", "j-kidd"], crowdPct: 2 },
+      { name: "Steve Nash", aliases: ["nash"], crowdPct: 2 },
+      { name: "Kevin Porter", aliases: ["kevin porter"], crowdPct: 3 },
+      { name: "Rod Strickland", aliases: ["strickland"], crowdPct: 1 },
+      { name: "Nate Archibald", aliases: ["archibald", "tiny archibald", "tiny"], crowdPct: 2 },
+      { name: "Tyrese Haliburton", aliases: ["haliburton", "tyrese"], crowdPct: 0.2 },
+      { name: "Lenny Wilkens", aliases: ["wilkens", "lenny wilkens"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 13,
+    prompt: "Name an NBA team that has NEVER won a championship",
+    category: "Teams",
+    answers: [
+      { name: "Brooklyn Nets", aliases: ["nets", "brooklyn", "new jersey nets"], crowdPct: 20 },
+      { name: "Phoenix Suns", aliases: ["suns", "phoenix"], crowdPct: 18 },
+      { name: "Utah Jazz", aliases: ["jazz", "utah"], crowdPct: 15 },
+      { name: "Indiana Pacers", aliases: ["pacers", "indiana"], crowdPct: 8 },
+      { name: "Orlando Magic", aliases: ["magic", "orlando"], crowdPct: 7 },
+      { name: "Memphis Grizzlies", aliases: ["grizzlies", "memphis", "grizz"], crowdPct: 5 },
+      { name: "Oklahoma City Thunder", aliases: ["thunder", "okc", "oklahoma city"], crowdPct: 4 },
+      { name: "Minnesota Timberwolves", aliases: ["timberwolves", "wolves", "minnesota"], crowdPct: 3 },
+      { name: "Charlotte Hornets", aliases: ["hornets", "charlotte"], crowdPct: 2 },
+      { name: "New Orleans Pelicans", aliases: ["pelicans", "new orleans"], crowdPct: 1.5 },
+      { name: "Sacramento Kings", aliases: ["kings", "sacramento"], crowdPct: 1.5 },
+      { name: "Los Angeles Clippers", aliases: ["clippers", "la clippers"], crowdPct: 1 },
+      { name: "Denver Nuggets", aliases: ["nuggets", "denver"], crowdPct: 12 },
+    ],
+  },
+  {
+    id: 14,
+    prompt: "Name a player from the 2003 NBA Draft class",
+    category: "Draft",
+    answers: [
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 42 },
+      { name: "Carmelo Anthony", aliases: ["melo", "carmelo"], crowdPct: 22 },
+      { name: "Dwyane Wade", aliases: ["wade", "d-wade"], crowdPct: 18 },
+      { name: "Chris Bosh", aliases: ["bosh", "cb4"], crowdPct: 8 },
+      { name: "Chris Kaman", aliases: ["kaman"], crowdPct: 2 },
+      { name: "Kirk Hinrich", aliases: ["hinrich"], crowdPct: 1.5 },
+      { name: "T.J. Ford", aliases: ["tj ford", "t.j. ford", "ford"], crowdPct: 1 },
+      { name: "Boris Diaw", aliases: ["diaw"], crowdPct: 0.5 },
+      { name: "Kyle Korver", aliases: ["korver"], crowdPct: 0.3 },
+      { name: "Mo Williams", aliases: ["mo williams"], crowdPct: 0.3 },
+      { name: "David West", aliases: ["david west"], crowdPct: 0.2 },
+      { name: "Mickael Pietrus", aliases: ["pietrus"], crowdPct: 0.8 },
+      { name: "Luke Ridnour", aliases: ["ridnour"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 15,
+    prompt: "Name a player in the 50-40-90 shooting club (season)",
+    category: "Stats",
+    answers: [
+      { name: "Steve Nash", aliases: ["nash"], crowdPct: 35 },
+      { name: "Stephen Curry", aliases: ["steph", "curry"], crowdPct: 28 },
+      { name: "Larry Bird", aliases: ["bird"], crowdPct: 12 },
+      { name: "Mark Price", aliases: ["price", "mark price"], crowdPct: 8 },
+      { name: "Reggie Miller", aliases: ["miller", "reggie"], crowdPct: 5 },
+      { name: "Kevin Durant", aliases: ["kd", "durant"], crowdPct: 4 },
+      { name: "Dirk Nowitzki", aliases: ["dirk"], crowdPct: 3 },
+      { name: "Jose Calderon", aliases: ["calderon"], crowdPct: 1 },
+      { name: "Malcolm Brogdon", aliases: ["brogdon"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 16,
+    prompt: "Name a player who won NBA Rookie of the Year",
+    category: "Awards",
+    answers: [
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 28 },
+      { name: "Michael Jordan", aliases: ["jordan", "mj"], crowdPct: 22 },
+      { name: "Shaquille O'Neal", aliases: ["shaq"], crowdPct: 10 },
+      { name: "Patrick Ewing", aliases: ["ewing"], crowdPct: 6 },
+      { name: "Larry Bird", aliases: ["bird"], crowdPct: 5 },
+      { name: "Magic Johnson", aliases: ["magic"], crowdPct: 5 },
+      { name: "Oscar Robertson", aliases: ["oscar", "the big o"], crowdPct: 3 },
+      { name: "David Robinson", aliases: ["robinson", "the admiral"], crowdPct: 3 },
+      { name: "Vince Carter", aliases: ["vince", "vc"], crowdPct: 2 },
+      { name: "Allen Iverson", aliases: ["iverson", "ai", "the answer"], crowdPct: 2 },
+      { name: "Tim Duncan", aliases: ["duncan"], crowdPct: 2 },
+      { name: "Blake Griffin", aliases: ["blake", "griffin"], crowdPct: 1 },
+      { name: "Derrick Rose", aliases: ["rose", "d-rose"], crowdPct: 1 },
+      { name: "Damian Lillard", aliases: ["dame", "lillard"], crowdPct: 0.8 },
+      { name: "Karl-Anthony Towns", aliases: ["kat", "towns"], crowdPct: 0.8 },
+      { name: "Luka Doncic", aliases: ["luka", "doncic"], crowdPct: 0.5 },
+      { name: "Ja Morant", aliases: ["ja", "morant"], crowdPct: 0.5 },
+      { name: "Zion Williamson", aliases: ["zion"], crowdPct: 0.3 },
+      { name: "Carmelo Anthony", aliases: ["melo", "carmelo"], crowdPct: 0.5 },
+      { name: "Ben Simmons", aliases: ["simmons"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 17,
+    prompt: "Name a player who appeared in the Finals with two different teams",
+    category: "History",
+    answers: [
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 38 },
+      { name: "Shaquille O'Neal", aliases: ["shaq"], crowdPct: 18 },
+      { name: "Kevin Durant", aliases: ["kd", "durant"], crowdPct: 10 },
+      { name: "Dennis Rodman", aliases: ["rodman", "the worm"], crowdPct: 8 },
+      { name: "Kareem Abdul-Jabbar", aliases: ["kareem"], crowdPct: 4 },
+      { name: "Scottie Pippen", aliases: ["pippen"], crowdPct: 5 },
+      { name: "Gary Payton", aliases: ["payton", "gp", "the glove"], crowdPct: 2 },
+      { name: "Robert Horry", aliases: ["horry", "big shot rob"], crowdPct: 1 },
+      { name: "Elgin Baylor", aliases: ["baylor"], crowdPct: 3 },
+      { name: "Jerry West", aliases: ["jerry west"], crowdPct: 2 },
+      { name: "Rick Fox", aliases: ["fox", "rick fox"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 18,
+    prompt: "Name a player who was an All-Star in both the ABA and NBA",
+    category: "History",
+    answers: [
+      { name: "Julius Erving", aliases: ["dr j", "dr. j", "erving", "julius erving"], crowdPct: 42 },
+      { name: "Rick Barry", aliases: ["barry", "rick barry"], crowdPct: 22 },
+      { name: "George Gervin", aliases: ["gervin", "the iceman"], crowdPct: 15 },
+      { name: "Dan Issel", aliases: ["issel", "the horse"], crowdPct: 8 },
+      { name: "Artis Gilmore", aliases: ["gilmore", "the a-train"], crowdPct: 5 },
+      { name: "Billy Cunningham", aliases: ["cunningham", "the kangaroo kid"], crowdPct: 3 },
+      { name: "David Thompson", aliases: ["thompson", "skywalker"], crowdPct: 2 },
+      { name: "Mel Daniels", aliases: ["daniels", "mel daniels"], crowdPct: 1 },
+      { name: "Roger Brown", aliases: ["roger brown"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 19,
+    prompt: "Name a player with career averages over 25 PPG and 10 RPG",
+    category: "Stats",
+    answers: [
+      { name: "Wilt Chamberlain", aliases: ["wilt", "the stilt"], crowdPct: 35 },
+      { name: "Elgin Baylor", aliases: ["baylor"], crowdPct: 22 },
+      { name: "Bob Pettit", aliases: ["pettit", "bob pettit"], crowdPct: 12 },
+      { name: "Moses Malone", aliases: ["moses malone"], crowdPct: 8 },
+      { name: "Charles Barkley", aliases: ["barkley", "sir charles"], crowdPct: 7 },
+      { name: "Karl Malone", aliases: ["malone", "the mailman", "karl malone"], crowdPct: 10 },
+      { name: "Bob McAdoo", aliases: ["mcadoo"], crowdPct: 2 },
+      { name: "Walt Bellamy", aliases: ["bellamy"], crowdPct: 1 },
+    ],
+  },
+  {
+    id: 20,
+    prompt: "Name a player who appeared in 1,000 or more NBA games",
+    category: "Stats",
+    answers: [
+      { name: "Vince Carter", aliases: ["vince", "vc", "half man half amazing"], crowdPct: 20 },
+      { name: "Robert Parish", aliases: ["parish", "the chief"], crowdPct: 18 },
+      { name: "Kareem Abdul-Jabbar", aliases: ["kareem"], crowdPct: 15 },
+      { name: "John Stockton", aliases: ["stockton"], crowdPct: 12 },
+      { name: "Karl Malone", aliases: ["malone", "the mailman"], crowdPct: 10 },
+      { name: "Kevin Garnett", aliases: ["kg", "garnett", "the big ticket"], crowdPct: 8 },
+      { name: "Dirk Nowitzki", aliases: ["dirk"], crowdPct: 5 },
+      { name: "Jason Kidd", aliases: ["kidd", "j-kidd"], crowdPct: 4 },
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 3 },
+      { name: "Tim Duncan", aliases: ["duncan"], crowdPct: 2 },
+      { name: "Elvin Hayes", aliases: ["elvin hayes", "the big e"], crowdPct: 0.5 },
+      { name: "Moses Malone", aliases: ["moses malone"], crowdPct: 0.5 },
+      { name: "Kevin Willis", aliases: ["kevin willis"], crowdPct: 0.3 },
+      { name: "Buck Williams", aliases: ["buck williams"], crowdPct: 0.5 },
+    ],
+  },
+  {
+    id: 21,
+    prompt: "Name a player who led the NBA in scoring AND assists in the same season",
+    category: "Stats",
+    answers: [
+      { name: "Nate Archibald", aliases: ["archibald", "tiny", "tiny archibald"], crowdPct: 55 },
+      { name: "Oscar Robertson", aliases: ["oscar", "the big o"], crowdPct: 28 },
+      { name: "LeBron James", aliases: ["lebron"], crowdPct: 12 },
+      { name: "James Harden", aliases: ["harden", "the beard"], crowdPct: 4 },
+    ],
+  },
+];
+
+export function getDailyQuestions(dayIndex: number): FullCourtQuestion[] {
+  const shuffled = [...FULL_COURT_QUESTIONS];
+  let seed = dayIndex * 1234567 + 89012;
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(seed) % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, 7);
+}
+
+export function normalizeAnswer(s: string): string {
+  return s.toLowerCase().trim().replace(/['.,-]/g, "").replace(/\s+/g, " ");
+}
+
+export function matchAnswer(input: string, question: FullCourtQuestion): FullCourtAnswer | null {
+  const norm = normalizeAnswer(input);
+  for (const ans of question.answers) {
+    if (normalizeAnswer(ans.name) === norm) return ans;
+    if (ans.aliases) {
+      for (const alias of ans.aliases) {
+        if (normalizeAnswer(alias) === norm) return ans;
+      }
+    }
+  }
+  return null;
+}
+
+export function calcScore(crowdPct: number): number {
+  return Math.round(10000 * (1 - crowdPct / 100));
+}
+
+export function getZoneLabel(score: number): { label: string; sub: string } {
+  if (score === 0) return { label: "Out of Bounds", sub: "Not a valid answer" };
+  if (score < 2000) return { label: "Backcourt", sub: "The crowd was way ahead of you" };
+  if (score < 4500) return { label: "Half Court", sub: "Solid — not too obvious" };
+  if (score < 6500) return { label: "Three-Point Range", sub: "Nice — the crowd didn't see that coming" };
+  if (score < 8500) return { label: "In the Paint", sub: "Deep cut — very few people go here" };
+  return { label: "At the Rim", sub: "Rare find — almost nobody picks this" };
+}

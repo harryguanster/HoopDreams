@@ -1,173 +1,195 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
-import { LINEUPS } from "@/lib/lineupData";
-import { TRIOS } from "@/lib/playerData";
-import { CURRENT_TRIOS } from "@/lib/currentPlayerData";
-import { useEffect, useState } from "react";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
-const IMGS = {
-  lebron2016:  "https://upload.wikimedia.org/wikipedia/commons/6/60/Lebron_dunking_finals_2016.jpg",
-  lebronSteph: "https://upload.wikimedia.org/wikipedia/commons/5/5e/LeBron_James_vs._Steph_Curry_%2827676810241%29.jpg",
-  jordan97:    "https://upload.wikimedia.org/wikipedia/commons/4/43/Steve_Lipfosky_--_Michael_Jordan_%281997%29.jpg",
-  kobe81:      "https://upload.wikimedia.org/wikipedia/commons/f/fc/Kobe_Bryant_81.jpg",
-  dreamTeam:   "https://upload.wikimedia.org/wikipedia/commons/a/a0/Dream_Team_at_the_1992_Summer_Olympics.JPEG",
-  rayAllen:    "https://upload.wikimedia.org/wikipedia/commons/f/f7/Ray_Allen_Heat.jpg",
-  curry:       "https://upload.wikimedia.org/wikipedia/commons/b/b6/Stephen_Curry_shooting.jpg",
-  wemby:       "https://upload.wikimedia.org/wikipedia/commons/2/21/Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup.jpg",
-};
-
-const HERO_PHOTOS = [
-  { src: IMGS.lebron2016,  label: "The Block · 2016 Finals",  pos: "center 30%" },
-  { src: IMGS.jordan97,    label: "Michael Jordan · 1997",    pos: "center 35%" },
-  { src: IMGS.kobe81,      label: "Kobe 81 Pts · 2006",       pos: "center 25%" },
-  { src: IMGS.dreamTeam,   label: "Dream Team · 1992",        pos: "center 20%" },
-  { src: IMGS.curry,       label: "Steph Curry · Warriors",   pos: "center 30%" },
-  { src: IMGS.wemby,       label: "Wemby · Spurs 2025",       pos: "center 20%" },
-  { src: IMGS.lebronSteph, label: "LeBron vs Steph · 2016",   pos: "center 30%" },
-  { src: IMGS.rayAllen,    label: "Ray Allen · Heat",          pos: "center 15%" },
-];
-
-const PLATE_LAYOUT = [
-  { x: -43, y: -24, rx:  14, ry: -28, rz: -13, w: 275, zLayer: 0 },
-  { x:  37, y: -27, rx: -11, ry:  24, rz:  11, w: 250, zLayer: 0 },
-  { x: -47, y:   9, rx:  20, ry: -18, rz:   8, w: 268, zLayer: 1 },
-  { x:  43, y:   7, rx: -16, ry: -24, rz:  -7, w: 248, zLayer: 0 },
-  { x: -13, y: -43, rx:   9, ry: -16, rz:  17, w: 205, zLayer: 1 },
-  { x:  11, y:  41, rx: -11, ry:  17, rz: -14, w: 225, zLayer: 0 },
-  { x:  45, y:  33, rx: -21, ry: -27, rz:  -5, w: 215, zLayer: 1 },
-  { x: -40, y:  33, rx:  17, ry:  21, rz:   5, w: 198, zLayer: 0 },
-];
-
-function PhotoPlate3D({ src, label, pos, x, y, rx, ry, rz, w, idx, zLayer }: {
-  src: string; label: string; pos: string;
-  x: number; y: number; rx: number; ry: number; rz: number;
-  w: number; idx: number; zLayer: number;
-}) {
+// ── Floating particles (arena dust) ───────────────────────────────────────────
+function ArenaParticles() {
+  const ps = Array.from({ length: 22 }, (_, i) => ({
+    id: i,
+    x: 3 + (i * 41) % 96,
+    delay: (i * 0.6) % 9,
+    dur: 9 + (i * 1.1) % 8,
+    size: 1 + (i * 0.3) % 2.2,
+    opacity: 0.3 + (i * 0.04) % 0.5,
+  }));
   return (
-    <motion.div
-      style={{
-        position: "absolute", width: w, aspectRatio: "4/3",
-        left: `calc(50% + ${x}vw)`, top: `calc(50% + ${y}vh)`,
-        translateX: "-50%", translateY: "-50%",
-        rotateX: rx, rotateY: ry, rotateZ: rz, transformPerspective: 950,
-        borderRadius: 16, overflow: "hidden",
-        zIndex: zLayer === 0 ? 5 : 15,
-        boxShadow: "0 50px 130px rgba(0,0,0,0.88), 0 24px 65px rgba(0,0,0,0.6)",
-        willChange: "transform", pointerEvents: "none",
-      }}
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{
-        opacity: 1, scale: 1,
-        x: [0, (idx % 2 === 0 ? 1 : -1) * (28 + (idx * 13) % 42), (idx % 2 === 0 ? -1 : 1) * (14 + (idx * 7) % 28), 0],
-        y: [0, -(20 + (idx * 9) % 35), -(8 + (idx * 5) % 22), 0],
-        rotateZ: [rz - 3, rz + 3, rz - 1.5, rz + 3],
-        rotateX: [rx - 1.5, rx + 1.5, rx - 1.5],
-        rotateY: [ry - 2, ry + 2, ry - 2],
-      }}
-      transition={{
-        opacity: { duration: 1.1, delay: 0.08 + idx * 0.13 },
-        scale: { duration: 1.1, delay: 0.08 + idx * 0.13, ease: [0.22, 1, 0.36, 1] },
-        x: { duration: 17 + idx * 2.8, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: idx * 0.8 },
-        y: { duration: 13 + idx * 2.2, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: idx * 0.6 },
-        rotateZ: { duration: 11 + idx * 1.8, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: idx * 0.5 },
-        rotateX: { duration: 19 + idx * 2.5, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.7 },
-        rotateY: { duration: 15 + idx * 2.1, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: idx * 0.9 },
-      }}
-    >
-      <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: pos }} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 48%, rgba(0,0,0,0.08) 100%)" }} />
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px", background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)" }}>
-        <p style={{ color: "rgba(163,230,53,0.9)", fontSize: "7.5px", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>{label}</p>
-      </div>
-    </motion.div>
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {ps.map(p => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{ left: `${p.x}%`, bottom: -4, width: p.size, height: p.size, background: `rgba(255,210,80,${p.opacity})` }}
+          animate={{ y: [0, -window?.innerHeight ?? -800], opacity: [0, p.opacity, p.opacity * 0.5, 0] }}
+          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear" }}
+        />
+      ))}
+    </div>
   );
 }
 
-function StatCounter({ value, label }: { value: string; label: string }) {
+// ── Court floor strip at bottom ────────────────────────────────────────────────
+function CourtFloor() {
   return (
-    <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.5 }}>
-      <p className="font-playfair font-black text-[#84cc16] tabular-nums" style={{ fontSize: "2.2rem", lineHeight: 1 }}>{value}</p>
-      <p className="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-1">{label}</p>
-    </motion.div>
+    <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none overflow-hidden">
+      <svg viewBox="0 0 1200 130" width="100%" height="130" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#C17F2A" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#8B5E1A" stopOpacity="0.5" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="1200" height="130" fill="url(#floorGrad)" />
+        {/* Plank lines */}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <line key={i} x1="0" y1={16 * i} x2="1200" y2={16 * i} stroke="rgba(139,94,26,0.4)" strokeWidth="1" />
+        ))}
+        {/* Court boundary line */}
+        <line x1="0" y1="2" x2="1200" y2="2" stroke="rgba(255,255,255,0.35)" strokeWidth="2" />
+        {/* Center circle suggestion */}
+        <ellipse cx="600" cy="130" rx="90" ry="40" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+        {/* Half court line */}
+        <line x1="600" y1="0" x2="600" y2="130" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+      </svg>
+    </div>
   );
 }
 
 export default function HomePage() {
   const [streakCount, setStreakCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    function refreshStreak() {
+    setMounted(true);
+    function refresh() {
       const s = loadStreak();
       setStreakCount(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
     }
-    refreshStreak();
-    window.addEventListener("daily-update", refreshStreak);
-    return () => window.removeEventListener("daily-update", refreshStreak);
+    refresh();
+    window.addEventListener("daily-update", refresh);
+    return () => window.removeEventListener("daily-update", refresh);
   }, []);
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col" style={{ background: "#030803" }}>
-      <style>{`
-        @keyframes floatA { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(40px,-30px) scale(1.08)} 70%{transform:translate(-20px,20px) scale(0.95)} }
-        @keyframes floatB { 0%,100%{transform:translate(0,0) scale(1)} 35%{transform:translate(-50px,25px) scale(1.06)} 65%{transform:translate(30px,-20px) scale(0.97)} }
-      `}</style>
+    <div
+      className="h-screen overflow-hidden flex flex-col"
+      style={{ background: "#030508", color: "white", fontFamily: "var(--font-geist-mono)" }}
+    >
+      {/* ── Background atmosphere ── */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        {/* Arena ceiling lights */}
+        <div style={{ position: "absolute", top: -120, left: "18%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,210,80,0.14) 0%, transparent 65%)" }} />
+        <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 560, height: 560, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,210,80,0.1) 0%, transparent 65%)" }} />
+        <div style={{ position: "absolute", top: -120, right: "18%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,210,80,0.14) 0%, transparent 65%)" }} />
+        {/* Green accent glow */}
+        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translateX(-50%)", width: 700, height: 400, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(132,204,22,0.07) 0%, transparent 65%)", filter: "blur(30px)" }} />
+        {/* Crowd darkness at sides */}
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 80% at 50% 45%, transparent 30%, rgba(3,5,8,0.75) 100%)" }} />
+        {/* Dot grid */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+      </div>
 
-      {/* Header */}
-      <header className="relative z-50 px-6 flex items-center justify-between shrink-0" style={{ minHeight: 56, borderBottom: "1px solid rgba(132,204,22,0.15)" }}>
+      {mounted && <ArenaParticles />}
+      <CourtFloor />
+
+      {/* ── Header ── */}
+      <header className="relative z-30 px-6 flex items-center justify-between shrink-0" style={{ minHeight: 58, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
         <div className="flex items-center gap-3">
-          <img src="/logo-green.png" alt="Courtside Central" className="h-10 w-auto" />
-          <span className="font-playfair font-black text-white" style={{ fontSize: "1.1rem", letterSpacing: "-0.01em", lineHeight: 1 }}>Courtside Central</span>
+          <img src="/logo-green.png" alt="Courtside Central" className="h-9 w-auto" />
+          <span className="font-playfair font-black text-white hidden sm:block" style={{ fontSize: "1.05rem", letterSpacing: "-0.01em" }}>Courtside Central</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#84cc16] hidden sm:block">Season 2025–26</span>
+          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-[#84cc16]/70 hidden sm:block">Season 2025–26</span>
           <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
       </header>
 
-      {/* Hero — fills remaining height, no scroll */}
-      <section className="relative flex-1 flex flex-col items-center justify-center overflow-hidden text-white">
-        <div className="absolute pointer-events-none" style={{ width: 780, height: 620, bottom: "-140px", left: "-160px", background: "radial-gradient(ellipse, rgba(251,146,60,0.28) 0%, rgba(234,88,12,0.12) 45%, transparent 70%)", filter: "blur(60px)", animation: "floatA 9s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
-        <div className="absolute pointer-events-none" style={{ width: 720, height: 580, top: "-120px", right: "-140px", background: "radial-gradient(ellipse, rgba(132,204,22,0.25) 0%, rgba(101,163,13,0.10) 50%, transparent 70%)", filter: "blur(65px)", animation: "floatB 11s ease-in-out infinite", borderRadius: "50%", zIndex: 1 }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 25%, rgba(3,8,3,0.85) 100%)", zIndex: 2 }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, rgba(132,204,22,0.08) 1px, transparent 1px)", backgroundSize: "28px 28px", zIndex: 2 }} />
+      {/* ── Hero ── */}
+      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6">
+        <motion.p
+          className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-[#84cc16] mb-6"
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+        >
+          Daily · {getTodayStr()}
+        </motion.p>
 
-        {PLATE_LAYOUT.map((pl, i) => (
-          <PhotoPlate3D key={i} src={HERO_PHOTOS[i].src} label={HERO_PHOTOS[i].label} pos={HERO_PHOTOS[i].pos} x={pl.x} y={pl.y} rx={pl.rx} ry={pl.ry} rz={pl.rz} w={pl.w} idx={i} zLayer={pl.zLayer} />
-        ))}
+        <motion.h1
+          className="font-playfair font-black italic"
+          style={{
+            fontSize: "clamp(64px, 13vw, 190px)",
+            lineHeight: 0.9,
+            letterSpacing: "-0.03em",
+            textShadow: "0 0 100px rgba(132,204,22,0.35), 0 4px 60px rgba(0,0,0,0.9)",
+          }}
+          initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }}
+        >
+          Courtside<br />Central.
+        </motion.h1>
 
-        <motion.div className="relative text-center pointer-events-none px-6" style={{ zIndex: 10 }} initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75, ease: "easeOut" }}>
-          <p className="text-[11px] font-mono font-bold uppercase tracking-[0.45em] text-[#84cc16] mb-8">Test Your NBA IQ</p>
-          <h1 className="font-playfair font-black text-white italic" style={{ fontSize: "clamp(64px, 12vw, 180px)", lineHeight: 0.92, letterSpacing: "-0.03em", textShadow: "0 0 80px rgba(132,204,22,0.4), 0 4px 40px rgba(0,0,0,0.9)" }}>
-            Courtside<br />Central.
-          </h1>
-        </motion.div>
+        <motion.p
+          className="mt-5 mb-10 text-white/40 text-sm max-w-xs leading-relaxed"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+        >
+          NBA trivia games. Inbound the ball, beat the crowd, go coast to coast.
+        </motion.p>
 
-        <motion.div className="relative mt-12" style={{ zIndex: 20 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}>
+        <motion.div
+          className="flex flex-col sm:flex-row items-center gap-3"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
+        >
           <motion.a
-            href="/games#daily-challenges"
-            className="inline-block px-12 py-4 text-[#111827] font-mono font-bold uppercase tracking-[0.2em] text-sm"
-            style={{ background: "#84cc16", border: "2px solid #84cc16", boxShadow: "0 0 40px rgba(132,204,22,0.4)" }}
-            whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.65)" }}
+            href="/full-court"
+            className="inline-flex items-center gap-2 px-10 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm"
+            style={{ background: "#84cc16", color: "#030508", boxShadow: "0 0 40px rgba(132,204,22,0.35)" }}
+            whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.55)" }}
             whileTap={{ scale: 0.96 }}
           >
-            Start Playing →
+            Play Full Court →
+          </motion.a>
+          <motion.a
+            href="/games"
+            className="inline-flex items-center gap-2 px-8 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm border transition-colors"
+            style={{ borderColor: "rgba(255,255,255,0.18)", color: "rgba(255,255,255,0.6)" }}
+            whileHover={{ borderColor: "rgba(255,255,255,0.4)", color: "white" }}
+          >
+            All Games
           </motion.a>
         </motion.div>
 
-        <motion.div className="absolute bottom-7 flex items-center gap-10" style={{ zIndex: 20 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}>
-          <StatCounter value={`${TRIOS.length + CURRENT_TRIOS.length}+`} label="Start Bench Cut Rounds" />
-          <div className="h-8 w-px bg-lime-500/20" />
-          <StatCounter value={`${LINEUPS.length}+`} label="Lineup Puzzles" />
-          <div className="h-8 w-px bg-lime-500/20" />
-          <StatCounter value="500+" label="Players" />
-        </motion.div>
+        {/* Streak badge */}
+        {streakCount > 0 && (
+          <motion.div
+            className="mt-8 flex items-center gap-2 px-4 py-2 rounded-full"
+            style={{ background: "rgba(132,204,22,0.1)", border: "1px solid rgba(132,204,22,0.2)" }}
+            initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.7 }}
+          >
+            <span className="text-[#84cc16] text-xs font-bold">🔥</span>
+            <span className="text-[#84cc16] text-xs font-bold uppercase tracking-widest">{streakCount} Day Streak</span>
+          </motion.div>
+        )}
       </section>
+
+      {/* ── Bottom stat bar ── */}
+      <motion.div
+        className="relative z-20 flex items-center justify-center gap-8 sm:gap-16 px-6 py-5"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+      >
+        {[
+          { val: "7", label: "Prompts per game" },
+          { val: "20s", label: "Per answer" },
+          { val: "10K", label: "Max score / round" },
+        ].map(s => (
+          <div key={s.label} className="text-center">
+            <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "1.8rem", lineHeight: 1 }}>{s.val}</p>
+            <p className="text-[8px] text-white/30 font-mono uppercase tracking-widest mt-0.5">{s.label}</p>
+          </div>
+        ))}
+      </motion.div>
     </div>
   );
 }
