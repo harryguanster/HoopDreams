@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
-import Arena3D from "@/app/components/Arena3D";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
 // ── Floating particles ─────────────────────────────────────────────────────────
@@ -52,8 +51,6 @@ export default function HomePage() {
       className="h-screen overflow-hidden flex flex-col"
       style={{ background: "#030508", color: "white", fontFamily: "var(--font-geist-mono)" }}
     >
-      {/* 3D arena background */}
-      <Arena3D />
       {mounted && <ArenaParticles />}
 
       {/* ── Header ── */}

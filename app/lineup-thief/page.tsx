@@ -219,7 +219,7 @@ export default function LineupThiefPage() {
   // ── DIFFICULTY PICKER ───────────────────────────────────────────────────────
   if (phase === "pick") {
     return (
-      <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+      <div className="min-h-screen" style={{ background: "rgba(15,20,30,0.85)" }}>
         <GameHeader title="Lineup Thief" />
         <main className="max-w-4xl mx-auto px-6 sm:px-10 py-12 pb-20">
 
@@ -230,8 +230,8 @@ export default function LineupThiefPage() {
                 Choose Your<br />Difficulty.
               </h2>
             </div>
-            <div className="px-8 py-6" style={{ background: "#f4f0e6" }}>
-              <p className="font-mono text-sm text-gray-500 text-center mb-6">
+            <div className="px-8 py-6" style={{ background: "rgba(15,20,30,0.85)" }}>
+              <p className="font-mono text-sm text-white/50 text-center mb-6">
                 One player from a famous lineup is stolen. Name them using clues.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border-2 border-[#111827]">
@@ -273,7 +273,7 @@ export default function LineupThiefPage() {
           </div>
 
           {score.total > 0 && (
-            <p className="font-mono text-xs text-center text-gray-400 uppercase tracking-widest">
+            <p className="font-mono text-xs text-center text-white/40 uppercase tracking-widest">
               Session: {score.wins}/{score.total} correct
             </p>
           )}
@@ -284,7 +284,7 @@ export default function LineupThiefPage() {
 
   // ── GAME ────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+    <div className="min-h-screen" style={{ background: "rgba(15,20,30,0.85)" }}>
       <GameHeader title="Lineup Thief" />
       <main className="max-w-5xl mx-auto px-4 sm:px-8 py-6 pb-20">
 
@@ -292,14 +292,14 @@ export default function LineupThiefPage() {
         <div className="border-2 border-[#111827] mb-4" style={{ background: "#111827" }}>
           <div className="flex items-center justify-between px-6 py-4">
             <div>
-              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-gray-400 mb-0.5">{lineup.season}</p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/40 mb-0.5">{lineup.season}</p>
               <p className="font-playfair font-black text-white" style={{ fontSize: "1.5rem", letterSpacing: "-0.02em" }}>
                 Who&apos;s missing?
               </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-gray-400 mb-0.5">Score</p>
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 mb-0.5">Score</p>
                 <p className="font-playfair font-black" style={{ fontSize: "1.4rem", color: "#84cc16", lineHeight: 1 }}>
                   {score.wins}/{score.total}
                 </p>
@@ -337,7 +337,7 @@ export default function LineupThiefPage() {
           </div>
 
           {/* Right panel (2/5) */}
-          <div className="lg:col-span-2 flex flex-col" style={{ background: "#f4f0e6" }}>
+          <div className="lg:col-span-2 flex flex-col" style={{ background: "rgba(15,20,30,0.85)" }}>
 
             {/* Clues section */}
             <div style={{ borderBottom: "2px solid #111827" }}>
@@ -357,7 +357,7 @@ export default function LineupThiefPage() {
               </div>
               <div className="px-4 py-3 space-y-2" style={{ minHeight: 130 }}>
                 {cluesShown === 0 && (
-                  <p className="font-mono text-xs text-gray-400 italic">No clues yet — take a guess or reveal one.</p>
+                  <p className="font-mono text-xs text-white/40 italic">No clues yet — take a guess or reveal one.</p>
                 )}
                 <AnimatePresence>
                   {clues.slice(0, cluesShown).map((clue, i) => (
@@ -396,7 +396,7 @@ export default function LineupThiefPage() {
                       type="submit"
                       disabled={!input.trim()}
                       className="px-5 py-3 font-mono font-bold text-xs uppercase tracking-widest border-l-2 border-[#111827] transition-colors"
-                      style={{ background: "#84cc16", color: "#111827" }}
+                      style={{ background: "#84cc16", color: "white" }}
                     >
                       Guess
                     </button>
@@ -429,14 +429,14 @@ export default function LineupThiefPage() {
                         }}
                       />
                     ))}
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-gray-400 ml-1 self-center">
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-white/40 ml-1 self-center">
                       {guessesLeft} left
                     </span>
                   </div>
 
                   <button
                     onClick={handleChangeDiff}
-                    className="font-mono text-[9px] uppercase tracking-widest text-gray-400 underline"
+                    className="font-mono text-[9px] uppercase tracking-widest text-white/40 underline"
                   >
                     Change difficulty
                   </button>
@@ -475,7 +475,7 @@ export default function LineupThiefPage() {
                       {mysteryPlayer.position} · #{mysteryPlayer.number} · {mysteryPlayer.ppg} PPG
                     </p>
                     {phase === "won" && (
-                      <p className="font-mono text-[9px] mt-1" style={{ color: "#111827", opacity: 0.6 }}>
+                      <p className="font-mono text-[9px] mt-1" style={{ color: "white", opacity: 0.6 }}>
                         {cluesShown === 0 ? "Cold! No clues needed." :
                           cluesShown <= 2 ? `Only ${cluesShown} clue${cluesShown > 1 ? "s" : ""}.` :
                           `Used ${cluesShown} clues.`}
@@ -489,7 +489,7 @@ export default function LineupThiefPage() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
                       className="w-full py-3 font-mono font-bold uppercase tracking-[0.15em] text-sm border-2 border-[#111827]"
-                      style={{ background: "#84cc16", color: "#111827" }}
+                      style={{ background: "#84cc16", color: "white" }}
                     >
                       Next Lineup →
                     </motion.button>
@@ -498,7 +498,7 @@ export default function LineupThiefPage() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
                       className="w-full py-3 font-mono font-bold uppercase tracking-[0.15em] text-sm border-2 border-[#111827]"
-                      style={{ background: "transparent", color: "#111827" }}
+                      style={{ background: "transparent", color: "white" }}
                     >
                       Change Difficulty
                     </motion.button>
@@ -509,7 +509,7 @@ export default function LineupThiefPage() {
           </div>
         </div>
 
-        <p className="font-mono text-[9px] uppercase tracking-widest text-gray-400 text-center mt-4">
+        <p className="font-mono text-[9px] uppercase tracking-widest text-white/40 text-center mt-4">
           {difficulty === "easy" ? "The franchise star is missing" :
            difficulty === "medium" ? "A key role player is missing" :
            "The quietest player is missing — toughest to name"}

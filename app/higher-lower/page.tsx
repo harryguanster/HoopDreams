@@ -127,20 +127,20 @@ export default function HigherLowerPage() {
 
   if (!mounted || !current || !challenger) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#f4f0e6" }}>
-        <p className="font-mono text-xs uppercase tracking-widest text-gray-400">Loading…</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="font-mono text-xs uppercase tracking-widest text-white/40">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+    <div className="min-h-screen" style={{ fontFamily: "var(--font-geist-mono)" }}>
       <GameHeader title="Higher or Lower" />
 
-      <main className="max-w-5xl mx-auto px-6 sm:px-10 py-10 pb-20">
+      <main className="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 py-10 pb-20">
 
         {/* Category tabs */}
-        <div className="border-2 border-[#111827] mb-6 overflow-x-auto">
+        <div className="mb-6 overflow-x-auto" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
           <div className="flex">
             {HL_CATEGORIES.map((cat, i) => (
               <button
@@ -148,9 +148,9 @@ export default function HigherLowerPage() {
                 onClick={() => switchCategory(i)}
                 className="shrink-0 px-5 py-3 font-mono font-bold text-xs uppercase tracking-[0.1em] transition-colors"
                 style={{
-                  background: i === catIdx ? "#111827" : "#f4f0e6",
-                  color: i === catIdx ? "#84cc16" : "#111827",
-                  borderRight: i < HL_CATEGORIES.length - 1 ? "2px solid #111827" : undefined,
+                  background: i === catIdx ? "#84cc16" : "rgba(255,255,255,0.04)",
+                  color: i === catIdx ? "#030508" : "rgba(255,255,255,0.6)",
+                  borderRight: i < HL_CATEGORIES.length - 1 ? "1px solid rgba(255,255,255,0.12)" : undefined,
                 }}
               >
                 {cat.label}
@@ -160,42 +160,40 @@ export default function HigherLowerPage() {
         </div>
 
         {/* Streak banner */}
-        <div className="border-2 border-[#111827] mb-8" style={{ background: "#111827" }}>
+        <div className="mb-8" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
           <div className="flex items-center justify-between px-8 py-5">
             <div>
-              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">Current Streak</p>
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-white/40 mb-1">Current Streak</p>
               <div className="font-playfair font-black tabular-nums" style={{ fontSize: "3rem", color: "#84cc16", lineHeight: 1 }}>{streak}</div>
             </div>
             <div className="text-center">
-              <p className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">{category.description}</p>
+              <p className="font-mono text-[10px] text-white/40 uppercase tracking-widest">{category.description}</p>
             </div>
             <div className="text-right">
-              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-1">
+              <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-white/40 mb-1">
                 {userName ? `${userName}'s Best` : "Best Streak"}
               </p>
-              <div className="font-playfair font-black tabular-nums" style={{ fontSize: "3rem", color: "#6b7280", lineHeight: 1 }}>{best}</div>
+              <div className="font-playfair font-black tabular-nums" style={{ fontSize: "3rem", color: "rgba(255,255,255,0.3)", lineHeight: 1 }}>{best}</div>
             </div>
           </div>
         </div>
 
         {/* Player cards */}
-        <div className="grid grid-cols-2 gap-0 border-2 border-[#111827] mb-6">
+        <div className="grid grid-cols-2 gap-0 mb-6" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
           {/* Current player */}
-          <div style={{ borderRight: "2px solid #111827" }}>
-            {/* Dark top: name */}
-            <div className="px-6 py-5" style={{ background: "#111827", borderBottom: "2px solid #111827" }}>
+          <div style={{ borderRight: "1px solid rgba(255,255,255,0.12)" }}>
+            <div className="px-6 py-5" style={{ background: "rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">Current</p>
               <p className="font-playfair font-black text-white leading-tight" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-0.02em" }}>
                 {current.name}
               </p>
-              <p className="font-mono text-xs text-gray-400 mt-1">{current.hint}</p>
+              <p className="font-mono text-xs text-white/40 mt-1">{current.hint}</p>
             </div>
-            {/* Cream bottom: stat value */}
-            <div className="px-6 py-5" style={{ background: "#f4f0e6" }}>
+            <div className="px-6 py-5" style={{ background: "rgba(255,255,255,0.03)" }}>
               <p className="font-playfair font-black tabular-nums" style={{ fontSize: "3.5rem", color: "#84cc16", lineHeight: 1 }}>
                 {formatValue(current.value, category.format)}
               </p>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mt-1">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-white/40 mt-1">
                 {category.unit}
               </p>
             </div>
@@ -203,8 +201,7 @@ export default function HigherLowerPage() {
 
           {/* Challenger */}
           <div>
-            {/* Dark top: name */}
-            <div className="px-6 py-5 relative" style={{ background: "#111827", borderBottom: "2px solid #111827" }}>
+            <div className="px-6 py-5 relative" style={{ background: "rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] mb-2"
                 style={{ color: phase === "revealed" ? (isCorrect ? "#84cc16" : "#ef4444") : "#a78bfa" }}>
                 Challenger
@@ -212,7 +209,7 @@ export default function HigherLowerPage() {
               <p className="font-playfair font-black text-white leading-tight" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-0.02em" }}>
                 {challenger.name}
               </p>
-              <p className="font-mono text-xs text-gray-400 mt-1">{challenger.hint}</p>
+              <p className="font-mono text-xs text-white/40 mt-1">{challenger.hint}</p>
 
               {phase === "revealed" && (
                 <motion.div
@@ -225,8 +222,7 @@ export default function HigherLowerPage() {
                 </motion.div>
               )}
             </div>
-            {/* Cream bottom: stat value */}
-            <div className="px-6 py-5" style={{ background: "#f4f0e6" }}>
+            <div className="px-6 py-5" style={{ background: "rgba(255,255,255,0.03)" }}>
               <AnimatePresence mode="wait">
                 {phase === "guessing" ? (
                   <motion.div
@@ -236,7 +232,7 @@ export default function HigherLowerPage() {
                     transition={{ duration: 0.15 }}
                   >
                     <p className="font-playfair font-black tabular-nums" style={{ fontSize: "3.5rem", color: "#8b5cf6", lineHeight: 1 }}>???</p>
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mt-1">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-white/40 mt-1">
                       {category.unit}
                     </p>
                   </motion.div>
@@ -253,7 +249,7 @@ export default function HigherLowerPage() {
                     >
                       {formatValue(challenger.value, category.format)}
                     </p>
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-gray-400 mt-1">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-white/40 mt-1">
                       {category.unit}
                     </p>
                   </motion.div>
@@ -284,13 +280,13 @@ export default function HigherLowerPage() {
 
         {/* Guess buttons */}
         {phase === "guessing" && (
-          <div className="grid grid-cols-2 gap-0 border-2 border-[#111827]">
+          <div className="grid grid-cols-2 gap-0" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
             <motion.button
               onClick={() => guess("lower")}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               className="py-6 font-mono font-bold text-lg flex flex-col items-center gap-1 uppercase tracking-[0.1em]"
-              style={{ background: "#111827", color: "white", borderRight: "2px solid #111827" }}
+              style={{ background: "rgba(255,255,255,0.06)", color: "white", borderRight: "1px solid rgba(255,255,255,0.12)" }}
             >
               <span className="text-2xl">↓</span>
               <span>Lower</span>
@@ -300,7 +296,7 @@ export default function HigherLowerPage() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               className="py-6 font-mono font-bold text-lg flex flex-col items-center gap-1 uppercase tracking-[0.1em]"
-              style={{ background: "#84cc16", color: "#111827" }}
+              style={{ background: "#84cc16", color: "#030508" }}
             >
               <span className="text-2xl">↑</span>
               <span>Higher</span>
@@ -313,11 +309,8 @@ export default function HigherLowerPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={next}
-            className="w-full py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] transition-colors"
-            style={{
-              background: "#84cc16",
-              color: "#111827",
-            }}
+            className="w-full py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-colors"
+            style={{ background: "#84cc16", color: "#030508" }}
           >
             Next →
           </motion.button>
@@ -327,24 +320,21 @@ export default function HigherLowerPage() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="border-2 border-[#111827]"
-            style={{ background: "#111827" }}
+            style={{ border: "1px solid rgba(132,204,22,0.3)" }}
           >
-            {/* Dark header */}
-            <div className="px-6 py-5 text-center" style={{ borderBottom: "2px solid #84cc16" }}>
+            <div className="px-6 py-5 text-center" style={{ background: "rgba(132,204,22,0.08)", borderBottom: "1px solid rgba(132,204,22,0.3)" }}>
               <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-2">Defeat</p>
               <h2 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)", letterSpacing: "-0.03em", lineHeight: 0.92 }}>
                 Streak<br />Broken.
               </h2>
             </div>
-            {/* Cream content */}
-            <div className="px-6 py-5 text-center" style={{ background: "#f4f0e6" }}>
-              <p className="font-mono text-xs text-gray-500 mb-1 uppercase tracking-[0.1em]">Final streak: <span className="font-bold text-[#111827]">{streak}</span></p>
-              <p className="font-mono text-xs text-gray-500 mb-5 uppercase tracking-[0.1em]">Best: <span className="font-bold text-[#111827]">{best}</span></p>
+            <div className="px-6 py-5 text-center" style={{ background: "rgba(255,255,255,0.03)" }}>
+              <p className="font-mono text-xs text-white/50 mb-1 uppercase tracking-[0.1em]">Final streak: <span className="font-bold text-white">{streak}</span></p>
+              <p className="font-mono text-xs text-white/50 mb-5 uppercase tracking-[0.1em]">Best: <span className="font-bold text-white">{best}</span></p>
               <button
                 onClick={restart}
-                className="px-10 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] transition-colors"
-                style={{ background: "#84cc16", color: "#111827" }}
+                className="px-10 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-colors"
+                style={{ background: "#84cc16", color: "#030508" }}
               >
                 Try Again
               </button>
@@ -353,7 +343,7 @@ export default function HigherLowerPage() {
         )}
 
         {phase === "guessing" && (
-          <p className="text-center font-mono text-xs text-gray-400 mt-5">
+          <p className="text-center font-mono text-xs text-white/40 mt-5">
             Does {challenger.name} have a higher or lower {category.label} than {current.name}?
           </p>
         )}

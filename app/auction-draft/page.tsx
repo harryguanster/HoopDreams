@@ -295,11 +295,11 @@ function RosterPanel({
                 >
                   <span className="font-mono text-[10px] font-bold shrink-0" style={{ color: POS_COLOR[s.player.position] }}>{s.player.position}</span>
                   <span className="font-mono text-sm flex-1 truncate" style={{ color: dark ? "#d1d5db" : "#111827" }}>{s.player.name}</span>
-                  {onSwap && <span className="font-mono text-xs text-gray-400 select-none">⠿</span>}
+                  {onSwap && <span className="font-mono text-xs text-white/40 select-none">⠿</span>}
                   <span className="font-mono text-xs" style={{ color: dark ? "#6b7280" : "#65a30d" }}>${s.paid}</span>
                 </div>
               ) : (
-                <span className="font-mono text-sm text-gray-300">— empty</span>
+                <span className="font-mono text-sm text-white/30">— empty</span>
               )}
             </div>
           );
@@ -317,15 +317,15 @@ function PlacementModal({ player, openSlots, onPlace }: {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="border-2 border-[#111827] bg-[#f4f0e6] p-8 max-w-sm w-full mx-4"
+        className="border-2 border-[#111827] bg-[rgba(15,20,30,0.85)] p-8 max-w-sm w-full mx-4"
       >
         <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-[#84cc16] mb-2">Assign Position</p>
         <p className="font-playfair font-black text-[#111827] mb-1" style={{ fontSize: "1.3rem" }}>{player.name}</p>
         <p className="font-mono text-xs mb-1">
           Natural slot: <span style={{ color: POS_COLOR[player.position] }}>{player.position}</span>
-          <span className="text-gray-400"> · already filled</span>
+          <span className="text-white/40"> · already filled</span>
         </p>
-        <p className="font-mono text-xs text-gray-400 mb-6">Choose an open slot. Drag players to rearrange after drafting.</p>
+        <p className="font-mono text-xs text-white/40 mb-6">Choose an open slot. Drag players to rearrange after drafting.</p>
         <div className="flex flex-col gap-2">
           {openSlots.map(pos => (
             <button
@@ -716,7 +716,7 @@ export default function AuctionDraftPage() {
   // ── Setup ──
   if (phase === "setup") {
     return (
-      <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+      <div className="min-h-screen" style={{ background: "rgba(15,20,30,0.85)" }}>
         <GameHeader title="Auction Draft" />
         <main className="max-w-2xl mx-auto px-6 py-16">
           <div className="text-center mb-12">
@@ -725,7 +725,7 @@ export default function AuctionDraftPage() {
               Auction<br />Draft
             </h1>
             <div style={{ borderTop: "2px solid #111827", margin: "20px auto", maxWidth: 120 }} />
-            <p className="font-mono text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
+            <p className="font-mono text-white/50 text-sm leading-relaxed max-w-md mx-auto">
               10 all-time legends. $20 each. Outbid the AI to build the greatest team ever assembled — then play a game to 7.
             </p>
           </div>
@@ -743,7 +743,7 @@ export default function AuctionDraftPage() {
               ].map(([label, text]) => (
                 <div key={label} className="flex gap-4">
                   <span className="font-mono font-bold text-[10px] text-[#84cc16] uppercase tracking-wider w-14 shrink-0 pt-0.5">{label}</span>
-                  <span className="font-mono text-xs text-gray-500 leading-relaxed">{text}</span>
+                  <span className="font-mono text-xs text-white/50 leading-relaxed">{text}</span>
                 </div>
               ))}
             </div>
@@ -751,7 +751,7 @@ export default function AuctionDraftPage() {
 
           {/* Era */}
           <div className="mb-8">
-            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-3 text-center">Player Pool</p>
+            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-white/40 mb-3 text-center">Player Pool</p>
             <div className="grid grid-cols-2 gap-0 border-2 border-[#111827]">
               {(["alltime", "current"] as Era[]).map((e, i) => (
                 <button
@@ -768,7 +768,7 @@ export default function AuctionDraftPage() {
                 </button>
               ))}
             </div>
-            <p className="font-mono text-xs text-gray-400 mt-2.5 text-center">
+            <p className="font-mono text-xs text-white/40 mt-2.5 text-center">
               {era === "alltime"
                 ? "Jordan, LeBron, Shaq — but also Rodman, Reggie Miller, Alonzo Mourning."
                 : "Jokic, Giannis, SGA — but also Bane, Randle, Scottie Barnes."}
@@ -777,7 +777,7 @@ export default function AuctionDraftPage() {
 
           {/* Difficulty */}
           <div className="mb-10">
-            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-gray-400 mb-3 text-center">AI Difficulty</p>
+            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[10px] text-white/40 mb-3 text-center">AI Difficulty</p>
             <div className="grid grid-cols-3 gap-0 border-2 border-[#111827]">
               {(["easy", "medium", "hard"] as Difficulty[]).map((d, i) => (
                 <button
@@ -794,7 +794,7 @@ export default function AuctionDraftPage() {
                 </button>
               ))}
             </div>
-            <p className="font-mono text-xs text-gray-400 mt-2.5 text-center">
+            <p className="font-mono text-xs text-white/40 mt-2.5 text-center">
               {difficulty === "easy" && "AI underbids — great for learning the ropes."}
               {difficulty === "medium" && "AI values players fairly — a real contest."}
               {difficulty === "hard" && "AI bids aggressively on stars — bring your A-game."}
@@ -831,7 +831,7 @@ export default function AuctionDraftPage() {
     const openUserSlots = POSITIONS.filter(p => !filledUserSlots.has(p));
 
     return (
-      <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+      <div className="min-h-screen" style={{ background: "rgba(15,20,30,0.85)" }}>
         <GameHeader title="Auction Draft" />
 
         {pendingPlayer && (
@@ -863,26 +863,26 @@ export default function AuctionDraftPage() {
                   <span className="text-xs font-mono font-bold uppercase tracking-[0.25em] px-4 py-2 border" style={{ borderColor: POS_COLOR[player.position], color: POS_COLOR[player.position] }}>
                     {player.position}
                   </span>
-                  <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">{qIdx + 1} / {queue.length}</span>
+                  <span className="text-xs font-mono text-white/50 uppercase tracking-widest">{qIdx + 1} / {queue.length}</span>
                 </div>
                 <h2 className="font-playfair font-black text-white mb-3" style={{ fontSize: "clamp(3rem, 5vw, 5rem)", letterSpacing: "-0.02em", lineHeight: 1 }}>
                   {player.name}
                 </h2>
-                <p className="font-mono text-gray-500 text-base mb-2">{player.era}</p>
-                <p className="font-mono text-gray-300 text-lg">{player.desc}</p>
+                <p className="font-mono text-white/50 text-base mb-2">{player.era}</p>
+                <p className="font-mono text-white/30 text-lg">{player.desc}</p>
               </div>
 
               {/* Bid status bar */}
-              <div className="flex items-center gap-12 px-12 py-6" style={{ background: "#f4f0e6", borderBottom: "2px solid #111827" }}>
+              <div className="flex items-center gap-12 px-12 py-6" style={{ background: "rgba(15,20,30,0.85)", borderBottom: "2px solid #111827" }}>
                 <div>
-                  <p className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-1">Current Bid</p>
+                  <p className="text-xs font-mono uppercase tracking-widest text-white/40 mb-1">Current Bid</p>
                   <p className="font-playfair font-black text-[#111827]" style={{ fontSize: "3.5rem", lineHeight: 1 }}>
                     {currentBid === 0 ? "—" : `$${currentBid}`}
                   </p>
                 </div>
                 {holder && (
                   <div>
-                    <p className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-1">Holds</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-white/40 mb-1">Holds</p>
                     <p className="font-mono font-bold text-lg" style={{ color: holder === "user" ? "#84cc16" : "#ef4444" }}>
                       {holder === "user" ? "You" : "AI"}
                     </p>
@@ -890,15 +890,15 @@ export default function AuctionDraftPage() {
                 )}
                 {canBid && isUserTurn && (
                   <div className="ml-auto text-right">
-                    <p className="text-xs font-mono uppercase tracking-widest text-gray-400 mb-0.5">Your cap here</p>
+                    <p className="text-xs font-mono uppercase tracking-widest text-white/40 mb-0.5">Your cap here</p>
                     <p className="font-mono font-bold text-base text-[#111827]">${cap} max · ${userBudget} left · {uSlots} slots</p>
                   </div>
                 )}
                 {!canBid && (
-                  <p className="ml-auto font-mono text-base text-gray-400">Roster full</p>
+                  <p className="ml-auto font-mono text-base text-white/40">Roster full</p>
                 )}
                 {auctionState === "ai_thinking" && (
-                  <p className="ml-auto font-mono text-base text-gray-400 animate-pulse">AI is deciding…</p>
+                  <p className="ml-auto font-mono text-base text-white/40 animate-pulse">AI is deciding…</p>
                 )}
                 {auctionState === "round_over" && roundMsg && (
                   <p className="ml-auto font-mono text-base font-bold" style={{ color: roundMsg.startsWith("✅") ? "#84cc16" : "#6b7280" }}>{roundMsg}</p>
@@ -907,7 +907,7 @@ export default function AuctionDraftPage() {
 
               {/* Bid controls */}
               {isUserTurn && (
-                <div className="px-12 py-7" style={{ borderBottom: "2px solid #111827", background: "#f4f0e6" }}>
+                <div className="px-12 py-7" style={{ borderBottom: "2px solid #111827", background: "rgba(15,20,30,0.85)" }}>
                   <div className="flex gap-4">
                     <input
                       type="number"
@@ -925,8 +925,8 @@ export default function AuctionDraftPage() {
                       disabled={!bidOk}
                       className="px-12 py-5 font-mono font-bold text-lg uppercase tracking-[0.1em] border-2 transition-colors"
                       style={bidOk
-                        ? { background: "#84cc16", borderColor: "#111827", color: "#111827" }
-                        : { background: "#f4f0e6", borderColor: "#d1d5db", color: "#d1d5db", cursor: "not-allowed" }}
+                        ? { background: "#84cc16", borderColor: "#111827", color: "white" }
+                        : { background: "rgba(15,20,30,0.85)", borderColor: "#d1d5db", color: "rgba(255,255,255,0.2)", cursor: "not-allowed" }}
                     >
                       Bid
                     </button>
@@ -962,7 +962,7 @@ export default function AuctionDraftPage() {
   // ── Rosters ──
   if (phase === "rosters") {
     return (
-      <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+      <div className="min-h-screen" style={{ background: "rgba(15,20,30,0.85)" }}>
         <GameHeader title="Auction Draft" />
         <main className="max-w-4xl mx-auto px-6 py-12">
           <div className="text-center mb-10">
@@ -972,7 +972,7 @@ export default function AuctionDraftPage() {
             </h2>
           </div>
 
-          <p className="font-mono text-xs text-gray-400 text-center mb-4">Drag players on your squad to rearrange positions before simulating.</p>
+          <p className="font-mono text-xs text-white/40 text-center mb-4">Drag players on your squad to rearrange positions before simulating.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-2 border-[#111827] mb-10">
             <div style={{ borderRight: "2px solid #111827" }}>
               <RosterPanel title="Your Squad" roster={userRoster} budget={userBudget} onSwap={handleRosterSwap} />
@@ -1014,14 +1014,14 @@ export default function AuctionDraftPage() {
             {/* Header row */}
             <div className="grid grid-cols-3 border-b-2 border-[#84cc16]">
               <div className="px-6 py-5 border-r-2 border-[#84cc16] text-center">
-                <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">Your Squad</p>
+                <p className="font-mono text-xs text-white/50 uppercase tracking-widest mb-1">Your Squad</p>
                 <p className="font-playfair font-black text-white" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{simSeriesU}</p>
                 <p className="font-mono text-[10px] text-[#84cc16] mt-1 uppercase tracking-widest">series wins</p>
               </div>
               <div className="px-6 py-5 text-center flex flex-col justify-center">
                 {simStep !== "done" ? (
                   <>
-                    <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-3">
+                    <p className="font-mono text-xs text-white/50 uppercase tracking-widest mb-3">
                       Game {currentGame?.num ?? 1} · Live
                     </p>
                     <div className="flex items-center justify-center gap-5">
@@ -1033,18 +1033,18 @@ export default function AuctionDraftPage() {
                   </>
                 ) : (
                   <>
-                    <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-2">Series Final</p>
+                    <p className="font-mono text-xs text-white/50 uppercase tracking-widest mb-2">Series Final</p>
                     <p className="font-playfair font-black" style={{ fontSize: "2rem", lineHeight: 1, color: "#84cc16" }}>
                       {simSeriesU} – {simSeriesA}
                     </p>
-                    <p className="font-mono text-xs text-gray-400 mt-2">Best of 7</p>
+                    <p className="font-mono text-xs text-white/40 mt-2">Best of 7</p>
                   </>
                 )}
               </div>
               <div className="px-6 py-5 border-l-2 border-[#84cc16] text-center">
-                <p className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-1">AI Squad</p>
+                <p className="font-mono text-xs text-white/50 uppercase tracking-widest mb-1">AI Squad</p>
                 <p className="font-playfair font-black text-white" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{simSeriesA}</p>
-                <p className="font-mono text-[10px] text-gray-500 mt-1 uppercase tracking-widest">series wins</p>
+                <p className="font-mono text-[10px] text-white/50 mt-1 uppercase tracking-widest">series wins</p>
               </div>
             </div>
 
@@ -1056,7 +1056,7 @@ export default function AuctionDraftPage() {
                   <span className="font-mono text-sm font-bold" style={{ color: g.winner==="user" ? "#84cc16" : "#ef4444" }}>
                     {g.winner==="user" ? "Your Squad wins" : "AI Squad wins"}
                   </span>
-                  <span className="font-mono text-sm text-gray-500 ml-auto">{g.uTotal} – {g.aTotal}</span>
+                  <span className="font-mono text-sm text-white/50 ml-auto">{g.uTotal} – {g.aTotal}</span>
                 </div>
               ))}
               {simStep === "scoring" && currentGame && (
@@ -1083,7 +1083,7 @@ export default function AuctionDraftPage() {
               <h2 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", lineHeight: 0.9, letterSpacing: "-0.03em" }}>
                 {won ? "Your Squad\nWins!" : "AI Squad\nWins."}
               </h2>
-              <p className="font-mono text-sm text-gray-500 mt-3">
+              <p className="font-mono text-sm text-white/50 mt-3">
                 Series stars — You: <strong className="text-white">{uStar}</strong> · AI: <strong className="text-white">{aStar}</strong>
               </p>
             </motion.div>
@@ -1107,17 +1107,17 @@ export default function AuctionDraftPage() {
                   </div>
                   <div className="px-5 py-2 grid grid-cols-6 gap-1 border-b border-gray-700">
                     {["PLAYER","PTS","REB","AST","STL","BLK"].map(h => (
-                      <span key={h} className="font-mono text-[9px] text-gray-500 uppercase tracking-wider text-center first:text-left">{h}</span>
+                      <span key={h} className="font-mono text-[9px] text-white/50 uppercase tracking-wider text-center first:text-left">{h}</span>
                     ))}
                   </div>
                   {bsUser.map((row, i) => (
                     <div key={i} className="px-5 py-2.5 grid grid-cols-6 gap-1 border-b border-gray-800">
                       <span className="font-mono text-xs text-white truncate col-span-1">{row.name.split(" ").slice(-1)[0]}</span>
                       <span className="font-mono text-sm font-bold text-center" style={{ color: "#84cc16" }}>{row.pts}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.reb}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.ast}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.stl}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.blk}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.reb}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.ast}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.stl}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.blk}</span>
                     </div>
                   ))}
                 </div>
@@ -1125,21 +1125,21 @@ export default function AuctionDraftPage() {
                 <div>
                   <div className="px-5 py-3 flex items-center justify-between" style={{ background: "#1f2937", borderBottom: "2px solid #374151" }}>
                     <p className="font-playfair font-black text-white">AI Squad</p>
-                    <p className="font-mono text-xs text-gray-400 font-bold">{!won ? "SERIES WIN" : "SERIES LOSS"}</p>
+                    <p className="font-mono text-xs text-white/40 font-bold">{!won ? "SERIES WIN" : "SERIES LOSS"}</p>
                   </div>
                   <div className="px-5 py-2 grid grid-cols-6 gap-1 border-b border-gray-700">
                     {["PLAYER","PTS","REB","AST","STL","BLK"].map(h => (
-                      <span key={h} className="font-mono text-[9px] text-gray-500 uppercase tracking-wider text-center first:text-left">{h}</span>
+                      <span key={h} className="font-mono text-[9px] text-white/50 uppercase tracking-wider text-center first:text-left">{h}</span>
                     ))}
                   </div>
                   {bsAi.map((row, i) => (
                     <div key={i} className="px-5 py-2.5 grid grid-cols-6 gap-1 border-b border-gray-800">
                       <span className="font-mono text-xs text-white truncate">{row.name.split(" ").slice(-1)[0]}</span>
                       <span className="font-mono text-sm font-bold text-center" style={{ color: !won ? "#84cc16" : "#ef4444" }}>{row.pts}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.reb}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.ast}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.stl}</span>
-                      <span className="font-mono text-xs text-gray-300 text-center">{row.blk}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.reb}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.ast}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.stl}</span>
+                      <span className="font-mono text-xs text-white/30 text-center">{row.blk}</span>
                     </div>
                   ))}
                 </div>

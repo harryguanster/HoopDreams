@@ -323,7 +323,7 @@ function TrendArrow({ trend, size = 14 }: { trend: Trend; size?: number }) {
 }
 
 function StatDelta({ delta }: { delta: number }) {
-  if (Math.abs(delta) < 0.15) return <span style={{ fontSize: 12, color: "#9ca3af" }}>—</span>;
+  if (Math.abs(delta) < 0.15) return <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>—</span>;
   const up = delta > 0;
   return (
     <span style={{ fontSize: 12, fontWeight: 700, color: up ? "#22c55e" : "#ef4444", display: "inline-flex", alignItems: "center", gap: 2 }}>
@@ -410,7 +410,7 @@ function StandingsTable({ entries, userAbbr }: { entries: StandingEntry[]; userA
   return (
     <div style={{ borderRadius: 10, overflow: "hidden", border: "1px solid rgba(0,0,0,0.08)" }}>
       <div style={{ display: "grid", gridTemplateColumns: "22px 26px 1fr 40px 40px 52px", padding: "5px 10px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
-        {["#", "", "Team", "W", "L", "GB"].map(h => <span key={h} style={{ fontSize: 8, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.1em" }}>{h}</span>)}
+        {["#", "", "Team", "W", "L", "GB"].map(h => <span key={h} style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{h}</span>)}
       </div>
       {entries.map((e, i) => {
         const isUser = e.abbr === userAbbr;
@@ -430,9 +430,9 @@ function StandingsTable({ entries, userAbbr }: { entries: StandingEntry[]; userA
               {e.abbr}
               {!inPlayoffs && <span style={{ fontSize: 8, color: "#c4b5a0", fontWeight: 400 }}>lotto</span>}
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", fontVariantNumeric: "tabular-nums" }}>{e.wins}</span>
-            <span style={{ fontSize: 11, color: "#9ca3af", fontVariantNumeric: "tabular-nums" }}>{e.losses}</span>
-            <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{gb}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", fontVariantNumeric: "tabular-nums" }}>{e.wins}</span>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{e.losses}</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{gb}</span>
           </div>
         );
       })}
@@ -457,12 +457,12 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
         <div style={{ padding: "6px 10px", background: userW && userIn ? "rgba(132,204,22,0.1)" : "#f8f7f4", display: "flex", alignItems: "center", gap: 7, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
           <TeamLogo url={series.winner.logoUrl} color={series.winner.color} size={20} />
           <span style={{ flex: 1, fontSize: 11, fontWeight: 800, color: userW ? "#1a3a00" : "#111827" }}>{series.winner.abbr}</span>
-          <span style={{ fontSize: 13, fontWeight: 900, color: "#111827", fontVariantNumeric: "tabular-nums" }}>{series.winsW}</span>
+          <span style={{ fontSize: 13, fontWeight: 900, color: "white", fontVariantNumeric: "tabular-nums" }}>{series.winsW}</span>
         </div>
         <div style={{ padding: "6px 10px", background: "white", display: "flex", alignItems: "center", gap: 7 }}>
           <div style={{ opacity: 0.45 }}><TeamLogo url={series.loser.logoUrl} color={series.loser.color} size={20} /></div>
-          <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: "#6b7280" }}>{series.loser.abbr}</span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "#9ca3af", fontVariantNumeric: "tabular-nums" }}>{series.winsL}</span>
+          <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>{series.loser.abbr}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{series.winsL}</span>
         </div>
       </div>
     );
@@ -473,7 +473,7 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
     if (!series) return null;
     return (
       <div>
-        <p style={{ fontSize: 9, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{label}</p>
+        <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{label}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {series.map((s, i) => <SeriesCard key={i} series={s} />)}
         </div>
@@ -529,11 +529,11 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 6 }}>
             <TeamLogo url={champion.logoUrl} color={champion.color} size={36} />
-            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.6rem", letterSpacing: "0.1em", color: "#111827", lineHeight: 1 }}>
+            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1.6rem", letterSpacing: "0.1em", color: "white", lineHeight: 1 }}>
               {isChamp ? "NBA Champions!" : `${champion.name} win the title`}
             </p>
           </div>
-          {!isChamp && <p style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>Better luck next season</p>}
+          {!isChamp && <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Better luck next season</p>}
         </motion.div>
       )}
     </div>
@@ -544,7 +544,7 @@ function PlayoffBracket({ results, userAbbr, champion }: { results: PlayoffResul
 function minuteRole(m: number): { label: string; color: string } {
   return m >= 28 ? { label: "Starter", color: "#15803d" }
        : m >= 16 ? { label: "Rotation", color: "#b45309" }
-       :           { label: "Bench", color: "#6b7280" };
+       :           { label: "Bench", color: "rgba(255,255,255,0.5)" };
 }
 
 function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRemove, onMins, onHandleDragStart, onHandleDragEnd }: {
@@ -597,13 +597,13 @@ function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRem
             </svg>
           </div>
         )}
-        <span style={{ flex: 1, fontSize: 8, fontFamily: "var(--font-bebas)", letterSpacing: "0.18em", color: "#9ca3af" }}>{slot.label}</span>
+        <span style={{ flex: 1, fontSize: 8, fontFamily: "var(--font-bebas)", letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)" }}>{slot.label}</span>
         {filled && (
           <>
             <ContractBadge years={slot.yearsLeft} />
             <button
               onClick={e => { e.stopPropagation(); onRemove(); }}
-              style={{ width: 22, height: 22, borderRadius: 5, background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 700 }}
+              style={{ width: 22, height: 22, borderRadius: 5, background: "rgba(0,0,0,0.04)", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 700 }}
               onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.color = "#ef4444"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.color = "#9ca3af"; }}
             >×</button>
@@ -615,7 +615,7 @@ function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRem
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <PlayerHeadshot playerId={slot.nbaPlayer?.id ?? null} color={color} size={34} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
+              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.95rem", letterSpacing: "0.05em", color: "white", lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
               <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
                 <OVRBadge ovr={slot.ovr} small />
                 <span style={{ fontSize: 11, color: "#65a30d", fontFamily: "monospace", fontWeight: 700 }}>${slot.salary}M</span>
@@ -627,7 +627,7 @@ function RosterSlotCard({ slot, isActive, isDragging, isDragOver, onClick, onRem
               onChange={e => onMins(Number(e.target.value))}
               onClick={e => e.stopPropagation()}
               style={{ flex: 1, accentColor: "#84cc16", height: 3 }} />
-            <span style={{ fontSize: 9, fontFamily: "monospace", color: "#374151", width: 28, textAlign: "right", flexShrink: 0 }}>{slot.minutes}m</span>
+            <span style={{ fontSize: 9, fontFamily: "monospace", color: "rgba(255,255,255,0.7)", width: 28, textAlign: "right", flexShrink: 0 }}>{slot.minutes}m</span>
           </div>
           <div style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
             <div style={{ flex: 1, height: 3, borderRadius: 2, background: "#f3f4f6", overflow: "hidden" }}>
@@ -1021,19 +1021,19 @@ export default function FranchisePage() {
 
   // ══════════════════════════════════════════════════════════════════
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f0e6" }}>
+    <div style={{ minHeight: "100vh", background: "rgba(15,20,30,0.85)" }}>
       <GameHeader title="Franchise Mode" />
 
       {/* Season bar */}
       {phase !== "setup" && chosenTeam && (
         <div style={{ background: "rgba(244,240,230,0.95)", borderBottom: "1px solid rgba(0,0,0,0.08)", padding: "7px 24px", display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 40, backdropFilter: "blur(8px)" }}>
           <TeamLogo url={chosenTeam.logoUrl} color={chosenTeam.color} size={28} />
-          <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.1em", color: "#111827" }}>{chosenTeam.name}</span>
+          <span style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.1em", color: "white" }}>{chosenTeam.name}</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: 20 }}>
             {[{ label: "Season", val: season }, { label: "Titles", val: titles }, { label: "Career W", val: totalWins }, { label: "Rating", val: userRating.toFixed(0) }].map(({ label, val }) => (
               <div key={label} style={{ textAlign: "center" }}>
-                <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.06em", color: "#111827", lineHeight: 1 }}>{val}</p>
-                <p style={{ fontSize: 7, color: "#9ca3af", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</p>
+                <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.06em", color: "white", lineHeight: 1 }}>{val}</p>
+                <p style={{ fontSize: 7, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</p>
               </div>
             ))}
           </div>
@@ -1044,8 +1044,8 @@ export default function FranchisePage() {
       {phase === "setup" && (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-20">
           <div style={{ marginBottom: 24 }}>
-            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(28px,6vw,52px)", letterSpacing: "0.06em", color: "#111827", lineHeight: 1 }}>Franchise Mode</p>
-            <p style={{ color: "#6b7280", fontSize: 13, marginTop: 6, maxWidth: 500 }}>Pick a team, build a 12-man roster, simulate full 82-game seasons, and manage your franchise year over year. Players improve or decline based on performance.</p>
+            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(28px,6vw,52px)", letterSpacing: "0.06em", color: "white", lineHeight: 1 }}>Franchise Mode</p>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 6, maxWidth: 500 }}>Pick a team, build a 12-man roster, simulate full 82-game seasons, and manage your franchise year over year. Players improve or decline based on performance.</p>
           </div>
           <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
             {(["East", "West"] as const).map(c => (
@@ -1061,8 +1061,8 @@ export default function FranchisePage() {
               >
                 <TeamLogo url={t.logoUrl} color={t.color} size={28} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: 700, fontSize: 13, color: "#111827", lineHeight: 1.2 }}>{t.name}</p>
-                  <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 2 }}>{t.conf} · {t.abbr}</p>
+                  <p style={{ fontWeight: 700, fontSize: 13, color: "white", lineHeight: 1.2 }}>{t.name}</p>
+                  <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", marginTop: 2 }}>{t.conf} · {t.abbr}</p>
                 </div>
                 <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: t.rating >= 87 ? "#fef3c7" : t.rating >= 78 ? "#dcfce7" : "#f1f5f9", color: t.rating >= 87 ? "#92400e" : t.rating >= 78 ? "#14532d" : "#6b7280", border: "1px solid rgba(0,0,0,0.1)" }}>
                   {t.rating >= 87 ? "Title" : t.rating >= 78 ? "Playoff" : "Rebuild"}
@@ -1080,14 +1080,14 @@ export default function FranchisePage() {
           <div style={{ width: 290, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(0,0,0,0.08)", background: "rgba(244,240,230,0.5)" }}>
             <div style={{ padding: "12px 14px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "white" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: "#374151" }}>Salary Cap</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>Salary Cap</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: capLeft < 8 ? "#ef4444" : "#374151" }}>${usedSalary}M / $100M</span>
               </div>
               <div style={{ height: 5, background: "#f3f4f6", borderRadius: 3, overflow: "hidden" }}>
                 <div style={{ height: "100%", background: capLeft < 8 ? "#ef4444" : "#84cc16", width: `${Math.min(100,(usedSalary/SALARY_CAP)*100)}%`, borderRadius: 3, transition: "width 0.25s" }} />
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5 }}>
-                <span style={{ fontSize: 9, color: "#9ca3af" }}>{filledCount}/12 players</span>
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)" }}>{filledCount}/12 players</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color: "#65a30d" }}>Rating {userRating.toFixed(0)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
@@ -1151,11 +1151,11 @@ export default function FranchisePage() {
             {/* Search + team filter */}
             <div style={{ padding: "8px 12px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "white", display: "flex", gap: 8, alignItems: "center" }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search all positions…"
-                style={{ flex: 1, padding: "6px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 12, outline: "none", background: "#fafaf7", color: "#111827" }}
+                style={{ flex: 1, padding: "6px 12px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 12, outline: "none", background: "#fafaf7", color: "white" }}
                 onFocus={e => (e.currentTarget.style.borderColor = "#84cc16")}
                 onBlur={e => (e.currentTarget.style.borderColor = "#e5e7eb")}
               />
-              <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)} style={{ padding: "6px 8px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 11, background: "#fafaf7", color: "#374151", outline: "none", maxWidth: 120 }}>
+              <select value={teamFilter} onChange={e => setTeamFilter(e.target.value)} style={{ padding: "6px 8px", borderRadius: 8, border: "1.5px solid #e5e7eb", fontSize: 11, background: "#fafaf7", color: "rgba(255,255,255,0.7)", outline: "none", maxWidth: 120 }}>
                 {teamList.map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
@@ -1169,8 +1169,8 @@ export default function FranchisePage() {
                   <div key={pos} style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", borderRight: idx < 4 ? "1px solid rgba(0,0,0,0.07)" : "none" }}>
                     {/* Column header */}
                     <div style={{ padding: "6px 8px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-                      <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.72rem", letterSpacing: "0.12em", color: "#374151" }}>{label}</span>
-                      <span style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{players.length}</span>
+                      <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.72rem", letterSpacing: "0.12em", color: "rgba(255,255,255,0.7)" }}>{label}</span>
+                      <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{players.length}</span>
                     </div>
                     {/* Player cards */}
                     <div style={{ flex: 1, overflowY: "auto" }}>
@@ -1186,20 +1186,20 @@ export default function FranchisePage() {
                           >
                             <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
                               <PlayerHeadshot playerId={p.id} color={p.teamColor} size={26} />
-                              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
+                              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.8rem", letterSpacing: "0.04em", color: "white", lineHeight: 1.1, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
                             </div>
                             <div style={{ paddingLeft: 31, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                               <OVRBadge ovr={ovr} small />
                               <span style={{ fontSize: 12, fontWeight: 800, color: canAfford ? "#65a30d" : "#ef4444" }}>${sal}M</span>
                             </div>
-                            <p style={{ paddingLeft: 31, fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 3 }}>
+                            <p style={{ paddingLeft: 31, fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", marginTop: 3 }}>
                               {playerAge(p)}yo · {p.ppg}p {p.rpg}r {p.apg}a
                             </p>
                           </button>
                         );
                       })}
                       {players.length === 0 && (
-                        <p style={{ textAlign: "center", padding: "24px 6px", color: "#d1d5db", fontSize: 10, fontFamily: "monospace" }}>—</p>
+                        <p style={{ textAlign: "center", padding: "24px 6px", color: "rgba(255,255,255,0.2)", fontSize: 10, fontFamily: "monospace" }}>—</p>
                       )}
                     </div>
                   </div>
@@ -1222,8 +1222,8 @@ export default function FranchisePage() {
               <BasketballIcon size={34} color="#84cc16" />
             </div>
           </div>
-          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.1em", color: "#111827", lineHeight: 1, marginBottom: 8 }}>Simulating Season {season}</p>
-          <p style={{ color: "#9ca3af", fontSize: 13, fontFamily: "monospace" }}>Playing 82 games{"." .repeat(simDots + 1)}</p>
+          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "2.2rem", letterSpacing: "0.1em", color: "white", lineHeight: 1, marginBottom: 8 }}>Simulating Season {season}</p>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, fontFamily: "monospace" }}>Playing 82 games{"." .repeat(simDots + 1)}</p>
           <div style={{ marginTop: 24, display: "flex", gap: 4 }}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: "#84cc16", animation: `pulse82 1.2s ease ${i * 0.2}s infinite` }} />
@@ -1283,7 +1283,7 @@ export default function FranchisePage() {
         const headers = ["NAME","POS","AGE","OVR","SCR","REB","PLK","DEF","POT","TREND"];
 
         return (
-          <div style={{ background: "#f4f0e6", minHeight: "calc(100vh - 52px)", display: "flex", flexDirection: "column" }}>
+          <div style={{ background: "rgba(15,20,30,0.85)", minHeight: "calc(100vh - 52px)", display: "flex", flexDirection: "column" }}>
 
             {/* ── Featured player ──────────────────────────────────────────── */}
             {star && (
@@ -1307,7 +1307,7 @@ export default function FranchisePage() {
                   <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.7rem", letterSpacing: "0.25em", color: starColor, textTransform: "uppercase" }}>
                     {star.nbaPlayer?.position}
                   </span>
-                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.8rem,4vw,2.6rem)", letterSpacing: "0.04em", color: "#111827", lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "2px 0 6px" }}>
+                  <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.8rem,4vw,2.6rem)", letterSpacing: "0.04em", color: "white", lineHeight: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "2px 0 6px" }}>
                     {starName}
                   </p>
                   <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.75rem", letterSpacing: "0.22em", color: starColor, textTransform: "uppercase", marginBottom: 14 }}>
@@ -1322,8 +1322,8 @@ export default function FranchisePage() {
                       { l: "SAL", v: `$${star.salary}M` },
                     ].map(({ l, v }) => (
                       <div key={l}>
-                        <p style={{ fontSize: 26, fontWeight: 800, color: "#111827", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</p>
-                        <p style={{ fontSize: 10, color: "#9ca3af", letterSpacing: "0.12em", marginTop: 4, textTransform: "uppercase" }}>{l}</p>
+                        <p style={{ fontSize: 26, fontWeight: 800, color: "white", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</p>
+                        <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", marginTop: 4, textTransform: "uppercase" }}>{l}</p>
                       </div>
                     ))}
                   </div>
@@ -1351,7 +1351,7 @@ export default function FranchisePage() {
             {/* ── Table header ──────────────────────────────────────────────── */}
             <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 24px", background: "#e8e4d8", borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0 }}>
               {headers.map(h => (
-                <span key={h} style={{ fontSize: 11, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "#6b7280" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontFamily: "var(--font-bebas)", letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)" }}>{h}</span>
               ))}
             </div>
 
@@ -1372,7 +1372,7 @@ export default function FranchisePage() {
                   : i % 2 === 0 ? "white" : "#f4f0e6";
 
                 const cell = (content: React.ReactNode, extra?: React.CSSProperties) => (
-                  <span style={{ display: "flex", alignItems: "center", fontSize: 20, fontFamily: "var(--font-bebas)", letterSpacing: "0.05em", color: "#374151", fontVariantNumeric: "tabular-nums", ...extra }}>
+                  <span style={{ display: "flex", alignItems: "center", fontSize: 20, fontFamily: "var(--font-bebas)", letterSpacing: "0.05em", color: "rgba(255,255,255,0.7)", fontVariantNumeric: "tabular-nums", ...extra }}>
                     {content}
                   </span>
                 );
@@ -1411,7 +1411,7 @@ export default function FranchisePage() {
                     </div>
 
                     {/* POS */}
-                    {cell(pos, { color: "#9ca3af" })}
+                    {cell(pos, { color: "rgba(255,255,255,0.4)" })}
 
                     {/* AGE */}
                     {cell(sl.age, { color: sl.age <= 22 ? "#16a34a" : sl.age >= 34 ? "#dc2626" : "#374151", fontWeight: sl.age <= 22 ? 700 : 400 })}
@@ -1447,14 +1447,14 @@ export default function FranchisePage() {
 
             {/* ── Footer ───────────────────────────────────────────────────── */}
             <div style={{ padding: "14px 24px", background: "#e8e4d8", borderTop: "1px solid rgba(0,0,0,0.08)", display: "flex", gap: 12, alignItems: "center", flexShrink: 0 }}>
-              <div style={{ flex: 1, fontSize: 10, color: "#9ca3af", fontFamily: "monospace", display: "flex", gap: 20, alignItems: "center" }}>
+              <div style={{ flex: 1, fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", display: "flex", gap: 20, alignItems: "center" }}>
                 <span><span style={{ color: "#15803d", fontWeight: 700 }}>A</span> = Elite</span>
                 <span><span style={{ color: "#65a30d", fontWeight: 700 }}>B</span> = Good</span>
                 <span><span style={{ color: "#b45309", fontWeight: 700 }}>C</span> = Avg</span>
                 <span><span style={{ color: "#dc2626", fontWeight: 700 }}>D/F</span> = Poor</span>
                 <span style={{ color: "#16a34a" }}>Green age = young prospect</span>
               </div>
-              <button onClick={() => setPhase("standings")} style={{ padding: "11px 32px", borderRadius: 10, background: "#84cc16", color: "#111827", fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.12em", border: "none", cursor: "pointer", flexShrink: 0 }}>
+              <button onClick={() => setPhase("standings")} style={{ padding: "11px 32px", borderRadius: 10, background: "#84cc16", color: "white", fontFamily: "var(--font-bebas)", fontSize: "1.1rem", letterSpacing: "0.12em", border: "none", cursor: "pointer", flexShrink: 0 }}>
                 See Standings →
               </button>
             </div>
@@ -1468,7 +1468,7 @@ export default function FranchisePage() {
       {phase === "standings" && standingsData && chosenTeam && (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-20">
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 20 }}>
-            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(22px,5vw,40px)", letterSpacing: "0.06em", color: "#111827", lineHeight: 1 }}>Season {season} Standings</p>
+            <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(22px,5vw,40px)", letterSpacing: "0.06em", color: "white", lineHeight: 1 }}>Season {season} Standings</p>
             {userSeed() && <span style={{ fontSize: 14, color: "#65a30d", fontWeight: 800 }}>{madePlayoffs() ? `Seed #${userSeed()}` : "Missed Playoffs"}</span>}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
@@ -1488,11 +1488,11 @@ export default function FranchisePage() {
                 {madePlayoffs() ? `Playoff bound — Seed #${userSeed()} in the ${chosenTeam.conf}` : "Missed the playoffs — head to offseason"}
               </p>
             </div>
-            <p style={{ fontSize: 12, color: "#6b7280" }}>{madePlayoffs() ? "Run the playoffs to see how far you go" : "Use the offseason to retool for next year"}</p>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{madePlayoffs() ? "Run the playoffs to see how far you go" : "Use the offseason to retool for next year"}</p>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
-            <button onClick={runPlayoffs} style={{ flex: 1, padding: "13px", borderRadius: 12, background: "#84cc16", color: "#111827", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em" }}>Run Playoffs</button>
-            <button onClick={goOffseason} style={{ padding: "13px 18px", borderRadius: 12, background: "white", color: "#6b7280", fontWeight: 700, fontSize: 13, border: "1.5px solid #e5e7eb", cursor: "pointer" }}>Skip to Offseason</button>
+            <button onClick={runPlayoffs} style={{ flex: 1, padding: "13px", borderRadius: 12, background: "#84cc16", color: "white", fontWeight: 800, fontSize: 14, border: "none", cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em" }}>Run Playoffs</button>
+            <button onClick={goOffseason} style={{ padding: "13px 18px", borderRadius: 12, background: "white", color: "rgba(255,255,255,0.5)", fontWeight: 700, fontSize: 13, border: "1.5px solid #e5e7eb", cursor: "pointer" }}>Skip to Offseason</button>
           </div>
         </div>
       )}
@@ -1500,10 +1500,10 @@ export default function FranchisePage() {
       {/* ════ PLAYOFFS ════ */}
       {phase === "playoffs" && playoffResults && chosenTeam && (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-20">
-          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(22px,5vw,40px)", letterSpacing: "0.06em", color: "#111827", lineHeight: 1, marginBottom: 24 }}>Playoff Results</p>
+          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(22px,5vw,40px)", letterSpacing: "0.06em", color: "white", lineHeight: 1, marginBottom: 24 }}>Playoff Results</p>
           <PlayoffBracket results={playoffResults} userAbbr={chosenTeam.abbr} champion={champion} />
           <div style={{ marginTop: 24 }}>
-            <button onClick={goOffseason} style={{ width: "100%", padding: "14px", borderRadius: 12, background: "#84cc16", color: "#111827", fontWeight: 800, fontSize: 15, border: "none", cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.12em" }}>Go to Offseason</button>
+            <button onClick={goOffseason} style={{ width: "100%", padding: "14px", borderRadius: 12, background: "#84cc16", color: "white", fontWeight: 800, fontSize: 15, border: "none", cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.12em" }}>Go to Offseason</button>
           </div>
         </div>
       )}
@@ -1514,8 +1514,8 @@ export default function FranchisePage() {
           {/* Left: roster */}
           <div style={{ width: 310, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "1px solid rgba(0,0,0,0.08)", background: "rgba(244,240,230,0.5)" }}>
             <div style={{ padding: "12px 14px", borderBottom: "1px solid rgba(0,0,0,0.07)", background: "white" }}>
-              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", color: "#111827" }}>Your Roster · Season {season}</p>
-              <p style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>${usedSalary}M used · ${capLeft}M space · {filledCount} players</p>
+              <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.12em", color: "white" }}>Your Roster · Season {season}</p>
+              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>${usedSalary}M used · ${capLeft}M space · {filledCount} players</p>
               <div style={{ marginTop: 4, height: 4, background: "#f3f4f6", borderRadius: 2, overflow: "hidden" }}>
                 <div style={{ height: "100%", background: capLeft < 8 ? "#ef4444" : "#84cc16", width: `${Math.min(100,(usedSalary/OFFSEASON_CAP)*100)}%`, transition: "width 0.25s" }} />
               </div>
@@ -1532,7 +1532,7 @@ export default function FranchisePage() {
                 const name = sl.nbaPlayer?.name ?? sl.rosterPlayer?.name;
                 const color = sl.nbaPlayer?.teamColor ?? "#84cc16";
                 if (!name) return (
-                  <div key={sl.slotId} style={{ padding: "7px 10px", borderRadius: 8, background: "#f3f4f6", marginBottom: 5, fontSize: 10, color: "#9ca3af", textAlign: "center" }}>
+                  <div key={sl.slotId} style={{ padding: "7px 10px", borderRadius: 8, background: "#f3f4f6", marginBottom: 5, fontSize: 10, color: "rgba(255,255,255,0.4)", textAlign: "center" }}>
                     {sl.label} — Empty
                   </div>
                 );
@@ -1543,7 +1543,7 @@ export default function FranchisePage() {
                       <PlayerHeadshot playerId={sl.nbaPlayer?.id ?? null} color={color} size={28} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.78rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{name}</p>
+                          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.78rem", letterSpacing: "0.05em", color: "white", lineHeight: 1 }}>{name}</p>
                           <TrendArrow trend={sl.trend} size={11} />
                         </div>
                         <div style={{ display: "flex", gap: 4, marginTop: 2, alignItems: "center", flexWrap: "wrap" }}>
@@ -1553,7 +1553,7 @@ export default function FranchisePage() {
                               {sl.ovr > sl.prevOVR ? `+${sl.ovr - sl.prevOVR}` : `${sl.ovr - sl.prevOVR}`}
                             </span>
                           )}
-                          <span style={{ fontSize: 8, color: "#9ca3af", fontFamily: "monospace" }}>${sl.salary}M</span>
+                          <span style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>${sl.salary}M</span>
                           <ContractBadge years={sl.yearsLeft} />
                           {sl.morale === "frustrated" && <span style={{ fontSize: 8, fontWeight: 700, color: "#dc2626", background: "#fee2e2", padding: "1px 5px", borderRadius: 3 }}>Unhappy</span>}
                           {sl.morale === "happy" && <span style={{ fontSize: 8, fontWeight: 700, color: "#15803d", background: "#dcfce7", padding: "1px 5px", borderRadius: 3 }}>Happy</span>}
@@ -1562,7 +1562,7 @@ export default function FranchisePage() {
                     </div>
                     {isExpiring && (
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button onClick={() => extendPlayer(sl.slotId)} style={{ flex: 1, padding: "5px 8px", borderRadius: 6, background: "#84cc16", color: "#111827", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 10 }}>
+                        <button onClick={() => extendPlayer(sl.slotId)} style={{ flex: 1, padding: "5px 8px", borderRadius: 6, background: "#84cc16", color: "white", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 10 }}>
                           Extend · ${Math.min(28, Math.round(sl.salary * 1.25))}M
                         </button>
                         <button onClick={() => removePlayer(sl.slotId)} style={{ flex: 1, padding: "5px 8px", borderRadius: 6, background: "#fee2e2", color: "#ef4444", border: "1px solid #fca5a5", cursor: "pointer", fontWeight: 700, fontSize: 10 }}>
@@ -1634,16 +1634,16 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
       <div style={{ flex: 1, overflowY: "auto", padding: "10px 14px" }}>
         {tab === "draft" && (
           <div>
-            <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12, fontFamily: "monospace" }}>{2024 + season} Draft Class · All signees get a 2-year deal</p>
-            {draftClass.length === 0 ? <p style={{ color: "#9ca3af", fontSize: 12, textAlign: "center", padding: "40px 0" }}>All prospects drafted</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 12, fontFamily: "monospace" }}>{2024 + season} Draft Class · All signees get a 2-year deal</p>
+            {draftClass.length === 0 ? <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center", padding: "40px 0" }}>All prospects drafted</p>
             : draftClass.map((p, i) => {
               const canDraft = filledCount < 12;
               const ovr = computeOVR(p.ppg, p.rpg, p.apg);
               return (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "white", border: "1px solid rgba(0,0,0,0.07)", marginBottom: 7, opacity: canDraft ? 1 : 0.5 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{p.name}</p>
-                    <p style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{p.pos} · Age {p.age} · {p.ppg.toFixed(1)}p {p.rpg.toFixed(1)}r</p>
+                    <p style={{ fontWeight: 700, fontSize: 13, color: "white" }}>{p.name}</p>
+                    <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{p.pos} · Age {p.age} · {p.ppg.toFixed(1)}p {p.rpg.toFixed(1)}r</p>
                   </div>
                   <OVRBadge ovr={ovr} />
                   <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 5, flexShrink: 0, background: p.potential === "Star" ? "#fef3c7" : p.potential === "Starter" ? "#dcfce7" : p.potential === "Rotation" ? "#ede9fe" : "#f1f5f9", color: p.potential === "Star" ? "#92400e" : p.potential === "Starter" ? "#14532d" : p.potential === "Rotation" ? "#4c1d95" : "#6b7280", border: "1px solid rgba(0,0,0,0.1)" }}>{p.potential}</span>
@@ -1655,16 +1655,16 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
         )}
         {tab === "fa" && (
           <div>
-            <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12, fontFamily: "monospace" }}>Free agents available · ${capLeft}M cap space</p>
-            {freeAgents.length === 0 ? <p style={{ color: "#9ca3af", fontSize: 12, textAlign: "center", padding: "40px 0" }}>No free agents available</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 12, fontFamily: "monospace" }}>Free agents available · ${capLeft}M cap space</p>
+            {freeAgents.length === 0 ? <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center", padding: "40px 0" }}>No free agents available</p>
             : freeAgents.map((fa, i) => {
               const canSign = capLeft >= fa.salary && filledCount < 12;
               const ovr = computeOVR(fa.ppg, fa.rpg, fa.apg);
               return (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "white", border: "1px solid rgba(0,0,0,0.07)", marginBottom: 7, opacity: canSign ? 1 : 0.45 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{fa.name}</p>
-                    <p style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{fa.pos} · Age {fa.age} · {fa.ppg.toFixed(1)}p {fa.rpg.toFixed(1)}r · ${fa.salary}M/yr</p>
+                    <p style={{ fontWeight: 700, fontSize: 13, color: "white" }}>{fa.name}</p>
+                    <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{fa.pos} · Age {fa.age} · {fa.ppg.toFixed(1)}p {fa.rpg.toFixed(1)}r · ${fa.salary}M/yr</p>
                   </div>
                   <OVRBadge ovr={ovr} />
                   <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 5, flexShrink: 0, background: fa.tier === "Max" ? "#fef3c7" : fa.tier === "Mid" ? "#dcfce7" : "#f1f5f9", color: fa.tier === "Max" ? "#92400e" : fa.tier === "Mid" ? "#14532d" : "#6b7280", border: "1px solid rgba(0,0,0,0.1)" }}>{fa.tier}</span>
@@ -1676,9 +1676,9 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
         )}
         {tab === "nba" && (
           <div>
-            <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12, fontFamily: "monospace" }}>Sign current NBA players · ${capLeft}M cap space · 2-year deal</p>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 12, fontFamily: "monospace" }}>Sign current NBA players · ${capLeft}M cap space · 2-year deal</p>
             {nbaPool.length === 0
-              ? <p style={{ color: "#9ca3af", fontSize: 12, textAlign: "center", padding: "40px 0" }}>All available players already on your roster</p>
+              ? <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center", padding: "40px 0" }}>All available players already on your roster</p>
               : nbaPool.map(p => {
                 const sal = playerSalary(p);
                 const ovr = playerOVR(p);
@@ -1691,8 +1691,8 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                   >
                     <PlayerHeadshot playerId={p.id} color={p.teamColor} size={36} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.05em", color: "#111827", lineHeight: 1 }}>{p.name}</p>
-                      <p style={{ fontSize: 10, color: "#6b7280", fontFamily: "monospace", marginTop: 2 }}>{p.position} · Age {playerAge(p)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "1rem", letterSpacing: "0.05em", color: "white", lineHeight: 1 }}>{p.name}</p>
+                      <p style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "monospace", marginTop: 2 }}>{p.position} · Age {playerAge(p)} · {p.ppg}p {p.rpg}r {p.apg}a</p>
                     </div>
                     <OVRBadge ovr={ovr} />
                     <span style={{ fontSize: 13, fontWeight: 800, color: canSign ? "#65a30d" : "#ef4444", width: 46, textAlign: "right", flexShrink: 0 }}>${sal}M</span>
@@ -1704,11 +1704,11 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
         )}
         {tab === "trades" && (
           <div>
-            <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12, fontFamily: "monospace" }}>
+            <p style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 12, fontFamily: "monospace" }}>
               {tradeOffers.length === 0 ? "No trade offers this offseason" : `${tradeOffers.length} AI trade offer${tradeOffers.length !== 1 ? "s" : ""} — review and decide`}
             </p>
             {tradeOffers.length === 0 && (
-              <p style={{ color: "#d1d5db", fontSize: 12, textAlign: "center", padding: "48px 0" }}>No offers — keep building</p>
+              <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, textAlign: "center", padding: "48px 0" }}>No offers — keep building</p>
             )}
             {tradeOffers.map(offer => {
               const salDelta = offer.theyOffer.salary - offer.wantedSalary;
@@ -1717,8 +1717,8 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                 <div key={offer.id} style={{ borderRadius: 12, border: "1.5px solid rgba(0,0,0,0.09)", background: "white", marginBottom: 10, overflow: "hidden" }}>
                   <div style={{ padding: "8px 12px", background: "#f8f7f2", borderBottom: "1px solid rgba(0,0,0,0.07)", display: "flex", alignItems: "center", gap: 7 }}>
                     <TeamLogo url={offer.aiTeam.logoUrl} color={offer.aiTeam.color} size={18} />
-                    <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.08em", color: "#374151" }}>{offer.aiTeam.abbr}</span>
-                    <span style={{ fontSize: 10, color: "#9ca3af", marginLeft: 4 }}>wants {offer.wantedName}</span>
+                    <span style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.08em", color: "rgba(255,255,255,0.7)" }}>{offer.aiTeam.abbr}</span>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>wants {offer.wantedName}</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 10, padding: "12px 14px" }}>
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: "rgba(132,204,22,0.06)", border: "1px solid rgba(132,204,22,0.2)" }}>
@@ -1726,15 +1726,15 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <PlayerHeadshot playerId={offer.theyOffer.id} color={offer.theyOffer.color} size={28} />
                         <div>
-                          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1 }}>{offer.theyOffer.name}</p>
-                          <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace" }}>{offer.theyOffer.position} · {offer.theyOffer.age}yo</p>
+                          <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "white", lineHeight: 1.1 }}>{offer.theyOffer.name}</p>
+                          <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>{offer.theyOffer.position} · {offer.theyOffer.age}yo</p>
                         </div>
                       </div>
                       <div style={{ display: "flex", gap: 5, marginTop: 5, alignItems: "center" }}>
                         <OVRBadge ovr={offer.theyOffer.ovr} small />
                         <span style={{ fontSize: 11, fontWeight: 700, color: "#65a30d" }}>${offer.theyOffer.salary}M</span>
                       </div>
-                      <p style={{ fontSize: 9, color: "#9ca3af", fontFamily: "monospace", marginTop: 3 }}>{offer.theyOffer.ppg.toFixed(1)}p {offer.theyOffer.rpg.toFixed(1)}r {offer.theyOffer.apg.toFixed(1)}a</p>
+                      <p style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "monospace", marginTop: 3 }}>{offer.theyOffer.ppg.toFixed(1)}p {offer.theyOffer.rpg.toFixed(1)}r {offer.theyOffer.apg.toFixed(1)}a</p>
                     </div>
                     <div style={{ textAlign: "center" }}>
                       <svg width="20" height="12" viewBox="0 0 20 12">
@@ -1748,10 +1748,10 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                     </div>
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.15)" }}>
                       <p style={{ fontSize: 9, fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>You Send</p>
-                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "#111827", lineHeight: 1.1 }}>{offer.wantedName}</p>
+                      <p style={{ fontFamily: "var(--font-bebas)", fontSize: "0.85rem", letterSpacing: "0.04em", color: "white", lineHeight: 1.1 }}>{offer.wantedName}</p>
                       <div style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
                         <OVRBadge ovr={offer.wantedOVR} small />
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#6b7280" }}>${offer.wantedSalary}M</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>${offer.wantedSalary}M</span>
                       </div>
                     </div>
                   </div>
@@ -1766,7 +1766,7 @@ function OffseasonTabs({ draftClass, freeAgents, nbaPool, tradeOffers, capLeft, 
                       Accept Trade
                     </button>
                     <button onClick={() => onDeclineTrade(offer.id)}
-                      style={{ flex: 1, padding: "7px", borderRadius: 7, border: "1px solid #e5e7eb", background: "white", color: "#6b7280", cursor: "pointer", fontWeight: 700, fontSize: 12 }}>
+                      style={{ flex: 1, padding: "7px", borderRadius: 7, border: "1px solid #e5e7eb", background: "white", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontWeight: 700, fontSize: 12 }}>
                       Decline
                     </button>
                   </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bebas_Neue, Rajdhani, Playfair_Display } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import ArenaBackground from "@/app/components/ArenaBackground";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -77,6 +78,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} ${playfair.variable} h-full`}>
         <body className="min-h-full flex flex-col text-white antialiased" style={{ background: "#030508" }}>
+          <ArenaBackground />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{

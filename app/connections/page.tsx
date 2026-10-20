@@ -201,14 +201,14 @@ export default function ConnectionsPage() {
 
   if (!puzzle) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#f4f0e6" }}>
-        <p className="text-gray-400 text-xs font-mono uppercase tracking-widest">Loading…</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-white/40 text-xs font-mono uppercase tracking-widest">Loading…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#f4f0e6" }}>
+    <div className="min-h-screen" style={{ fontFamily: "var(--font-geist-mono)" }}>
       <style>{`
         @keyframes shake {
           0%,100%{transform:translateX(0)}
@@ -230,15 +230,15 @@ export default function ConnectionsPage() {
         <div className="flex items-start justify-between mb-8">
           <div>
             <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-3">Daily Puzzle</p>
-            <h1 className="font-playfair font-black italic text-[#111827]" style={{ fontSize: "clamp(2.8rem, 5vw, 4.5rem)", letterSpacing: "-0.02em", lineHeight: 0.9 }}>
+            <h1 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2.8rem, 5vw, 4.5rem)", letterSpacing: "-0.02em", lineHeight: 0.9 }}>
               NBA<br />Connections
             </h1>
           </div>
           <div className="text-right">
-            <p className="font-mono font-bold uppercase tracking-[0.2em] text-[10px] text-gray-400 mb-2">
+            <p className="font-mono font-bold uppercase tracking-[0.2em] text-[10px] text-white/40 mb-2">
               {getTodayStr()} · Puzzle #{puzzle.id + 1}
             </p>
-            <p className="font-mono font-bold text-[#111827] text-sm">
+            <p className="font-mono font-bold text-white text-sm">
               {solvedColors.length} / {puzzle.categories.length} solved
             </p>
           </div>
@@ -246,7 +246,7 @@ export default function ConnectionsPage() {
 
         {/* Lives */}
         <div className="mb-6">
-          <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-gray-400 mb-2">Lives Left</p>
+          <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-white/40 mb-2">Lives Left</p>
           <div className="flex gap-2">
             {Array.from({ length: MAX_LIVES }).map((_, i) => (
               <div
@@ -261,7 +261,7 @@ export default function ConnectionsPage() {
           </div>
         </div>
 
-        <div style={{ borderTop: "2px solid #111827", marginBottom: "24px" }} />
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginBottom: "24px" }} />
 
         {/* Feedback */}
         <AnimatePresence>
@@ -282,7 +282,7 @@ export default function ConnectionsPage() {
 
         {/* Solved category banners */}
         {(sortedSolved.length > 0 || unsolvedCategories.length > 0) && (
-          <div className="flex flex-col mb-4" style={{ border: "2px solid #111827" }}>
+          <div className="flex flex-col mb-4" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
             {sortedSolved.map((cat, i) => (
               <motion.div
                 key={cat.color}
@@ -293,7 +293,7 @@ export default function ConnectionsPage() {
                 style={{
                   background: COLOR_HEX[cat.color].bg,
                   color: COLOR_HEX[cat.color].text,
-                  borderBottom: i < sortedSolved.length - 1 || unsolvedCategories.length > 0 ? "2px solid #111827" : undefined,
+                  borderBottom: i < sortedSolved.length - 1 || unsolvedCategories.length > 0 ? "1px solid rgba(255,255,255,0.15)" : undefined,
                 }}
               >
                 <p className="font-mono font-bold text-sm uppercase tracking-[0.2em] leading-tight">{cat.title}</p>
@@ -310,7 +310,7 @@ export default function ConnectionsPage() {
                 style={{
                   background: COLOR_HEX[cat.color].bg,
                   color: COLOR_HEX[cat.color].text,
-                  borderBottom: i < unsolvedCategories.length - 1 ? "2px solid #111827" : undefined,
+                  borderBottom: i < unsolvedCategories.length - 1 ? "1px solid rgba(255,255,255,0.15)" : undefined,
                 }}
               >
                 <p className="font-mono font-bold text-sm uppercase tracking-[0.2em] leading-tight">{cat.title}</p>
@@ -337,9 +337,9 @@ export default function ConnectionsPage() {
                     onClick={() => toggleSelect(name)}
                     className="py-7 px-3 text-center font-mono font-bold text-sm transition-colors duration-150 leading-tight border-2"
                     style={{
-                      background: isSel ? "#84cc16" : "white",
-                      borderColor: isSel ? "#65a30d" : "#111827",
-                      color: "#111827",
+                      background: isSel ? "#84cc16" : "rgba(255,255,255,0.06)",
+                      borderColor: isSel ? "#65a30d" : "rgba(255,255,255,0.12)",
+                      color: isSel ? "#030508" : "white",
                     }}
                   >
                     {name}
@@ -356,7 +356,8 @@ export default function ConnectionsPage() {
             <button
               onClick={() => setSelected([])}
               disabled={selected.length === 0}
-              className="flex-1 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 border-[#111827] bg-white text-[#111827] hover:bg-gray-100 transition-colors disabled:opacity-30"
+              className="flex-1 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] transition-colors disabled:opacity-30"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "white" }}
             >
               Deselect All
             </button>
@@ -365,8 +366,8 @@ export default function ConnectionsPage() {
               disabled={selected.length !== 4}
               className="flex-1 py-4 font-mono font-bold text-sm uppercase tracking-[0.1em] border-2 transition-colors disabled:opacity-30"
               style={selected.length === 4
-                ? { background: "#111827", borderColor: "#111827", color: "#84cc16" }
-                : { background: "#f4f0e6", borderColor: "#d1d5db", color: "#9ca3af" }}
+                ? { background: "#84cc16", border: "1px solid #84cc16", color: "#030508" }
+                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.3)" }}
             >
               Submit ({selected.length}/4)
             </button>
@@ -379,7 +380,8 @@ export default function ConnectionsPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 280, damping: 24 }}
-            className="mt-4 border-2 border-[#111827] overflow-hidden"
+            className="mt-4 overflow-hidden"
+            style={{ border: "1px solid rgba(255,255,255,0.12)" }}
           >
             <div className="px-8 py-6 text-center" style={{ background: won ? "#84cc16" : "#111827" }}>
               <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] mb-3" style={{ color: won ? "#111827" : "#84cc16" }}>
@@ -389,8 +391,8 @@ export default function ConnectionsPage() {
                 {won ? "Genius!" : "Better Luck\nTomorrow"}
               </h2>
             </div>
-            <div className="px-8 py-6 text-center" style={{ background: won ? "#f4f0e6" : "#f4f0e6" }}>
-              <p className="font-mono text-sm text-gray-500 mb-6">
+            <div className="px-8 py-6 text-center" style={{ background: "rgba(255,255,255,0.04)" }}>
+              <p className="font-mono text-sm text-white/50 mb-6">
                 {won
                   ? `Solved with ${MAX_LIVES - livesLeft} mistake${MAX_LIVES - livesLeft === 1 ? "" : "s"}`
                   : `${solvedColors.length} / ${puzzle.categories.length} categories solved`}
@@ -407,7 +409,7 @@ export default function ConnectionsPage() {
 
         {/* Instructions */}
         {!gameOver && solvedColors.length === 0 && (
-          <p className="text-center font-mono text-xs text-gray-400 mt-2">
+          <p className="text-center font-mono text-xs text-white/40 mt-2">
             Select 4 players that share a connection · Yellow = easiest · Purple = hardest
           </p>
         )}

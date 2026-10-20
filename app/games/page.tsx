@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
-import Arena3D from "@/app/components/Arena3D";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
 const FEATURED = {
@@ -117,13 +116,6 @@ export default function GamesPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "#030508", color: "white", fontFamily: "var(--font-geist-mono)" }}>
-
-      {/* 3D arena background */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <Arena3D />
-        {/* Extra fade so cards are readable */}
-        <div style={{ position: "absolute", inset: 0, background: "rgba(3,5,8,0.3)" }} />
-      </div>
 
       {/* Header */}
       <header className="sticky top-0 z-50 px-6 flex items-center justify-between" style={{ minHeight: 56, background: "rgba(3,5,8,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>

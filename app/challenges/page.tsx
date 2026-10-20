@@ -11,20 +11,20 @@ function ChallengeCard({
   return (
     <Link
       href={href}
-      className="group bg-white rounded-2xl p-6 flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] min-h-[200px]"
-      style={{ border: "1.5px solid rgba(0,0,0,0.08)" }}
+      className="group flex flex-col min-h-[200px] p-6 transition-colors duration-200"
+      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
     >
       <div className="flex items-start justify-between mb-4">
         <span className="text-3xl">{emoji}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ color: "#65a30d", background: "rgba(132,204,22,0.1)", border: "1px solid rgba(132,204,22,0.25)" }}>
+        <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1" style={{ color: "#84cc16", background: "rgba(132,204,22,0.1)", border: "1px solid rgba(132,204,22,0.25)" }}>
           {tag}
         </span>
       </div>
-      <h2 className="text-xl font-bold text-zinc-900 mb-2 group-hover:text-[#65a30d] transition-colors">
+      <h2 className="font-playfair font-black italic text-white text-xl mb-2 group-hover:text-[#84cc16] transition-colors">
         {title}
       </h2>
-      <p className="text-sm text-zinc-500 leading-relaxed flex-1 mb-5">{description}</p>
-      <p className="text-[11px] text-zinc-400 font-medium border-t border-zinc-100 pt-3">{meta}</p>
+      <p className="text-sm text-white/40 leading-relaxed flex-1 mb-5">{description}</p>
+      <p className="text-[11px] text-white/25 font-mono" style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 12 }}>{meta}</p>
     </Link>
   );
 }
@@ -32,24 +32,24 @@ function ChallengeCard({
 export default function ChallengesPage() {
   const totalPlayers = Object.values(TEAM_ROSTERS).reduce((sum, r) => sum + r.length, 0);
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ fontFamily: "var(--font-geist-mono)" }}>
       <GameHeader title="Challenges" />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 pb-20">
+      <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 pb-20">
         <div className="text-center mb-12 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#65a30d" }}>
-            Listing Challenges
+          <p className="text-xs font-mono font-bold uppercase tracking-widest mb-3" style={{ color: "#84cc16" }}>
+            Timed Challenges
           </p>
-          <h1 className="text-4xl sm:text-5xl font-bold text-zinc-900 tracking-tight mb-3">
+          <h1 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)", letterSpacing: "-0.02em", lineHeight: 0.95 }}>
             How Much Do You Know?
           </h1>
-          <p className="text-zinc-500 text-base max-w-md mx-auto">
+          <p className="text-white/40 text-sm max-w-md mx-auto mt-3">
             Race the clock — type as many answers as you can before time runs out.
           </p>
         </div>
 
-        <div className="h-px bg-zinc-200 mb-10" />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.08)", marginBottom: 40 }} />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <ChallengeCard
             href="/challenges/name-teams"
             emoji="🏟️"
@@ -84,7 +84,7 @@ export default function ChallengesPage() {
           />
         </div>
 
-        <p className="text-zinc-400 text-xs text-center mt-14">
+        <p className="text-white/25 text-xs text-center mt-14 font-mono">
           Nicknames and abbreviations accepted · Full name always works
         </p>
       </main>
