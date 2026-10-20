@@ -23,7 +23,7 @@ function ArenaParticles() {
           key={p.id}
           className="absolute rounded-full"
           style={{ left: `${p.x}%`, bottom: -4, width: p.size, height: p.size, background: `rgba(255,210,80,${p.opacity})` }}
-          animate={{ y: [0, -window?.innerHeight ?? -800], opacity: [0, p.opacity, p.opacity * 0.5, 0] }}
+          animate={{ y: [0, -900], opacity: [0, p.opacity, p.opacity * 0.5, 0] }}
           transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear" }}
         />
       ))}
