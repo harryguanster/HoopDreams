@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   "/franchise(.*)",
   "/badge-court(.*)",
   "/full-court(.*)",
+  "/puffer-party(.*)",
   "/sitemap.xml",
   "/robots.txt",
 ]);

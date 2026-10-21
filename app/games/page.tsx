@@ -17,6 +17,13 @@ const FEATURED = {
 
 const GAMES = [
   {
+    href: "/puffer-party",
+    title: "Puffer Party",
+    desc: "Hot potato trivia — type answers to deflate the basketball before it explodes. Rarer answers deflate more.",
+    tag: "Hot",
+    tagColor: "#ef4444",
+  },
+  {
     href: "/my-team",
     title: "My Team",
     desc: "Collect 2K-style era cards and build your dream 10-man roster.",
