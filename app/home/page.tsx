@@ -6,31 +6,6 @@ import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
-// ── Floating particles ─────────────────────────────────────────────────────────
-function ArenaParticles() {
-  const ps = Array.from({ length: 18 }, (_, i) => ({
-    id: i,
-    x: 3 + (i * 41) % 96,
-    delay: (i * 0.6) % 9,
-    dur: 9 + (i * 1.1) % 8,
-    size: 1 + (i * 0.3) % 2.2,
-    opacity: 0.3 + (i * 0.04) % 0.5,
-  }));
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }}>
-      {ps.map(p => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full"
-          style={{ left: `${p.x}%`, bottom: -4, width: p.size, height: p.size, background: `rgba(255,210,80,${p.opacity})` }}
-          animate={{ y: [0, -900], opacity: [0, p.opacity, p.opacity * 0.5, 0] }}
-          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear" }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function HomePage() {
   const [streakCount, setStreakCount] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -49,102 +24,230 @@ export default function HomePage() {
   return (
     <div
       className="h-screen overflow-hidden flex flex-col"
-      style={{ background: "#030508", color: "white", fontFamily: "var(--font-geist-mono)" }}
+      style={{ background: "transparent", color: "white" }}
     >
-      {mounted && <ArenaParticles />}
-
       {/* ── Header ── */}
-      <header className="relative z-30 px-6 flex items-center justify-between shrink-0" style={{ minHeight: 58, borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+      <header
+        className="relative z-30 px-4 sm:px-6 flex items-center justify-between shrink-0"
+        style={{
+          minHeight: 52,
+          background: "rgba(5,10,25,0.85)",
+          borderBottom: "2px solid #1a2a4a",
+          boxShadow: "0 2px 0 #000",
+        }}
+      >
         <div className="flex items-center gap-3">
-          <img src="/logo-green.png" alt="Courtside Central" className="h-9 w-auto" />
-          <span className="font-playfair font-black text-white hidden sm:block" style={{ fontSize: "1.05rem", letterSpacing: "-0.01em" }}>Courtside Central</span>
+          <img src="/logo-green.png" alt="Courtside Central" className="h-8 w-auto" style={{ imageRendering: "pixelated" }} />
+          <span
+            className="hidden sm:block text-white"
+            style={{ fontFamily: "var(--font-press-start), monospace", fontSize: "0.6rem", letterSpacing: "0.05em", lineHeight: 1.4 }}
+          >
+            COURTSIDE<br />CENTRAL
+          </span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-[#84cc16]/70 hidden sm:block">Season 2025–26</span>
+        <div className="flex items-center gap-3">
+          <span
+            className="hidden sm:block"
+            style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.85rem", color: "#84cc16", letterSpacing: "0.15em" }}
+          >
+            SEASON 2025-26
+          </span>
           <DailyBadge count={streakCount} />
           <AuthButton />
         </div>
       </header>
 
       {/* ── Hero ── */}
-      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6">
-        <motion.p
-          className="text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-[#84cc16] mb-6"
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-        >
-          Daily · {getTodayStr()}
-        </motion.p>
+      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6">
 
-        <motion.h1
-          className="font-playfair font-black italic"
+        {/* Pixel date tag */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           style={{
-            fontSize: "clamp(64px, 13vw, 190px)",
-            lineHeight: 0.9,
-            letterSpacing: "-0.03em",
-            textShadow: "0 0 100px rgba(132,204,22,0.35), 0 4px 60px rgba(0,0,0,0.9)",
+            fontFamily: "var(--font-vt323), monospace",
+            fontSize: "1.1rem",
+            color: "#84cc16",
+            letterSpacing: "0.25em",
+            marginBottom: "1.5rem",
+            background: "rgba(10,30,10,0.6)",
+            border: "2px solid #2a5010",
+            padding: "4px 12px",
+            display: "inline-block",
           }}
-          initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          Courtside<br />Central.
+          {mounted ? `> ${getTodayStr()}` : "> ..."}
+        </motion.div>
+
+        {/* Main title */}
+        <motion.h1
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          style={{
+            fontFamily: "var(--font-press-start), monospace",
+            fontSize: "clamp(22px, 5vw, 72px)",
+            lineHeight: 1.3,
+            letterSpacing: "-0.02em",
+            color: "#ffffff",
+            textShadow: "4px 4px 0 #000, 0 0 40px rgba(132,204,22,0.4)",
+            marginBottom: "0.5rem",
+          }}
+        >
+          COURTSIDE
+        </motion.h1>
+        <motion.h1
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.08, ease: "easeOut" }}
+          style={{
+            fontFamily: "var(--font-press-start), monospace",
+            fontSize: "clamp(22px, 5vw, 72px)",
+            lineHeight: 1.3,
+            letterSpacing: "-0.02em",
+            color: "#84cc16",
+            textShadow: "4px 4px 0 #1a3000, 0 0 40px rgba(132,204,22,0.5)",
+            marginBottom: "2rem",
+          }}
+        >
+          CENTRAL
         </motion.h1>
 
+        {/* Subtitle */}
         <motion.p
-          className="mt-5 mb-10 text-white/40 text-sm max-w-xs leading-relaxed"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          style={{
+            fontFamily: "var(--font-vt323), monospace",
+            fontSize: "1.2rem",
+            color: "rgba(255,255,255,0.55)",
+            letterSpacing: "0.1em",
+            marginBottom: "2.5rem",
+            maxWidth: 380,
+          }}
         >
-          Two game modes. Beat the crowd or beat the clock — don&apos;t let it pop.
+          2 GAME MODES. BEAT THE CROWD OR BEAT THE CLOCK.
         </motion.p>
 
+        {/* CTA Buttons */}
         <motion.div
-          className="flex flex-col sm:flex-row items-center gap-3"
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
+          className="flex flex-col sm:flex-row items-center gap-4"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
         >
+          {/* Full Court */}
           <motion.a
             href="/full-court"
-            className="inline-flex items-center gap-2 px-10 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm"
-            style={{ background: "#84cc16", color: "#030508", boxShadow: "0 0 40px rgba(132,204,22,0.35)" }}
-            whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.55)" }}
-            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96, y: 0 }}
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-press-start), monospace",
+              fontSize: "0.6rem",
+              letterSpacing: "0.08em",
+              color: "#030508",
+              background: "#84cc16",
+              padding: "14px 28px",
+              border: "3px solid #5a8a0a",
+              boxShadow: "4px 4px 0 #1a3000, 0 0 20px rgba(132,204,22,0.35)",
+              cursor: "pointer",
+              textDecoration: "none",
+              textTransform: "uppercase",
+            }}
           >
-            Full Court →
+            FULL COURT &gt;
           </motion.a>
+
+          {/* Puffer Party */}
           <motion.a
             href="/puffer-party"
-            className="inline-flex items-center gap-2 px-8 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm border transition-colors"
-            style={{ borderColor: "rgba(239,68,68,0.4)", color: "rgba(239,68,68,0.8)" }}
-            whileHover={{ borderColor: "rgba(239,68,68,0.7)", color: "#ef4444" }}
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96, y: 0 }}
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-press-start), monospace",
+              fontSize: "0.6rem",
+              letterSpacing: "0.08em",
+              color: "#ef4444",
+              background: "rgba(30,5,5,0.7)",
+              padding: "14px 28px",
+              border: "3px solid #801010",
+              boxShadow: "4px 4px 0 #400000",
+              cursor: "pointer",
+              textDecoration: "none",
+              textTransform: "uppercase",
+            }}
           >
-            Puffer Party →
+            PUFFER PARTY &gt;
           </motion.a>
         </motion.div>
 
         {/* Streak badge */}
         {streakCount > 0 && (
           <motion.div
-            className="mt-8 flex items-center gap-2 px-4 py-2 rounded-full"
-            style={{ background: "rgba(132,204,22,0.1)", border: "1px solid rgba(132,204,22,0.2)" }}
-            initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.7 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7 }}
+            style={{
+              marginTop: "2rem",
+              fontFamily: "var(--font-vt323), monospace",
+              fontSize: "1.1rem",
+              color: "#ffd060",
+              background: "rgba(40,30,0,0.7)",
+              border: "2px solid #5a4010",
+              padding: "6px 16px",
+              letterSpacing: "0.15em",
+              boxShadow: "2px 2px 0 #000",
+            }}
           >
-            <span className="text-[#84cc16] text-xs font-bold">🔥</span>
-            <span className="text-[#84cc16] text-xs font-bold uppercase tracking-widest">{streakCount} Day Streak</span>
+            * {streakCount} DAY STREAK *
           </motion.div>
         )}
       </section>
 
       {/* ── Bottom stat bar ── */}
       <motion.div
-        className="relative z-20 flex items-center justify-center gap-8 sm:gap-16 px-6 py-5"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+        className="relative z-20 flex items-center justify-center gap-8 sm:gap-16 px-6 py-4"
+        style={{
+          background: "rgba(5,10,25,0.85)",
+          borderTop: "2px solid #1a2a4a",
+          boxShadow: "0 -2px 0 #000",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
       >
         {[
-          { val: "2", label: "Game modes" },
-          { val: "10K", label: "Max score / round" },
-          { val: "3", label: "Lives · Puffer Party" },
+          { val: "2", label: "GAME MODES" },
+          { val: "10K", label: "MAX SCORE" },
+          { val: "3", label: "LIVES" },
         ].map(s => (
           <div key={s.label} className="text-center">
-            <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "1.8rem", lineHeight: 1 }}>{s.val}</p>
-            <p className="text-[8px] text-white/30 font-mono uppercase tracking-widest mt-0.5">{s.label}</p>
+            <p
+              style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(14px, 3vw, 22px)",
+                color: "#84cc16",
+                textShadow: "2px 2px 0 #1a3000",
+                lineHeight: 1,
+                marginBottom: 4,
+              }}
+            >
+              {s.val}
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-vt323), monospace",
+                fontSize: "0.75rem",
+                color: "rgba(255,255,255,0.4)",
+                letterSpacing: "0.2em",
+              }}
+            >
+              {s.label}
+            </p>
           </div>
         ))}
       </motion.div>

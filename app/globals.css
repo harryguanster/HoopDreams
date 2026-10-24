@@ -17,7 +17,30 @@
   --font-bebas: var(--font-bebas);
   --font-rajdhani: var(--font-rajdhani);
   --font-playfair: var(--font-playfair);
+  --font-press-start: var(--font-press-start);
+  --font-vt323: var(--font-vt323);
 }
+
+/* Pixel-art utility */
+.pixel-border {
+  border: 3px solid #2a3a5a;
+  box-shadow: inset 0 0 0 1px #0a1428, 3px 3px 0 #000;
+  image-rendering: pixelated;
+}
+.pixel-border-green {
+  border: 3px solid #4a8010;
+  box-shadow: inset 0 0 0 1px #1a3008, 3px 3px 0 #000;
+}
+.pixel-border-red {
+  border: 3px solid #801010;
+  box-shadow: inset 0 0 0 1px #300808, 3px 3px 0 #000;
+}
+
+@keyframes pixel-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.pixel-blink { animation: pixel-blink 1s step-end infinite; }
 
 body {
   background-color: #030508;
@@ -128,9 +151,11 @@ body {
 }
 
 /* Display font helpers */
-.font-bebas    { font-family: var(--font-bebas), 'Impact', sans-serif; }
-.font-rajdhani { font-family: var(--font-rajdhani), sans-serif; }
-.font-playfair { font-family: var(--font-playfair), 'Georgia', serif; }
+.font-bebas       { font-family: var(--font-bebas), 'Impact', sans-serif; }
+.font-rajdhani    { font-family: var(--font-rajdhani), sans-serif; }
+.font-playfair    { font-family: var(--font-playfair), 'Georgia', serif; }
+.font-press-start { font-family: var(--font-press-start), 'Courier New', monospace; }
+.font-vt323       { font-family: var(--font-vt323), 'Courier New', monospace; }
 
 /* Editorial rule line */
 .rule-line {

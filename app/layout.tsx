@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bebas_Neue, Rajdhani, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Bebas_Neue, Rajdhani, Playfair_Display, Press_Start_2P, VT323 } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import ArenaBackground from "@/app/components/ArenaBackground";
@@ -33,6 +33,20 @@ const playfair = Playfair_Display({
   weight: ["400", "700", "800", "900"],
   style: ["normal", "italic"],
   variable: "--font-playfair",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const pressStart = Press_Start_2P({
+  weight: "400",
+  variable: "--font-press-start",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const vt323 = VT323({
+  weight: "400",
+  variable: "--font-vt323",
   subsets: ["latin"],
   display: "swap",
 });
@@ -76,7 +90,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} ${playfair.variable} h-full`}>
+      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${rajdhani.variable} ${playfair.variable} ${pressStart.variable} ${vt323.variable} h-full`}>
         <body className="min-h-full flex flex-col text-white antialiased" style={{ background: "#030508" }}>
           <ArenaBackground />
           <script
