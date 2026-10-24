@@ -5,10 +5,12 @@ import GameHeader from "@/app/components/GameHeader";
 import {
   FULL_COURT_QUESTIONS,
   matchAnswer,
+  getSuggestions,
   calcScore,
   normalizeAnswer,
   getZoneLabel,
   type FullCourtQuestion,
+  type FullCourtAnswer,
 } from "@/lib/fullCourtData";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -194,6 +196,8 @@ export default function PufferPartyPage() {
   const [inflation, setInflation] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [input, setInput] = useState("");
+  const [suggestions, setSuggestions] = useState<FullCourtAnswer[]>([]);
+  const [sugIdx, setSugIdx] = useState(-1);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<{ text: string; color: string } | null>(null);
   const [questions, setQuestions] = useState<FullCourtQuestion[]>([]);
@@ -285,11 +289,23 @@ export default function PufferPartyPage() {
     setPopping(false);
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (phase !== "playing" || !question || !input.trim()) return;
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setInput(val);
+    setSugIdx(-1);
+    if (question && val.trim().length >= 2) {
+      setSuggestions(getSuggestions(val, question));
+    } else {
+      setSuggestions([]);
+    }
+  }
 
-    const norm = normalizeAnswer(input);
+  function processAnswer(rawInput: string) {
+    if (phase !== "playing" || !question || !rawInput.trim()) return;
+    setSuggestions([]);
+    setSugIdx(-1);
+
+    const norm = normalizeAnswer(rawInput);
 
     if (answers.includes(norm)) {
       setFeedback({ text: "Already used!", color: "#f59e0b" });
@@ -298,7 +314,7 @@ export default function PufferPartyPage() {
       return;
     }
 
-    const match = matchAnswer(input, question);
+    const match = matchAnswer(rawInput, question);
     if (!match) {
       setFeedback({ text: "Not valid — try again", color: "#ef4444" });
       setInput("");
@@ -335,6 +351,28 @@ export default function PufferPartyPage() {
     const color = pts >= 7500 ? "#84cc16" : pts >= 4500 ? "#f59e0b" : "rgba(255,255,255,0.85)";
     setFeedback({ text: `${zone.label} · +${pts.toLocaleString()}`, color });
     setTimeout(() => setFeedback(null), 1400);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (suggestions.length > 0) {
+      if (e.key === "ArrowDown") { e.preventDefault(); setSugIdx(i => Math.min(i + 1, suggestions.length - 1)); return; }
+      if (e.key === "ArrowUp") { e.preventDefault(); setSugIdx(i => Math.max(i - 1, -1)); return; }
+      if (e.key === "Escape") { setSuggestions([]); setSugIdx(-1); return; }
+      if (e.key === "Enter" && sugIdx >= 0) {
+        e.preventDefault();
+        processAnswer(suggestions[sugIdx].name);
+        return;
+      }
+    }
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (sugIdx >= 0 && suggestions[sugIdx]) {
+      processAnswer(suggestions[sugIdx].name);
+    } else {
+      processAnswer(input);
+    }
   }
 
   const stage = inflation < 0.35 ? 0 : inflation < 0.65 ? 1 : inflation < 0.85 ? 2 : 3;
@@ -456,6 +494,9 @@ export default function PufferPartyPage() {
 
   return (
     <div className="min-h-screen" style={{ overflow: "hidden" }}>
+      {/* Cover global ArenaBackground — puffer party has its own dark bg */}
+      <div className="fixed inset-0" style={{ zIndex: 0, background: "#030508" }} />
+
       {/* Flash on explosion */}
       <AnimatePresence>
         {popping && (
@@ -564,34 +605,65 @@ export default function PufferPartyPage() {
         )}
 
         {/* Input */}
-        <form onSubmit={handleSubmit} className="w-full flex gap-2 mb-3">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Type an answer…"
-            disabled={phase !== "playing"}
-            className="flex-1 px-4 py-3 font-mono text-sm text-white placeholder-white/20 outline-none"
-            style={{
-              background: "rgba(255,255,255,0.07)",
-              border: "1px solid rgba(255,255,255,0.14)",
-              caretColor: "#84cc16",
-            }}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-          />
-          <motion.button
-            type="submit"
-            whileTap={{ scale: 0.93 }}
-            disabled={phase !== "playing"}
-            className="px-5 py-3 font-mono font-bold text-sm uppercase"
-            style={{ background: "#84cc16", color: "#030508" }}
-          >
-            →
-          </motion.button>
+        <form onSubmit={handleSubmit} className="w-full mb-3" style={{ position: "relative" }}>
+          <div className="flex gap-2">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              placeholder="Type an answer…"
+              disabled={phase !== "playing"}
+              className="flex-1 px-4 py-3 font-mono text-sm text-white placeholder-white/20 outline-none"
+              style={{
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(255,255,255,0.14)",
+                caretColor: "#84cc16",
+              }}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+            />
+            <motion.button
+              type="submit"
+              whileTap={{ scale: 0.93 }}
+              disabled={phase !== "playing"}
+              className="px-5 py-3 font-mono font-bold text-sm uppercase"
+              style={{ background: "#84cc16", color: "#030508" }}
+            >
+              →
+            </motion.button>
+          </div>
+          {/* Autocomplete suggestions */}
+          {suggestions.length > 0 && phase === "playing" && (
+            <div style={{
+              position: "absolute", bottom: "100%", left: 0, right: 56, zIndex: 50,
+              background: "#060d1c", border: "2px solid #1a2a4a",
+              boxShadow: "4px 4px 0 #000", marginBottom: 4,
+            }}>
+              {suggestions.map((s, i) => (
+                <button
+                  key={s.name}
+                  type="button"
+                  onMouseDown={e => { e.preventDefault(); processAnswer(s.name); }}
+                  style={{
+                    display: "block", width: "100%", textAlign: "left",
+                    padding: "8px 12px",
+                    background: i === sugIdx ? "#1a2a4a" : "transparent",
+                    color: i === sugIdx ? "#84cc16" : "rgba(255,255,255,0.85)",
+                    fontFamily: "var(--font-vt323), monospace",
+                    fontSize: "1rem", letterSpacing: "0.05em",
+                    border: "none", cursor: "pointer",
+                    borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                  }}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          )}
         </form>
 
         {/* Feedback */}

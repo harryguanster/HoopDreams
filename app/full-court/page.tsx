@@ -7,6 +7,7 @@ import {
   FULL_COURT_QUESTIONS,
   getDailyQuestions,
   matchAnswer,
+  getSuggestions,
   calcScore,
   getZoneLabel,
   type FullCourtQuestion,
@@ -142,6 +143,8 @@ export default function FullCourtPage() {
   const [lastZone, setLastZone] = useState<{ label: string; sub: string } | null>(null);
   const [lastScore, setLastScore] = useState(0);
   const [alreadyPlayed, setAlreadyPlayed] = useState(false);
+  const [suggestions, setSuggestions] = useState<FullCourtAnswer[]>([]);
+  const [sugIdx, setSugIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -175,6 +178,8 @@ export default function FullCourtPage() {
   const submitAnswer = useCallback((rawInput: string) => {
     if (!currentQ || phase !== "playing") return;
     stopTimer();
+    setSuggestions([]);
+    setSugIdx(-1);
 
     const matched = matchAnswer(rawInput, currentQ);
     const score = matched ? calcScore(matched.crowdPct) : 0;
@@ -246,7 +251,31 @@ export default function FullCourtPage() {
     setInput("");
   }
 
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setInput(val);
+    setSugIdx(-1);
+    if (currentQ && val.trim().length >= 2) {
+      setSuggestions(getSuggestions(val, currentQ));
+    } else {
+      setSuggestions([]);
+    }
+  }
+
+  function selectSuggestion(ans: FullCourtAnswer) {
+    setInput(ans.name);
+    setSuggestions([]);
+    setSugIdx(-1);
+    submitAnswer(ans.name);
+  }
+
   function handleKey(e: React.KeyboardEvent) {
+    if (suggestions.length > 0) {
+      if (e.key === "ArrowDown") { e.preventDefault(); setSugIdx(i => Math.min(i + 1, suggestions.length - 1)); return; }
+      if (e.key === "ArrowUp") { e.preventDefault(); setSugIdx(i => Math.max(i - 1, -1)); return; }
+      if (e.key === "Escape") { setSuggestions([]); setSugIdx(-1); return; }
+      if (e.key === "Enter" && sugIdx >= 0) { e.preventDefault(); selectSuggestion(suggestions[sugIdx]); return; }
+    }
     if (e.key === "Enter" && input.trim()) submitAnswer(input);
   }
 
@@ -262,7 +291,9 @@ export default function FullCourtPage() {
         fontFamily: "var(--font-geist-mono)",
       }}
     >
-      {/* 3D arena background */}
+      {/* Cover the global pixel-art ArenaBackground so only our 3D court shows */}
+      <div className="fixed inset-0" style={{ zIndex: 0, background: "#030508" }} />
+      {/* 3D arena background with ball progress */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <Arena3D ballProgress={ballProgress} animateBall={phase === "revealing"} />
       </div>
@@ -377,27 +408,57 @@ export default function FullCourtPage() {
               </div>
 
               {phase !== "revealing" ? (
-                <div className="flex gap-2">
-                  <input
-                    ref={inputRef}
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={handleKey}
-                    placeholder="Type your answer…"
-                    disabled={phase === "crowd"}
-                    className="flex-1 bg-transparent border-b-2 text-white placeholder-white/25 text-sm py-2 outline-none transition-colors"
-                    style={{
-                      borderColor: phase === "playing" ? "rgba(132,204,22,0.6)" : "rgba(255,255,255,0.15)",
-                    }}
-                  />
-                  <button
-                    onClick={() => input.trim() && submitAnswer(input)}
-                    disabled={phase !== "playing" || !input.trim()}
-                    className="px-5 py-2 text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-30"
-                    style={{ background: "#84cc16", color: "#030508" }}
-                  >
-                    Submit
-                  </button>
+                <div style={{ position: "relative" }}>
+                  <div className="flex gap-2">
+                    <input
+                      ref={inputRef}
+                      value={input}
+                      onChange={handleInputChange}
+                      onKeyDown={handleKey}
+                      placeholder="Type your answer…"
+                      disabled={phase === "crowd"}
+                      className="flex-1 bg-transparent border-b-2 text-white placeholder-white/25 text-sm py-2 outline-none transition-colors"
+                      style={{
+                        borderColor: phase === "playing" ? "rgba(132,204,22,0.6)" : "rgba(255,255,255,0.15)",
+                      }}
+                      autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+                    />
+                    <button
+                      onClick={() => input.trim() && submitAnswer(input)}
+                      disabled={phase !== "playing" || !input.trim()}
+                      className="px-5 py-2 text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-30"
+                      style={{ background: "#84cc16", color: "#030508" }}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                  {/* Autocomplete suggestions */}
+                  {suggestions.length > 0 && phase === "playing" && (
+                    <div style={{
+                      position: "absolute", bottom: "100%", left: 0, right: 60, zIndex: 50,
+                      background: "#060d1c", border: "2px solid #1a2a4a",
+                      boxShadow: "4px 4px 0 #000", marginBottom: 4,
+                    }}>
+                      {suggestions.map((s, i) => (
+                        <button
+                          key={s.name}
+                          onMouseDown={e => { e.preventDefault(); selectSuggestion(s); }}
+                          style={{
+                            display: "block", width: "100%", textAlign: "left",
+                            padding: "8px 12px",
+                            background: i === sugIdx ? "#1a2a4a" : "transparent",
+                            color: i === sugIdx ? "#84cc16" : "rgba(255,255,255,0.85)",
+                            fontFamily: "var(--font-vt323), monospace",
+                            fontSize: "1rem", letterSpacing: "0.05em",
+                            border: "none", cursor: "pointer",
+                            borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                          }}
+                        >
+                          {s.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* Reveal */

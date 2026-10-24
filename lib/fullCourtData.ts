@@ -507,6 +507,23 @@ export function matchAnswer(input: string, question: FullCourtQuestion): FullCou
   return null;
 }
 
+// Returns answers whose name or aliases start with / contain the input — for autocomplete
+export function getSuggestions(input: string, question: FullCourtQuestion): FullCourtAnswer[] {
+  const trimmed = input.trim();
+  if (trimmed.length < 2) return [];
+  const norm = normalizeAnswer(trimmed);
+  const results: FullCourtAnswer[] = [];
+  for (const ans of question.answers) {
+    const normName = normalizeAnswer(ans.name);
+    // Match start of any word in the full name
+    const matchesName = normName.split(" ").some(w => w.startsWith(norm)) || normName.startsWith(norm);
+    // Or start of any alias
+    const matchesAlias = ans.aliases?.some(a => normalizeAnswer(a).startsWith(norm)) ?? false;
+    if (matchesName || matchesAlias) results.push(ans);
+  }
+  return results.slice(0, 5);
+}
+
 export function calcScore(crowdPct: number): number {
   return Math.round(10000 * (1 - crowdPct / 100));
 }

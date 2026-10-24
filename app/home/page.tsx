@@ -58,7 +58,7 @@ export default function HomePage() {
       </header>
 
       {/* ── Hero ── */}
-      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6">
+      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6" style={{ isolation: "isolate" }}>
 
         {/* Pixel date tag */}
         <motion.div
