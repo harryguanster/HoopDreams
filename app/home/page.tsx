@@ -92,7 +92,7 @@ export default function HomePage() {
           className="mt-5 mb-10 text-white/40 text-sm max-w-xs leading-relaxed"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
         >
-          NBA trivia games. Inbound the ball, beat the crowd, go coast to coast.
+          Two game modes. Beat the crowd or beat the clock — don&apos;t let it pop.
         </motion.p>
 
         <motion.div
@@ -106,15 +106,15 @@ export default function HomePage() {
             whileHover={{ scale: 1.04, boxShadow: "0 0 60px rgba(132,204,22,0.55)" }}
             whileTap={{ scale: 0.96 }}
           >
-            Play Full Court →
+            Full Court →
           </motion.a>
           <motion.a
-            href="/games"
+            href="/puffer-party"
             className="inline-flex items-center gap-2 px-8 py-4 font-mono font-bold uppercase tracking-[0.2em] text-sm border transition-colors"
-            style={{ borderColor: "rgba(255,255,255,0.18)", color: "rgba(255,255,255,0.6)" }}
-            whileHover={{ borderColor: "rgba(255,255,255,0.4)", color: "white" }}
+            style={{ borderColor: "rgba(239,68,68,0.4)", color: "rgba(239,68,68,0.8)" }}
+            whileHover={{ borderColor: "rgba(239,68,68,0.7)", color: "#ef4444" }}
           >
-            All Games
+            Puffer Party →
           </motion.a>
         </motion.div>
 
@@ -138,9 +138,9 @@ export default function HomePage() {
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
       >
         {[
-          { val: "7", label: "Prompts per game" },
-          { val: "20s", label: "Per answer" },
+          { val: "2", label: "Game modes" },
           { val: "10K", label: "Max score / round" },
+          { val: "3", label: "Lives · Puffer Party" },
         ].map(s => (
           <div key={s.label} className="text-center">
             <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "1.8rem", lineHeight: 1 }}>{s.val}</p>

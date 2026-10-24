@@ -7,105 +7,6 @@ import AuthButton from "@/app/components/AuthButton";
 import DailyBadge from "@/app/components/DailyBadge";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
-const FEATURED = {
-  href: "/full-court",
-  title: "Full Court",
-  desc: "7 NBA prompts. Beat the crowd — rarer answers travel farther down the court. Inbound at the baseline and go coast to coast.",
-  tag: "Daily",
-  tagColor: "#84cc16",
-};
-
-const GAMES = [
-  {
-    href: "/puffer-party",
-    title: "Puffer Party",
-    desc: "Hot potato trivia — type answers to deflate the basketball before it explodes. Rarer answers deflate more.",
-    tag: "Hot",
-    tagColor: "#ef4444",
-  },
-  {
-    href: "/my-team",
-    title: "My Team",
-    desc: "Collect 2K-style era cards and build your dream 10-man roster.",
-    tag: "New",
-    tagColor: "#c084fc",
-  },
-  {
-    href: "/higher-lower",
-    title: "Higher or Lower",
-    desc: "Guess which player's career stat is higher. Build your streak.",
-    tag: "Streak",
-    tagColor: "#84cc16",
-  },
-  {
-    href: "/lineup-thief",
-    title: "Lineup Thief",
-    desc: "One player from a famous lineup is blacked out. Name them using clues.",
-    tag: "New",
-    tagColor: "#f97316",
-  },
-  {
-    href: "/connections",
-    title: "NBA Connections",
-    desc: "16 players, 4 hidden groups. Daily puzzle.",
-    tag: "Daily",
-    tagColor: "#84cc16",
-  },
-  {
-    href: "/auction-draft",
-    title: "Auction Draft",
-    desc: "Bid on all-time legends against an AI. Build your dream team.",
-    tag: "Strategy",
-    tagColor: "#60a5fa",
-  },
-  {
-    href: "/badge-court",
-    title: "Badge Court",
-    desc: "Card battle with NBA legends. Pick plays, activate badges.",
-    tag: "New",
-    tagColor: "#f97316",
-  },
-  {
-    href: "/franchise",
-    title: "Franchise Mode",
-    desc: "Build a roster, simulate seasons, run the playoffs year after year.",
-    tag: "Sim",
-    tagColor: "#84cc16",
-  },
-];
-
-const TIMED = [
-  { href: "/challenges/name-teams",   title: "Name All 30 Teams",    tag: "5 min",  desc: "Type every NBA franchise before time runs out." },
-  { href: "/challenges/name-players", title: "Name the Starters",    tag: "10 min", desc: "Name the 5 starters + 1 bench for all 30 teams." },
-  { href: "/challenges/draft-class",  title: "Draft Class Challenge", tag: "8 min",  desc: "Name 3 players from every draft class 2010–2025." },
-  { href: "/challenges/champions",    title: "Champions by Year",     tag: "6 min",  desc: "Type a team, all their title years fill in at once." },
-];
-
-function Tag({ label, color }: { label: string; color: string }) {
-  return (
-    <span
-      className="text-[8px] font-mono font-bold uppercase tracking-[0.25em] px-2 py-0.5 border"
-      style={{ borderColor: color, color, background: `${color}18` }}
-    >
-      {label}
-    </span>
-  );
-}
-
-function SectionLabel({ label, title }: { label: string; title: string }) {
-  return (
-    <div className="mb-5">
-      <div className="flex items-center gap-2 mb-2">
-        <div className="w-2 h-2" style={{ background: "#84cc16" }} />
-        <span className="text-[9px] font-mono font-bold uppercase tracking-[0.4em] text-[#84cc16]">{label}</span>
-      </div>
-      <h2 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(1.6rem, 3vw, 2.5rem)", letterSpacing: "-0.02em", lineHeight: 1 }}>
-        {title}
-      </h2>
-    </div>
-  );
-}
-
 export default function GamesPage() {
   const [streakCount, setStreakCount] = useState(0);
 
@@ -138,105 +39,109 @@ export default function GamesPage() {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-6xl mx-auto px-5 py-10 space-y-14 pb-24">
+      <main className="relative z-10 max-w-4xl mx-auto px-5 py-16 pb-24">
 
-        {/* ── FEATURED: Full Court ── */}
-        <section>
-          <SectionLabel label="Today's Game" title="Full Court" />
-          <Link href={FEATURED.href} className="group block">
+        <div className="text-center mb-14">
+          <p className="text-[9px] font-mono font-bold uppercase tracking-[0.5em] text-[#84cc16] mb-4">Game Modes</p>
+          <h1 className="font-playfair font-black italic text-white" style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", letterSpacing: "-0.03em", lineHeight: 0.92 }}>
+            Choose Your Game
+          </h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* Full Court */}
+          <Link href="/full-court" className="group block">
             <motion.div
-              className="relative overflow-hidden p-8 md:p-12"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(132,204,22,0.25)", minHeight: 200 }}
-              whileHover={{ background: "rgba(132,204,22,0.06)" }}
-              transition={{ duration: 0.2 }}
+              className="relative overflow-hidden p-8 flex flex-col justify-between"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(132,204,22,0.3)", minHeight: 320 }}
+              whileHover={{ background: "rgba(132,204,22,0.06)", borderColor: "rgba(132,204,22,0.55)" }}
+              transition={{ duration: 0.18 }}
             >
-              {/* Court SVG background hint */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10">
-                <svg viewBox="0 0 900 200" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-                  <rect x="0" y="0" width="900" height="200" fill="#C17F2A" />
-                  {Array.from({ length: 7 }).map((_, i) => (
-                    <line key={i} x1="0" y1={30 * i} x2="900" y2={30 * i} stroke="#7A520F" strokeWidth="1" />
+              {/* Court texture hint */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-8">
+                <svg viewBox="0 0 500 320" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+                  <rect width="500" height="320" fill="#C17F2A" />
+                  {Array.from({ length: 11 }).map((_, i) => (
+                    <line key={i} x1="0" y1={30 * i} x2="500" y2={30 * i} stroke="#7A520F" strokeWidth="0.8" />
                   ))}
-                  <rect x="20" y="15" width="860" height="170" fill="none" stroke="white" strokeWidth="2" />
-                  <line x1="450" y1="15" x2="450" y2="185" stroke="white" strokeWidth="1.5" />
-                  <circle cx="450" cy="100" r="45" fill="none" stroke="white" strokeWidth="1.5" />
-                  <rect x="20" y="55" width="140" height="90" fill="none" stroke="white" strokeWidth="1.5" />
-                  <rect x="740" y="55" width="140" height="90" fill="none" stroke="white" strokeWidth="1.5" />
+                  <rect x="15" y="15" width="470" height="290" fill="none" stroke="white" strokeWidth="2" />
+                  <line x1="250" y1="15" x2="250" y2="305" stroke="white" strokeWidth="1.5" />
+                  <circle cx="250" cy="160" r="50" fill="none" stroke="white" strokeWidth="1.5" />
+                  <rect x="15" y="85" width="120" height="150" fill="none" stroke="white" strokeWidth="1.5" />
+                  <rect x="365" y="85" width="120" height="150" fill="none" stroke="white" strokeWidth="1.5" />
                 </svg>
               </div>
 
-              <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                  <Tag label={FEATURED.tag} color={FEATURED.tagColor} />
-                  <h2 className="font-playfair font-black italic text-white mt-3" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", lineHeight: 0.95, letterSpacing: "-0.02em" }}>
-                    {FEATURED.title}
-                  </h2>
-                  <p className="text-white/45 text-sm mt-3 leading-relaxed max-w-lg">{FEATURED.desc}</p>
-                </div>
-                <motion.span
-                  className="inline-block px-8 py-3 font-mono font-bold text-xs uppercase tracking-[0.2em] shrink-0"
-                  style={{ background: "#84cc16", color: "#030508" }}
-                  whileHover={{ scale: 1.04 }}
-                >
-                  Inbound →
-                </motion.span>
+              <div className="relative z-10">
+                <span className="text-[8px] font-mono font-bold uppercase tracking-[0.3em] px-2 py-0.5 border"
+                  style={{ borderColor: "#84cc16", color: "#84cc16", background: "rgba(132,204,22,0.1)" }}>
+                  Daily
+                </span>
+                <h2 className="font-playfair font-black italic text-white mt-4"
+                  style={{ fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 0.95, letterSpacing: "-0.02em" }}>
+                  Full Court
+                </h2>
+                <p className="text-white/45 text-sm mt-3 leading-relaxed">
+                  7 NBA prompts. Beat the crowd — rarer answers travel farther down the court. Inbound at the baseline and go coast to coast.
+                </p>
               </div>
+
+              <motion.div
+                className="relative z-10 mt-8 self-start px-7 py-3 font-mono font-bold text-xs uppercase tracking-[0.2em]"
+                style={{ background: "#84cc16", color: "#030508" }}
+                whileHover={{ scale: 1.03 }}
+              >
+                Inbound →
+              </motion.div>
             </motion.div>
           </Link>
-        </section>
 
-        {/* ── GAME MODES ── */}
-        <section>
-          <SectionLabel label="Game Modes" title="Choose Your Game" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px" style={{ background: "rgba(255,255,255,0.07)" }}>
-            {GAMES.map(g => (
-              <Link key={g.href} href={g.href} className="group block">
-                <motion.div
-                  className="h-full flex flex-col justify-between p-5 transition-colors duration-200"
-                  style={{ background: "#030508", minHeight: 160 }}
-                  whileHover={{ background: "rgba(255,255,255,0.04)" }}
-                >
-                  <Tag label={g.tag} color={g.tagColor} />
-                  <div className="mt-auto pt-6">
-                    <h3 className="font-playfair font-black italic text-white leading-tight mb-1.5" style={{ fontSize: "1.15rem" }}>
-                      {g.title}
-                    </h3>
-                    <p className="font-mono text-white/35 leading-snug" style={{ fontSize: "10px" }}>{g.desc}</p>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
-        </section>
+          {/* Puffer Party */}
+          <Link href="/puffer-party" className="group block">
+            <motion.div
+              className="relative overflow-hidden p-8 flex flex-col justify-between"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(239,68,68,0.3)", minHeight: 320 }}
+              whileHover={{ background: "rgba(239,68,68,0.06)", borderColor: "rgba(239,68,68,0.55)" }}
+              transition={{ duration: 0.18 }}
+            >
+              {/* Basketball texture hint */}
+              <div className="absolute right-6 bottom-6 opacity-6 pointer-events-none">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                  <circle cx="70" cy="70" r="60" fill="#e46209" />
+                  <path d="M10,70 Q70,40 130,70" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="3" />
+                  <path d="M70,10 Q100,70 70,130" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="3" />
+                  <path d="M30,20 Q10,70 30,120" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" />
+                  <path d="M110,20 Q130,70 110,120" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" />
+                </svg>
+              </div>
 
-        {/* ── TIMED CHALLENGES ── */}
-        <section>
-          <SectionLabel label="Timed Challenges" title="Race the Clock" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: "rgba(255,255,255,0.07)" }}>
-            {TIMED.map(g => (
-              <Link key={g.href} href={g.href} className="group block">
-                <motion.div
-                  className="h-full p-5 flex flex-col justify-between"
-                  style={{ background: "#030508", minHeight: 140 }}
-                  whileHover={{ background: "rgba(255,255,255,0.04)" }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <span className="text-[8px] font-mono font-bold uppercase tracking-[0.25em] px-2 py-0.5 border border-[#84cc16]/40 text-[#84cc16] self-start">
-                    {g.tag}
-                  </span>
-                  <div className="mt-auto pt-5">
-                    <p className="font-playfair font-black italic text-white leading-tight mb-1" style={{ fontSize: "1.05rem" }}>{g.title}</p>
-                    <p className="font-mono text-white/35 leading-snug" style={{ fontSize: "9px" }}>{g.desc}</p>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
-        </section>
+              <div className="relative z-10">
+                <span className="text-[8px] font-mono font-bold uppercase tracking-[0.3em] px-2 py-0.5 border"
+                  style={{ borderColor: "#ef4444", color: "#ef4444", background: "rgba(239,68,68,0.1)" }}>
+                  Hot Potato
+                </span>
+                <h2 className="font-playfair font-black italic text-white mt-4"
+                  style={{ fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 0.95, letterSpacing: "-0.02em" }}>
+                  Puffer Party
+                </h2>
+                <p className="text-white/45 text-sm mt-3 leading-relaxed">
+                  A basketball inflates over time. Type NBA answers to deflate it before it pops. Rarer answers deflate more. Don&apos;t let it explode.
+                </p>
+              </div>
 
-        <p className="text-center text-white/20 text-[9px] font-mono uppercase tracking-widest">
-          Stats are career averages · Accolades are highlights, not exhaustive
-        </p>
+              <motion.div
+                className="relative z-10 mt-8 self-start px-7 py-3 font-mono font-bold text-xs uppercase tracking-[0.2em]"
+                style={{ background: "#ef4444", color: "white" }}
+                whileHover={{ scale: 1.03 }}
+              >
+                Play →
+              </motion.div>
+            </motion.div>
+          </Link>
+
+        </div>
+
       </main>
     </div>
   );
