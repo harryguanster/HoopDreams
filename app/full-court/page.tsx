@@ -189,21 +189,20 @@ export default function FullCourtPage() {
       crowdPct,
     };
 
+    const newResults = [...results, result];
     setLastScore(score);
     setLastZone(zone);
     setBallProgress(scoreToBallProgress(score));
+    setResults(newResults);
     setPhase("revealing");
 
-    const newResults = [...results, result];
     setTimeout(() => {
       if (roundIdx + 1 >= TOTAL_ROUNDS) {
-        setResults(newResults);
         setPhase("complete");
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: getTodayStr(), results: newResults }));
         } catch { /* ignore */ }
       } else {
-        setResults(newResults);
         setRoundIdx(prev => prev + 1);
         setInput("");
         setBallProgress(0.04);
