@@ -1,256 +1,296 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import AuthButton from "@/app/components/AuthButton";
-import DailyBadge from "@/app/components/DailyBadge";
 import { loadStreak, getTodayStr } from "@/lib/dailyUtils";
 
+function useTimeUntilMidnight() {
+  const [secs, setSecs] = useState(0);
+  useEffect(() => {
+    function calc() {
+      const now = new Date();
+      const midnight = new Date(now);
+      midnight.setHours(24, 0, 0, 0);
+      setSecs(Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000)));
+    }
+    calc();
+    const id = setInterval(calc, 1000);
+    return () => clearInterval(id);
+  }, []);
+  const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+  const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+  const s = String(secs % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
+
+function GameCard({
+  title,
+  tagline,
+  color,
+  href,
+  disabled,
+}: {
+  title: string;
+  tagline: string;
+  color: string;
+  href?: string;
+  disabled?: boolean;
+}) {
+  const inner = (
+    <div
+      style={{
+        background: color,
+        padding: "22px 16px 16px",
+        position: "relative",
+        height: "100%",
+        minHeight: 100,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 6,
+        cursor: disabled ? "default" : "pointer",
+        opacity: disabled ? 0.72 : 1,
+        transition: "filter 0.15s",
+      }}
+      onMouseEnter={e => { if (!disabled) (e.currentTarget as HTMLElement).style.filter = "brightness(1.12)"; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.filter = ""; }}
+    >
+      {!disabled && (
+        <span style={{
+          position: "absolute", top: 8, right: 10,
+          fontFamily: "var(--font-press-start), monospace",
+          fontSize: "0.75rem", color: "rgba(255,255,255,0.6)",
+        }}>+</span>
+      )}
+      <p style={{
+        fontFamily: "var(--font-press-start), monospace",
+        fontSize: "0.6rem", color: "white",
+        letterSpacing: "0.06em", textAlign: "center", lineHeight: 1.7,
+      }}>{title}</p>
+      <p style={{
+        fontFamily: "var(--font-vt323), monospace",
+        fontSize: "0.9rem", color: "rgba(255,255,255,0.5)",
+        letterSpacing: "0.1em", textAlign: "center",
+      }}>{disabled ? "coming soon" : tagline}</p>
+    </div>
+  );
+
+  if (disabled) return <div style={{ flex: 1 }}>{inner}</div>;
+  return (
+    <a href={href} style={{ flex: 1, display: "block", textDecoration: "none" }}>
+      {inner}
+    </a>
+  );
+}
+
 export default function HomePage() {
-  const [streakCount, setStreakCount] = useState(0);
+  const timeStr = useTimeUntilMidnight();
+  const [streak, setStreak] = useState(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    function refresh() {
-      const s = loadStreak();
-      setStreakCount(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
-    }
-    refresh();
-    window.addEventListener("daily-update", refresh);
-    return () => window.removeEventListener("daily-update", refresh);
+    const s = loadStreak();
+    setStreak(s.count > 0 && s.lastDate === getTodayStr() ? s.count : 0);
   }, []);
 
+  const panelStyle: React.CSSProperties = {
+    background: "rgba(10,16,30,0.97)",
+    border: "2px solid rgba(255,255,255,0.07)",
+  };
+
+  const monoSm: React.CSSProperties = {
+    fontFamily: "var(--font-vt323), monospace",
+    fontSize: "0.8rem",
+    letterSpacing: "0.1em",
+    color: "rgba(255,255,255,0.35)",
+  };
+
   return (
-    <div
-      className="h-screen overflow-hidden flex flex-col"
-      style={{ background: "transparent", color: "white" }}
-    >
-      {/* ── Header ── */}
-      <header
-        className="relative z-30 px-4 sm:px-6 flex items-center justify-between shrink-0"
-        style={{
-          minHeight: 52,
-          background: "rgba(5,10,25,0.85)",
-          borderBottom: "2px solid #1a2a4a",
-          boxShadow: "0 2px 0 #000",
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <img src="/logo-green.png" alt="Courtside Central" className="h-8 w-auto" style={{ imageRendering: "pixelated" }} />
-          <span
-            className="hidden sm:block text-white"
-            style={{ fontFamily: "var(--font-press-start), monospace", fontSize: "0.6rem", letterSpacing: "0.05em", lineHeight: 1.4 }}
-          >
-            COURTSIDE<br />CENTRAL
-          </span>
+    <div className="h-screen overflow-hidden relative" style={{ color: "white" }}>
+
+      {/* Title at top-center */}
+      <div style={{
+        position: "absolute", top: "4%", left: "50%", transform: "translateX(-50%)",
+        textAlign: "center", zIndex: 20, pointerEvents: "none", whiteSpace: "nowrap",
+      }}>
+        <h1 style={{
+          fontFamily: "var(--font-press-start), monospace",
+          fontSize: "clamp(14px, 2.8vw, 44px)",
+          color: "white",
+          textShadow: "4px 4px 0 #000, 0 0 40px rgba(0,0,0,0.5)",
+          letterSpacing: "0.03em", lineHeight: 1.5,
+        }}>COURTSIDE</h1>
+        <h1 style={{
+          fontFamily: "var(--font-press-start), monospace",
+          fontSize: "clamp(14px, 2.8vw, 44px)",
+          color: "#84cc16",
+          textShadow: "4px 4px 0 #1a3000",
+          letterSpacing: "0.03em",
+        }}>CENTRAL</h1>
+      </div>
+
+      {/* Center panel */}
+      <div style={{
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -38%)",
+        width: "min(460px, 92vw)",
+        zIndex: 20,
+        ...panelStyle,
+      }}>
+
+        {/* Top bar */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "10px 12px",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            background: "rgba(255,255,255,0.07)",
+            border: "1px solid rgba(255,255,255,0.09)",
+            padding: "5px 10px",
+          }}>
+            <span style={{ fontSize: "0.9rem" }}>🔥</span>
+            <span style={{
+              fontFamily: "var(--font-press-start), monospace",
+              fontSize: "0.55rem", color: "white",
+            }}>{mounted ? streak : 0}</span>
+          </div>
+
+          <div style={{
+            display: "flex", alignItems: "center", gap: 5,
+            background: "rgba(255,255,255,0.07)",
+            border: "1px solid rgba(255,255,255,0.09)",
+            padding: "5px 12px", cursor: "pointer",
+          }}>
+            <span style={{ fontSize: "0.75rem" }}>📊</span>
+            <span style={{
+              fontFamily: "var(--font-vt323), monospace",
+              fontSize: "0.9rem", color: "rgba(255,255,255,0.7)", letterSpacing: "0.1em",
+            }}>MY STATS</span>
+          </div>
+
+          <div style={{ marginLeft: "auto" }}>
+            <AuthButton />
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span
-            className="hidden sm:block"
-            style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.85rem", color: "#84cc16", letterSpacing: "0.15em" }}
-          >
+
+        {/* 2×2 game card grid */}
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2,
+          background: "rgba(255,255,255,0.04)",
+        }}>
+          <GameCard title="FULL COURT"   tagline="the rarest answer" color="#1c2d58" href="/full-court" />
+          <GameCard title="PUFFER PARTY" tagline="beat the clock"     color="#5a1e1e" href="/puffer-party" />
+          <GameCard title="VETERAN"      tagline="the oldest player"  color="#1a3828" disabled />
+          <GameCard title="ROOKIE"       tagline="the newest player"  color="#28183e" disabled />
+        </div>
+
+        {/* Link row */}
+        <div style={{
+          display: "flex", alignItems: "center",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(0,0,0,0.25)",
+        }}>
+          {["UNLIMITED", "ARCHIVE", "SEASON PACKS"].map(label => (
+            <button key={label} style={{
+              flex: 1, padding: "9px 4px",
+              fontFamily: "var(--font-vt323), monospace",
+              fontSize: "0.75rem", color: "rgba(255,255,255,0.3)",
+              background: "none", border: "none", cursor: "not-allowed",
+              letterSpacing: "0.08em",
+            }}>{label}</button>
+          ))}
+        </div>
+
+        {/* Leaderboard / League row */}
+        <div style={{
+          display: "flex", gap: 2, padding: "2px",
+          background: "rgba(0,0,0,0.25)",
+        }}>
+          {[
+            { label: "📊 LEADERBOARD", href: "/higher-lower" },
+            { label: "👥 LEAGUE",      href: "/games" },
+          ].map(({ label, href }) => (
+            <a key={label} href={href} style={{
+              flex: 1, padding: "10px 4px",
+              fontFamily: "var(--font-vt323), monospace",
+              fontSize: "0.9rem", color: "rgba(255,255,255,0.65)",
+              background: "rgba(255,255,255,0.05)",
+              textAlign: "center", textDecoration: "none",
+              letterSpacing: "0.1em",
+            }}>{label}</a>
+          ))}
+        </div>
+
+        {/* Footer bar */}
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          padding: "7px 14px",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+        }}>
+          <span style={monoSm}>? HELP</span>
+          <span style={{ ...monoSm, fontFamily: "var(--font-vt323), monospace", fontSize: "0.75rem" }}>
             SEASON 2025-26
           </span>
-          <DailyBadge count={streakCount} />
-          <AuthButton />
+          <span style={monoSm}>🎨 CUSTOMIZE</span>
         </div>
-      </header>
+      </div>
 
-      {/* ── Hero ── */}
-      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6" style={{ isolation: "isolate" }}>
+      {/* Bottom-left: countdown */}
+      <div style={{
+        position: "absolute", bottom: "5%", left: "5%",
+        zIndex: 20, pointerEvents: "none",
+      }}>
+        <p style={{ ...monoSm, marginBottom: 4, color: "rgba(255,255,255,0.45)" }}>
+          NEXT RESET IN
+        </p>
+        <p style={{
+          fontFamily: "var(--font-press-start), monospace",
+          fontSize: "clamp(10px, 1.6vw, 18px)",
+          color: "#84cc16",
+          textShadow: "2px 2px 0 #1a3000",
+        }}>{mounted ? timeStr : "--:--:--"}</p>
+        <div style={{ marginTop: 10, fontSize: "1.8rem" }}>🏆</div>
+      </div>
 
-        {/* Pixel date tag */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          style={{
-            fontFamily: "var(--font-vt323), monospace",
-            fontSize: "1.1rem",
-            color: "#84cc16",
-            letterSpacing: "0.25em",
-            marginBottom: "1.5rem",
-            background: "rgba(10,30,10,0.6)",
-            border: "2px solid #2a5010",
-            padding: "4px 12px",
-            display: "inline-block",
-          }}
-        >
-          {mounted ? `> ${getTodayStr()}` : "> ..."}
-        </motion.div>
-
-        {/* Main title */}
-        <motion.h1
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          style={{
-            fontFamily: "var(--font-press-start), monospace",
-            fontSize: "clamp(22px, 5vw, 72px)",
-            lineHeight: 1.3,
-            letterSpacing: "-0.02em",
-            color: "#ffffff",
-            textShadow: "4px 4px 0 #000, 0 0 40px rgba(132,204,22,0.4)",
-            marginBottom: "0.5rem",
-          }}
-        >
-          COURTSIDE
-        </motion.h1>
-        <motion.h1
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.08, ease: "easeOut" }}
-          style={{
-            fontFamily: "var(--font-press-start), monospace",
-            fontSize: "clamp(22px, 5vw, 72px)",
-            lineHeight: 1.3,
-            letterSpacing: "-0.02em",
-            color: "#84cc16",
-            textShadow: "4px 4px 0 #1a3000, 0 0 40px rgba(132,204,22,0.5)",
-            marginBottom: "2rem",
-          }}
-        >
-          CENTRAL
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.35 }}
-          style={{
-            fontFamily: "var(--font-vt323), monospace",
-            fontSize: "1.2rem",
-            color: "rgba(255,255,255,0.55)",
-            letterSpacing: "0.1em",
-            marginBottom: "2.5rem",
-            maxWidth: 380,
-          }}
-        >
-          2 GAME MODES. BEAT THE CROWD OR BEAT THE CLOCK.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          className="flex flex-col sm:flex-row items-center gap-4"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          {/* Full Court */}
-          <motion.a
-            href="/full-court"
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96, y: 0 }}
-            style={{
-              display: "inline-block",
-              fontFamily: "var(--font-press-start), monospace",
-              fontSize: "0.6rem",
-              letterSpacing: "0.08em",
-              color: "#030508",
-              background: "#84cc16",
-              padding: "14px 28px",
-              border: "3px solid #5a8a0a",
-              boxShadow: "4px 4px 0 #1a3000, 0 0 20px rgba(132,204,22,0.35)",
-              cursor: "pointer",
-              textDecoration: "none",
-              textTransform: "uppercase",
-            }}
-          >
-            FULL COURT &gt;
-          </motion.a>
-
-          {/* Puffer Party */}
-          <motion.a
-            href="/puffer-party"
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96, y: 0 }}
-            style={{
-              display: "inline-block",
-              fontFamily: "var(--font-press-start), monospace",
-              fontSize: "0.6rem",
-              letterSpacing: "0.08em",
-              color: "#ef4444",
-              background: "rgba(30,5,5,0.7)",
-              padding: "14px 28px",
-              border: "3px solid #801010",
-              boxShadow: "4px 4px 0 #400000",
-              cursor: "pointer",
-              textDecoration: "none",
-              textTransform: "uppercase",
-            }}
-          >
-            PUFFER PARTY &gt;
-          </motion.a>
-        </motion.div>
-
-        {/* Streak badge */}
-        {streakCount > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.7 }}
-            style={{
-              marginTop: "2rem",
-              fontFamily: "var(--font-vt323), monospace",
-              fontSize: "1.1rem",
-              color: "#ffd060",
-              background: "rgba(40,30,0,0.7)",
-              border: "2px solid #5a4010",
-              padding: "6px 16px",
-              letterSpacing: "0.15em",
-              boxShadow: "2px 2px 0 #000",
-            }}
-          >
-            * {streakCount} DAY STREAK *
-          </motion.div>
-        )}
-      </section>
-
-      {/* ── Bottom stat bar ── */}
-      <motion.div
-        className="relative z-20 flex items-center justify-center gap-8 sm:gap-16 px-6 py-4"
-        style={{
-          background: "rgba(5,10,25,0.85)",
-          borderTop: "2px solid #1a2a4a",
-          boxShadow: "0 -2px 0 #000",
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        {[
-          { val: "2", label: "GAME MODES" },
-          { val: "10K", label: "MAX SCORE" },
-          { val: "3", label: "LIVES" },
-        ].map(s => (
-          <div key={s.label} className="text-center">
-            <p
-              style={{
-                fontFamily: "var(--font-press-start), monospace",
-                fontSize: "clamp(14px, 3vw, 22px)",
-                color: "#84cc16",
-                textShadow: "2px 2px 0 #1a3000",
-                lineHeight: 1,
-                marginBottom: 4,
-              }}
-            >
-              {s.val}
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-vt323), monospace",
-                fontSize: "0.75rem",
-                color: "rgba(255,255,255,0.4)",
-                letterSpacing: "0.2em",
-              }}
-            >
-              {s.label}
-            </p>
-          </div>
-        ))}
-      </motion.div>
+      {/* Bottom-right: stats panel */}
+      <div style={{
+        position: "absolute", bottom: "5%", right: "5%",
+        width: 210, zIndex: 20, ...panelStyle, padding: "12px 14px",
+      }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+          {[
+            { label: "⬆ FULL COURT", pts: 0 },
+            { label: "⬆ PUFFER",     pts: 0 },
+            { label: "⬆ VETERAN",    pts: 0 },
+            { label: "⬆ ROOKIE",     pts: 0 },
+          ].map(({ label, pts }) => (
+            <div key={label}>
+              <p style={{ fontFamily: "var(--font-vt323)", fontSize: "0.6rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.08em" }}>{label}</p>
+              <p style={{ fontFamily: "var(--font-press-start)", fontSize: "0.75rem", color: "white", lineHeight: 1.4 }}>
+                {pts}<span style={{ fontSize: "0.4rem", color: "rgba(255,255,255,0.35)", marginLeft: 2 }}>pts</span>
+              </p>
+            </div>
+          ))}
+        </div>
+        <div style={{
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          paddingTop: 8,
+          fontFamily: "var(--font-vt323)",
+          fontSize: "0.8rem",
+          color: "#ffd060",
+          letterSpacing: "0.1em",
+        }}>🔥 {mounted ? streak : 0} DAY STREAK</div>
+        <p style={{ ...monoSm, marginTop: 6, color: "rgba(255,255,255,0.3)", fontSize: "0.65rem" }}>
+          YOUR BEST GAME
+        </p>
+        <p style={{ fontFamily: "var(--font-vt323)", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", letterSpacing: "0.08em" }}>
+          — pts
+        </p>
+      </div>
     </div>
   );
 }

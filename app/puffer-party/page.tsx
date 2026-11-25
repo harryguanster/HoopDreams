@@ -1,7 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import GameHeader from "@/app/components/GameHeader";
 import {
   FULL_COURT_QUESTIONS,
   matchAnswer,
@@ -13,14 +12,11 @@ import {
   type FullCourtAnswer,
 } from "@/lib/fullCourtData";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * Math.min(1, Math.max(0, t));
 }
 
 function ballFill(inf: number): string {
-  // basketball orange → danger red
   const t = Math.min(1, inf * 1.4);
   return `rgb(${Math.round(lerp(228, 220, t))},${Math.round(lerp(98, 38, t))},${Math.round(lerp(9, 38, t))})`;
 }
@@ -40,11 +36,8 @@ function getRoundTime(round: number): number {
 }
 
 function getDeflation(crowdPct: number): number {
-  // Common answers barely deflate; rare answers deflate a lot
   return 0.10 + (1 - crowdPct / 100) * 0.28;
 }
-
-// ── Puffer basketball SVG ─────────────────────────────────────────────────────
 
 function PufferBall({ inflation, popping }: { inflation: number; popping: boolean }) {
   const cx = 110, cy = 115;
@@ -57,7 +50,6 @@ function PufferBall({ inflation, popping }: { inflation: number; popping: boolea
   if (popping) {
     return (
       <div style={{ width: 220, height: 230, position: "relative" }}>
-        {/* Burst lines */}
         {Array.from({ length: 12 }).map((_, i) => {
           const a = (i / 12) * Math.PI * 2;
           return (
@@ -78,7 +70,6 @@ function PufferBall({ inflation, popping }: { inflation: number; popping: boolea
             />
           );
         })}
-        {/* Fading ball */}
         <motion.svg
           width="220" height="230" viewBox="0 0 220 230"
           style={{ position: "absolute", inset: 0 }}
@@ -101,11 +92,7 @@ function PufferBall({ inflation, popping }: { inflation: number; popping: boolea
           ? { y: [-1.5, 1.5, -1.5] }
           : {}
       }
-      transition={
-        stage >= 2
-          ? { repeat: Infinity, duration: stage === 3 ? 0.1 : 0.28 }
-          : {}
-      }
+      transition={stage >= 2 ? { repeat: Infinity, duration: stage === 3 ? 0.1 : 0.28 } : {}}
       style={{ display: "inline-block" }}
     >
       <svg width="220" height="230" viewBox="0 0 220 230">
@@ -117,66 +104,33 @@ function PufferBall({ inflation, popping }: { inflation: number; popping: boolea
           </radialGradient>
           <filter id="pbf" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation={glowBlur.toFixed(1)} result="b" />
-            <feMerge>
-              <feMergeNode in="b" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
           <clipPath id="pbc"><circle cx={cx} cy={cy} r={r} /></clipPath>
         </defs>
-
-        {/* Outer glow ring */}
         {inflation > 0.4 && (
-          <circle
-            cx={cx} cy={cy} r={r + 10}
-            fill="none" stroke={color}
-            strokeWidth={2 + inflation * 5}
-            opacity={0.08 + (inflation - 0.4) * 0.3}
-          />
+          <circle cx={cx} cy={cy} r={r + 10} fill="none" stroke={color}
+            strokeWidth={2 + inflation * 5} opacity={0.08 + (inflation - 0.4) * 0.3} />
         )}
-
-        {/* Spiky halo */}
         {spikeLen > 1 && (
-          <polygon
-            points={pufferPoints(cx, cy, r + 2, spikeLen)}
-            fill={color} opacity={0.6}
-          />
+          <polygon points={pufferPoints(cx, cy, r + 2, spikeLen)} fill={color} opacity={0.6} />
         )}
-
-        {/* Main ball */}
-        <circle
-          cx={cx} cy={cy} r={r}
-          fill="url(#pbg)"
-          filter={stage >= 2 ? "url(#pbf)" : undefined}
-        />
-
-        {/* Basketball seams (clipped) */}
-        <g clipPath="url(#pbc)" fill="none"
-          stroke="rgba(0,0,0,0.42)" strokeWidth={2 + inflation * 1.5}>
+        <circle cx={cx} cy={cy} r={r} fill="url(#pbg)" filter={stage >= 2 ? "url(#pbf)" : undefined} />
+        <g clipPath="url(#pbc)" fill="none" stroke="rgba(0,0,0,0.42)" strokeWidth={2 + inflation * 1.5}>
           <path d={`M${cx - r},${cy} Q${cx},${cy - r * 0.38} ${cx + r},${cy}`} />
           <path d={`M${cx},${cy - r} Q${cx + r * 0.38},${cy} ${cx},${cy + r}`} />
           <path d={`M${cx - r * 0.5},${cy - r * 0.87} Q${cx - r * 1.15},${cy} ${cx - r * 0.5},${cy + r * 0.87}`} />
           <path d={`M${cx + r * 0.5},${cy - r * 0.87} Q${cx + r * 1.15},${cy} ${cx + r * 0.5},${cy + r * 0.87}`} />
         </g>
-
-        {/* Shine */}
-        <ellipse
-          cx={cx - r * 0.22} cy={cy - r * 0.28}
-          rx={r * 0.22} ry={r * 0.15}
-          fill="rgba(255,255,255,0.22)"
-        />
-
-        {/* Stage 3: worried eyes */}
+        <ellipse cx={cx - r * 0.22} cy={cy - r * 0.28} rx={r * 0.22} ry={r * 0.15} fill="rgba(255,255,255,0.22)" />
         {stage >= 3 && (
           <g>
             <ellipse cx={cx - 18} cy={cy - 12} rx={7} ry={8} fill="white" />
             <ellipse cx={cx + 18} cy={cy - 12} rx={7} ry={8} fill="white" />
             <circle cx={cx - 17} cy={cy - 10} r={4} fill="#1a0000" />
             <circle cx={cx + 19} cy={cy - 10} r={4} fill="#1a0000" />
-            <path d={`M${cx - 26},${cy - 24} L${cx - 13},${cy - 18}`}
-              stroke="#1a0000" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-            <path d={`M${cx + 26},${cy - 24} L${cx + 13},${cy - 18}`}
-              stroke="#1a0000" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d={`M${cx - 26},${cy - 24} L${cx - 13},${cy - 18}`} stroke="#1a0000" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d={`M${cx + 26},${cy - 24} L${cx + 13},${cy - 18}`} stroke="#1a0000" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           </g>
         )}
       </svg>
@@ -184,10 +138,13 @@ function PufferBall({ inflation, popping }: { inflation: number; popping: boolea
   );
 }
 
-// ── Game page ─────────────────────────────────────────────────────────────────
-
 type Phase = "intro" | "playing" | "exploded" | "complete";
 const MAX_LIVES = 3;
+
+const panelBase: React.CSSProperties = {
+  background: "rgba(8,14,26,0.96)",
+  border: "2px solid rgba(255,255,255,0.08)",
+};
 
 export default function PufferPartyPage() {
   const [phase, setPhase] = useState<Phase>("intro");
@@ -214,7 +171,6 @@ export default function PufferPartyPage() {
 
   const question = questions[round % Math.max(1, questions.length)];
 
-  // ── Inflation ticker ────────────────────────────────────────────────────────
   useEffect(() => {
     if (phase !== "playing") return;
     const roundTime = getRoundTime(round);
@@ -229,23 +185,16 @@ export default function PufferPartyPage() {
         const next = prev + addPerTick;
         if (next >= 1) {
           active = false;
-          setTimeout(() => {
-            setPopping(true);
-            setPhase("exploded");
-          }, 0);
+          setTimeout(() => { setPopping(true); setPhase("exploded"); }, 0);
           return 1;
         }
         return next;
       });
     }, tickMs);
 
-    return () => {
-      active = false;
-      clearInterval(tid);
-    };
+    return () => { active = false; clearInterval(tid); };
   }, [phase, round]);
 
-  // ── Explosion aftermath ─────────────────────────────────────────────────────
   useEffect(() => {
     if (phase !== "exploded") return;
     const tid = setTimeout(() => {
@@ -268,14 +217,10 @@ export default function PufferPartyPage() {
     return () => clearTimeout(tid);
   }, [phase]);
 
-  // Auto-focus input when round starts
   useEffect(() => {
-    if (phase === "playing") {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (phase === "playing") setTimeout(() => inputRef.current?.focus(), 100);
   }, [phase, round]);
 
-  // ── Game actions ────────────────────────────────────────────────────────────
   function startGame() {
     setQuestions(qs => [...qs].sort(() => Math.random() - 0.5));
     setPhase("playing");
@@ -306,7 +251,6 @@ export default function PufferPartyPage() {
     setSugIdx(-1);
 
     const norm = normalizeAnswer(rawInput);
-
     if (answers.includes(norm)) {
       setFeedback({ text: "Already used!", color: "#f59e0b" });
       setInput("");
@@ -331,7 +275,6 @@ export default function PufferPartyPage() {
 
     setInflation(inf => {
       const next = Math.max(0, inf - deflation);
-      // Cleared this round!
       if (next <= 0 && phaseRef.current === "playing") {
         setTimeout(() => {
           setFeedback({ text: "CLEARED! +1000 bonus", color: "#84cc16" });
@@ -358,11 +301,7 @@ export default function PufferPartyPage() {
       if (e.key === "ArrowDown") { e.preventDefault(); setSugIdx(i => Math.min(i + 1, suggestions.length - 1)); return; }
       if (e.key === "ArrowUp") { e.preventDefault(); setSugIdx(i => Math.max(i - 1, -1)); return; }
       if (e.key === "Escape") { setSuggestions([]); setSugIdx(-1); return; }
-      if (e.key === "Enter" && sugIdx >= 0) {
-        e.preventDefault();
-        processAnswer(suggestions[sugIdx].name);
-        return;
-      }
+      if (e.key === "Enter" && sugIdx >= 0) { e.preventDefault(); processAnswer(suggestions[sugIdx].name); return; }
     }
   }
 
@@ -381,332 +320,402 @@ export default function PufferPartyPage() {
 
   if (!mounted) return null;
 
-  // ── INTRO ──────────────────────────────────────────────────────────────────
-  if (phase === "intro") {
-    return (
-      <div className="min-h-screen">
-        <GameHeader title="Puffer Party" />
-        <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-56px)] px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center"
-          >
-            <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-              className="mb-6"
-            >
-              <PufferBall inflation={0.18} popping={false} />
-            </motion.div>
-
-            <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#84cc16] mb-3">
-              Hot Potato Trivia
-            </p>
-            <h1
-              className="font-playfair font-black italic text-white mb-5"
-              style={{ fontSize: "clamp(3rem, 9vw, 5.5rem)", letterSpacing: "-0.03em", lineHeight: 0.9 }}
-            >
-              Puffer<br />Party
-            </h1>
-            <p className="text-white/45 text-sm max-w-xs mx-auto mb-8 leading-relaxed font-mono">
-              A basketball inflates over time. Type valid NBA answers to deflate it.
-              Rarer answers deflate it more. If it pops — you lose a life.
-            </p>
-
-            <div className="flex gap-5 justify-center mb-10 text-[11px] font-mono text-white/35 uppercase tracking-widest">
-              <span>♥ 3 lives</span>
-              <span>·</span>
-              <span>rare = big deflate</span>
-              <span>·</span>
-              <span>survive!</span>
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={startGame}
-              className="px-14 py-5 font-mono font-bold text-base uppercase tracking-[0.15em]"
-              style={{ background: "#84cc16", color: "#030508" }}
-            >
-              Start Game
-            </motion.button>
-          </motion.div>
-        </main>
-      </div>
-    );
-  }
-
-  // ── COMPLETE ───────────────────────────────────────────────────────────────
-  if (phase === "complete") {
-    return (
-      <div className="min-h-screen">
-        <GameHeader title="Puffer Party" />
-        <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-56px)] px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.88 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 22 }}
-            className="flex flex-col items-center"
-          >
-            <p className="font-mono font-bold uppercase tracking-[0.35em] text-[10px] text-[#ef4444] mb-3">
-              All Popped Out
-            </p>
-            <h2
-              className="font-playfair font-black italic text-white mb-6"
-              style={{ fontSize: "clamp(2.8rem, 8vw, 5rem)", letterSpacing: "-0.03em", lineHeight: 0.9 }}
-            >
-              Game<br />Over
-            </h2>
-
-            <div
-              className="px-10 py-5 mb-8 text-center"
-              style={{ border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }}
-            >
-              <p className="font-mono text-white/40 text-[10px] uppercase tracking-widest mb-1">Final Score</p>
-              <p className="font-playfair font-black text-[#84cc16]"
-                style={{ fontSize: "clamp(2.5rem, 7vw, 4rem)" }}>
-                {score.toLocaleString()}
-              </p>
-              <p className="font-mono text-white/35 text-xs mt-2">
-                {round} round{round === 1 ? "" : "s"} survived
-              </p>
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={startGame}
-              className="px-14 py-5 font-mono font-bold text-base uppercase tracking-[0.15em]"
-              style={{ background: "#84cc16", color: "#030508" }}
-            >
-              Play Again
-            </motion.button>
-          </motion.div>
-        </main>
-      </div>
-    );
-  }
-
-  // ── PLAYING / EXPLODED ─────────────────────────────────────────────────────
-  const roundTime = getRoundTime(round);
-
   return (
-    <div className="min-h-screen" style={{ overflow: "hidden" }}>
-      {/* Cover global ArenaBackground — puffer party has its own dark bg */}
-      <div className="fixed inset-0" style={{ zIndex: 0, background: "#030508" }} />
+    <div className="fixed inset-0 overflow-hidden" style={{ color: "white" }}>
+
+      {/* Back link */}
+      <a
+        href="/"
+        style={{
+          position: "absolute", top: 16, left: 16, zIndex: 30,
+          fontFamily: "var(--font-press-start), monospace",
+          fontSize: "0.5rem", color: "rgba(255,255,255,0.45)",
+          textDecoration: "none", letterSpacing: "0.1em",
+        }}
+      >
+        ← HOME
+      </a>
 
       {/* Flash on explosion */}
       <AnimatePresence>
         {popping && (
           <motion.div
-            className="fixed inset-0 z-50 pointer-events-none"
+            className="fixed inset-0 pointer-events-none"
+            style={{ zIndex: 50, background: "#dc2626" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 0.65, 0] }}
             transition={{ duration: 0.55, times: [0, 0.25, 1] }}
-            style={{ background: "#dc2626" }}
           />
         )}
       </AnimatePresence>
 
-      <GameHeader title="Puffer Party" />
+      <AnimatePresence mode="wait">
 
-      <main className="relative z-10 flex flex-col items-center px-4 pt-4 pb-10 max-w-lg mx-auto">
-
-        {/* Top bar */}
-        <div className="w-full flex items-center justify-between mb-4">
-          {/* Lives */}
-          <div className="flex gap-1.5 items-center">
-            {Array.from({ length: MAX_LIVES }).map((_, i) => (
-              <motion.span
-                key={i}
-                className="text-xl select-none"
-                style={{ opacity: i < lives ? 1 : 0.18, color: "#ef4444" }}
-                animate={i === lives && popping ? { scale: [1, 1.5, 0] } : {}}
-                transition={{ duration: 0.3 }}
-              >
-                ♥
-              </motion.span>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <p className="font-mono text-white/40 text-[10px] uppercase tracking-widest">
-              Round {round + 1} · {roundTime}s
-            </p>
-          </div>
-
-          <div className="text-right">
-            <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "1.15rem" }}>
-              {score.toLocaleString()}
-            </p>
-            <p className="font-mono text-white/25 text-[9px] uppercase tracking-widest">pts</p>
-          </div>
-        </div>
-
-        {/* Stage status */}
-        <motion.p
-          key={stage}
-          initial={{ opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="font-mono font-bold uppercase tracking-[0.3em] text-xs mb-2"
-          style={{ color: stageColor }}
-        >
-          {stageLabel}
-        </motion.p>
-
-        {/* THE BALL */}
-        <div className="relative flex items-center justify-center" style={{ minHeight: 230 }}>
-          <AnimatePresence mode="wait">
-            {phase === "playing" || popping ? (
-              <motion.div
-                key={`ball-${round}`}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.5 }}
-                transition={{ type: "spring", stiffness: 380, damping: 22 }}
-              >
-                <PufferBall inflation={inflation} popping={popping} />
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-        </div>
-
-        {/* Inflation bar */}
-        <div className="w-full mb-1 relative"
-          style={{ height: 5, background: "rgba(255,255,255,0.07)", borderRadius: 3 }}>
+        {/* ── INTRO ── */}
+        {phase === "intro" && (
           <motion.div
-            style={{
-              position: "absolute", left: 0, top: 0, bottom: 0,
-              borderRadius: 3,
-              background: stageColor,
-              width: `${(inflation * 100).toFixed(1)}%`,
-            }}
-          />
-        </div>
-        <p className="font-mono text-[9px] text-white/20 uppercase tracking-widest mb-5">
-          {Math.round(inflation * 100)}% inflated
-        </p>
-
-        {/* Question */}
-        {question && (
-          <div className="w-full mb-5 text-center">
-            <p className="font-mono font-bold uppercase tracking-[0.25em] text-[9px] text-[#84cc16] mb-1.5">
-              {question.category}
-            </p>
-            <h2
-              className="font-playfair font-black italic text-white"
-              style={{ fontSize: "clamp(1.25rem, 4vw, 1.7rem)", letterSpacing: "-0.01em", lineHeight: 1.2 }}
-            >
-              {question.prompt}
-            </h2>
-          </div>
+            key="intro"
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <div style={{ ...panelBase, padding: "36px 40px", width: "min(420px, 90vw)", textAlign: "center" }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+                <motion.div
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                >
+                  <PufferBall inflation={0.18} popping={false} />
+                </motion.div>
+              </div>
+              <p style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "0.45rem", color: "#ef4444",
+                letterSpacing: "0.2em", marginBottom: 12,
+              }}>
+                HOT POTATO TRIVIA
+              </p>
+              <h1 style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(14px, 2.5vw, 20px)",
+                color: "white", lineHeight: 1.5,
+                textShadow: "4px 4px 0 #000",
+                marginBottom: 20,
+              }}>
+                PUFFER PARTY
+              </h1>
+              <p style={{
+                fontFamily: "var(--font-vt323), monospace",
+                fontSize: "1.05rem", color: "rgba(255,255,255,0.5)",
+                letterSpacing: "0.08em", lineHeight: 1.5,
+                marginBottom: 32,
+              }}>
+                A basketball inflates over time. Type valid NBA answers to deflate it.
+                Rarer answers deflate it more. If it pops — you lose a life.
+              </p>
+              <div style={{
+                display: "flex", gap: 12, justifyContent: "center", marginBottom: 28,
+                fontFamily: "var(--font-vt323), monospace",
+                fontSize: "0.9rem", color: "rgba(255,255,255,0.3)",
+                letterSpacing: "0.1em",
+              }}>
+                <span>♥ 3 lives</span>
+                <span>·</span>
+                <span>rare = big deflate</span>
+              </div>
+              <button
+                onClick={startGame}
+                style={{
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "0.65rem", letterSpacing: "0.15em",
+                  background: "#84cc16", color: "#030508",
+                  border: "none", padding: "14px 28px",
+                  cursor: "pointer", width: "100%",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.filter = "brightness(1.1)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.filter = ""; }}
+              >
+                START GAME →
+              </button>
+            </div>
+          </motion.div>
         )}
 
-        {/* Input */}
-        <form onSubmit={handleSubmit} className="w-full mb-3" style={{ position: "relative" }}>
-          <div className="flex gap-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Type an answer…"
-              disabled={phase !== "playing"}
-              className="flex-1 px-4 py-3 font-mono text-sm text-white placeholder-white/20 outline-none"
-              style={{
-                background: "rgba(255,255,255,0.07)",
-                border: "1px solid rgba(255,255,255,0.14)",
-                caretColor: "#84cc16",
-              }}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-            />
-            <motion.button
-              type="submit"
-              whileTap={{ scale: 0.93 }}
-              disabled={phase !== "playing"}
-              className="px-5 py-3 font-mono font-bold text-sm uppercase"
-              style={{ background: "#84cc16", color: "#030508" }}
-            >
-              →
-            </motion.button>
-          </div>
-          {/* Autocomplete suggestions */}
-          {suggestions.length > 0 && phase === "playing" && (
+        {/* ── COMPLETE ── */}
+        {phase === "complete" && (
+          <motion.div
+            key="complete"
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          >
+            <div style={{ ...panelBase, padding: "36px 40px", width: "min(420px, 90vw)", textAlign: "center" }}>
+              <p style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "0.45rem", color: "#ef4444",
+                letterSpacing: "0.2em", marginBottom: 12,
+              }}>
+                ALL POPPED OUT
+              </p>
+              <h2 style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(16px, 2.5vw, 22px)",
+                color: "white", lineHeight: 1.5,
+                textShadow: "4px 4px 0 #000",
+                marginBottom: 24,
+              }}>
+                GAME OVER
+              </h2>
+              <div style={{
+                background: "rgba(132,204,22,0.08)",
+                border: "1px solid rgba(132,204,22,0.2)",
+                padding: "18px 24px", marginBottom: 28,
+              }}>
+                <p style={{ fontFamily: "var(--font-press-start), monospace", fontSize: "0.4rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.15em", marginBottom: 6 }}>
+                  FINAL SCORE
+                </p>
+                <p style={{ fontFamily: "var(--font-press-start), monospace", fontSize: "2rem", color: "#84cc16", lineHeight: 1 }}>
+                  {score.toLocaleString()}
+                </p>
+                <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.85rem", color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
+                  {round} round{round === 1 ? "" : "s"} survived
+                </p>
+              </div>
+              <button
+                onClick={startGame}
+                style={{
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "0.65rem", letterSpacing: "0.15em",
+                  background: "#84cc16", color: "#030508",
+                  border: "none", padding: "14px 28px",
+                  cursor: "pointer", width: "100%", marginBottom: 10,
+                }}
+              >
+                PLAY AGAIN →
+              </button>
+              <a
+                href="/"
+                style={{
+                  display: "block", padding: "12px",
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "0.45rem", letterSpacing: "0.12em",
+                  color: "rgba(255,255,255,0.4)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  textDecoration: "none",
+                }}
+              >
+                ← BACK HOME
+              </a>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── PLAYING / EXPLODED ── */}
+        {(phase === "playing" || phase === "exploded") && (
+          <motion.div
+            key="playing"
+            className="absolute inset-0"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            {/* Top status panel */}
             <div style={{
-              position: "absolute", bottom: "100%", left: 0, right: 56, zIndex: 50,
-              background: "#060d1c", border: "2px solid #1a2a4a",
-              boxShadow: "4px 4px 0 #000", marginBottom: 4,
+              position: "absolute", top: 60, left: "50%",
+              transform: "translateX(-50%)",
+              width: "min(480px, 92vw)",
+              ...panelBase, zIndex: 20,
             }}>
-              {suggestions.map((s, i) => (
-                <button
-                  key={s.name}
-                  type="button"
-                  onMouseDown={e => { e.preventDefault(); processAnswer(s.name); }}
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "10px 16px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+              }}>
+                {/* Lives */}
+                <div style={{ display: "flex", gap: 6 }}>
+                  {Array.from({ length: MAX_LIVES }).map((_, i) => (
+                    <motion.span
+                      key={i}
+                      style={{
+                        fontSize: "1rem", color: "#ef4444",
+                        opacity: i < lives ? 1 : 0.2,
+                      }}
+                      animate={i === lives && popping ? { scale: [1, 1.5, 0] } : {}}
+                      transition={{ duration: 0.3 }}
+                    >
+                      ♥
+                    </motion.span>
+                  ))}
+                </div>
+
+                <motion.p
+                  key={stage}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
                   style={{
-                    display: "block", width: "100%", textAlign: "left",
-                    padding: "8px 12px",
-                    background: i === sugIdx ? "#1a2a4a" : "transparent",
-                    color: i === sugIdx ? "#84cc16" : "rgba(255,255,255,0.85)",
+                    fontFamily: "var(--font-press-start), monospace",
+                    fontSize: "0.45rem", color: stageColor,
+                    letterSpacing: "0.12em",
+                  }}
+                >
+                  {stageLabel}
+                </motion.p>
+
+                <p style={{
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "0.65rem", color: "#84cc16",
+                }}>
+                  {score.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Question */}
+              {question && (
+                <div style={{ padding: "14px 18px 12px" }}>
+                  <p style={{
+                    fontFamily: "var(--font-press-start), monospace",
+                    fontSize: "0.4rem", color: "rgba(132,204,22,0.7)",
+                    letterSpacing: "0.2em", marginBottom: 8,
+                  }}>
+                    ROUND {round + 1} · {getRoundTime(round)}s
+                  </p>
+                  <p style={{
                     fontFamily: "var(--font-vt323), monospace",
-                    fontSize: "1rem", letterSpacing: "0.05em",
-                    border: "none", cursor: "pointer",
-                    borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                  }}
-                >
-                  {s.name}
-                </button>
-              ))}
+                    fontSize: "1.4rem", color: "white",
+                    lineHeight: 1.35, letterSpacing: "0.04em",
+                  }}>
+                    {question.prompt}
+                  </p>
+                </div>
+              )}
+
+              {/* Inflation bar */}
+              <div style={{
+                height: 4, margin: "0 0 0",
+                background: "rgba(255,255,255,0.07)",
+                position: "relative",
+              }}>
+                <motion.div style={{
+                  position: "absolute", left: 0, top: 0, bottom: 0,
+                  background: stageColor,
+                  width: `${(inflation * 100).toFixed(1)}%`,
+                }} />
+              </div>
             </div>
-          )}
-        </form>
 
-        {/* Feedback */}
-        <AnimatePresence mode="wait">
-          {feedback && (
-            <motion.p
-              key={feedback.text}
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="font-mono font-bold text-sm uppercase tracking-[0.1em] mb-3"
-              style={{ color: feedback.color }}
-            >
-              {feedback.text}
-            </motion.p>
-          )}
-        </AnimatePresence>
+            {/* Ball — centered */}
+            <div style={{
+              position: "absolute", top: "50%", left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 20, pointerEvents: "none",
+            }}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`ball-${round}`}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                >
+                  <PufferBall inflation={inflation} popping={popping} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-        {!feedback && <div style={{ height: 28 }} />}
+            {/* Bottom input panel */}
+            <div style={{
+              position: "absolute", bottom: 32, left: "50%",
+              transform: "translateX(-50%)",
+              width: "min(480px, 92vw)",
+              ...panelBase, padding: "14px 18px",
+              zIndex: 20,
+            }}>
+              {/* Feedback */}
+              <AnimatePresence mode="wait">
+                {feedback && (
+                  <motion.p
+                    key={feedback.text}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    style={{
+                      fontFamily: "var(--font-vt323), monospace",
+                      fontSize: "1.1rem", color: feedback.color,
+                      letterSpacing: "0.08em", marginBottom: 8,
+                      textAlign: "center",
+                    }}
+                  >
+                    {feedback.text}
+                  </motion.p>
+                )}
+              </AnimatePresence>
 
-        {/* Used answers this round */}
-        {answers.length > 0 && (
-          <div className="w-full">
-            <p className="font-mono text-[9px] uppercase tracking-widest text-white/20 mb-2 text-center">
-              This round · {answers.length} answer{answers.length === 1 ? "" : "s"}
-            </p>
-            <div className="flex flex-wrap gap-1.5 justify-center">
-              {answers.map(a => (
-                <span
-                  key={a}
-                  className="font-mono text-[10px] px-2 py-0.5 text-white/50"
+              <form onSubmit={handleSubmit} style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
+                {/* Autocomplete above */}
+                {suggestions.length > 0 && phase === "playing" && (
+                  <div style={{
+                    position: "absolute", bottom: "100%", left: 0, right: 60,
+                    background: "#060d1c", border: "2px solid #1a2a4a",
+                    boxShadow: "4px 4px 0 #000", marginBottom: 4, zIndex: 60,
+                  }}>
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={s.name}
+                        type="button"
+                        onMouseDown={e => { e.preventDefault(); processAnswer(s.name); }}
+                        style={{
+                          display: "block", width: "100%", textAlign: "left",
+                          padding: "8px 12px",
+                          background: i === sugIdx ? "#1a2a4a" : "transparent",
+                          color: i === sugIdx ? "#84cc16" : "rgba(255,255,255,0.85)",
+                          fontFamily: "var(--font-vt323), monospace",
+                          fontSize: "1.05rem", letterSpacing: "0.05em",
+                          border: "none", cursor: "pointer",
+                          borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                        }}
+                      >
+                        {s.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type an answer…"
+                  disabled={phase !== "playing"}
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.07)",
+                    flex: 1,
+                    fontFamily: "var(--font-vt323), monospace",
+                    fontSize: "1.2rem", letterSpacing: "0.06em",
+                    background: "transparent", color: "white",
+                    border: "none", borderBottom: "2px solid rgba(132,204,22,0.6)",
+                    outline: "none", padding: "6px 0",
+                  }}
+                  autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+                />
+                <button
+                  type="submit"
+                  disabled={phase !== "playing"}
+                  style={{
+                    fontFamily: "var(--font-press-start), monospace",
+                    fontSize: "0.5rem", letterSpacing: "0.1em",
+                    background: "#84cc16", color: "#030508",
+                    border: "none", padding: "12px 14px",
+                    cursor: "pointer", flexShrink: 0,
                   }}
                 >
-                  {a}
-                </span>
-              ))}
+                  →
+                </button>
+              </form>
+
+              {/* Used answers */}
+              {answers.length > 0 && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center" }}>
+                    {answers.map(a => (
+                      <span
+                        key={a}
+                        style={{
+                          fontFamily: "var(--font-vt323), monospace",
+                          fontSize: "0.75rem", padding: "2px 8px",
+                          color: "rgba(255,255,255,0.4)",
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.07)",
+                          letterSpacing: "0.06em",
+                        }}
+                      >
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </motion.div>
         )}
-      </main>
+
+      </AnimatePresence>
     </div>
   );
 }

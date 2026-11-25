@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Arena3D from "@/app/components/Arena3D";
 import {
   FULL_COURT_QUESTIONS,
   getDailyQuestions,
@@ -29,14 +28,10 @@ type RoundResult = {
   crowdPct: number;
 };
 
-// ── Court SVG ─────────────────────────────────────────────────────────────────
-
-// ── Score to ball progress (0=near end, 1=at rim) ─────────────────────────────
 function scoreToBallProgress(score: number): number {
   return 0.04 + (score / 10000) * 0.9;
 }
 
-// ── Crowd bars ─────────────────────────────────────────────────────────────────
 function CrowdBars({ question, visible }: { question: FullCourtQuestion; visible: boolean }) {
   const topAnswers = [...question.answers]
     .sort((a, b) => b.crowdPct - a.crowdPct)
@@ -45,8 +40,8 @@ function CrowdBars({ question, visible }: { question: FullCourtQuestion; visible
 
   return (
     <div className="space-y-2">
-      <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-white/40 mb-3">
-        The crowd will pick
+      <p style={{ fontFamily: "var(--font-press-start), monospace", fontSize: "0.5rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.2em", marginBottom: 10 }}>
+        THE CROWD WILL PICK
       </p>
       {topAnswers.map((ans, i) => (
         <motion.div
@@ -57,9 +52,9 @@ function CrowdBars({ question, visible }: { question: FullCourtQuestion; visible
           transition={{ delay: i * 0.08, duration: 0.35 }}
         >
           <span className="text-white/70 font-mono text-xs w-36 truncate shrink-0">{ans.name}</span>
-          <div className="flex-1 h-2 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+          <div className="flex-1 h-2" style={{ background: "rgba(255,255,255,0.08)" }}>
             <motion.div
-              className="h-full rounded-full"
+              className="h-full"
               style={{ background: "linear-gradient(90deg, #84cc16, #65a30d)" }}
               initial={{ width: 0 }}
               animate={visible ? { width: `${(ans.crowdPct / maxPct) * 100}%` } : { width: 0 }}
@@ -73,14 +68,13 @@ function CrowdBars({ question, visible }: { question: FullCourtQuestion; visible
   );
 }
 
-// ── Timer ring ─────────────────────────────────────────────────────────────────
 function TimerRing({ seconds, total }: { seconds: number; total: number }) {
   const r = 22;
   const circ = 2 * Math.PI * r;
   const pct = seconds / total;
   const color = seconds <= 5 ? "#ef4444" : seconds <= 10 ? "#f97316" : "#84cc16";
   return (
-    <svg width={60} height={60} viewBox="0 0 60 60">
+    <svg width={56} height={56} viewBox="0 0 60 60" style={{ flexShrink: 0 }}>
       <circle cx={30} cy={30} r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={4} />
       <circle
         cx={30} cy={30} r={r}
@@ -100,37 +94,11 @@ function TimerRing({ seconds, total }: { seconds: number; total: number }) {
   );
 }
 
-// ── Floating particles ─────────────────────────────────────────────────────────
-function Particles() {
-  const particles = Array.from({ length: 18 }, (_, i) => ({
-    id: i,
-    x: 5 + (i * 37) % 92,
-    delay: (i * 0.7) % 8,
-    duration: 8 + (i * 1.3) % 10,
-    size: 1 + (i * 0.4) % 2.5,
-  }));
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map(p => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full"
-          style={{
-            left: `${p.x}%`,
-            bottom: "-4px",
-            width: p.size,
-            height: p.size,
-            background: "rgba(255,220,100,0.6)",
-          }}
-          animate={{ y: [0, -600], opacity: [0, 0.7, 0.5, 0] }}
-          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "linear" }}
-        />
-      ))}
-    </div>
-  );
-}
+const panelBase: React.CSSProperties = {
+  background: "rgba(8,14,26,0.96)",
+  border: "2px solid rgba(255,255,255,0.08)",
+};
 
-// ── Main page ──────────────────────────────────────────────────────────────────
 export default function FullCourtPage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [questions, setQuestions] = useState<FullCourtQuestion[]>([]);
@@ -153,7 +121,6 @@ export default function FullCourtPage() {
     const qs = getDailyQuestions(dayIdx);
     setQuestions(qs);
 
-    // Check if already played today
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -170,6 +137,8 @@ export default function FullCourtPage() {
   }, []);
 
   const currentQ = questions[roundIdx];
+  const totalScore = results.reduce((s, r) => s + r.score, 0);
+  const finalZone = getZoneLabel(Math.min(Math.round(totalScore / TOTAL_ROUNDS), 10000));
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -217,7 +186,6 @@ export default function FullCourtPage() {
     }, 2800);
   }, [currentQ, phase, stopTimer, results, roundIdx]);
 
-  // Start timer when phase = "playing"
   useEffect(() => {
     if (phase !== "playing") return;
     setTimeLeft(TIMER_SECONDS);
@@ -235,7 +203,6 @@ export default function FullCourtPage() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase, roundIdx]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Show crowd bars then transition to playing
   useEffect(() => {
     if (phase !== "crowd") return;
     setShowCrowdBars(true);
@@ -279,89 +246,78 @@ export default function FullCourtPage() {
     if (e.key === "Enter" && input.trim()) submitAnswer(input);
   }
 
-  const totalScore = results.reduce((s, r) => s + r.score, 0);
-  const finalZone = getZoneLabel(Math.min(Math.round(totalScore / TOTAL_ROUNDS), 10000));
-
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{
-        background: "#030508",
-        color: "white",
-        fontFamily: "var(--font-geist-mono)",
-      }}
-    >
-      {/* Cover the global pixel-art ArenaBackground so only our 3D court shows */}
-      <div className="fixed inset-0" style={{ zIndex: 0, background: "#030508" }} />
-      {/* 3D arena background with ball progress */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <Arena3D ballProgress={ballProgress} animateBall={phase === "revealing"} />
-      </div>
-      <Particles />
+    <div className="fixed inset-0 overflow-hidden" style={{ color: "white" }}>
 
-      {/* Header */}
-      <header className="relative z-20 flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <a href="/games" className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-          <span className="text-xs">←</span>
-          <img src="/logo-green.png" alt="" className="h-7 w-auto" />
-        </a>
-        {phase !== "intro" && phase !== "complete" && (
-          <div className="flex items-center gap-5">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-white/40">
-              Round {roundIdx + 1} / {TOTAL_ROUNDS}
-            </span>
-            <span className="text-[#84cc16] font-bold text-sm tabular-nums">
-              {totalScore.toLocaleString()} pts
-            </span>
-          </div>
-        )}
-        <div className="w-20" />
-      </header>
+      {/* Back link */}
+      <a
+        href="/"
+        style={{
+          position: "absolute", top: 16, left: 16, zIndex: 30,
+          fontFamily: "var(--font-press-start), monospace",
+          fontSize: "0.5rem", color: "rgba(255,255,255,0.45)",
+          textDecoration: "none", letterSpacing: "0.1em",
+        }}
+      >
+        ← HOME
+      </a>
 
-      {/* ── INTRO ── */}
       <AnimatePresence mode="wait">
+
+        {/* ── INTRO ── */}
         {phase === "intro" && (
           <motion.div
             key="intro"
-            className="relative z-10 flex flex-col items-center justify-center flex-1 px-6 text-center"
+            className="absolute inset-0 flex items-center justify-center"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
-            <motion.p
-              className="text-[10px] uppercase tracking-[0.5em] text-[#84cc16] mb-6"
-              initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
-            >
-              Daily · {getTodayStr()}
-            </motion.p>
-            <motion.h1
-              className="font-playfair font-black italic mb-4"
-              style={{ fontSize: "clamp(3rem, 10vw, 7rem)", lineHeight: 0.95, letterSpacing: "-0.03em", textShadow: "0 0 80px rgba(132,204,22,0.4)" }}
-              initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}
-            >
-              Full Court
-            </motion.h1>
-            <motion.p
-              className="text-white/50 text-sm max-w-sm mb-3 leading-relaxed"
-              initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.45 }}
-            >
-              7 NBA prompts. 20 seconds each. The rarer your answer, the farther down the court you travel.
-            </motion.p>
-            <motion.p
-              className="text-white/30 text-xs mb-10"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
-            >
-              Beat the crowd — obvious answers barely move you.
-            </motion.p>
-
-            <motion.button
-              onClick={startGame}
-              className="px-14 py-4 font-mono font-bold uppercase tracking-[0.3em] text-sm"
-              style={{ background: "#84cc16", color: "#030508" }}
-              initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }}
-              whileHover={{ scale: 1.04, boxShadow: "0 0 40px rgba(132,204,22,0.5)" }}
-              whileTap={{ scale: 0.97 }}
-            >
-              Inbound the Ball →
-            </motion.button>
+            <div style={{ ...panelBase, padding: "36px 40px", width: "min(420px, 90vw)", textAlign: "center" }}>
+              <p style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "0.5rem", color: "#84cc16",
+                letterSpacing: "0.25em", marginBottom: 16,
+              }}>
+                DAILY · {getTodayStr()}
+              </p>
+              <h1 style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(16px, 3vw, 26px)",
+                color: "white", lineHeight: 1.5,
+                textShadow: "4px 4px 0 #000",
+                marginBottom: 20,
+              }}>
+                FULL COURT
+              </h1>
+              <p style={{
+                fontFamily: "var(--font-vt323), monospace",
+                fontSize: "1.1rem", color: "rgba(255,255,255,0.55)",
+                letterSpacing: "0.08em", lineHeight: 1.5,
+                marginBottom: 8,
+              }}>
+                7 NBA prompts. 20 seconds each.
+              </p>
+              <p style={{
+                fontFamily: "var(--font-vt323), monospace",
+                fontSize: "1rem", color: "rgba(255,255,255,0.35)",
+                letterSpacing: "0.08em", marginBottom: 32,
+              }}>
+                The rarer your answer, the farther down the court you travel.
+              </p>
+              <button
+                onClick={startGame}
+                style={{
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "0.65rem", letterSpacing: "0.15em",
+                  background: "#84cc16", color: "#030508",
+                  border: "none", padding: "14px 28px",
+                  cursor: "pointer", width: "100%",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.filter = "brightness(1.1)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.filter = ""; }}
+              >
+                INBOUND THE BALL →
+              </button>
+            </div>
           </motion.div>
         )}
 
@@ -369,143 +325,202 @@ export default function FullCourtPage() {
         {(phase === "crowd" || phase === "playing" || phase === "revealing") && currentQ && (
           <motion.div
             key={`round-${roundIdx}`}
-            className="relative z-10 flex flex-col flex-1 px-4 md:px-8 py-4 gap-4 max-w-3xl mx-auto w-full"
+            className="absolute inset-0"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
-            {/* Round dots */}
-            <div className="flex justify-center gap-2">
-              {Array.from({ length: TOTAL_ROUNDS }).map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-full transition-all duration-300"
-                  style={{
-                    width: i === roundIdx ? 20 : 8,
-                    height: 8,
-                    background: i < roundIdx
-                      ? "#84cc16"
-                      : i === roundIdx
-                      ? "#84cc16"
-                      : "rgba(255,255,255,0.15)",
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Crowd bars */}
-            <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <CrowdBars question={currentQ} visible={showCrowdBars} />
-            </div>
-
-            {/* Question + input */}
-            <div className="rounded-xl p-5" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <div className="flex items-start justify-between mb-4">
-                <p className="text-white font-bold text-base md:text-lg leading-snug flex-1 pr-4">
-                  {currentQ.prompt}
-                </p>
-                {phase === "playing" && (
-                  <TimerRing seconds={timeLeft} total={TIMER_SECONDS} />
-                )}
+            {/* Crowd bars panel — mid-screen */}
+            {(phase === "crowd") && (
+              <div style={{
+                position: "absolute", top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "min(460px, 90vw)",
+                ...panelBase, padding: "24px 28px",
+                zIndex: 20,
+              }}>
+                <CrowdBars question={currentQ} visible={showCrowdBars} />
               </div>
+            )}
 
-              {phase !== "revealing" ? (
-                <div style={{ position: "relative" }}>
-                  <div className="flex gap-2">
+            {/* Top question panel */}
+            {(phase === "playing" || phase === "revealing") && (
+              <div style={{
+                position: "absolute", top: 60, left: "50%",
+                transform: "translateX(-50%)",
+                width: "min(560px, 92vw)",
+                ...panelBase, zIndex: 20,
+              }}>
+                {/* Round progress dots + label */}
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "10px 16px",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                }}>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {Array.from({ length: TOTAL_ROUNDS }).map((_, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          width: i === roundIdx ? 20 : 8,
+                          height: 8,
+                          borderRadius: 4,
+                          background: i <= roundIdx ? "#84cc16" : "rgba(255,255,255,0.15)",
+                          transition: "width 0.3s",
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span style={{
+                    fontFamily: "var(--font-press-start), monospace",
+                    fontSize: "0.45rem", color: "rgba(255,255,255,0.35)",
+                    letterSpacing: "0.1em",
+                  }}>
+                    Q {roundIdx + 1} / {TOTAL_ROUNDS}
+                  </span>
+                </div>
+
+                {/* Question text */}
+                <div style={{ padding: "18px 20px 14px" }}>
+                  <p style={{
+                    fontFamily: "var(--font-press-start), monospace",
+                    fontSize: "0.4rem", color: "rgba(132,204,22,0.7)",
+                    letterSpacing: "0.2em", marginBottom: 12,
+                  }}>
+                    FULL COURT
+                  </p>
+                  <p style={{
+                    fontFamily: "var(--font-vt323), monospace",
+                    fontSize: "1.5rem", color: "white",
+                    lineHeight: 1.35, letterSpacing: "0.04em",
+                    marginBottom: 10,
+                  }}>
+                    {currentQ.prompt}
+                  </p>
+                  {phase === "playing" && (
+                    <p style={{
+                      fontFamily: "var(--font-vt323), monospace",
+                      fontSize: "0.9rem", color: "rgba(255,255,255,0.3)",
+                      letterSpacing: "0.08em",
+                    }}>
+                      give a rare answer to advance the ball
+                    </p>
+                  )}
+                  {phase === "revealing" && (
+                    <div style={{ marginTop: 8 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div>
+                          <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", marginBottom: 4 }}>
+                            YOUR ANSWER
+                          </p>
+                          <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "1.3rem", color: "white" }}>
+                            {results[results.length - 1]?.answer || "(skipped)"}
+                          </p>
+                          {results[results.length - 1]?.matched ? (
+                            <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.95rem", color: "#84cc16", marginTop: 2 }}>
+                              {results[results.length - 1].matched!.crowdPct}% of crowd picked this
+                            </p>
+                          ) : (
+                            <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.95rem", color: "#ef4444", marginTop: 2 }}>
+                              Not a valid answer
+                            </p>
+                          )}
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <p style={{
+                            fontFamily: "var(--font-press-start), monospace",
+                            fontSize: "1.4rem", color: lastScore > 0 ? "#84cc16" : "rgba(255,255,255,0.3)",
+                          }}>
+                            +{lastScore.toLocaleString()}
+                          </p>
+                          {lastZone && (
+                            <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginTop: 2 }}>
+                              {lastZone.label}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Bottom input panel */}
+            {phase === "playing" && (
+              <div style={{
+                position: "absolute", bottom: 32, left: "50%",
+                transform: "translateX(-50%)",
+                width: "min(560px, 92vw)",
+                ...panelBase, padding: "16px 20px",
+                zIndex: 20,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative" }}>
+                  <TimerRing seconds={timeLeft} total={TIMER_SECONDS} />
+                  <div style={{ flex: 1, position: "relative" }}>
+                    {/* Autocomplete above input */}
+                    {suggestions.length > 0 && (
+                      <div style={{
+                        position: "absolute", bottom: "100%", left: 0, right: 0,
+                        background: "#060d1c", border: "2px solid #1a2a4a",
+                        boxShadow: "4px 4px 0 #000", marginBottom: 4, zIndex: 60,
+                      }}>
+                        {suggestions.map((s, i) => (
+                          <button
+                            key={s.name}
+                            onMouseDown={e => { e.preventDefault(); selectSuggestion(s); }}
+                            style={{
+                              display: "block", width: "100%", textAlign: "left",
+                              padding: "8px 12px",
+                              background: i === sugIdx ? "#1a2a4a" : "transparent",
+                              color: i === sugIdx ? "#84cc16" : "rgba(255,255,255,0.85)",
+                              fontFamily: "var(--font-vt323), monospace",
+                              fontSize: "1.05rem", letterSpacing: "0.05em",
+                              border: "none", cursor: "pointer",
+                              borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                            }}
+                          >
+                            {s.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <input
                       ref={inputRef}
                       value={input}
                       onChange={handleInputChange}
                       onKeyDown={handleKey}
                       placeholder="Type your answer…"
-                      disabled={phase === "crowd"}
-                      className="flex-1 bg-transparent border-b-2 text-white placeholder-white/25 text-sm py-2 outline-none transition-colors"
+                      className="w-full bg-transparent text-white placeholder-white/25 text-sm py-2 outline-none"
                       style={{
-                        borderColor: phase === "playing" ? "rgba(132,204,22,0.6)" : "rgba(255,255,255,0.15)",
+                        fontFamily: "var(--font-vt323), monospace",
+                        fontSize: "1.2rem", letterSpacing: "0.06em",
+                        borderBottom: "2px solid rgba(132,204,22,0.6)",
                       }}
                       autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
                     />
-                    <button
-                      onClick={() => input.trim() && submitAnswer(input)}
-                      disabled={phase !== "playing" || !input.trim()}
-                      className="px-5 py-2 text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-30"
-                      style={{ background: "#84cc16", color: "#030508" }}
-                    >
-                      Submit
-                    </button>
                   </div>
-                  {/* Autocomplete suggestions */}
-                  {suggestions.length > 0 && phase === "playing" && (
-                    <div style={{
-                      position: "absolute", bottom: "100%", left: 0, right: 60, zIndex: 50,
-                      background: "#060d1c", border: "2px solid #1a2a4a",
-                      boxShadow: "4px 4px 0 #000", marginBottom: 4,
-                    }}>
-                      {suggestions.map((s, i) => (
-                        <button
-                          key={s.name}
-                          onMouseDown={e => { e.preventDefault(); selectSuggestion(s); }}
-                          style={{
-                            display: "block", width: "100%", textAlign: "left",
-                            padding: "8px 12px",
-                            background: i === sugIdx ? "#1a2a4a" : "transparent",
-                            color: i === sugIdx ? "#84cc16" : "rgba(255,255,255,0.85)",
-                            fontFamily: "var(--font-vt323), monospace",
-                            fontSize: "1rem", letterSpacing: "0.05em",
-                            border: "none", cursor: "pointer",
-                            borderBottom: i < suggestions.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                          }}
-                        >
-                          {s.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Reveal */
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-3"
+                  <button
+                    onClick={() => input.trim() && submitAnswer(input)}
+                    disabled={!input.trim()}
+                    style={{
+                      fontFamily: "var(--font-press-start), monospace",
+                      fontSize: "0.5rem", letterSpacing: "0.1em",
+                      background: "#84cc16", color: "#030508",
+                      border: "none", padding: "12px 16px",
+                      cursor: "pointer", flexShrink: 0,
+                      opacity: input.trim() ? 1 : 0.35,
+                    }}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white/50 text-xs uppercase tracking-widest mb-1">Your answer</p>
-                        <p className="text-white font-bold">
-                          {results[results.length - 1]?.answer || "(skipped)"}
-                        </p>
-                        {results[results.length - 1]?.matched ? (
-                          <p className="text-[#84cc16] text-xs mt-1">
-                            {results[results.length - 1].matched!.crowdPct}% of crowd picked this
-                          </p>
-                        ) : (
-                          <p className="text-red-400 text-xs mt-1">Not a valid answer</p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <motion.p
-                          className="font-playfair font-black"
-                          style={{ fontSize: "2rem", color: lastScore > 0 ? "#84cc16" : "rgba(255,255,255,0.3)" }}
-                          initial={{ scale: 0.5, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        >
-                          +{lastScore.toLocaleString()}
-                        </motion.p>
-                        {lastZone && (
-                          <p className="text-white/50 text-xs mt-1">{lastZone.label}</p>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              )}
-            </div>
-
-            {phase === "crowd" && (
-              <p className="text-center text-white/30 text-xs animate-pulse">
-                Study the crowd… answer in 3 seconds
-              </p>
+                    SUBMIT
+                  </button>
+                </div>
+                <p style={{
+                  fontFamily: "var(--font-vt323), monospace",
+                  fontSize: "0.8rem", color: "rgba(255,255,255,0.25)",
+                  letterSpacing: "0.08em", marginTop: 8, textAlign: "center",
+                }}>
+                  SCORE: {totalScore.toLocaleString()} pts
+                </p>
+              </div>
             )}
           </motion.div>
         )}
@@ -514,65 +529,110 @@ export default function FullCourtPage() {
         {phase === "complete" && (
           <motion.div
             key="complete"
-            className="relative z-10 flex flex-col items-center justify-center flex-1 px-6 py-10 text-center max-w-2xl mx-auto w-full"
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ overflowY: "auto", padding: "60px 16px" }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           >
-            <p className="text-[10px] uppercase tracking-[0.5em] text-[#84cc16] mb-4">
-              {alreadyPlayed ? "Today's Result" : "Game Over"}
-            </p>
-            <h2
-              className="font-playfair font-black italic mb-2"
-              style={{ fontSize: "clamp(2.5rem, 8vw, 5rem)", lineHeight: 0.95, textShadow: "0 0 60px rgba(132,204,22,0.4)" }}
-            >
-              {finalZone.label}
-            </h2>
-            <p className="text-white/40 text-sm mb-8">{finalZone.sub}</p>
-
-            {/* Total score */}
-            <div className="mb-8 py-6 px-12 rounded-xl" style={{ background: "rgba(132,204,22,0.08)", border: "1px solid rgba(132,204,22,0.2)" }}>
-              <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">Total Score</p>
-              <p className="font-playfair font-black text-[#84cc16]" style={{ fontSize: "3.5rem", lineHeight: 1 }}>
-                {totalScore.toLocaleString()}
+            <div style={{ ...panelBase, padding: "32px 28px", width: "min(480px, 92vw)", textAlign: "center" }}>
+              <p style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "0.45rem", color: "#84cc16",
+                letterSpacing: "0.2em", marginBottom: 12,
+              }}>
+                {alreadyPlayed ? "TODAY'S RESULT" : "GAME OVER"}
               </p>
-              <p className="text-white/30 text-xs mt-1">avg {Math.round(totalScore / TOTAL_ROUNDS).toLocaleString()} / round</p>
-            </div>
+              <h2 style={{
+                fontFamily: "var(--font-press-start), monospace",
+                fontSize: "clamp(16px, 3vw, 24px)",
+                color: "white", lineHeight: 1.4,
+                textShadow: "4px 4px 0 #1a3000",
+                marginBottom: 6,
+              }}>
+                {finalZone.label}
+              </h2>
+              <p style={{
+                fontFamily: "var(--font-vt323), monospace",
+                fontSize: "1rem", color: "rgba(255,255,255,0.4)",
+                letterSpacing: "0.1em", marginBottom: 24,
+              }}>
+                {finalZone.sub}
+              </p>
 
-            {/* Result breakdown */}
-            <div className="w-full space-y-2 mb-8">
-              {results.map((r, i) => (
-                <motion.div
-                  key={i}
-                  className="flex items-center justify-between px-4 py-3 rounded-lg"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                >
-                  <div className="text-left flex-1 min-w-0">
-                    <p className="text-white/40 text-[9px] uppercase tracking-widest truncate">{r.question.prompt}</p>
-                    <p className="text-white text-sm font-bold truncate">{r.answer}</p>
-                  </div>
-                  <div className="text-right ml-4 shrink-0">
-                    <p className="font-bold text-sm" style={{ color: r.score > 0 ? "#84cc16" : "rgba(255,255,255,0.3)" }}>
-                      +{r.score.toLocaleString()}
-                    </p>
-                    {r.matched && (
-                      <p className="text-white/30 text-[9px]">{r.crowdPct}% picked</p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+              {/* Total score */}
+              <div style={{
+                background: "rgba(132,204,22,0.08)",
+                border: "1px solid rgba(132,204,22,0.2)",
+                padding: "18px 24px", marginBottom: 20,
+              }}>
+                <p style={{ fontFamily: "var(--font-press-start), monospace", fontSize: "0.4rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.15em", marginBottom: 6 }}>
+                  TOTAL SCORE
+                </p>
+                <p style={{
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "2rem", color: "#84cc16", lineHeight: 1,
+                }}>
+                  {totalScore.toLocaleString()}
+                </p>
+                <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.85rem", color: "rgba(255,255,255,0.3)", marginTop: 4 }}>
+                  avg {Math.round(totalScore / TOTAL_ROUNDS).toLocaleString()} / round
+                </p>
+              </div>
 
-            <a
-              href="/games"
-              className="px-10 py-3 text-xs font-bold uppercase tracking-[0.25em] border transition-colors"
-              style={{ borderColor: "rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.6)" }}
-            >
-              ← Back to Games
-            </a>
+              {/* Result breakdown */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 24 }}>
+                {results.map((r, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "10px 14px",
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                    }}
+                  >
+                    <div style={{ textAlign: "left", flex: 1, minWidth: 0, marginRight: 12 }}>
+                      <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em", marginBottom: 2 }}>
+                        {r.question.prompt}
+                      </p>
+                      <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "1.1rem", color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {r.answer}
+                      </p>
+                    </div>
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <p style={{
+                        fontFamily: "var(--font-press-start), monospace",
+                        fontSize: "0.65rem",
+                        color: r.score > 0 ? "#84cc16" : "rgba(255,255,255,0.3)",
+                      }}>
+                        +{r.score.toLocaleString()}
+                      </p>
+                      {r.matched && (
+                        <p style={{ fontFamily: "var(--font-vt323), monospace", fontSize: "0.75rem", color: "rgba(255,255,255,0.3)" }}>
+                          {r.crowdPct}% picked
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <a
+                href="/"
+                style={{
+                  display: "block", padding: "14px",
+                  fontFamily: "var(--font-press-start), monospace",
+                  fontSize: "0.5rem", letterSpacing: "0.15em",
+                  color: "rgba(255,255,255,0.5)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  textDecoration: "none", textAlign: "center",
+                }}
+              >
+                ← BACK HOME
+              </a>
+            </div>
           </motion.div>
         )}
+
       </AnimatePresence>
     </div>
   );
