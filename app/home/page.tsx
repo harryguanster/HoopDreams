@@ -183,9 +183,9 @@ export default function HomePage() {
           background: "rgba(255,255,255,0.04)",
         }}>
           <GameCard title="FULL COURT"   tagline="the rarest answer" color="#1c2d58" href="/full-court" />
-          <GameCard title="PUFFER PARTY" tagline="beat the clock"     color="#5a1e1e" href="/puffer-party" />
-          <GameCard title="VETERAN"      tagline="the oldest player"  color="#1a3828" disabled />
-          <GameCard title="ROOKIE"       tagline="the newest player"  color="#28183e" disabled />
+          <GameCard title="SURFACE"      tagline="the crowd answer"   color="#1a3828" disabled />
+          <GameCard title="VETERAN"      tagline="the oldest player"  color="#28183e" disabled />
+          <GameCard title="ROOKIE"       tagline="the newest player"  color="#2a1a40" disabled />
         </div>
 
         {/* Link row */}
