@@ -66,6 +66,7 @@ export default function FullCourtPage() {
   const [lastScore, setLastScore] = useState(0);
   const [lastResult, setLastResult] = useState<RoundResult | null>(null);
   const [alreadyPlayed, setAlreadyPlayed] = useState(false);
+  const [invalidGuess, setInvalidGuess] = useState(false);
   const [suggestions, setSuggestions] = useState<FullCourtAnswer[]>([]);
   const [sugIdx, setSugIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -101,11 +102,21 @@ export default function FullCourtPage() {
 
   const submitAnswer = useCallback((rawInput: string) => {
     if (!currentQ || phase !== "playing") return;
-    stopTimer();
     setSuggestions([]);
     setSugIdx(-1);
 
     const matched = matchAnswer(rawInput, currentQ);
+
+    // Invalid guess and not a timer timeout — let them try again
+    if (!matched && rawInput !== "") {
+      setInput("");
+      setInvalidGuess(true);
+      setTimeout(() => setInvalidGuess(false), 1500);
+      setTimeout(() => inputRef.current?.focus(), 50);
+      return;
+    }
+
+    stopTimer();
     const score = matched ? calcScore(matched.crowdPct) : 0;
     const crowdPct = matched?.crowdPct ?? 100;
     const zone = getZoneLabel(score);
@@ -393,6 +404,20 @@ export default function FullCourtPage() {
                   }}
                   autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
                 />
+                {invalidGuess && (
+                  <div style={{
+                    position: "absolute", bottom: "100%", left: 0, right: 0,
+                    marginBottom: 6,
+                    fontFamily: "var(--font-vt323), monospace",
+                    fontSize: "1rem", letterSpacing: "0.06em",
+                    color: "#ef4444",
+                    padding: "6px 10px",
+                    background: "rgba(239,68,68,0.1)",
+                    border: "1px solid rgba(239,68,68,0.3)",
+                  }}>
+                    ✗ Not a valid answer — try again
+                  </div>
+                )}
                 <button
                   onClick={() => input.trim() && submitAnswer(input)}
                   disabled={!input.trim()}
